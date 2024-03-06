@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Class-Path: 
+Dependencies: org.apache.poi export,
+ org.apache.poi-ooxml export,
+ org.apache.poi-ooxml-schemas export,
+ org.apache.commons.codec export,
+ org.apache.commons.logging export,
+ org.apache.xmlbeans export

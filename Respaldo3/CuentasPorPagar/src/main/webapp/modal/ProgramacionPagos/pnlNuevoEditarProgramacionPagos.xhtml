@@ -1,0 +1,308 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlNuevoEditarProgramacionPagos" autosized="true" >
+		<f:facet name="header">
+			<h:panelGroup>						
+				<h:outputText style="margin-left:10px" value="#{progPagosAction.progPagoId != 0 ? progPagosAction.detallesProgramacion : msg['navegacion.label.nuevoReg']}" styleClass="Titulo"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" id="btnCerrarNuevoEditarProgramacionPagos"/>
+				<rich:componentControl for="pnlNuevoEditarProgramacionPagos" attachTo="btnCerrarNuevoEditarProgramacionPagos" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmNuevoEditarProgramacionPagos">
+			<a4j:region id="loadNuevoEditarProgramacionPagos">
+				<div style="margin:0 auto; display:block; min-height: 42px; height:auto;">
+					<h:panelGrid columns="2" columnClasses="tygCompGtosColDer, tygCompGtosColDer" style="margin-right:5px;">
+						<rich:messages id="msgErrorProgramacionPagos" showDetail="true" showSummary="false"/>
+						
+						<h:panelGroup style="float:right; vertical-align:top; position:relative; min-height:42px;">
+							<a4j:status for="loadNuevoEditarProgramacionPagos">
+								<f:facet name="start"><h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;"/></f:facet>
+								<f:facet name="stop" ><h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: middle; position:relative;"/></f:facet>
+							</a4j:status>
+
+							<a4j:commandButton id="cmdSalvar" style="cursor:pointer; margin:0 5px;" 
+								image="#{msg['salvar22.img']}" 
+								rendered="#{pojoProgPagos.estatus == 'P' || progPagosAction.clicNuevo}"
+								onclick="#{rich:element('cmdSalvar')}.disabled = true;" 
+								action="#{progPagosAction.guardar}" 
+								oncomplete="checaResultado('#{progPagosAction.resOperacion}', 'pnlNuevoEditarProgramacionPagos', 'pnlMsgGralesProgramacionPagos', 'guardar', #{rich:element('msgErrorProgramacionPagos')}); #{rich:element('cmdSalvar')}.disabled = false;"
+								reRender="pnlDatos2,dtResults,pnlMsgGralesProgramacionPagos,LabelClave">
+								<rich:toolTip showDelay="300"><h:outputText value="#{msg['agregar.e']}" styleClass="Descripcion"/></rich:toolTip>
+							</a4j:commandButton>
+						</h:panelGroup>
+					</h:panelGrid>
+				</div>
+				
+				<rich:tabPanel switchType="client" style="min-height: 280px; min-width:700px;">
+					<rich:tab label="#{msg['datosGenerales']}" styleClass="Titulo">
+						<h:panelGrid id="pnlDatos2" columns="2" columnClasses="tygCompGtosColIzq,tygCompGtosColDer" style="display:block; position:relative; margin:5px auto;">					
+							<h:outputText value="#{msg['navegacion.label.clave']}:" styleClass="Titulo"/>					
+							<h:outputText id="LabelClave" value="#{progPagosAction.progPagoId}" styleClass="Titulo" />
+							
+							<h:outputText value="#{msg['sucursal']}:"  styleClass="Titulo"/>
+							<h:panelGroup>
+								<h:selectOneMenu id="txtSucursal" styleClass="Titulo" style="width:216px;"
+									value="#{progPagosAction.sucursal}" 
+					                required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+						           	requiredMessage="#{msg['sucursal']} #{msg['mensaje.error.requerido']}">
+									<f:selectItem itemLabel="#{msg['seleccione']}" />
+									<f:selectItems value="#{registroGastosAction.listSucursalesItems}" />
+								</h:selectOneMenu>
+								
+								<rich:message for="txtSucursal" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:panelGroup>
+											<h:graphicImage value="#{msg['cancelar16.img']}" />
+											<h:outputLabel styleClass="Err" value="#{msg['mensaje.validacion.selectItem']}" />
+										</h:panelGroup>
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>			
+							
+							<h:outputText value="#{msg['navegacion.label.del']}:" styleClass="Titulo"/>
+							<h:panelGroup>
+								<rich:calendar id="cmbFecha1" value="#{progPagosAction.del}" inputSize="18" datePattern="dd, MMM yyyy" zindex="100" showWeekDaysBar="false" showWeeksBar="false" required="#{!empty param[rich:clientId('cmdSalvar')]}">
+									<f:validateLength minimum="1"/>
+								</rich:calendar>
+								
+								<rich:message for="cmbFecha1" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:panelGroup>
+											<h:graphicImage value="#{msg['cancelar16.img']}" />
+											<h:outputLabel  styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+										</h:panelGroup>
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+									
+							<h:outputText value="#{msg['navegacion.label.al']}:" styleClass="Titulo"/>
+							<h:panelGroup>
+								<rich:calendar id="cmbFecha2" value="#{progPagosAction.al}" inputSize="18" datePattern="dd, MMM yyyy" zindex="100" showWeekDaysBar="false" showWeeksBar="false" required="#{!empty param[rich:clientId('cmdSalvar')]}">
+									<f:validateLength minimum="1"/>
+								</rich:calendar>
+								
+								<rich:message for="cmbFecha2" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:panelGroup>
+											<h:graphicImage value="#{msg['cancelar16.img']}" />
+											<h:outputLabel  styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+										</h:panelGroup>
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>		
+									
+							<h:outputText value="#{msg['total']}:" styleClass="Titulo" />
+							<h:outputText id="txtTotal" value="#{progPagosAction.total}" style="text-align:rigth;" styleClass="Titulo">
+								<f:convertNumber pattern="$ ###,##0.00" /> 
+							</h:outputText>	
+							
+							<h:outputText value="#{msg['navegacion.label.totalRev']}:" styleClass="Titulo" />
+							<h:outputText id="txtMontoRevisado" value="#{progPagosAction.montoRevisado}" style="text-align:rigth;"  styleClass="Titulo">
+								<f:convertNumber pattern="$ ###,##0.00" /> 
+							</h:outputText>	
+							
+							<h:outputText value="#{msg['observaciones']}:" styleClass="Titulo"/>
+							<h:panelGroup>
+								<h:inputTextarea id="txtObservaciones" style="width:550px; resize:none;" rows="1"
+									value="#{progPagosAction.observaciones}"
+									required="#{!empty param[rich:clientId('cmdSalvar')]}"
+						           	requiredMessage="#{msg['observaciones']} #{msg['mensaje.error.requerido']}" />
+																				
+								<rich:message for="txtObservaciones" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:panelGroup>
+											<h:graphicImage value="#{msg['cancelar16.img']}"/>
+											<h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+										</h:panelGroup>
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+						</h:panelGrid>
+					</rich:tab>
+					
+					<rich:tab label="#{msg['navegacion.label.gastos']}" styleClass="Titulo">
+						<h:panelGrid id="pnlDatos3" columns="2" columnClasses="tygCompGtosColIzq,tygCompGtosColDer" style="display:block; position:relative; margin:5px auto;">
+							<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+							<h:panelGroup >
+								<h:selectOneRadio id="radioTipoPersona" styleClass="Titulo"
+									value="#{progPagosAction.tipoPersona}">
+									<f:selectItem itemLabel="#{msg['persona']}" itemValue="P"/>
+									<f:selectItem itemLabel="#{msg['negocio.e']}" itemValue="N"/>
+									<a4j:support event="onchange" 
+										action="#{progPagosAction.cambioBeneficiario}" 
+										reRender="txtBene,suggBenes" />
+								</h:selectOneRadio>
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['navegacion.label.beneficiario']}:" styleClass="Titulo" />
+							<h:panelGroup>
+								<h:inputText id="txtBene" size="35"
+									onkeypress="keyF9(event, #{rich:component('suggBenes')})"
+									value="#{progPagosAction.beneficiario}" 
+									required="#{!empty param[rich:clientId('cmdAgregar')]}"
+						           	requiredMessage="#{msg['navegacion.label.beneficiario']} #{msg['mensaje.error.requerido']}">
+									<f:validator validatorId="valClaveValor"/>
+									<rich:toolTip><span style="white-space:nowrap"><strong>Presione F9</strong></span></rich:toolTip>
+								</h:inputText>
+								
+								<h:graphicImage style="margin-left:0px;  vertical-align:bottom; cursor:pointer;" value="#{msg['despliega.img']}" onclick="#{rich:component('suggBenes')}.callSuggestion(true)" alt=""/>
+								
+								<rich:suggestionbox id="suggBenes" height="100" width="230" 
+									eventsQueue="suggQRegGto" suggestionAction="#{progPagosAction.autoacompletaBeneficiario}" 
+									var="ben" minChars="2" for="txtBene" fetchValue="#{ben.id} - #{ben.nombre}">
+									<h:column><h:outputText value="#{ben.id}"/></h:column>
+									<h:column><h:outputText value="#{ben.nombre}"/></h:column>
+								</rich:suggestionbox>
+								
+								<rich:message for="txtBene" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:panelGroup>
+											<h:graphicImage value="#{msg['cancelar16.img']}" />
+											<h:outputLabel  styleClass="Err" value="#{msg['mensaje.validacion.selectItem']}"/>
+										</h:panelGroup>
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['navegacion.label.gto']}:" styleClass="Titulo"/>
+							<h:panelGroup>
+								<h:inputText id="txtGasto" size="35" 
+									onkeypress="keyF9(event, #{rich:component('suggGastos')})"
+									value="#{progPagosAction.conceptoGasto}" 
+									required="#{!empty param[rich:clientId('cmdAgregar')]}"
+						           	requiredMessage="#{msg['navegacion.label.gto']} #{msg['mensaje.error.requerido']}">
+									<f:validator validatorId="valClaveValor" />
+									<rich:toolTip><span style="white-space:nowrap"><strong>Presione F9</strong></span></rich:toolTip>
+								</h:inputText>
+								
+								<h:graphicImage style="vertical-align:bottom; cursor:pointer;" value="#{msg['despliega.img']}" onclick="#{rich:component('suggGastos')}.callSuggestion(true)" alt=""/>
+								
+								<rich:suggestionbox id="suggGastos" for="txtGasto" height="100" width="230" 
+									eventsQueue="suggQProgPagos" minChars="2" 
+									suggestionAction="#{progPagosAction.autoacompletaConceptoGasto}" 
+									var="gasto" fetchValue="#{gasto.id} - #{gasto.descripcion}">
+									<h:column><h:outputText value="#{gasto.id}"/></h:column>
+									<h:column><h:outputText value="#{gasto.descripcion}"/></h:column>												
+								</rich:suggestionbox>
+								
+								<rich:message for="txtGasto" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:panelGroup>
+											<h:graphicImage value="#{msg['cancelar16.img']}" />
+											<h:outputLabel  styleClass="Err" value="#{msg['mensaje.validacion.selectItem']}"/>
+										</h:panelGroup>
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>	
+							
+							<h:outputText value="#{msg['ordenCompra']}:" styleClass="Titulo" />
+							<h:panelGroup id="pnlOrdenCompraDatos">
+								<h:panelGrid columns="2">
+									<h:outputText id="txtCajaChicaObra" value="#{progPagosAction.ordenCompraSeleccionada}" styleClass="Titulo" />
+									<a4j:commandLink id="linkBusquedaOrdenCompra"
+										action="#{progPagosAction.nuevaBusquedaOrdenCompra}" 
+										value="#{progPagosAction.ordenCompraSeleccionada == '' ? msg['seleccionar'] : msg['cambiar']}"
+										oncomplete="#{rich:component('pnlBusquedaOrdenesCompra')}.show()"
+										reRender="pnlBusquedaOrdenesCompra" />
+								</h:panelGrid>
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['navegacion.label.monto']}:" styleClass="Titulo" />
+							<h:panelGroup>
+								<h:inputText id="txtMontoGasto" maxlength="15" style="text-align:rigth; width: 150px;"
+									value="#{progPagosAction.monto}" 
+									required="#{!empty param[rich:clientId('cmdAgregar')]}"
+						           	requiredMessage="#{msg['navegacion.label.monto']} #{msg['mensaje.error.requerido']}">
+									<f:validateLength minimum="1" /> 
+									<f:converter converterId="javax.faces.Double" />								
+								</h:inputText>
+		
+								<h:panelGroup style="vertical-align: middle; position:relative; margin-left:10px; " >
+									<a4j:commandButton id="cmdAgregar" 
+										image="#{msg['agregar16.img']}" style="cursor: pointer;" 
+										action="#{progPagosAction.agregarGasto}" 
+										reRender="dtConceptosGasto,txtTotal,txtMontoRevisado,txtMontoGasto,radioTipoPersona,txtBene,txtGasto,suggBenes,suggGastos,pnlOrdenCompraDatos" >
+										<rich:toolTip showDelay="300"><h:outputText value="#{msg['agregar.e']}" styleClass="Descripcion"/></rich:toolTip>	
+									</a4j:commandButton>
+								</h:panelGroup>
+		
+								<rich:message for="txtMontoGasto" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+									<h:panelGroup>
+										<h:graphicImage value="#{msg['cancelar16.img']}" />
+										<h:outputLabel value="#{msg['mensaje.error.requerido']}" styleClass="Err" />
+									</h:panelGroup>
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+						</h:panelGrid>
+							
+						<rich:dataTable id="dtConceptosGasto" value="#{progPagosAction.listGastos}" var="gasto" 
+							rows="5" style="margin: 0 auto; width: 100%;" cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" >
+							<f:facet name="header">
+								<rich:columnGroup>
+									<rich:column colspan="4" styleClass="Titulo">
+										<h:outputText value="#{msg['navegacion.label.gastos']}"/>
+									</rich:column>
+									
+									<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['navegacion.label.gto']}"  />
+									</rich:column>
+									
+									<rich:column style="text-align:left;" styleClass="Titulo">
+										<h:outputText value="#{msg['navegacion.label.beneficiario']}"  />
+									</rich:column>
+									
+									<rich:column style="text-align:center; margin-left:10px;" styleClass="Titulo">
+										<h:outputText value="#{msg['navegacion.label.monto']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center; margin-left:10px;" styleClass="Titulo" />
+								</rich:columnGroup>
+							</f:facet>
+							
+							<rich:column style="text-align:left; min-width: 150px;" styleClass="Descripcion">
+								<h:outputText value="#{gasto.tiposGastos.descripcion}" />													
+							</rich:column>
+							
+							<rich:column style="text-align:left; min-width: 150px;" styleClass="Descripcion">
+								<h:outputText value="#{gasto.idBeneficiario.nombre}" />													
+							</rich:column>
+							
+							<rich:column width="100" style="text-align:right;" styleClass="Descripcion">
+								<h:outputText value="#{gasto.monto}" ><f:convertNumber pattern="$###,###.00" /></h:outputText>  		
+							</rich:column>
+							
+							<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;" styleClass="Descripcion">
+								<a4j:commandButton style="cursor:pointer;"
+									image="#{msg['eliminar22.img']}" 
+									action="#{progPagosAction.eliminarGasto}" 
+									reRender="dtConceptosGasto,txtTotal,txtMontoRevisado">  
+									<f:setPropertyActionListener target="#{progPagosAction.pojoProPagosDet}" value="#{gasto}" />
+									<rich:toolTip showDelay="300"><h:outputText value="#{msg['eliminar.e']}" styleClass="Descripcion" /></rich:toolTip>	
+								</a4j:commandButton>																
+							</rich:column>
+																			
+							<f:facet name="footer" >
+								<rich:datascroller id="dScroll" for="dtConceptosGasto" page="#{progPagosAction.numPaginagasto}" 
+									maxPages="10" align="center" ajaxSingle="true" styleClass="Titulo"/>
+							</f:facet>
+						</rich:dataTable>
+					</rich:tab>
+				</rich:tabPanel>
+			</a4j:region>										
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

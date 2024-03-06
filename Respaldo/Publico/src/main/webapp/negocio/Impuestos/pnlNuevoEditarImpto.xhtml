@@ -1,0 +1,158 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlNuevoEditarImpto" autosized="true" >
+		<f:facet name="header">
+			<h:panelGroup>					 
+				<h:outputText style="margin-left:10px" value="#{ ImpuestosAction.valorId != 0 ? ImpuestosAction.descripcion : msg['navegacion.label.nuevoReg']}" styleClass="Titulo"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" styleClass="cursor:pointer;" id="btnCerrarNuevoMon"/>
+				<rich:componentControl for="pnlNuevoEditarImpto" attachTo="btnCerrarNuevoMon" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="frmNuevoEditarimpuesto">
+			<a4j:region id="loadNuevoEditarImpto">
+				<div style = "display: block; width: 500px; height: 22px;">
+					<h:panelGrid columns="2" style="float:right; margin-right:5px;" >
+						<h:panelGroup style="vertical-align: middle; position:relative; ">
+							<a4j:commandButton id="cmdSalvar" style="vertical-align: middle; position:relative;" styleClass="Titulo"
+								image="#{msg['salvar22.img']}" 
+								onclick="#{rich:element('cmdSalvar')}.disabled = true;" 
+								action="#{ImpuestosAction.guardar}" 
+								oncomplete="checaResultado(#{rich:element('txtResultado')}, 'pnlNuevoEditarImpto', 'pnlMsgGralImpto', 'salvar', #{rich:element('msgErrorImpto')}); #{rich:element('cmdSalvar')}.disabled = false;" 
+								reRender="miMenu,dtResults,LabelClave,pnlMsgGralImpto" />
+							<h:outputLabel for="cmdSalvar" value="#{msg['salvar.e']}" style="cursor:pointer; font-weight: bold; font-family: Arial, Verdana, sans-serif; font-size: 11px;"/>
+						</h:panelGroup>
+
+						<h:panelGroup style="vertical-align: middle; position:relative;">
+							<a4j:status for="loadNuevoEditarImpto">
+								<f:facet name="start">
+									<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;"/>
+								</f:facet>
+								
+								<f:facet name="stop">
+									<h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: middle; position:relative;"/>
+								</f:facet>
+							</a4j:status>
+						</h:panelGroup>
+					</h:panelGrid>
+				</div>
+									
+				<h:panelGrid id="pnlDatos1" columns="2" cellpadding="3" columnClasses="Observacion" style = "display: block; width: 400px; position:relative; margin-left:10px;">						
+					<h:outputText value="*" />
+					<h:outputText value="#{ ImpuestosAction.valorId != 0 ? msg['navegacion.label.noeditar'] : msg['navegacion.label.generaAuto']}" />
+					<h:outputText value="" />
+					<h:outputText value="#{ ImpuestosAction.valorId != 0 ? msg['navegacion.label.vacio'] : msg['navegacion.label.cuandoSalve']}"  />						
+				</h:panelGrid>
+																															
+				<h:panelGrid id="pnlDatos2" columns="2" cellpadding="3" columnClasses="tygImpColIzq, tygImpColDer" style = "display: block; position:relative; margin-top:15px; margin-left:10px;" >
+					<h:outputText value="#{msg['navegacion.label.clave']}:" styleClass="Titulo"/>					
+					<h:outputText id="LabelClave" value="#{ImpuestosAction.valorId}" styleClass="Titulo" />
+						
+					<h:outputText value="#{msg['impuesto']}:" styleClass="Titulo"/>
+					<h:panelGroup >
+						<h:inputText id="txtImpuesto" value="#{ImpuestosAction.descripcion}" maxlength="240" size="40" required="#{!empty param[rich:clientId('cmdSalvar')]}" >
+							<f:validateLength minimum="1"/>
+						</h:inputText>
+						
+						<rich:message for="txtImpuesto" showSummary="false" showDetail="false"  style="color:red">
+							<f:facet name="errorMarker">
+								<h:panelGroup>
+									<h:graphicImage  value="#{msg['cancelar16.img']}"/>
+									<h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+								</h:panelGroup>
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['navegacion.label.ctaCont']}:" styleClass="Titulo"/>
+					<h:panelGroup >
+						<h:inputText id="txtCtaContable" value="#{ImpuestosAction.valor}" maxlength="150" size="40" required="#{!empty param[rich:clientId('cmdSalvar')]}" >
+							<f:validateLength minimum="1" /> 
+							<f:validator  validatorId="SoloNum"/>
+						</h:inputText>
+						
+						<rich:message for="txtCtaContable" showSummary="false" showDetail="false"  style="color:red">
+						  	<f:facet name="errorMarker">
+								<h:panelGroup>
+									<h:graphicImage value="#{msg['cancelar16.img']}"/>
+									<h:outputLabel styleClass="Err" value="#{msg['mensaje.error.reqSoloNum']}"/>
+								</h:panelGroup>
+						  	</f:facet>
+						</rich:message>
+					</h:panelGroup>					
+					
+					<h:outputText value="#{msg['porcentaje']}:" styleClass="Titulo"/>
+					<h:panelGroup >
+						<h:inputText id="txtPorcentaje" value="#{ImpuestosAction.atributo1}" maxlength="240" size="40" required="#{!empty param[rich:clientId('cmdSalvar')]}" >								
+							<f:converter converterId="javax.faces.Double" />
+							<f:validateLength minimum="1" /> 
+						</h:inputText>
+						
+						<rich:message for="txtPorcentaje" showSummary="false" showDetail="false"  style="color:red">
+							<f:facet name="errorMarker">
+								<h:panelGroup>
+									<h:graphicImage value="#{msg['cancelar16.img']}"/>
+									<h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+								</h:panelGroup>
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+
+					<h:outputText value="#{msg['mensaje.label.grupoImp']}:" styleClass="Titulo"/>
+					<h:panelGroup >
+						<h:inputText id="txtGrupoImp" maxlength="240" size="40" 
+							value="#{ImpuestosAction.atributo2}" 
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" >
+							<f:validateLength minimum="1" /> 
+						</h:inputText>
+						
+						<rich:message for="txtGrupoImp" showSummary="false" showDetail="false"  style="color:red">
+							<f:facet name="errorMarker">
+								<h:panelGroup>
+									<h:graphicImage value="#{msg['cancelar16.img']}"/>
+									<h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+								</h:panelGroup>
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>	
+
+					<h:outputText value="#{msg['mensaje.label.desglosar']}:" styleClass="Titulo"/>
+					<h:selectBooleanCheckbox value="#{ImpuestosAction.desglosar}" />
+
+					<h:outputText value="#{msg['navegacion.label.operacion']}:" styleClass="Titulo"/>
+					<h:panelGroup >							
+						<rich:comboBox id="cmbOperacion" listStyle="text-align:left;" enableManualInput="false" 
+							value="#{ImpuestosAction.tipoCuenta}" 
+							suggestionValues="#{ImpuestosAction.tipoOperacion}" 
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" >
+							<f:validateLength minimum="1" />
+						</rich:comboBox>
+						
+						<rich:message for="cmbOperacion" showSummary="false" showDetail="false"  style="color:red">
+							<f:facet name="errorMarker">
+								<h:panelGroup>
+									<h:graphicImage value="#{msg['cancelar16.img']}"/>
+									<h:outputLabel styleClass="Err" value="#{msg['mensaje.validacion.selectItem']}"/>
+								</h:panelGroup>
+						  	</f:facet>
+						</rich:message>
+					</h:panelGroup>
+
+					<rich:messages id="msgErrorImpto" showDetail="false" showSummary="false">
+					</rich:messages>
+				</h:panelGrid>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

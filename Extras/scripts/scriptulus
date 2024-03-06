@@ -1,0 +1,927 @@
+#!/bin/bash
+# Script para compilar y deployar modulos DISESA
+# Parametros:
+# 	- <Ninguno>					: Compila y deploya todos los modulos con el orden MODELOS, LOGICAS y VISTAS
+# 	- <MODULO> 					: Compila y deploya el modulo especifico.
+# 	- VISTAS					: compila todos los modulos VISTA.
+# 	- LOGICAS					: Compila todos los modulos Logica_XXXX.
+# 	- MODELOS					: Compila todos los modulos Model_XXXX.
+# 	- MOD2JBOSS					: EXPERIMENTAL. Copia los modules.xml al JBOSS desde la carpeta Extras del repositorio.
+# 	- MOD2REPO					: EXPERIMENTAL. Copia los modules.xml a la carpeta Extras del repositorio desde el JBOSS.
+# 	- run						: Arranca el servidor JBOSS usando el archivo standalone-full.xml
+# 	- run1						: Arranca el servidor JBOSS usando el archivo standalone.xml
+# 	- runp						: Arranca el servidor JBOSS usando el archivo standalone.full.xml y conectando a PRODUCCION
+#	- close						: Cerramos Tunel
+
+### CONECTAR PUERTO LOCAL CON PUERTO REMOTO HACIA EL HOST 62.151.182.250 Cm6567J5Ak
+# ssh -fNg -L 5555:localhost:5432 root@62.151.182.250
+
+export JBOSS_HOME=$ASPROD
+
+seccion=0
+parametro=$1
+extra_param=$2
+base_dir=$(pwd)
+extras_dir=$base_dir/Extras/modulos/7.1.1
+my_ip=$(hostname -i) #$(ip -4 route get 8.8.8.8 | awk {'print $7'} | tr -d '\n')
+my_tunel=$(lsof -ti:5555)
+emp_dir=$base_dir/zEmpaquetados
+
+modelos=(
+	"Comun"
+	"Model_Cargas_Documentos"
+	"Model_Clientes"
+	"Model_Compras"
+	"Model_Contabilidad"
+	"Model_Credito"
+	"Model_CuentasPorCobrar"
+	"Model_CuentasPorPagar"
+	"Model_GestionProyectos"
+	"Model_Inventarios"
+	"Model_Publico"
+	"Model_RecHum"
+	"Model_TYG"
+)
+
+logicas=(
+	"FRAMEWORK"
+	"Logica_Publico"
+	"Logica_Cargas_Documentos"
+	"Logica_Clientes"
+	"Logica_TYG"
+	"Logica_RecHum"
+	"Logica_Inventarios"
+	"Logica_GestionProyectos"
+	"Logica_Compras"
+	"Logica_Contabilidad"
+	"Logica_CuentasPorCobrar"
+	"Logica_CuentasPorPagar"
+	"Navegador"
+	"Navegador4"
+)
+
+vistas=(
+	"DISESA"
+	"Clientes"
+	"Compras"
+	"Contabilidad"
+	"CuentasPorCobrar"
+	"CuentasPorPagar"
+	"GestionProyectos"
+	"Inventarios"
+	"Publico"
+	"RecHum"
+	"tyg"
+	"Mobile"
+	"PROCESOS"
+	"Dashboard"
+)
+
+navegador=(
+	"Navegador"
+	"Navegador4"
+)
+
+all_modules=("${modelos[@]}" "${logicas[@]}" "${vistas[@]}")
+
+### Comprobamos si tiene al final una diagonal y se la quitamos
+if [[ $parametro == *"/" ]]; then
+	parametro=$(expr "$parametro" : '\(.*\).')
+fi
+
+if [ "$parametro" == "MODELOS" ]; then
+	parametro=""
+	seccion=1
+fi
+
+if [ "$parametro" == "LOGICAS" ]; then
+	parametro=""
+	seccion=2
+fi
+
+if [ "$parametro" == "NAVEGADOR" ]; then
+	parametro=""
+	seccion=4
+fi
+
+if [ "$parametro" == "VISTAS" ]; then
+	parametro=""
+	seccion=3
+fi
+
+if [ "$parametro" == "MOD2JBOSS" ]; then
+	parametro=""
+	seccion=4
+fi
+
+if [ "$parametro" == "MOD2REPO" ]; then
+	parametro=""
+	seccion=5
+fi
+
+### AYUDA
+if [ "$parametro" == "help" ]; then
+	echo "run, runip, runremote, tunel, tunel_report, tunel_ftp, descarga, close, svn_ignore, unversion, flush, failed, ip, MODELOS, LOGICAS, VISTA, [MODULO]"
+	exit 0
+fi
+
+### Opciones para iniciar JBOSS
+if [ "$parametro" == "run" ]; then
+	if [ "$extra_param" == "flush" ]; then
+		echo -n "Limpiando LOGs JBOSS ... "
+		rm -rf $JBOSS_HOME/standalone/log/*
+		echo "OK"
+
+		echo -n "Limpiando temporales JBOSS ... "
+		rm -rf $JBOSS_HOME/standalone/tmp/*
+		echo "OK"
+
+		echo -n "Limpiando indexes JBOSS ... "
+		for ITEM in `find $JBOSS_HOME/modules/net/giro -type f -name "*.index"` ; do rm $ITEM ; done
+		echo "OK"
+
+		echo -n "Limpiando Deployments JBOSS ... "
+		rm -rf $JBOSS_HOME/standalone/deployments/*.*.*
+		echo "OK"
+	fi
+
+	echo "ERP Compiler :: Running JBOSS standalone-full-local.xml on localhost ($my_ip)"
+	$JBOSS_HOME/bin/standalone.sh -c standalone-full-local.xml -b localhost
+	exit 0
+fi
+if [ "$parametro" == "runip" ]; then
+	if [ "$extra_param" == "flush" ]; then
+		echo -n "Limpiando LOGs JBOSS ... "
+		rm -rf $JBOSS_HOME/standalone/log/*
+		echo "OK"
+
+		echo -n "Limpiando temporales JBOSS ... "
+		rm -rf $JBOSS_HOME/standalone/tmp/*
+		echo "OK"
+
+		echo -n "Limpiando indexes JBOSS ... "
+		for ITEM in `find $JBOSS_HOME/modules/net/giro -type f -name "*.index"` ; do rm $ITEM ; done
+		echo "OK"
+
+		echo -n "Limpiando Deployments JBOSS ... "
+		rm -rf $JBOSS_HOME/standalone/deployments/*.*.*
+		echo "OK"
+	fi
+
+	my_ip=$(ip -4 route get 8.8.8.8 | awk {'print $7'} | tr -d '\n')
+	if [ "$my_ip" == "" ]; then
+		my_ip=localhost
+	fi
+
+	echo "ERP Compiler :: Running JBOSS standalone-full-local.xml on $my_ip"
+	$JBOSS_HOME/bin/standalone.sh -c standalone-full-local.xml -b $my_ip
+	exit 0
+fi
+if [ "$parametro" == "runremote" ]; then
+	if [ "$extra_param" == "flush" ]; then
+		echo -n "Limpiando LOGs JBOSS ... "
+		rm -rf $JBOSS_HOME/standalone/log/*
+		echo "OK"
+
+		echo -n "Limpiando temporales JBOSS ... "
+		rm -rf $JBOSS_HOME/standalone/tmp/*
+		echo "OK"
+
+		echo -n "Limpiando indexes JBOSS ... "
+		for ITEM in `find $JBOSS_HOME/modules/net/giro -type f -name "*.index"` ; do rm $ITEM ; done
+		echo "OK"
+
+		echo -n "Limpiando Deployments JBOSS ... "
+		rm -rf $JBOSS_HOME/standalone/deployments/*.*.*
+		echo "OK"
+	fi
+
+	if [ "$my_ip" == "" ]; then
+		my_ip=localhost
+	fi
+
+	if [ "$my_tunel" == "" ]; then
+		echo ERP Compiler :: Running JBOSS standalone-full-local.xml on $my_ip
+		$JBOSS_HOME/bin/standalone.sh -c standalone-full-local.xml -b $my_ip
+		exit 0
+	else
+		echo ERP Compiler :: Running JBOSS standalone-full.xml on $my_ip
+		$JBOSS_HOME/bin/standalone.sh -c standalone-full.xml -b $my_ip
+		exit 0
+	fi
+fi
+
+# Conexion a BD Produccion
+if [ "$parametro" == "tunel" ]; then
+	if [ "$extra_param" == "reportes" ]; then
+		echo -n "Conectando LPORT 2099 al RPORT 2099 en procesos.condese.net) ... "
+		ssh -fNg -L 2099:procesos.condese.net:2099 root@62.151.182.250
+		echo "OK"
+		exit 0
+	fi
+
+	if [ "$extra_param" == "ftp" ]; then
+		echo -n "Conectando LPORT 2021 al RPORT 2021 en procesos.condese.net) ... "
+		ssh -fNg -L 2021:procesos.condese.net:2021 root@62.151.182.250
+		echo "OK"
+		exit 0
+	fi
+
+	if [ "$extra_param" == "" ]; then
+		extra_param="62.151.182.250"
+	fi
+
+	# Conexion a base de datos
+	echo -n "Conectando LPORT 5555 al RPORT 5432 en $extra_param) ... "
+	ssh -fNg -L 5555:localhost:5432 root@$extra_param
+	echo "OK"
+	exit 0
+fi
+
+# Conexion a RSPROCESOS
+if [ "$parametro" == "tunel_report" ]; then
+	echo -n "Conectando LPORT 2099 al RPORT 2099 en procesos.condese.net) ... "
+	ssh -fNg -L 2099:procesos.condese.net:2099 root@62.151.182.250
+	echo "OK"
+	exit 0
+fi
+
+### Conexion a FTP
+if [ "$parametro" == "tunel_ftp" ]; then
+	echo -n "Conectando LPORT 2021 al RPORT 2021 en procesos.condese.net) ... "
+	ssh -fNg -L 2021:procesos.condese.net:2021 root@62.151.182.250
+	echo "OK"
+	exit 0
+fi
+
+### Cerrar puertos de conexion (tuneles)
+if [ "$parametro" == "close" ]; then
+	echo -n "ERP Compiler :: Cerrando tunel (LPORT 5555) ... "
+	if [ "$(lsof -ti:5555)" != "" ]; then
+		lsof -ti:5555 | xargs kill -TERM
+	fi
+	echo "OK"
+
+	echo -n "ERP Compiler :: Cerrando tunel (LPORT 2099) ... "
+	if [ "$(lsof -ti:2099)" != "" ]; then
+		lsof -ti:2099 | xargs kill -TERM
+	fi
+	echo "OK"
+
+	echo -n "ERP Compiler :: Cerrando tunel (LPORT 2021) ... "
+	if [ "$(lsof -ti:2021)" != "" ]; then
+		lsof -ti:2021 | xargs kill -TERM
+	fi
+	echo "OK"
+
+	exit 0
+fi
+
+### Cerrar puertos de conexion (tuneles)
+if [ "$parametro" == "reconnect" ]; then
+	echo -n "ERP Compiler :: Cerrando tunel (LPORT 5555) ... "
+	if [ "$(lsof -ti:5555)" != "" ]; then
+		lsof -ti:5555 | xargs kill -TERM
+	fi
+	echo "OK"
+
+	echo -n "ERP Compiler :: Cerrando tunel (LPORT 2099) ... "
+	if [ "$(lsof -ti:2099)" != "" ]; then
+		lsof -ti:2099 | xargs kill -TERM
+	fi
+	echo "OK"
+
+	echo -n "ERP Compiler :: Cerrando tunel (LPORT 2021) ... "
+	if [ "$(lsof -ti:2021)" != "" ]; then
+		lsof -ti:2021 | xargs kill -TERM
+	fi
+	echo "OK"
+	
+	if [ "$extra_param" == "" ]; then
+		extra_param="62.151.182.250"
+	fi
+
+	# Conexion a base de datos
+	echo -n "Conectando LPORT 5555 al RPORT 5432 en $extra_param) ... "
+	ssh -fNg -L 5555:localhost:5432 root@$extra_param
+	echo "OK"
+	exit 0
+fi
+
+if [ "$parametro" == "descarga" ]; then
+	if [ "$extra_param" == "" ]; then
+		echo "Indique el nombre del respaldo para la descarga ... "
+		exit 0
+	fi
+
+	# Recuperamos el respaldo
+	echo -n "Descargando respaldo $extra_param en ERP BASE ... "
+	scp root@62.151.182.250:"/var/lib/postgresql/respaldos/{$extra_param,quartz_$extra_param}" /mnt/data/air/bd/
+	echo "OK"
+
+	# Copiamos a home POSTGRES
+	echo -n "Copiamos a home POSTGRES ... "
+	sudo cp /mnt/data/air/bd/$extra_param /var/lib/postgresql/
+	sudo cp /mnt/data/air/bd/$extra_param /var/lib/postgresql/respaldos
+	sudo cp /mnt/data/air/bd/quartz_$extra_param /var/lib/postgresql/respaldos
+	echo "OK"
+
+	# Copiamos el respaldo a SERVIDOR2 si corresponde
+	ping -q -c5 192.168.10.72 > /dev/null
+	if [ $? -eq 0 ]; then
+		echo -n "Enviando a SERVIDOR2  ... "
+		scp "/mnt/data/air/bd/"{$extra_param,quartz_$extra_param} sistemas@192.168.10.72:/opt/tmp/
+		echo "OK"
+	fi
+
+	# Cambiamos propietario a POSTGRES
+	echo -n "Cambiamos propietario    ... "
+	sudo chown postgres:postgres /var/lib/postgresql/$extra_param
+	sudo chown postgres:postgres /var/lib/postgresql/respaldos/$extra_param
+	sudo chown postgres:postgres /var/lib/postgresql/respaldos/quartz_$extra_param
+	echo "OK"
+
+	# Descomprimimos respaldo
+	echo -n "Descomprimimos respaldo  ... "
+	sudo gzip -d /var/lib/postgresql/$extra_param
+	echo "OK"
+
+	#if [ "$my_ip" == "192.168.10.28" ]; then
+	#	echo -n "Enviando a SERVIDOR-DEV  ... "
+	#	scp "/mnt/data/air/bd/"{$extra_param,quartz_$extra_param} sistemas@192.168.10.72:/var/lib/postgresql/
+	#	echo "OK"
+	#fi
+	exit 0
+fi
+
+# Enviamos respaldo al SERVIDOR-DEV si corresponde
+if [ "$parametro" == "send" ]; then
+	if [ "$extra_param" == "" ]; then
+		echo "Indique el modulo a enviar ... "
+		exit 0
+	fi
+
+	if [[ $extra_param == *"/" ]]; then
+		extra_param=$(expr "$extra_param" : '\(.*\).')
+	fi
+
+	case $extra_param in 
+		'BackOrderOrdenes') 			extra_param='zEmpaquetados/BackOrderOrdenes.jar' ;;
+		'Clientes') 					extra_param='zEmpaquetados/Clientes.war' ;;
+		'Comparativa') 					extra_param='zEmpaquetados/Comparativa.jar' ;;
+		'Compras') 						extra_param='zEmpaquetados/Compras.war' ;;
+		'Comun') 						extra_param='zEmpaquetados/Comun.jar' ;;
+		'Contabilidad') 				extra_param='zEmpaquetados/Contabilidad.war' ;;
+		'CuentasPorCobrar') 			extra_param='zEmpaquetados/CuentasPorCobrar.war' ;;
+		'CuentasPorPagar') 				extra_param='zEmpaquetados/CuentasPorPagar.war' ;;
+		'Dashboard') 					extra_param='zEmpaquetados/Dashboard.war' ;;
+		'DISESA') 						extra_param='zEmpaquetados/DISESA.war' ;;
+		'FRAMEWORK') 					extra_param='zEmpaquetados/FRAMEWORK.jar' ;;
+		'GestionProyectos') 			extra_param='zEmpaquetados/GestionProyectos.war' ;;
+		'Inventarios') 					extra_param='zEmpaquetados/Inventarios.war' ;;
+		'Logica_Cargas_Documentos') 	extra_param='zEmpaquetados/Logica_Cargas_Documentos.jar' ;;
+		'Logica_Clientes') 				extra_param='zEmpaquetados/Logica_Clientes.jar' ;;
+		'Logica_Compras') 				extra_param='zEmpaquetados/Logica_Compras.jar' ;;
+		'Logica_Contabilidad') 			extra_param='zEmpaquetados/Logica_Contabilidad.jar' ;;
+		'Logica_CuentasPorCobrar') 		extra_param='zEmpaquetados/Logica_CuentasPorCobrar.jar' ;;
+		'Logica_CuentasPorPagar') 		extra_param='zEmpaquetados/Logica_CuentasPorPagar.jar' ;;
+		'Logica_GestionProyectos') 		extra_param='zEmpaquetados/Logica_GestionProyectos.jar' ;;
+		'Logica_Inventarios') 			extra_param='zEmpaquetados/Logica_Inventarios.jar' ;;
+		'Logica_Publico') 				extra_param='zEmpaquetados/Logica_Publico.jar' ;;
+		'Logica_RecHum') 				extra_param='zEmpaquetados/Logica_RecHum.jar' ;;
+		'Logica_TYG') 					extra_param='zEmpaquetados/Logica_TYG.jar' ;;
+		'Mobile') 						extra_param='zEmpaquetados/Mobile.war' ;;
+		'Model_Cargas_Documentos') 		extra_param='zEmpaquetados/Model_Cargas_Documentos.jar' ;;
+		'Model_Clientes') 				extra_param='zEmpaquetados/Model_Clientes.jar' ;;
+		'Model_Compras') 				extra_param='zEmpaquetados/Model_Compras.jar' ;;
+		'Model_Contabilidad') 			extra_param='zEmpaquetados/Model_Contabilidad.jar' ;;
+		'Model_Credito') 				extra_param='zEmpaquetados/Model_Credito.jar' ;;
+		'Model_CuentasPorCobrar') 		extra_param='zEmpaquetados/Model_CuentasPorCobrar.jar' ;;
+		'Model_CuentasPorPagar') 		extra_param='zEmpaquetados/Model_CuentasPorPagar.jar' ;;
+		'Model_GestionProyectos') 		extra_param='zEmpaquetados/Model_GestionProyectos.jar' ;;
+		'Model_Inventarios') 			extra_param='zEmpaquetados/Model_Inventarios.jar' ;;
+		'Model_Publico') 				extra_param='zEmpaquetados/Model_Publico.jar' ;;
+		'Model_RecHum') 				extra_param='zEmpaquetados/Model_RecHum.jar' ;;
+		'Model_Tesoreria') 				extra_param='zEmpaquetados/Model_Tesoreria.jar' ;;
+		'Model_TYG') 					extra_param='zEmpaquetados/Model_TYG.jar' ;;
+		'Navegador4') 					extra_param='zEmpaquetados/Navegador4.jar' ;;
+		'Navegador') 					extra_param='zEmpaquetados/Navegador.jar' ;;
+		'PROCESOS') 					extra_param='zEmpaquetados/PROCESOS.war' ;;
+		'Publico') 						extra_param='zEmpaquetados/Publico.war' ;;
+		'RecHum') 						extra_param='zEmpaquetados/RecHum.war' ;;
+		'tyg') 							extra_param='zEmpaquetados/tyg.war' ;;
+		*) exit 1 ;;
+	esac
+	
+	echo -n "Enviando a PRODUCCION ... "
+	scp $extra_param root@62.151.182.250:/opt/tmp
+	echo "OK"
+	exit 0
+fi
+
+# Enviamos respaldo al SERVIDOR-DEV si corresponde
+if [ "$parametro" == "send_server" ]; then
+	if [ "$extra_param" == "" ]; then
+		echo "Indique el nombre del respaldo ... "
+		exit 0
+	fi
+	
+	echo -n "Enviando a SERVIDOR-DEV ... "
+	scp /mnt/javaz/data/DISESA/ERP/BASE/base\ de\ datos/$extra_param root@servidor-dev:/var/lib/postgresql/respaldos/
+	echo "OK"
+	exit 0
+fi
+
+# Añadimos a SVN IGNORE
+if [ "$parametro" == "svn_ignore" ]; then
+	echo "ERP Compiler :: SVN Ignore"
+	echo "--------------------------------------------------------------------------"
+	echo "TARGETS   : target, .settings, .classpath, .project, .metadata"
+	echo "DIRECTORY : ALL "
+	echo "--------------------------------------------------------------------------"
+	echo "CURRENT   : "
+
+	for item in ${all_modules[*]}; do
+		echo -n "CURRENT   : $item ... "
+		svn propset svn:ignore "target"$'\n'".settings"$'\n'".classpath"$'\n'".project"$'\n'".metadata" $item > svn_log
+		commok=$?
+		if [ $commok -eq 1 ]; then
+			echo "ERROR"
+			cat commok
+			exit 1
+		else
+			rm svn_log
+			echo "OK"
+		fi
+	done
+
+	exit 0
+fi
+
+### Eliminamos el versionamiento (Borramos la carpeta .svn) de cada directorio
+if [ "$parametro" == "unversion" ]; then
+	echo ERP Compiler :: Eliminamos versionamiento
+	max_len=0
+	espacios=
+	for i in * ; do 
+		if [ -d $i && $max_lan -lt ${#i} ]; then 
+			max_len=${#i} + 1
+		fi
+	done
+
+	for i in * ; do
+		echo -n "Checking $i : "
+		if [ -d $i/.svn ]; then rm -rf $i/.svn; echo "unversioned"; else echo "No changed"; fi
+	done
+	exit 0
+fi
+
+### Borrar los temporales y log de JBOSS
+if [ "$parametro" == "flush" ]; then
+	echo -n "Limpiando LOGs JBOSS ... "
+	rm -rf $JBOSS_HOME/standalone/log/*
+	echo "OK"
+
+	echo -n "Limpiando temporales JBOSS ... "
+	rm -rf $JBOSS_HOME/standalone/tmp/*
+	echo "OK"
+
+	echo -n "Limpiando indexes JBOSS ... "
+	for ITEM in `find $JBOSS_HOME/modules/net/giro -type f -name "*.index"` ; do rm $ITEM ; done
+	echo "OK"
+
+	echo -n "Limpiando Deployments JBOSS ... "
+	rm -rf $JBOSS_HOME/standalone/deployments/*.*.*
+	echo "OK"
+
+	exit 0
+fi
+
+### Borrar fallos de deploy en deployments
+if [ "$parametro" == "failed" ]; then
+	echo -n "Limpiando FAILED de Deployments ... "
+	rm -rf $JBOSS_HOME/standalone/deployments/Model_*.*.failed
+	rm -rf $JBOSS_HOME/standalone/deployments/Logica_*.*.failed
+	rm -rf $JBOSS_HOME/standalone/deployments/*.*.failed
+	echo "OK"
+
+	exit 0
+fi
+
+### Mostrar IP
+if [ "$parametro" == "ip" ]; then
+	echo "IP $my_ip"
+	exit 0
+fi
+
+### Editar HOSTS
+if [ "$parametro" == "host" ]; then
+	sudo nano /etc/hosts
+	exit 0
+fi
+
+### Modulo especifico
+### --------------------------------------------------------------------------------------------------------------------------------------------
+if [ "x$parametro" != "x" ]; then
+	if [ ! -d $parametro ]; then
+		echo "NO EXISTE DIRECTORIO"
+		exit 1
+	fi
+
+	echo ""
+	echo "> ERP Compiler"
+	echo "--------------------------------------------------------------------------"
+	echo "DIRECTORY_ROOT : $base_dir"
+	echo "JBOSS_HOME     : $JBOSS_HOME"
+	echo "TARGET         : $parametro"
+	echo ""
+
+	MOD_DIR=''
+	case $parametro in 
+		'Comparativa')				MOD_DIR=''; 										extension='jar' ;;
+		'BackOrderOrdenes')			MOD_DIR=''; 										extension='jar' ;;
+		'Comun')					MOD_DIR='net/giro/comun/main'; 						extension='jar' ;;
+		'FRAMEWORK')				MOD_DIR='net/izel/framework/main'; 					extension='jar' ;;
+		'Navegador')				MOD_DIR='net/giro/navegador/3.3.0'; 				extension='jar' ;;
+		'Navegador4')				MOD_DIR='net/giro/navegador/4.3.0'; 				extension='jar' ;;
+		'Logica_Cargas_Documentos')	MOD_DIR='net/giro/logica/cargasdocumentos/main'; 	extension='jar' ;;
+		'Logica_Clientes') 			MOD_DIR='net/giro/logica/clientes/main'; 			extension='jar' ;;
+		'Logica_Compras') 			MOD_DIR='net/giro/logica/compras/main'; 			extension='jar' ;;
+		'Logica_Contabilidad') 		MOD_DIR='net/giro/logica/contabilidad/main'; 		extension='jar' ;;
+		'Logica_CuentasPorCobrar') 	MOD_DIR='net/giro/logica/cuentasporcobrar/main'; 	extension='jar' ;;
+		'Logica_CuentasPorPagar') 	MOD_DIR='net/giro/logica/cuentasporpagar/main'; 	extension='jar' ;;
+		'Logica_Factoraje') 		MOD_DIR='net/giro/logica/factoraje/main'; 			extension='jar' ;;
+		'Logica_GestionProyectos') 	MOD_DIR='net/giro/logica/gestionproyectos/main'; 	extension='jar' ;;
+		'Logica_Inventarios') 		MOD_DIR='net/giro/logica/inventarios/main'; 		extension='jar' ;;
+		'Logica_Publico') 			MOD_DIR='net/giro/logica/publico/main'; 			extension='jar' ;;
+		'Logica_RecHum') 			MOD_DIR='net/giro/logica/rechum/main'; 				extension='jar' ;;
+		'Logica_TYG') 				MOD_DIR='net/giro/logica/tyg/main'; 				extension='jar' ;;
+		'Model_Cargas_Documentos')	MOD_DIR='net/giro/model/cargasdocumentos/main'; 	extension='jar' ;;
+		'Model_Clientes') 			MOD_DIR='net/giro/model/clientes/main'; 			extension='jar' ;;
+		'Model_Compras') 			MOD_DIR='net/giro/model/compras/main'; 				extension='jar' ;;
+		'Model_Contabilidad') 		MOD_DIR='net/giro/model/contabilidad/main'; 		extension='jar' ;;
+		'Model_Credito') 			MOD_DIR='net/giro/model/credito/main'; 				extension='jar' ;;
+		'Model_CuentasPorCobrar') 	MOD_DIR='net/giro/model/cuentasporcobrar/main'; 	extension='jar' ;;
+		'Model_CuentasPorPagar') 	MOD_DIR='net/giro/model/cuentasporpagar/main'; 		extension='jar' ;;
+		'Model_Factoraje') 			MOD_DIR='net/giro/model/factoraje/main'; 			extension='jar' ;;
+		'Model_GestionProyectos') 	MOD_DIR='net/giro/model/gestionproyectos/main'; 	extension='jar' ;;
+		'Model_Inventarios')		MOD_DIR='net/giro/model/inventarios/main'; 			extension='jar' ;;
+		'Model_Publico') 			MOD_DIR='net/giro/model/publico/main'; 				extension='jar' ;;
+		'Model_RecHum') 			MOD_DIR='net/giro/model/rechum/main'; 				extension='jar' ;;
+		'Model_TYG') 				MOD_DIR='net/giro/model/tyg/main'; 					extension='jar' ;;
+		*)							MOD_DIR=''; 										extension='war' ;;
+	esac
+
+	cd $parametro
+	echo -n "Compilando ... "
+	mvn clean install > maven_log
+	compilo=$?
+
+	if [ $compilo -eq 0 ]; then
+		rm maven_log
+		echo "OK"
+
+		### Comprobamos directorio de empaquetados
+		if [ ! -d $emp_dir ]; then
+			mkdir $emp_dir
+		fi
+
+		### Hacemos las copias necesarias
+		cp ./target/$parametro.$extension $emp_dir
+		cp ./target/$parametro.$extension $JBOSS_HOME/standalone/deployments
+		if [ "x$MOD_DIR" != "x" ]; then
+			if [ ! -d $JBOSS_HOME/modules/$MOD_DIR ]; then
+				mkdir -p $JBOSS_HOME/modules/$MOD_DIR
+			fi
+			cp ./target/$parametro.$extension $JBOSS_HOME/modules/$MOD_DIR
+		fi
+
+		cd $base_dir
+
+		if [ "$extra_param" == "send" ]; then
+			echo -n "Enviando a produccion ... "
+			scp ./zEmpaquetados/$parametro.$extension root@62.151.182.250:/opt/tmp/
+			echo "OK"
+		fi
+
+		exit 0
+	else
+		echo "ERROR"
+		cat maven_log
+		cd $base_dir
+		exit $compilo
+	fi
+fi
+
+echo ""
+echo "> ERP Compiler"
+echo "--------------------------------------------------------------------------"
+echo "DIRECTORY_ROOT : $base_dir"
+echo "JBOSS_HOME     : $JBOSS_HOME"
+echo -n "TARGET         : "
+
+if [ $seccion -eq 0 ]; then
+	echo "--------------------------------------------------------------------------"
+	echo " COMPILAR EL REPOSITORIO: $(pwd)"
+	echo "--------------------------------------------------------------------------"
+fi
+
+if [ $seccion -eq 0 ] || [ $seccion -eq 1 ]; then
+	echo "MODELOS"
+	echo "--------------------------------------------------------------------------"
+
+	for item in ${modelos[*]}; do
+		MOD_DIR=''
+		case $item in 
+			'Comun')					MOD_DIR='net/giro/comun/main'; 						extension='jar' ;;
+			'Model_Cargas_Documentos')	MOD_DIR='net/giro/model/cargasdocumentos/main'; 	extension='jar' ;;
+			'Model_Clientes') 			MOD_DIR='net/giro/model/clientes/main'; 			extension='jar' ;;
+			'Model_Compras') 			MOD_DIR='net/giro/model/compras/main'; 				extension='jar' ;;
+			'Model_Contabilidad') 		MOD_DIR='net/giro/model/contabilidad/main'; 		extension='jar' ;;
+			'Model_Credito') 			MOD_DIR='net/giro/model/credito/main'; 				extension='jar' ;;
+			'Model_CuentasPorCobrar') 	MOD_DIR='net/giro/model/cuentasporcobrar/main'; 	extension='jar' ;;
+			'Model_CuentasPorPagar') 	MOD_DIR='net/giro/model/cuentasporpagar/main'; 		extension='jar' ;;
+			'Model_Factoraje') 			MOD_DIR='net/giro/model/factoraje/main'; 			extension='jar' ;;
+			'Model_GestionProyectos') 	MOD_DIR='net/giro/model/gestionproyectos/main'; 	extension='jar' ;;
+			'Model_Inventarios')		MOD_DIR='net/giro/model/inventarios/main'; 			extension='jar' ;;
+			'Model_Publico') 			MOD_DIR='net/giro/model/publico/main'; 				extension='jar' ;;
+			'Model_RecHum') 			MOD_DIR='net/giro/model/rechum/main'; 				extension='jar' ;;
+			'Model_TYG') 				MOD_DIR='net/giro/model/tyg/main'; 					extension='jar' ;;
+		esac
+
+		cd $item
+		echo -n "Compilando $item ... "
+		mvn clean install > maven_log
+		compilo=$?
+
+		if [ $compilo -eq 0 ]; then
+			rm maven_log
+			### Creamos carpeta empaquetados
+			if [ ! -d $emp_dir ]; then
+				mkdir $emp_dir
+			fi
+			### Creamos la carpeta modules
+			if [ ! -d $JBOSS_HOME/modules/$MOD_DIR ]; then
+				mkdir -p $JBOSS_HOME/modules/$MOD_DIR
+			fi
+
+			echo "OK"
+			cp ./target/$item.$extension $emp_dir 
+			cp ./target/$item.$extension $JBOSS_HOME/standalone/deployments
+			cp ./target/$item.$extension $JBOSS_HOME/modules/$MOD_DIR
+			cd $base_dir
+
+			if [ "x$parametro" != "x" ]; then
+				parametro="$parametro "
+			fi
+			parametro="$parametro$emp_dir/$item.$extension"
+		else
+			echo "ERROR"
+			cat maven_log
+			cd $base_dir
+			exit $compilo
+		fi
+	done
+
+	if [ "$extra_param" == "send" ]; then
+		echo -n "Enviando a produccion ... "
+		scp $parametro root@62.151.182.250:/opt/tmp/
+		echo "OK"
+	fi
+
+	exit 0
+fi
+
+if [ $seccion -eq 0 ] || [ $seccion -eq 2 ]; then
+	echo "LOGICAS"
+	echo "--------------------------------------------------------------------------"
+
+	for item in ${logicas[*]}; do
+		MOD_DIR=''
+		case $item in 
+			'FRAMEWORK')				MOD_DIR='net/izel/framework/main'; 					extension='jar' ;;
+			'Navegador')				MOD_DIR='net/giro/navegador/3.3.0'; 				extension='jar' ;;
+			'Navegador4')				MOD_DIR='net/giro/navegador/4.3.0'; 				extension='jar' ;;
+			'Logica_Cargas_Documentos')	MOD_DIR='net/giro/logica/cargasdocumentos/main'; 	extension='jar' ;;
+			'Logica_Clientes') 			MOD_DIR='net/giro/logica/clientes/main'; 			extension='jar' ;;
+			'Logica_Compras') 			MOD_DIR='net/giro/logica/compras/main'; 			extension='jar' ;;
+			'Logica_Contabilidad') 		MOD_DIR='net/giro/logica/contabilidad/main'; 		extension='jar' ;;
+			'Logica_CuentasPorCobrar') 	MOD_DIR='net/giro/logica/cuentasporcobrar/main'; 	extension='jar' ;;
+			'Logica_CuentasPorPagar') 	MOD_DIR='net/giro/logica/cuentasporpagar/main'; 	extension='jar' ;;
+			'Logica_Factoraje') 		MOD_DIR='net/giro/logica/factoraje/main'; 			extension='jar' ;;
+			'Logica_GestionProyectos') 	MOD_DIR='net/giro/logica/gestionproyectos/main'; 	extension='jar' ;;
+			'Logica_Inventarios') 		MOD_DIR='net/giro/logica/inventarios/main'; 		extension='jar' ;;
+			'Logica_Publico') 			MOD_DIR='net/giro/logica/publico/main'; 			extension='jar' ;;
+			'Logica_RecHum') 			MOD_DIR='net/giro/logica/rechum/main'; 				extension='jar' ;;
+			'Logica_TYG') 				MOD_DIR='net/giro/logica/tyg/main'; 				extension='jar' ;;
+		esac
+
+
+		cd $item
+		echo -n "Compilando $item ... "
+		mvn clean install > maven_log
+		compilo=$?
+
+		if [ $compilo -eq 0 ]; then
+			rm maven_log
+			### Creamos carpeta empaquetados
+			if [ ! -d $emp_dir ]; then
+				mkdir $emp_dir
+			fi
+			### Creamos la carpeta modules
+			if [ ! -d $JBOSS_HOME/modules/$MOD_DIR ]; then
+				mkdir -p $JBOSS_HOME/modules/$MOD_DIR
+			fi
+
+			echo "OK"
+			### Hacemos las copias
+			cp ./target/$item.$extension $emp_dir
+			cp ./target/$item.$extension $JBOSS_HOME/standalone/deployments
+			cp ./target/$item.$extension $JBOSS_HOME/modules/$MOD_DIR; 
+			cd $base_dir
+
+			if [ "x$parametro" != "x" ]; then
+				parametro="$parametro "
+			fi
+			parametro="$parametro$emp_dir/$item.$extension"
+		else
+			echo "ERROR"
+			cat maven_log
+			cd $base_dir
+			exit $compilo
+		fi
+	done
+
+	if [ "$extra_param" == "send" ]; then
+		echo -n "Enviando a produccion ... "
+		scp $parametro root@62.151.182.250:/opt/tmp/
+		echo "OK"
+	fi
+
+	exit 0
+fi
+
+if [ $seccion -eq 0 ] || [ $seccion -eq 3 ]; then
+	echo "VISTAS"
+	echo "--------------------------------------------------------------------------"
+
+	extension='war'
+	for item in ${vistas[*]}; do
+		cd $item
+		echo -n "Compilando $item ... "
+		mvn clean install > maven_log
+		compilo=$?
+
+		if [ $compilo -eq 0 ]; then
+			rm maven_log
+			### Creamos carpeta empaquetados
+			if [ ! -d $emp_dir ]; then
+				mkdir $emp_dir
+			fi
+
+			echo "OK"
+			### Hacemos las copias
+			cp ./target/$item.$extension $emp_dir
+			cp ./target/$item.$extension $JBOSS_HOME/standalone/deployments
+			cd $base_dir
+
+			if [ "x$parametro" != "x" ]; then
+				parametro="$parametro "
+			fi
+			parametro="$parametro$emp_dir/$item.$extension"
+		else
+			echo "ERROR"
+			cat maven_log
+			cd $base_dir
+			exit $compilo
+		fi
+	done
+
+	if [ "$extra_param" == "send" ]; then
+		echo -n "Enviando a produccion ... "
+		scp $parametro root@62.151.182.250:/opt/tmp/
+		echo "OK"
+	fi
+
+	exit 0
+fi
+
+if [ $seccion -eq 0 ] || [ $seccion -eq 4 ]; then
+	echo "NAVEGADOR"
+	echo "--------------------------------------------------------------------------"
+
+	for item in ${navegador[*]}; do
+		MOD_DIR=''
+		case $item in 
+			'Navegador')				MOD_DIR='net/giro/navegador/3.3.0'; 				extension='jar' ;;
+			'Navegador4')				MOD_DIR='net/giro/navegador/4.3.0'; 				extension='jar' ;;
+		esac
+
+
+		cd $item
+		echo -n "Compilando $item ... "
+		mvn clean install > maven_log
+		compilo=$?
+
+		if [ $compilo -eq 0 ]; then
+			rm maven_log
+			### Creamos carpeta empaquetados
+			if [ ! -d $emp_dir ]; then
+				mkdir $emp_dir
+			fi
+			### Creamos la carpeta modules
+			if [ ! -d $JBOSS_HOME/modules/$MOD_DIR ]; then
+				mkdir -p $JBOSS_HOME/modules/$MOD_DIR
+			fi
+
+			echo "OK"
+			### Hacemos las copias
+			cp ./target/$item.$extension $emp_dir
+			cp ./target/$item.$extension $JBOSS_HOME/standalone/deployments
+			cp ./target/$item.$extension $JBOSS_HOME/modules/$MOD_DIR; 
+			cd $base_dir
+
+			if [ "x$parametro" != "x" ]; then
+				parametro="$parametro "
+			fi
+			parametro="$parametro$emp_dir/$item.$extension"
+		else
+			echo "ERROR"
+			cat maven_log
+			cd $base_dir
+			exit $compilo
+		fi
+	done
+
+	if [ "$extra_param" == "send" ]; then
+		echo -n "Enviando a produccion ... "
+		scp $parametro root@62.151.182.250:/opt/tmp/
+		echo "OK"
+	fi
+
+	exit 0
+fi
+
+if [ $seccion -eq 4 ] || [ $seccion -eq 5 ]; then
+	echo "MODULES "
+	echo "--------------------------------------------------------------------------"
+
+	cd $extras_dir
+	modules=("${modelos}" "${logicas}")
+	origen=''
+	destino=''
+	for item in ${modules[*]}; do
+		MOD_DIR=''
+		case $item in
+			'Comun')					MOD_DIR='net/giro/comun/main'; 						;;
+			'FRAMEWORK')				MOD_DIR='net/izel/framework/main'; 					;;
+			'Navegador')				MOD_DIR='net/giro/navegador/3.3.0'; 				;;
+			'Navegador4')				MOD_DIR='net/giro/navegador/4.3.0'; 				;;
+			'Model_Cargas_Documentos')	MOD_DIR='net/giro/model/cargasdocumentos/main'; 	;;
+			'Model_Clientes') 			MOD_DIR='net/giro/model/clientes/main'; 			;;
+			'Model_Compras') 			MOD_DIR='net/giro/model/compras/main'; 				;;
+			'Model_Contabilidad') 		MOD_DIR='net/giro/model/contabilidad/main'; 		;;
+			'Model_Credito') 			MOD_DIR='net/giro/model/credito/main'; 				;;
+			'Model_CuentasPorCobrar') 	MOD_DIR='net/giro/model/cuentasporcobrar/main'; 	;;
+			'Model_CuentasPorPagar') 	MOD_DIR='net/giro/model/cuentasporpagar/main'; 		;;
+			'Model_Factoraje') 			MOD_DIR='net/giro/model/factoraje/main'; 			;;
+			'Model_GestionProyectos') 	MOD_DIR='net/giro/model/gestionproyectos/main'; 	;;
+			'Model_Inventarios')		MOD_DIR='net/giro/model/inventarios/main'; 			;;
+			'Model_Publico') 			MOD_DIR='net/giro/model/publico/main'; 				;;
+			'Model_RecHum') 			MOD_DIR='net/giro/model/rechum/main'; 				;;
+			'Model_TYG') 				MOD_DIR='net/giro/model/tyg/main'; 					;;
+			'Logica_Cargas_Documentos')	MOD_DIR='net/giro/logica/cargasdocumentos/main';	;;
+			'Logica_Clientes') 			MOD_DIR='net/giro/logica/clientes/main'; 			;;
+			'Logica_Compras') 			MOD_DIR='net/giro/logica/compras/main'; 			;;
+			'Logica_Contabilidad') 		MOD_DIR='net/giro/logica/contabilidad/main'; 		;;
+			'Logica_CuentasPorCobrar') 	MOD_DIR='net/giro/logica/cuentasporcobrar/main'; 	;;
+			'Logica_CuentasPorPagar') 	MOD_DIR='net/giro/logica/cuentasporpagar/main'; 	;;
+			'Logica_Factoraje') 		MOD_DIR='net/giro/logica/factoraje/main'; 			;;
+			'Logica_GestionProyectos') 	MOD_DIR='net/giro/logica/gestionproyectos/main'; 	;;
+			'Logica_Inventarios') 		MOD_DIR='net/giro/logica/inventarios/main'; 		;;
+			'Logica_Publico') 			MOD_DIR='net/giro/logica/publico/main'; 			;;
+			'Logica_RecHum') 			MOD_DIR='net/giro/logica/rechum/main'; 				;;
+			'Logica_TYG') 				MOD_DIR='net/giro/logica/tyg/main'; 				;;
+		esac
+
+		if [ $seccion -eq 4 ]; then # modules to JBOSS
+			origen=$extras_dir/$MOD_DIR/module.xml
+			destino=$JBOSS_HOME/modules/$MOD_DIR
+		fi
+
+		if [ $seccion -eq 5 ]; then # modules to REPO EXTRAS
+			origen=$JBOSS_HOME/modules/$MOD_DIR/module.xml
+			destino=$extras_dir/$MOD_DIR
+		fi
+
+		echo -n "$item. Copiar module.xml a $destino ... "
+		# si no existe el directorio lo creamos
+		mkdir -p $destino
+		cp $origen $destino; echo "OK"
+		cd $extras_dir
+	done
+
+	cd $base_dir
+fi
+
+exit 0

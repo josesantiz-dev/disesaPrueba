@@ -1,0 +1,89 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlDesgloceImpuestos" autosized="true" top="30"
+		onshow="document.getElementById('#{rich:clientId('btnDesgloceImpuestosOk')}').focus();">
+		
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.desgloseImptos']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<a4j:form id="frmDesgloceImpuestos" style="text-align:center; margin:0; padding:0; min-width:300px; max-width:500px; width:auto;">
+			<h:panelGroup style="text-align:center; margin:0 auto; padding:0; width:100%;">
+				<rich:dataTable id="dtDesgloseImpuestos" value="#{cajaChicaAction.listDesgloseImpuestos}" var="desglose" rows="5" 
+					style="margin:0 auto; min-width:300px; max-width:320px;" cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2">
+		        	<f:facet name="header">
+		                <rich:columnGroup>
+		                    <rich:column styleClass="tygPerTit" style="text-align:center; min-width:100px;">
+		                        <h:outputText value="#{msg['impuesto']}"/>
+		                    </rich:column>
+		                    
+		                    <rich:column styleClass="tygPerTit" style="text-align:center; min-width:70px;">
+		                        <h:outputText value="#{msg['porcentaje']}"/>
+		                    </rich:column>
+		                    
+		                    <rich:column styleClass="tygPerTit" style="text-align:center; min-width:100px;">
+		                        <h:outputText value="#{msg['monto']}"/>
+		                    </rich:column>
+		                    
+		                    <rich:column styleClass="tygPerTit" style="text-align:center; min-width:20px;" />
+		                </rich:columnGroup>
+		            </f:facet>
+					
+					<rich:column styleClass="tygCompGtosDesc" style="text-align:left;">
+						<h:outputText value="#{desglose.idImpuesto.descripcion}" />
+					</rich:column>
+					
+					<rich:column styleClass="tygCompGtosDesc" style="text-align:center;">
+						<h:outputText value="#{desglose.idImpuesto.atributo1}" />
+					</rich:column>
+					
+					<rich:column styleClass="tygCompGtosDesc" style="text-align:center;">
+						<h:inputText maxlength="10" style="text-align:right; width:90px;"
+							title="#{msg['navegacion.label.editable']}"
+							value="#{desglose.valor}">
+							<f:converter converterId="javax.faces.Double" />
+			               	<f:convertNumber pattern="###,###,##0.00" /> 
+							<a4j:support event="onchange" 
+								action="#{cajaChicaAction.cambioMontoImpuesto}" 
+								reRender="txtSubtotal,txtTotalImpto,txtTotalRet,txtTotal,dtDesgloseImpuestos"
+								limitToList="true" />
+						</h:inputText>
+					</rich:column>
+					 
+					<rich:column styleClass="tygCompGtosDesc" style="text-align:center;">
+						<a4j:commandButton rendered="#{desglose.idImpuesto.atributo6 != null ? desglose.idImpuesto.atributo6 == 'S' : false}"
+							image="#{msg['eliminar22.img']}" title="#{msg['eliminar.e']}"
+							action="#{cajaChicaAction.eliminarImpuestoDesglosado}" 
+							reRender="txtSubtotal,txtTotalImpto,txtTotalRet,txtTotal,dtDesgloseImpuestos"
+		            		limitToList="true">
+							<f:setPropertyActionListener target="#{cajaChicaAction.pojoDesgloImpto}" value="#{desglose}" />
+						</a4j:commandButton>
+					</rich:column>
+
+		            <f:facet name="footer">
+		            	<rich:columnGroup rendered="#{cajaChicaAction.existeRetencion}">
+		            		<rich:column colspan="3" style="text-align:center;" >
+		                    	<a4j:commandLink styleClass="tygCompGtosAtn"
+		                    		value="#{msg['navegacion.label.capturaRetencion']}" 
+		                    		onclick="Richfaces.showModalPanel('pnlBusquedaRetenciones')" 
+		                    		reRender="dtRetEncontradas" 
+		                    		limitToList="true" />
+		                    </rich:column>	
+		            	</rich:columnGroup>
+		            </f:facet>				      		                                                           
+		        </rich:dataTable>
+			</h:panelGroup>
+				
+			<a4j:commandButton id="btnDesgloceImpuestosOk" style="margin:10px auto 0; width:100px; cursor:pointer;" 
+				value="#{msg['navegacion.label.aceptar']}"
+				onclick="#{rich:component('pnlDesgloceImpuestos')}.hide()" 
+				reRender="txtSubtotal,txtTotalImpto,txtTotalRet,txtTotal,dtDesgloseImpuestos"
+				limitToList="true" />
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

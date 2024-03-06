@@ -1,0 +1,318 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlObrasCobranza" autosized="true" domElementAttachment="form" top="5">
+    	<f:facet name="header">
+			<h:panelGroup>
+				<h:graphicImage style="cursor:pointer; margin:0; float:left;" title="Auditoria"
+					value="#{msg['navegacion.gral.info.img']}">
+					<a4j:ajax event="click" 
+						oncomplete="#{rich:component('pnlAuditoria')}.show()" 
+						render="pnlAuditoria" />
+				</h:graphicImage>
+				
+				<h:outputText value="#{msg['estadoCuenta']}" styleClass="Titulo" />
+			</h:panelGroup>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" title="Cerrar"
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlObrasCobranza')}.hide()" />
+		</f:facet>
+		
+		<a4j:region id ="regObrasCobranza">
+			<div style="margin:0; padding:0; min-width:1280px; width:1280px; text-align:center; overflow:hidden;">
+				<h:panelGrid id="botoneraCobranza" columns="2" style="padding:0; width:100%; min-height:22px; text-align:left;">
+					<h:panelGroup id="grupoBotonesIzquierdosCobranza" style="width:100%; vertical-align:middle; position:relative;">
+						<a4j:commandButton id="cmdActualizaObraCobranza" style="margin:auto 5px; vertical-align: middle; position:relative; cursor:pointer;"
+							image="#{msg['actualizar22.img']}" title="#{msg['actualizar']}" 
+							action="#{cobranzaAction.ver}"
+							render="groupCobranza"
+							limitRender="true" />
+						
+						<rich:messages id="validadorCobranza" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+							<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+						</rich:messages>
+					</h:panelGroup>
+					
+					<h:panelGroup id="grupoBotonesDerechosCobranza" style="width:100%; vertical-align:middle; position:relative;">
+						<a4j:commandButton id="cmdSalvarObraCobranza" style="float:right; margin:auto 5px; vertical-align:middle; cursor:pointer; float:right;" 
+							rendered="#{cobranzaAction.permisoEscritura}"
+							image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+							action="#{cobranzaAction.guardar}" execute="@region" 
+							oncomplete="salvar(#{cobranzaAction.operacion}, '#{rich:clientId('pnlObrasCobranza')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorCobranza')})"
+							render="validadorCobranza,pnlMensajes"
+							limitRender="true" />
+							
+						<a4j:commandButton id="cmdReporte" style="float:right; margin:auto 5px; vertical-align:middle; cursor:pointer;" 
+							image="#{msg['imprimir22.img']}" title="#{msg['imprimir.e']} #{msg['estadoCuenta']} #{msg['cobranza']}"
+							action="#{cobranzaAction.reporte}"
+							oncomplete="reporte(#{cobranzaAction.operacion}, '#{rich:clientId('pnlMensajes')}')"
+							render="pnlMensajes"
+							limitRender="true" />
+					</h:panelGroup>
+				</h:panelGrid>
+				
+				<h:panelGroup styleClass="encabezado" style="margin:5px auto 0; min-height:1em; padding:4px 0;">
+					<h:outputLabel value="#{cobranzaAction.cobranzaTitulo}" />
+				</h:panelGroup>
+				
+				<fieldset style="border:none;" disabled="#{! cobranzaAction.permisoEscritura ? 'disabled' : ''}">
+					<h:panelGroup layout="block" style="margin:5px auto 10px; width:100%; padding:0; text-align:left;">
+						<h:outputText value="#{msg['anticipo']}:" styleClass="Titulo" />
+						<h:panelGroup>
+							<h:inputText id="txtPorcentajeAnticipo" style="width:50px; text-align:right; margin:0 5px;"
+								value="#{cobranzaAction.porcentajeAnticipo}"
+								onkeypress="return soloDecimales(event, this.value, 3, 4);"
+								validatorMessage="#{msg['porcentaje']} #{msg['anticipo']}: #{msg['mensaje.validacion.valorCeroCien']}">
+								<f:convertNumber pattern="#{cobranzaAction.porcentajeFormat}" />
+								<f:validateLongRange minimum="0" maximum="100" for="txtPorcentajeAnticipo" />
+								<a4j:ajax event="change" execute="@region" 
+									render="dtCobranza,txtPorcentajeAnticipo,validadorCobranza" 
+									limitRender="true" />
+							</h:inputText>
+							<h:outputText value="#{msg['%']}" styleClass="Titulo" />
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['retencion']}:" styleClass="Titulo" style="margin:0 0 0 10px;" />
+						<h:panelGroup>
+							<h:inputText id="txtPorcentajeRetencion" style="width:50px; text-align:right; margin:0 5px;"
+								value="#{cobranzaAction.porcentajeRetencion}"
+								onkeypress="return soloDecimales(event, this.value, 3, 4);"
+								validatorMessage="#{msg['porcentaje']} #{msg['retencion']}: #{msg['mensaje.validacion.valorCeroCien']}">
+								<f:convertNumber pattern="#{cobranzaAction.porcentajeFormat}" />
+								<f:validateLongRange minimum="0" maximum="100" for="txtPorcentajeRetencion" />
+								<a4j:ajax event="change" execute="@region" 
+									render="dtCobranza,txtPorcentajeRetencion,validadorCobranza" 
+									limitRender="true" />
+							</h:inputText>
+							<h:outputText value="#{msg['%']}" styleClass="Titulo" />
+						</h:panelGroup>
+					</h:panelGroup>
+					
+					<div class="tableParent" style="display:block; margin:0 auto; width:100%; padding:0; height:auto; max-height:450px; overflow-y:auto;">
+						<rich:dataTable id="dtCobranza" value="#{cobranzaAction.listCobranza}" var="item" iterationStatusVar="it"
+							style="margin:0 auto;" cellpadding="0" cellspacing="0" rows="50" border="0" rowClasses="Row2" styleClass="tabla_pagina">
+							<f:facet name="header">
+								<rich:columnGroup>
+									<rich:column colspan="4" style="text-align:center; padding:2px;">
+										<h:outputLabel value="#{msg['facturacion']}" />
+									</rich:column>
+									
+									<rich:column colspan="8" style="text-align:center; padding:2px;">
+										<h:outputLabel value="#{msg['cobranza']}" />
+									</rich:column>
+									
+									<rich:column style="min-width:78px; max-width:78px; text-align:center; padding:2px;" breakRowBefore="true">
+										<h:outputLabel value="#{msg['factura']}" />
+									</rich:column>
+									
+									<rich:column style="min-width:78px; max-width:78px; text-align:center; padding:2px;">
+										<h:outputLabel value="#{msg['fecha']}" />
+									</rich:column>
+									
+									<rich:column style="min-width:160px; max-width:160px; text-align:center; padding:2px;">
+										<h:outputLabel value="#{msg['concepto']}" />
+									</rich:column>
+									
+									<rich:column style="min-width:96px; max-width:96px; text-align:center; padding:2px;">
+										<h:outputLabel value="#{msg['facturado']}" />
+									</rich:column>
+									
+									<rich:column style="min-width:96px; max-width:96px; text-align:center; padding:2px;">
+										<h:outputText value="#{msg['anticipo']}" />
+									</rich:column>
+									
+									<rich:column style="min-width:96px; max-width:96px; text-align:center; padding:2px;">
+										<h:outputLabel value="#{msg['estimacion']}" />
+									</rich:column>
+									
+									<rich:column style="min-width:96px; max-width:96px; text-align:center; padding:2px;">
+										<h:outputLabel value="#{msg['amortizacion']}" />
+									</rich:column>
+									
+									<rich:column style="min-width:96px; max-width:96px; text-align:center; padding:2px;">
+										<h:outputLabel value="#{msg['fondo']} #{msg['garantia']}" />
+									</rich:column>
+									
+									<rich:column style="min-width:96px; max-width:96px; text-align:center; padding:2px;">
+										<h:outputLabel value="#{msg['subtotal']} #{msg['con']} #{msg['retenciones']}" />
+									</rich:column>
+										
+									<rich:column style="min-width:96px; max-width:96px; text-align:center; padding:2px;">
+										<h:outputLabel value="#{msg['iva']}" />
+									</rich:column>
+									
+									<rich:column style="min-width:96px; max-width:96px; text-align:center; padding:2px;">
+										<h:outputLabel value="#{msg['estimacion']} #{msg['retenciones']} #{msg['e']} #{msg['iva']}" title="#{msg['cobrado']}" />
+									</rich:column>
+									
+									<rich:column style="min-width:96px; max-width:128px; text-align:center; padding:2px;">
+										<h:outputLabel value="#{msg['cobradoLiquido']}" />
+									</rich:column>
+								</rich:columnGroup>
+							</f:facet>
+					         
+							<rich:column style="text-align:left;" styleClass="Titulo" colspan="3">
+								<rich:collapsibleSubTableToggler for="stCobranza" />
+								<h:outputText value="#{item.descripcion}" title="#{item.idMoneda}" />
+							</rich:column>
+							
+							<rich:column style="text-align:right; width:100px;">
+								<h:outputText styleClass="Titulo" value="#{item.facturado}">
+									<f:convertNumber pattern="###,###,##0.00" />
+								</h:outputText>
+							</rich:column>
+							
+							<rich:column style="text-align:right; width:100px;">
+								<h:outputText styleClass="Titulo" value="#{item.anticipo}">
+									<f:convertNumber pattern="###,###,##0.00" />
+								</h:outputText>
+							</rich:column>
+							
+							<rich:column style="text-align:right; width:100px;">
+								<h:outputText styleClass="Titulo" value="#{item.estimacion}">
+									<f:convertNumber pattern="###,###,##0.00" />
+								</h:outputText>
+							</rich:column>
+							
+							<rich:column style="text-align:right; width:100px;">
+								<h:outputText styleClass="Titulo" value="#{item.amortizacion}">
+									<f:convertNumber pattern="###,###,##0.00" />
+								</h:outputText>
+							</rich:column>
+							
+							<rich:column style="text-align:right; width:100px;">
+								<h:outputText styleClass="Titulo" value="#{item.fondoGarantia}">
+									<f:convertNumber pattern="###,###,##0.00" />
+								</h:outputText>
+							</rich:column>
+							
+							<rich:column style="text-align:right; width:100px;">
+								<h:outputText styleClass="Titulo" value="#{item.subtotal}">
+									<f:convertNumber pattern="###,###,##0.00" />
+								</h:outputText>
+							</rich:column>
+							
+							<rich:column style="text-align:right; width:100px;">
+								<h:outputText styleClass="Titulo" value="#{item.iva}">
+									<f:convertNumber pattern="###,###,##0.00" />
+								</h:outputText>
+							</rich:column>
+							
+							<rich:column style="text-align:right; width:100px;">
+								<h:outputText styleClass="Titulo" value="#{item.total}">
+									<f:convertNumber pattern="###,###,##0.00" />
+								</h:outputText>
+							</rich:column>
+							
+							<rich:column style="text-align:right; width:100px;">
+								<h:outputText styleClass="Titulo" value="#{item.cobrado}">
+									<f:convertNumber pattern="###,###,##0.00" />
+								</h:outputText>
+							</rich:column>
+							
+							<rich:collapsibleSubTable id="stCobranza" value="#{item.listCobranza}" var="var" noDataLabel="Facturas no encontradas" expandMode="client" rowClasses="Row1" rows="25">
+								<rich:column style="min-width:78px; max-width:78px; text-align:center; padding:2px;">
+									<h:outputLabel value="#{var.folio}" title="#{var.idFactura}" />
+								</rich:column>
+								
+								<rich:column style="min-width:78px; max-width:78px; text-align:center; padding:2px;">
+									<h:outputLabel value="#{var.fecha}">
+										<f:convertDateTime type="date" pattern="dd-MMM-yyyy" />
+									</h:outputLabel>
+								</rich:column>
+								
+								<rich:column style="min-width:160px; max-width:160px; text-align:left; padding:2px;">
+									<h:outputLabel value="#{var.concepto}" title="#{var.concepto}" style="display:inline-block; width:100%; height:100%; max-height:72px; font-size:0.9em; overflow:hidden; text-overflow:ellipsis; text-align:left; text-transform:uppercase;" />
+								</rich:column>
+								
+								<rich:column style="min-width:96px; max-width:96px; text-align:right; padding:2px;">
+									<h:outputLabel value="#{var.facturaTotal}" title="#{msg['saldo']}: #{var.facturaSaldo}">
+										<f:convertNumber pattern="#{cobranzaAction.decimalFormat}" />
+									</h:outputLabel>
+								</rich:column>
+								
+								<rich:column style="min-width:96px; max-width:96px; text-align:center; padding:2px;">
+									<h:inputText style="width:74px; text-align:right"
+										value="#{var.anticipo}" 
+										onkeypress="return soloDecimales(event, this.value, 10, 4);">
+										<f:convertNumber pattern="#{cobranzaAction.decimalFormat}" />
+										<a4j:ajax event="blur" 
+											listener="#{cobranzaAction.totalizarCobranzaMXN}" 
+											render="dtCobranza" execute="@region" />
+									</h:inputText>
+								</rich:column>
+								
+								<rich:column style="min-width:96px; max-width:96px; text-align:center; padding:2px;">
+									<h:inputText style="width:74px; text-align:right"
+										value="#{var.estimacion}" 
+										onkeypress="return soloDecimales(event, this.value, 10, 4);">
+										<f:convertNumber pattern="#{cobranzaAction.decimalFormat}" />
+										<a4j:ajax event="change" 
+											listener="#{cobranzaAction.totalizarCobranzaMXN}" 
+											render="dtCobranza" execute="@region" />
+									</h:inputText>
+								</rich:column>
+								
+								<rich:column style="min-width:96px; max-width:96px; text-align:right; padding:2px;">
+									<h:outputLabel value="#{var.amortizacion}">
+										<f:convertNumber pattern="#{cobranzaAction.decimalFormat}" />
+									</h:outputLabel>
+								</rich:column> 
+								
+								<rich:column style="min-width:96px; max-width:96px; text-align:right; padding:2px;">
+									<h:outputLabel value="#{var.fondoGarantia}">
+										<f:convertNumber pattern="#{cobranzaAction.decimalFormat}" />
+									</h:outputLabel>
+								</rich:column>
+								
+								<rich:column style="min-width:96px; max-width:96px; text-align:right; padding:2px;">
+									<h:outputLabel value="#{var.subtotal}">
+										<f:convertNumber pattern="#{cobranzaAction.decimalFormat}" />
+									</h:outputLabel>
+								</rich:column>
+								
+								<rich:column style="min-width:96px; max-width:96px; text-align:right; padding:2px;">
+									<h:outputLabel value="#{var.iva}">
+										<f:convertNumber pattern="#{cobranzaAction.decimalFormat}" />
+									</h:outputLabel>
+								</rich:column>
+								
+								<rich:column style="min-width:96px; max-width:96px; text-align:right; padding:2px;">
+									<h:outputLabel value="#{var.total}">
+										<f:convertNumber pattern="#{cobranzaAction.decimalFormat}" />
+									</h:outputLabel>
+								</rich:column>
+								
+								<rich:column style="min-width:96px; max-width:128px; text-align:right; padding:2px;">
+									<h:outputLabel value="#{var.facturaCobrado}">
+										<f:convertNumber pattern="#{cobranzaAction.decimalFormat}" />
+									</h:outputLabel>
+								</rich:column>
+							
+								<f:facet name="footer">
+									<rich:column colspan="12" style="text-align:center;">
+										<rich:dataScroller for="stCobranza" page="#{item.paginacion}" renderIfSinglePage="false"
+											ajaxSingle="true" maxPages="10" fastStep="10" align="center" styleClass="Titulo" />
+									</rich:column>
+								</f:facet>
+							</rich:collapsibleSubTable>
+							
+							<f:facet name="footer">
+								<rich:dataScroller for="dtCobranza" page="#{cobranzaAction.paginacionCobranza}" renderIfSinglePage="false"
+									ajaxSingle="true" maxPages="10" fastStep="10" align="center" styleClass="Titulo" />
+							</f:facet>
+						</rich:dataTable>
+					</div>
+				</fieldset>
+			</div>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

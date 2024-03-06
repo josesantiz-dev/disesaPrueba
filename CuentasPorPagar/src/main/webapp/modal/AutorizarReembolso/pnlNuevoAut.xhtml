@@ -1,0 +1,87 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlNuevoAut" autosized="true">
+		<f:facet name="header">
+			<h:panelGroup id="pnlMensaje">
+				<h:outputText value="#{msg['navegacion.label.autReembolso']}" style="margin-left:10px" styleClass="Titulo"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" styleClass="cursor:pointer;" id="btnCerrarNuevo"/>
+				<rich:componentControl for="pnlNuevoAut" attachTo="btnCerrarNuevo" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="frmNuevoAut">
+			<a4j:region id="loadNuevoAut">
+				<div style = "display: block; width: 600px; height: 22px;margin-bottom:10px">
+					<h:panelGrid  id="pnlSalvar" columns="2" style="float:right; margin-right:5px;" rendered="#{autReembolsoAction.muestraSalvar}" >
+						<h:panelGroup style="vertical-align: middle; position:relative; " rendered="#{autReembolsoAction.muestraSalvar}">
+							<a4j:commandButton id="cmdSalvar" onclick="#{rich:element('cmdSalvar')}.disabled = true;" 
+								action="#{autReembolsoAction.guardar}" image="#{msg['salvar22.img']}" style="vertical-align: right; position:relative;" 
+								reRender="txtResultadoAut,pnlMsgAut,dtResultsAutorizaciones,dtResults"
+								oncomplete = "checaResultado(#{rich:element('txtResultadoAut')}, 'pnlNuevoAut', 'pnlMsgAut', 'salvar', #{rich:element('msgErroresAut')}); #{rich:element('cmdSalvar')}.disabled = false;"/>
+							<h:outputLabel for="cmdSalvar" value="#{msg['salvar.e']}" style="cursor:pointer;" styleClass="Titulo"/>
+						</h:panelGroup>
+
+						<h:panelGroup style="vertical-align: right; position:relative;" >
+							<a4j:status for="loadNuevoAut">
+								<f:facet name="start">
+									<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: right; position:relative;"/>
+								</f:facet>
+								<f:facet name="stop">
+									<h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: right; position:relative;"/>
+								</f:facet>
+							</a4j:status>
+						</h:panelGroup>
+					</h:panelGrid>
+				</div>
+				<h:panelGrid columns="2" >
+				</h:panelGrid>
+
+				<h:panelGrid id="pnlAutorizaciones" columns="2" style="margin-left:15px; margin-bottom:10px; display:block;" width="600" cellpadding="3" columnClasses="colDerAutReem,colIzqAutReem">
+					<h:outputText value="#{msg['navegacion.label.numero']}:" styleClass="Titulo"/>
+					<h:outputText id="txtNum"  value="#{autReembolsoAction.pagosGastosId}" styleClass="Descripcion"/>
+					<h:outputText value="#{msg['navegacion.label.beneficiario']}:" styleClass="Titulo"/>
+					<h:outputText id="txtBeneficiario"  value="#{autReembolsoAction.pojoMovCtas.idBeneficiario.nombre} #{autReembolsoAction.pojoMovCtas.idBeneficiario.primerApellido} #{autReembolsoAction.pojoMovCtas.idBeneficiario.segundoApellido}" styleClass="Descripcion"/>
+					
+					<h:outputText value="#{msg['navegacion.label.fechaAut']}:" styleClass="Titulo" style="text-align:right"/>
+					<h:panelGroup>
+						<rich:calendar id="cmbFecha"  value="#{autReembolsoAction.varFecha}" zindex="100" required="#{!empty param[rich:clientId('cmdSalvar')]}" showWeeksBar="false"/>
+						<rich:message for="cmbFecha" showSummary="false" showDetail="false"  styleClass="Err">
+							<f:facet name="errorMarker">
+								<h:panelGroup>
+										<h:graphicImage id="errorCmbFecha" value="#{msgAcc['mensajes.cancelar16.img']}"/>
+										<h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+								</h:panelGroup>
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					<h:outputText value="#{msg['navegacion.label.montoAut']}:" styleClass="Titulo"/>
+					<h:panelGroup>
+						<h:inputText id="txtMonto" value="#{autReembolsoAction.varMonto}" required="#{!empty param[rich:clientId('cmdSalvar')]}" maxlength="8"/>
+						<rich:message for="txtMonto" showSummary="false" showDetail="false"  styleClass = "Err">
+							<f:facet name="errorMarker">
+								<h:panelGroup>
+									<h:graphicImage  value="#{msg['cancelar16.img']}"/>
+									<h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+								</h:panelGroup>
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+				</h:panelGrid>
+				<!-- utilizo esta lista de mensajes de errores para conocer si debo seguir en el proceso en js -->
+				<rich:messages id="msgErroresAut" showDetail="false" showSummary="false">
+				</rich:messages>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

@@ -1,0 +1,30 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlEliminarOperacionIntegradaSQL" autosized="true" domElementAttachment="form"
+		header="#{msg['navegacion.label.atencion']}"
+		onshow="document.getElementById('#{rich:clientId('pnlEliminarOperacionIntegradaSQLNo')}').focus();">
+		
+		<h:panelGroup style="display:block; min-width:300px; max-width:500px; text-align:center;">
+			<h:outputText value="#{msg['confirmacionEliminarCampo']}" style="display:block;" styleClass="Descripcion" />
+			
+			<h:panelGrid columns="2" style="margin:10px auto 0; width:200px;">
+				<a4j:commandButton id="pnlEliminarOperacionIntegradaSQLSi" style="margin:0 auto; cursor:pointer; width:100px;"
+					value="#{msg['si']}" 
+					action="#{operIntTransAction.borrarOperacionIntegradaSQL}" 
+					oncomplete="eliminar(#{operIntTransAction.operacion}, '#{rich:clientId('pnlEliminarOperacionIntegradaSQL')}', '#{rich:clientId('pnlMensajes')}')"
+					render="dtOperIntegradaSQLConceptos,pnlMensajes"
+					limitRender="true" />
+					
+				<a4j:commandButton id="pnlEliminarOperacionIntegradaSQLNo" style="margin:0 auto; cursor:pointer; width:90px;"
+					value="#{msg['no']}" 
+					onclick="#{rich:component('pnlEliminarOperacionIntegradaSQL')}.hide()" />
+			</h:panelGrid>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

@@ -1,0 +1,75 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlNuevaEntrada" autosized="true" domElementAttachment="form" top="15"
+		onshow="document.getElementById('#{rich:clientId('btnEntradaCancel')}').focus();">
+		<f:facet name="header">
+			<h:outputText value="#{msg['nueva']} #{msg['entrada']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<h:panelGroup styleClass="encabezado" style="min-height:1em; margin:5px auto 0;">
+			<h:outputText value="#{entradasAction.almacenMovimiento}" />
+		</h:panelGroup>
+		
+		<h:panelGroup style="display:block; min-width:300px; max-width:500px; text-align:center; margin:10px auto 0; vertical-align:top;">
+			<a4j:commandButton id="btnEntradaOrden" style="margin:0 auto; cursor:pointer; width:100px; height:50px; white-space:pre-line; text-align:center; vertical-align:top;"
+				rendered="#{entradasAction.almacenMovimientoTipo == 'AL' || entradasAction.almacenMovimientoTipo == 'BO'}"
+				value="#{msg['ordenCompra']}" title="#{msg['entradaPorOC']} #{entradasAction.debugging ? 'OC' : ''}"
+				onclick="#{rich:component('pnlNuevaEntrada')}.hide()"
+				action="#{entradasAction.nuevaEntrada}" 
+				oncomplete="#{rich:component('pnlEntrada')}.show(); delayAutoClick('frmPrincipal:btnSelectorOrdenCompra');"
+				render="pnlEntrada,grupoSelectores,dtEntradaDetalles" limitRender="true">
+				<f:param name="origen" value="OC" assignTo="#{entradasAction.tipoEntrada}" />
+			</a4j:commandButton>
+			
+			<a4j:commandButton id="btnEntradaTraspasoAL" style="margin:0 auto; cursor:pointer; width:100px; height:50px; white-space:pre-line; text-align:center; vertical-align:top;"
+				rendered="#{entradasAction.almacenMovimientoTipo == 'AL'}"
+				value="#{msg['traspaso']}" title="#{msg['entradaPorTraspaso']} #{entradasAction.debugging ? 'TX' : ''}"
+				onclick="#{rich:component('pnlNuevaEntrada')}.hide()"
+				action="#{entradasAction.nuevaEntrada}" 
+				oncomplete="#{rich:component('pnlEntrada')}.show(); delayAutoClick('frmPrincipal:btnSelectorTraspaso');"
+				render="pnlEntrada,grupoSelectores,dtEntradaDetalles" limitRender="true">
+				<f:param name="origen" value="TX" assignTo="#{entradasAction.tipoEntrada}" />
+			</a4j:commandButton>
+			
+			<a4j:commandButton id="btnEntradaTraspasoBO" style="margin:0 auto; cursor:pointer; width:100px; height:50px; white-space:pre-line; text-align:center; vertical-align:top;"
+				rendered="#{entradasAction.almacenMovimientoTipo == 'BO'}"
+				value="#{msg['traspaso']}" title="#{msg['entradaPorTraspaso']} #{entradasAction.debugging ? 'TR' : ''}"
+				onclick="#{rich:component('pnlNuevaEntrada')}.hide()"
+				action="#{entradasAction.nuevaEntrada}" 
+				oncomplete="#{rich:component('pnlEntrada')}.show(); delayAutoClick('frmPrincipal:btnSelectorTraspaso');"
+				render="pnlEntrada,grupoSelectores,dtEntradaDetalles" limitRender="true">
+				<f:param name="origen" value="TR" assignTo="#{entradasAction.tipoEntrada}" />
+			</a4j:commandButton>
+			
+			<a4j:commandButton id="btnEntradaDevolucionAL" style="margin:0 auto; cursor:pointer; width:100px; height:50px; white-space:pre-line; text-align:center; vertical-align:top;"
+				rendered="#{entradasAction.almacenMovimientoTipo == 'AL'}"
+				value="#{msg['devolucion']}" title="#{msg['entradaPorDevolucion']} #{entradasAction.debugging ? 'DE' : ''}"
+				onclick="#{rich:component('pnlNuevaEntrada')}.hide()"
+				action="#{entradasAction.nuevaEntrada}" 
+				oncomplete="#{rich:component('pnlEntrada')}.show(); delayAutoClick('frmPrincipal:btnSelectorDevolucion');"
+				render="pnlEntrada,grupoSelectores,dtEntradaDetalles" limitRender="true">
+				<f:param name="origen" value="DE" assignTo="#{entradasAction.tipoEntrada}" />
+			</a4j:commandButton>
+			
+			<a4j:commandButton id="btnEntradaDevolucionBO" style="margin:0 auto; cursor:pointer; width:100px; height:50px; white-space:pre-line; text-align:center; vertical-align:top;"
+				rendered="#{entradasAction.almacenMovimientoTipo == 'BO'}"
+				value="#{msg['devolucion']}" title="#{msg['entradaPorDevolucion']} #{entradasAction.debugging ? 'SO' : ''}"
+				onclick="#{rich:component('pnlNuevaEntrada')}.hide()"
+				action="#{entradasAction.nuevaEntrada}" 
+				oncomplete="#{rich:component('pnlEntrada')}.show(); delayAutoClick('frmPrincipal:cmdSeleccionarObra');"
+				render="pnlEntrada,grupoSelectores,dtEntradaDetalles" limitRender="true">
+				<f:param name="origen" value="SO" assignTo="#{entradasAction.tipoEntrada}" />
+			</a4j:commandButton>
+			
+			<a4j:commandButton id="btnEntradaCancel" style="margin:10px auto 0; cursor:pointer; width:90px; display:block;"
+				value="#{msg['cancelar']}"
+				onclick="#{rich:component('pnlNuevaEntrada')}.hide()" />
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

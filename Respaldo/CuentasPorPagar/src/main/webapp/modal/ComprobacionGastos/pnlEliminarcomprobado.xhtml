@@ -1,0 +1,37 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlEliminarcomprobado" autosized="true">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo"/>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor:pointer;" id="imgCerrarEliminarcomprobado"/>
+				<rich:componentControl for="pnlEliminarcomprobado" attachTo="imgCerrarEliminarcomprobado" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="frmEliminarFactura">
+			<a4j:region id="loadEliminarFactura">
+				<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+					<h:outputText value="#{msg['navegacion.label.deseaEliminar']}" style="display:block;"  styleClass="Descripcion"/>
+					<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+						<a4j:commandButton id="cmdElimina" onclick="#{rich:element('cmdElimina')}.disabled = true;" action="#{comprobacionGastosAction.eliminar}" oncomplete="#{rich:element('cmdElimina')}.disabled = false; #{rich:component('pnlEliminarcomprobado')}.hide(); "  value="#{msg['navegacion.label.aceptar']}" reRender="dtResultsComprobado"/>
+						<a4j:commandButton onclick="#{rich:component('pnlEliminarcomprobado')}.hide()" value="#{msg['cancelar.e']}" style="margin-left:10px;"/>
+					</h:panelGroup>
+					<a4j:status for="loadEliminarFactura">
+						<f:facet name="start">
+							<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}"/>
+						</f:facet>
+					</a4j:status>
+				</h:panelGrid>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

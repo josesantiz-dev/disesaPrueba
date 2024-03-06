@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="NotificacionBancos" pageWidth="226" pageHeight="792" columnWidth="226" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="1b751c7e-e543-4df2-9970-6c67127b33f0">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<parameter name="control" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ruta_img" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["c:/imagenes/"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select pb.banco, pb.sucursal, coalesce(pb.tarjeta,0) as tarjeta, ci.cinsncorto, ci.cta_pagos, c.referencia, c.monto,
+ci.cat_banco_id, c.campone4, c.region_id, right('9999999999' || c.referencia,12) as ref
+from pagos_banco pb, catinsti ci, contrato c
+where pb.banco=ci.cinsinstit and c.sucursal=pb.sucursal
+and ci.cat_banco_id<>4 and ci.cat_banco_id<>5 and c.control = $P{control} and pb.tarjeta = -1
+order by  ci.cat_banco_id]]>
+	</queryString>
+	<field name="banco" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="sucursal" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="tarjeta" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cinsncorto" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cta_pagos" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="referencia" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="monto" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cat_banco_id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="campone4" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="region_id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ref" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="cuenta" class="java.lang.String">
+		<variableExpression><![CDATA[(($F{cat_banco_id}.intValue()==5) || ($F{cat_banco_id}.intValue()==4))
+? ""
+: $F{cta_pagos}]]></variableExpression>
+	</variable>
+	<variable name="nombre" class="java.lang.String">
+		<variableExpression><![CDATA[(($F{cat_banco_id}.intValue()==4))
+? "OXXO"
+: $F{cinsncorto}]]></variableExpression>
+	</variable>
+	<variable name="referencia" class="java.lang.String">
+		<variableExpression><![CDATA[$F{referencia}]]></variableExpression>
+		<initialValueExpression><![CDATA[$F{referencia}]]></initialValueExpression>
+	</variable>
+	<variable name="vitem" class="java.lang.String">
+		<variableExpression><![CDATA["abcdefghijklm" + $F{referencia}]]></variableExpression>
+		<initialValueExpression><![CDATA[$F{referencia}]]></initialValueExpression>
+	</variable>
+	<variable name="leng" class="java.lang.Integer">
+		<variableExpression><![CDATA[new Integer($V{vitem}.length()-12)]]></variableExpression>
+	</variable>
+	<group name="referencia">
+		<groupExpression><![CDATA[$F{referencia}]]></groupExpression>
+		<groupHeader>
+			<band splitType="Stretch"/>
+		</groupHeader>
+		<groupFooter>
+			<band height="16" splitType="Stretch">
+				<printWhenExpression><![CDATA[new Boolean((($F{cat_banco_id}.shortValue() == 9))
+? true
+:false)]]></printWhenExpression>
+				<image>
+					<reportElement uuid="d0ecc49f-13da-4e6f-bf38-fd8c96b925ed" key="image-8" x="2" y="1" width="54" height="12">
+						<printWhenExpression><![CDATA[new Boolean($F{cat_banco_id}.intValue() == 9 ? true : false)]]></printWhenExpression>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<imageExpression><![CDATA[$P{ruta_img} + "facil.PNG"]]></imageExpression>
+				</image>
+				<textField isBlankWhenNull="false">
+					<reportElement uuid="ffa8c25d-5ffb-4811-b957-bbc0e3f54d35" key="textField-5" x="65" y="2" width="86" height="12"/>
+					<box leftPadding="3">
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{cuenta}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement uuid="b8811566-abd4-413e-b9bf-ca5925b74518" key="line-11" x="60" y="0" width="1" height="15"/>
+				</line>
+				<line>
+					<reportElement uuid="130f1098-b7d6-4517-9164-93afe2b83d5e" key="line-12" x="150" y="0" width="1" height="15"/>
+				</line>
+				<line>
+					<reportElement uuid="d8633195-cbf5-4614-8283-0c0a01d0aa43" key="line-13" x="0" y="0" width="226" height="1"/>
+				</line>
+				<line>
+					<reportElement uuid="9868295e-6dda-4b2f-9fd2-61a1e533a0bf" key="line-13" x="0" y="15" width="226" height="1"/>
+				</line>
+			</band>
+			<band height="12">
+				<printWhenExpression><![CDATA[Boolean.valueOf(
+    $F{cat_banco_id}.intValue()!=5 &&
+    $F{monto}.doubleValue() < 20500d &&
+    $F{region_id}.intValue()!=2 &&
+    $F{region_id}.intValue()!=3 &&
+    $F{region_id}.intValue()!=9 &&
+    $F{region_id}.intValue()!=1
+)]]></printWhenExpression>
+				<image>
+					<reportElement uuid="9f025eed-e8a1-4bde-a53c-c3696f982dc0" key="image-8" x="2" y="0" width="54" height="12"/>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<imageExpression><![CDATA[$P{ruta_img} + "telecomm.JPG"]]></imageExpression>
+				</image>
+				<textField isBlankWhenNull="false">
+					<reportElement uuid="5fc4b24c-7ed8-40e7-8939-3c55e579a9eb" key="textField-4" x="151" y="2" width="70" height="10"/>
+					<box leftPadding="3">
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{referencia}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="banco_id">
+		<groupExpression><![CDATA[$F{banco}]]></groupExpression>
+		<groupHeader>
+			<band splitType="Stretch"/>
+		</groupHeader>
+		<groupFooter>
+			<band height="16" splitType="Stretch">
+				<printWhenExpression><![CDATA[new Boolean((($F{cat_banco_id}.shortValue() == 4) && ($F{campone4}.shortValue()==1))
+? true
+: ((($F{cat_banco_id}.shortValue()==5) && ($F{monto}.doubleValue()<20500) && ($F{region_id}.shortValue()!=1) && ($F{region_id}.shortValue()!= 2) && ($F{region_id}.shortValue()!= 3) && ($F{region_id}.shortValue()!= 9) )
+  ? true
+  : ((($F{tarjeta}.shortValue()!=0) && ($F{cat_banco_id}.shortValue()!=5) && ($F{cat_banco_id}.shortValue()!=9))
+    ? true
+    : false
+    )
+  )
+)]]></printWhenExpression>
+				<image>
+					<reportElement uuid="0a45c432-a54d-4710-9ec9-91349597b3dc" key="image-1" x="2" y="3" width="54" height="10">
+						<printWhenExpression><![CDATA[new Boolean($F{cat_banco_id}.intValue() == 6 ? true : false)]]></printWhenExpression>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<imageExpression><![CDATA[$P{ruta_img} + "banorte.jpg"]]></imageExpression>
+				</image>
+				<image>
+					<reportElement uuid="03164bc8-9cf6-4160-802e-0cd61c542526" key="image-2" x="2" y="2" width="55" height="10">
+						<printWhenExpression><![CDATA[new Boolean($F{cat_banco_id}.intValue() == 1 ? true : false)]]></printWhenExpression>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<imageExpression><![CDATA[$P{ruta_img} + "banamex.jpg"]]></imageExpression>
+				</image>
+				<image>
+					<reportElement uuid="8cb7053a-780c-4d4c-ac7f-c87d21f3d9dd" key="image-3" x="2" y="2" width="54" height="11">
+						<printWhenExpression><![CDATA[new Boolean(($F{cat_banco_id}.intValue() == 11) || ($F{cat_banco_id}.intValue() == 2 )
+? true
+: false)]]></printWhenExpression>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<imageExpression><![CDATA[$P{ruta_img} + "bbva.jpg"]]></imageExpression>
+				</image>
+				<line>
+					<reportElement uuid="21c80b8b-2b8f-4e63-b92d-b7332896d632" key="line-2" x="0" y="0" width="226" height="1"/>
+				</line>
+				<textField isBlankWhenNull="false">
+					<reportElement uuid="b3060a84-b33f-4b34-83df-1ea9385ac12a" key="textField-3" x="65" y="2" width="86" height="12"/>
+					<box leftPadding="3">
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{cuenta}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement uuid="8b6b1147-a0f3-4913-bf54-f962bd331e9c" key="line-7" x="60" y="0" width="1" height="16"/>
+				</line>
+				<line>
+					<reportElement uuid="bc034b75-0974-458a-b715-8c98547f1f28" key="line-9" x="150" y="0" width="1" height="16"/>
+				</line>
+				<textField isBlankWhenNull="false">
+					<reportElement uuid="8cbf11ff-bc32-45a6-9415-7a9111a29432" key="textField-4" x="153" y="2" width="70" height="12"/>
+					<box leftPadding="3">
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{referencia}]]></textFieldExpression>
+				</textField>
+				<image>
+					<reportElement uuid="49b1500e-c3ed-4e7c-b1e6-ffccd565d03f" key="image-9" x="2" y="2" width="54" height="11">
+						<printWhenExpression><![CDATA[new Boolean(($F{cat_banco_id}.intValue() == 5 )
+? true
+: false)]]></printWhenExpression>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<imageExpression><![CDATA[$P{ruta_img} + "telecomm.JPG"]]></imageExpression>
+				</image>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="12" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="4092b298-9079-408a-9534-5168bf374a86" key="staticText-1" mode="Opaque" x="65" y="0" width="81" height="12" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Cuenta]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="79767a29-04e4-4aa8-8501-84fe176d37a8" key="staticText-2" mode="Opaque" x="153" y="0" width="67" height="12" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Referencia]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="81007911-cdee-4395-8ceb-8790f8698dca" key="line-3" x="60" y="0" width="1" height="12"/>
+			</line>
+			<line>
+				<reportElement uuid="a992151b-f6ba-4c6f-85e1-b954488a83f8" key="line-5" x="150" y="0" width="1" height="12"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

@@ -1,0 +1,28 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlMensajes" autosized="true" 
+		header="#{msg['navegacion.label.atencion']}"
+		onshow="document.getElementById('#{rich:clientId('pnlMensajesOk')}').focus();">
+		
+		<h:panelGroup style="margin:0 auto; text-align:center; min-width:300px; max-width:500px; display:block;">
+			<h:outputText value="#{operIntTransAction.mensaje}" styleClass="Descripcion" rendered="#{operIntTransAction.tipoMensaje == -1}" />
+			<h:outputText value="#{msg['mensaje.info.infoReg']}" styleClass="Descripcion" rendered="#{operIntTransAction.tipoMensaje == 0}" />       			
+			<h:outputText value="#{msg['mensaje.error.inesperado']}" styleClass="Descripcion" rendered="#{operIntTransAction.tipoMensaje == 1}" />
+			<h:outputText value="#{msg['mensaje.info.busquedaVacia']}" styleClass="Descripcion" rendered="#{operIntTransAction.tipoMensaje == 2}" />
+			<h:outputText value="#{msg['mensaje.error.requerido']}" styleClass="Descripcion" rendered="#{operIntTransAction.tipoMensaje == 3}" />
+			<h:outputText value="#{msg['sqlVacio']} #{msg['para']}: #{operIntTransAction.mensaje}" styleClass="Descripcion" rendered="#{operIntTransAction.tipoMensaje == 4}" />
+		</h:panelGroup>
+		
+		<h:panelGroup style="margin:10px auto 0; text-align:center; width:200px; display:block;">
+			<a4j:commandButton id="pnlMensajesOk" style="width:100px; margin:0 auto;"
+				value="#{msg['navegacion.label.aceptar']}" 
+				oncomplete="#{rich:component('pnlMensajes')}.hide()" />
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="ca.juliusdavies.not-yet-commons-ssl" xmlns="urn:jboss:module:1.1">
+	<resources>
+		<resource-root path="not-yet-commons-ssl-0.3.11.jar"/>
+	</resources>
+	<dependencies>
+		<module export="true" name="javax.api" />
+		<module export="true" name="javax.xml.bind.api" />
+		<!--module export="true" name="org.robovm.robovm-rt"/>
+		<module export="true" name="com.sun.net.ssl.internal.ssl"/-->
+	</dependencies>
+</module>

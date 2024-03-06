@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+	<head>
+		<title><h:outputText value="#{msg['navegacion']}" /></title>
+		<script language="javascript">
+			A4J.AJAX.onExpired = function(loc,expiredMsg){
+				alert(expiredMsg);
+				document.location="/cas/logout"; 
+			};
+			A4J.AJAX.onError = function(req, status, message){
+				// window.alert("Custom onError handler "+message);
+			};
+		</script>
+		<a4j:loadStyle  src="resource:///resources/css/general.css" />
+		<a4j:loadStyle  src="resource:///resources/css/menu_modulos.css" />
+		<!--<h:outputStylesheet library="css"  name="general.css" />
+		<h:outputStylesheet library="css"  name="menu_modulos.css" />-->
+	</head>
+
+	<body>  
+		<a4j:region id="loadGral">
+			<a4j:status id="statusMensaje" for="loadGral" onstart="#{rich:component('wait')}.show()" onstop="#{rich:component('wait')}.hide()"/>
+			<h:form ignoreDupResponses="true" id="frmPrincipal" style="text-align:center; float:center; width:100%;">
+				<rich:toolBar id="cabecera" styleClass="div_header">
+					<ui:insert name="menuFrag"/>
+				</rich:toolBar>
+				
+				<div id="div_footer">
+					<h:outputText id="txtFooterUsuario" value="#{msg['usuario']}: #{moduloManager.userName}" styleClass="div_footer_txt"/>
+					<h:outputText id="txtFooterFecha" value="#{msg['fecha']}: #{moduloManager.fecha}" styleClass="div_footer_txt"/>
+					<a4j:commandButton id="cmdCerrarSession" image="#{msg['ruta_img_22']}#{msg['salir.img']}" action="#{moduloManager.cerrarSession}" styleClass="div_footer_cerrar_session">
+						<rich:toolTip value="#{msg['cerrarSession']}" styleClass="DescripcionGral"/>
+					</a4j:commandButton>
+				</div>
+				
+				<div id="divContainer" style="height: 100%;">
+					<div class="div_pagina" style="height: 100%;">
+						<table border="0" class="tablaModulos" style="width: 400px;">
+							<tr>	
+								<ui:repeat id="dtModulos" value="#{moduloManager.lstModulos}" var="ur">
+									<td>
+										<a4j:commandLink  id="lnkMenu" action="#{moduloManager.seleccionaModulo}" style="padding:3px auto; font-weight: bold;">
+											<f:setPropertyActionListener target="#{moduloManager.modulo}" value="#{ur}" />
+											<div class="tile">
+												<h:graphicImage value="/#{msg['ruta_img_72']}#{ur.img}" name="#{ur.img}"/>
+												<h:outputLabel for="lnkMenu" value="#{ur.modulo}" styleClass="titulo" style="margin-top:10px"/>
+											</div>
+										</a4j:commandLink>
+									</td>
+								</ui:repeat>
+							</tr> 		
+						</table>
+					</div>
+				</div>
+			</h:form>
+		</a4j:region>
+	</body>
+</html>

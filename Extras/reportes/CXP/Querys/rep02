@@ -1,0 +1,35 @@
+
+Select
+	pg.monto as efectivo,
+	pg.area as area, o.id_obra, o.nombre, agente.af as sucursal, pg.monto as reembolso,
+
+	pg.consecutivo, no_beneficiario, case pg.tipo_benef when 'P' then persona.ag else negocio.af end as beneficiario
+From
+	pagos_gastos pg inner join obra o on pg.id_obra = o.id_obra
+
+	left join c81498d458 persona on pg.no_beneficiario = persona.aa
+	left join e769c352b7 negocio on pg.no_beneficiario = negocio.aa
+
+	left join a535303dbc agente on agente.aa = cast(pg.agente as integer)
+
+Where
+	pg.pagos_gastos_id = 10000070
+
+
+
+
+-- FOOTER
+
+Select
+	(Select sum( coalesce(pgd.subtotal,0) + coalesce(pgd.total_impuestos, 0) - coalesce(pgd.total_retenciones,0))
+		From pagos_gastos_det pgd Where pgd.pagos_gastos_id = pg.pagos_gastos_id and facturado = 0 ) as total,
+	(Select sum( facturado ) From pagos_gastos_det pgd Where pgd.pagos_gastos_id = pg.pagos_gastos_id and facturado = 0 ) as total_sin_facturas,	
+
+
+	pg.monto - (Select sum( coalesce(pgd.subtotal,0) + coalesce(pgd.total_impuestos, 0) - coalesce(pgd.total_retenciones,0))
+		From pagos_gastos_det pgd Where pgd.pagos_gastos_id = pg.pagos_gastos_id and facturado = 0 )
+	as reembolso
+From
+	pagos_gastos pg
+Where
+	pg.pagos_gastos_id = 10000070

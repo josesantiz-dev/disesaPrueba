@@ -1,0 +1,753 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="net.giro.co.beans.Correlativo" table="bbb4420d88">
+		<composite-id name="id" class ="net.giro.co.beans.CorrelativoId" unsaved-value="none">
+			<key-property name="codigoEmpresa" type="long" column="c_codemp"/>
+			<key-property name="nombreTabla" type="string" column="c_nomtab"/>
+		</composite-id>
+		<property name="cbEmpresa" column="c_codemp" insert="false" update="false"/>
+		<property name="descriTabla" column="c_destab"/>
+		<property name="fechaInsercion" column="a_fecins"/>
+		<property name="fechaModificacion" column="a_fecmod"/>
+		<property name="ipInsercion" column="a_ipeins"/>
+		<property name="ipModificacion" column="a_ipemod"/>
+		<property name="numeroCorrelativo" column="n_numcor"/>
+		<property name="terminalInsercion" column="a_terins"/>
+		<property name="terminalModificacion" column="a_termod"/>
+		<property name="usuarioInsercion" column="a_usuins"/>
+		<property name="usuarioModificacion" column="a_usumod"/>
+	</class>
+	
+	<class name="net.giro.ne.beans.Empresa" table="a858c9f4c5">
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="empresa" column="af"/>
+		<property name="domicilio" column="ag"/>
+		<many-to-one name="domicilio1" column="ah" class="net.giro.plataforma.beans.ConValores" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="domicilio2" column="ai" class="net.giro.plataforma.beans.ConValores" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="domicilio3" column="aj" class="net.giro.plataforma.beans.ConValores" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="domicilio4" column="ak" class="net.giro.plataforma.beans.ConValores" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="domicilio5" column="al" class="net.giro.plataforma.beans.ConValores" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<property name="descDomicilio1" column="am"/>
+		<property name="descDomicilio2" column="an"/>
+		<property name="descDomicilio3" column="ao"/>
+		<property name="descDomicilio4" column="ap"/>
+		<property name="descDomicilio5" column="aq"/>
+		<many-to-one name="colonia" column="ar"  class="net.giro.plataforma.ubicacion.beans.Colonia" lazy="false"  fetch="join" insert="true" update="true" not-found="ignore"/>
+		<property name="monedaId" column="au"/>
+		<property name="fechaBaja" column="av"/>
+		<property name="paginaWeb" column="aw"/>
+		<property name="correoElectronico" column="ax"/>
+		<property name="rfc" column="rfc"/>
+		<property name="telefono" column="telefono"/>
+		<property name="idRegimenFiscal" column="id_regimen_fiscal"/>
+		<property name="codigoRegimenFiscal" column="codigo_regimen_fiscal"/>
+		<property name="serieComplementoPago" column="serie_complemento_pago"/>
+	</class>
+	
+	<class name="net.giro.ne.beans.EmpresaCertificado" table="empresa_certificado">
+		<id column="id" name="id" />
+		<many-to-one column="id_empresa" name="idEmpresa" class="net.giro.ne.beans.Empresa" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<property column="certificado" name="certificado" />
+		<property column="no_certificado" name="noCertificado" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="estatus" name="estatus" />
+		<property column="llave" name="llave" />
+		<property column="al" name="al" />
+		<property column="del" name="del" />
+		<property column="asunto" name="asunto" />
+		<property column="certificado_data" name="certificadoData" />
+		<property column="llave_data" name="llaveData" />
+		<property column="palabra" name="palabra" />
+		<property column="certificado_data_pem" name="certificadoDataPem" />
+		<property column="llave_data_pem" name="llaveDataPem" />
+		<property column="llave_data_enc" name="llaveDataEnc" />
+		<property column="usuario_timbre" name="usuarioTimbre" />
+		<property column="clave_timbre" name="claveTimbre" />
+	</class>
+
+	<class name="net.giro.ne.beans.Sucursal" table="a535303dbc">
+		<id name="id" column="aa"/>
+		<property name="sucursal" column="af"/>
+		<many-to-one name="colonia" column="ar"  class="net.giro.plataforma.ubicacion.beans.Colonia" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<property name="domicilio" column="ag"/>
+		<many-to-one name="domicilio1" column="ah" class="net.giro.plataforma.beans.ConValores" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="domicilio2" column="ai" class="net.giro.plataforma.beans.ConValores" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="domicilio3" column="aj" class="net.giro.plataforma.beans.ConValores" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="domicilio4" column="ak" class="net.giro.plataforma.beans.ConValores" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="domicilio5" column="al" class="net.giro.plataforma.beans.ConValores" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<property name="descDomicilio1" column="am"/>
+		<property name="descDomicilio2" column="an"/>
+		<property name="descDomicilio3" column="ao"/>
+		<property name="descDomicilio4" column="ap"/>
+		<property name="descDomicilio5" column="aq"/>
+		<many-to-one name="idEmpresa" column="au"  class="net.giro.ne.beans.Empresa" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="region" column="av"  class="net.giro.ne.beans.Regiones" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="calendarioDiaInhabil" column="aw"  class="net.giro.ne.beans.CalendarioDiaInhabil" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<property name="segmentoContable" column="ax"/>
+		<property name="segmentoNegocio" column="ay"/>
+		<property name="serie" column="serie"/>
+		<property name="folio" column="folio"/>
+		<property name="nombreSecuencia" column="nombre_secuencia"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="fechaModificacion" column="ae"/>
+	</class>
+	
+	<class name="net.giro.ne.beans.CalendarioDiaInhabil" table="F847F9A387">
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="calendarioDiaInhabil" column="af"/>
+	</class>
+
+	<class name="net.giro.ne.beans.CalendarioDiaInhabilDetalle" table="A21A2849B9">
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="descripcion" column="af"/>
+		<property name="fecha" column="ag"/>
+		<many-to-one name="calendarioDiaInhabil" column="ah"  class="net.giro.ne.beans.CalendarioDiaInhabil" lazy="false"  fetch="join" insert="true" update="true" not-found="ignore"/>
+	</class>
+
+	<class name="net.giro.plataforma.beans.ConGrupoValores" table="ad11d130caa">
+		<id name="id" column="aa"/>
+		<property name="nombre" column="af"/>
+		<property name="descripcion" column="ag"/>
+		<property name="columnaValor" column="ai"/>
+		<property name="grupoValorPadreId" column="ah"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="expRegular" column="aj"/>
+		<property name="atributo1Etiqueta" column="atributo1_etiqueta"/>
+		<property name="atributo1Tipo" column="atributo1_tipo"/>
+		<property name="atributo1SrcDato" column="atributo1_src_dato"/>
+		<property name="atributo1Formato" column="atributo1_formato"/>
+		<property name="atributo1FormatoEjemplo" column="atributo1_formato_ejemplo"/>
+		<property name="atributo1Tamano" column="atributo1_Tamano"/>
+		<property name="atributo2Etiqueta" column="atributo2_etiqueta"/>
+		<property name="atributo2Tipo" column="atributo2_tipo"/>
+		<property name="atributo2SrcDato" column="atributo2_src_dato"/>
+		<property name="atributo2Formato" column="atributo2_formato"/>
+		<property name="atributo2FormatoEjemplo" column="atributo2_formato_ejemplo"/>
+		<property name="atributo2Tamano" column="atributo2_Tamano"/>
+		<property name="atributo3Etiqueta" column="atributo3_etiqueta"/>
+		<property name="atributo3Tipo" column="atributo3_tipo"/>
+		<property name="atributo3SrcDato" column="atributo3_src_dato"/>
+		<property name="atributo3Formato" column="atributo3_formato"/>
+		<property name="atributo3FormatoEjemplo" column="atributo3_formato_ejemplo"/>
+		<property name="atributo3Tamano" column="atributo3_Tamano"/>
+		<property name="atributo4Etiqueta" column="atributo4_etiqueta"/>
+		<property name="atributo4Tipo" column="atributo4_tipo"/>
+		<property name="atributo4SrcDato" column="atributo4_src_dato"/>
+		<property name="atributo4Formato" column="atributo4_formato"/>
+		<property name="atributo4FormatoEjemplo" column="atributo4_formato_ejemplo"/>
+		<property name="atributo4Tamano" column="atributo4_Tamano"/>
+		<property name="atributo5Etiqueta" column="atributo5_etiqueta"/>
+		<property name="atributo5Tipo" column="atributo5_tipo"/>
+		<property name="atributo5SrcDato" column="atributo5_src_dato"/>
+		<property name="atributo5Formato" column="atributo5_formato"/>
+		<property name="atributo5FormatoEjemplo" column="atributo5_formato_ejemplo"/>
+		<property name="atributo5Tamano" column="atributo5_Tamano"/>
+		<property name="atributo6Etiqueta" column="atributo6_etiqueta"/>
+		<property name="atributo6Tipo" column="atributo6_tipo"/>
+		<property name="atributo6SrcDato" column="atributo6_src_dato"/>
+		<property name="atributo6Formato" column="atributo6_formato"/>
+		<property name="atributo6FormatoEjemplo" column="atributo6_formato_ejemplo"/>
+		<property name="atributo6Tamano" column="atributo6_Tamano"/>
+		<property name="atributo7Etiqueta" column="atributo7_etiqueta"/>
+		<property name="atributo7Tipo" column="atributo7_tipo"/>
+		<property name="atributo7SrcDato" column="atributo7_src_dato"/>
+		<property name="atributo7Formato" column="atributo7_formato"/>
+		<property name="atributo7FormatoEjemplo" column="atributo7_formato_ejemplo"/>
+		<property name="atributo7Tamano" column="atributo7_Tamano"/>
+		<property name="atributo8Etiqueta" column="atributo8_etiqueta"/>
+		<property name="atributo8Tipo" column="atributo8_tipo"/>
+		<property name="atributo8SrcDato" column="atributo8_src_dato"/>
+		<property name="atributo8Formato" column="atributo8_formato"/>
+		<property name="atributo8FormatoEjemplo" column="atributo8_formato_ejemplo"/>
+		<property name="atributo8Tamano" column="atributo8_Tamano"/>
+		<property name="atributo9Etiqueta" column="atributo9_etiqueta"/>
+		<property name="atributo9Tipo" column="atributo9_tipo"/>
+		<property name="atributo9SrcDato" column="atributo9_src_dato"/>
+		<property name="atributo9Formato" column="atributo9_formato"/>
+		<property name="atributo9FormatoEjemplo" column="atributo9_formato_ejemplo"/>
+		<property name="atributo9Tamano" column="atributo9_Tamano"/>
+		<property name="atributo10Etiqueta" column="atributo10_etiqueta"/>
+		<property name="atributo10Tipo" column="atributo10_tipo"/>
+		<property name="atributo10SrcDato" column="atributo10_src_dato"/>
+		<property name="atributo10Formato" column="atributo10_formato"/>
+		<property name="atributo10FormatoEjemplo" column="atributo10_formato_ejemplo"/>
+		<property name="atributo10Tamano" column="atributo10_Tamano"/>
+		<property name="atributo11Etiqueta" column="atributo11_etiqueta"/>
+		<property name="atributo11Tipo" column="atributo11_tipo"/>
+		<property name="atributo11SrcDato" column="atributo11_src_dato"/>
+		<property name="atributo11Formato" column="atributo11_formato"/>
+		<property name="atributo11FormatoEjemplo" column="atributo11_formato_ejemplo"/>
+		<property name="atributo11Tamano" column="atributo11_Tamano"/>
+		<property name="atributo12Etiqueta" column="atributo12_etiqueta"/>
+		<property name="atributo12Tipo" column="atributo12_tipo"/>
+		<property name="atributo12SrcDato" column="atributo12_src_dato"/>
+		<property name="atributo12Formato" column="atributo12_formato"/>
+		<property name="atributo12FormatoEjemplo" column="atributo12_formato_ejemplo"/>
+		<property name="atributo12Tamano" column="atributo12_Tamano"/>
+		<property name="atributo13Etiqueta" column="atributo13_etiqueta"/>
+		<property name="atributo13Tipo" column="atributo13_tipo"/>
+		<property name="atributo13SrcDato" column="atributo13_src_dato"/>
+		<property name="atributo13Formato" column="atributo13_formato"/>
+		<property name="atributo13FormatoEjemplo" column="atributo13_formato_ejemplo"/>
+		<property name="atributo13Tamano" column="atributo13_Tamano"/>
+		<property name="atributo14Etiqueta" column="atributo14_etiqueta"/>
+		<property name="atributo14Tipo" column="atributo14_tipo"/>
+		<property name="atributo14SrcDato" column="atributo14_src_dato"/>
+		<property name="atributo14Formato" column="atributo14_formato"/>
+		<property name="atributo14FormatoEjemplo" column="atributo14_formato_ejemplo"/>
+		<property name="atributo14Tamano" column="atributo14_Tamano"/>
+		<property name="atributo15Etiqueta" column="atributo15_etiqueta"/>
+		<property name="atributo15Tipo" column="atributo15_tipo"/>
+		<property name="atributo15SrcDato" column="atributo15_src_dato"/>
+		<property name="atributo15Formato" column="atributo15_formato"/>
+		<property name="atributo15FormatoEjemplo" column="atributo15_formato_ejemplo"/>
+		<property name="atributo15Tamano" column="atributo15_Tamano"/>
+		<property name="atributo16Etiqueta" column="atributo16_etiqueta"/>
+		<property name="atributo16Tipo" column="atributo16_tipo"/>
+		<property name="atributo16SrcDato" column="atributo16_src_dato"/>
+		<property name="atributo16Formato" column="atributo16_formato"/>
+		<property name="atributo16FormatoEjemplo" column="atributo16_formato_ejemplo"/>
+		<property name="atributo16Tamano" column="atributo16_Tamano"/>
+		<property name="atributo17Etiqueta" column="atributo17_etiqueta"/>
+		<property name="atributo17Tipo" column="atributo17_tipo"/>
+		<property name="atributo17SrcDato" column="atributo17_src_dato"/>
+		<property name="atributo17Formato" column="atributo17_formato"/>
+		<property name="atributo17FormatoEjemplo" column="atributo17_formato_ejemplo"/>
+		<property name="atributo17Tamano" column="atributo17_Tamano"/>
+		<property name="atributo18Etiqueta" column="atributo18_etiqueta"/>
+		<property name="atributo18Tipo" column="atributo18_tipo"/>
+		<property name="atributo18SrcDato" column="atributo18_src_dato"/>
+		<property name="atributo18Formato" column="atributo18_formato"/>
+		<property name="atributo18FormatoEjemplo" column="atributo18_formato_ejemplo"/>
+		<property name="atributo18Tamano" column="atributo18_Tamano"/>
+		<property name="atributo19Etiqueta" column="atributo19_etiqueta"/>
+		<property name="atributo19Tipo" column="atributo19_tipo"/>
+		<property name="atributo19SrcDato" column="atributo19_src_dato"/>
+		<property name="atributo19Formato" column="atributo19_formato"/>
+		<property name="atributo19FormatoEjemplo" column="atributo19_formato_ejemplo"/>
+		<property name="atributo19Tamano" column="atributo19_Tamano"/>
+		<property name="atributo20Etiqueta" column="atributo20_etiqueta"/>
+		<property name="atributo20Tipo" column="atributo20_tipo"/>
+		<property name="atributo20SrcDato" column="atributo20_src_dato"/>
+		<property name="atributo20Formato" column="atributo20_formato"/>
+		<property name="atributo20FormatoEjemplo" column="atributo20_formato_ejemplo"/>
+		<property name="atributo20Tamano" column="atributo20_Tamano"/>
+	</class>
+
+	<class name="net.giro.plataforma.beans.ConValores" table="de7a4d94446">
+		<id name="id" column="aa"/>
+		<many-to-one name="grupoValorId" column="ai"  class="net.giro.plataforma.beans.ConGrupoValores" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<property name="valor" column="af"/>
+		<property name="tipoCuenta" column="ah"/>
+		<property name="descripcion" column="ag"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="atributo1" column="atributo1"/>
+		<property name="atributo2" column="atributo2"/>
+		<property name="atributo3" column="atributo3"/>
+		<property name="atributo4" column="atributo4"/>
+		<property name="atributo5" column="atributo5"/>
+		<property name="atributo6" column="atributo6"/>
+		<property name="atributo7" column="atributo7"/>
+		<property name="atributo8" column="atributo8"/>
+		<property name="atributo9" column="atributo9"/>
+		<property name="atributo10" column="atributo10"/>
+		<property name="atributo11" column="atributo11"/>
+		<property name="atributo12" column="atributo12"/>
+		<property name="atributo13" column="atributo13"/>
+		<property name="atributo14" column="atributo14"/>
+		<property name="atributo15" column="atributo15"/>
+		<property name="atributo16" column="atributo16"/>
+		<property name="atributo17" column="atributo17"/>
+		<property name="atributo18" column="atributo18"/>
+		<property name="atributo19" column="atributo19"/>
+		<property name="atributo20" column="atributo20"/>
+	</class>
+
+	<class name="net.giro.plataforma.beans.DocumentoDigitalizado" table="e010c5bea9"><!-- !!! -->
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<many-to-one name="tipoDocumento" column="af"  class="net.giro.plataforma.beans.ConValores" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="documento" column="ah"  class="net.giro.plataforma.beans.ConValores" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<property name="tamano" column="ag"/>
+		<property name="extension" column="ai"/>
+		<property name="numero" column="aj"/>
+		<property name="version" column="ak"/>
+	</class>
+
+	<class name="net.giro.plataforma.beans.ExpCondicion" table="ed8491486c">
+		<id name="id" column="aa"/>
+		<property name="nombre" column="af"/>
+		<property name="tipoOp1" column="ah"/>
+		<property name="idOp1" column="ai"/>
+		<property name="tipoCondicion" column="aj"/>
+		<property name="tipoOp2" column="ak"/>
+		<property name="idOp2" column="al"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="modificadoPor" column="ad"/>
+	</class>
+
+	<class name="net.giro.plataforma.beans.ExpOperacion" table="ab59831d09">
+		<id name="id" column="aa"/>
+		<property name="nombre" column="af"/>
+		<property name="tipoOp1" column="ag"/>
+		<property name="idOp1" column="ah"/>
+		<property name="tipoOperacion" column="ai"/>
+		<property name="tipoOp2" column="aj"/>
+		<property name="idOp2" column="ak"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="modificadoPor" column="ad"/>
+	</class>
+
+	<class name="net.giro.plataforma.beans.ExpRegla" table="d24ef34176">
+		<id name="id" column="aa"/>
+		<property name="nombre" column="af"/>
+		<property name="expresion" column="ag"/>
+		<property name="expresionVerdadero" column="ah"/>
+		<property name="expresionFalso" column="ai"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="modificadoPor" column="ad"/>
+	</class>
+
+	<class name="net.giro.plataforma.beans.ExpRequisito" table="exp_requisito">
+		<id name="id" column="id"/>
+		<property name="mensajeError" column="mensaje_error"/>
+		<property name="aplica" column="aplica"/>
+		<many-to-one name="regla" column="regla_id"  class="net.giro.plataforma.beans.ExpRegla" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<property name="fechaCreacion" column="fecha_creacion"/>
+		<property name="fechaModificacion" column="fecha_modificacion"/>
+		<property name="creadoPor" column="creado_por"/>
+		<property name="modificadoPor" column="modificado_por"/>
+	</class>
+
+	<class name="net.giro.plataforma.beans.ExpVariable" table="ab525bfad6">
+		<id name="id" column="aa"/>
+		<property name="nombre" column="af"/>
+		<property name="valor" column="ag"/>
+		<property name="propiedad" column="ah"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="modificadoPor" column="ad"/>
+	</class>
+	
+	<class name="net.giro.plataforma.seguridad.beans.Acceso" table="df3c8761e3a">
+		<id name="id" column="aa"/>
+		<many-to-one name="usuario" column="af" class="net.giro.plataforma.seguridad.beans.Usuario" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<property name="terminal" column="ag"/>
+		<property name="inicio" column="ah"/>
+		<property name="terminacion" column="ai"/>
+		<property name="ipTerminal" column="aj"/>
+		<many-to-one name="canal" column="ak" class="net.giro.plataforma.seguridad.beans.Canal" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="aplicacion" column="al" class="net.giro.plataforma.seguridad.beans.Aplicacion" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+	</class>
+
+    <class name="net.giro.plataforma.seguridad.beans.Canal" table="ead2b0079d">
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="canal" column="af" />
+		<property name="tipoCanal" column="ag" />
+	</class>
+	
+	<class name="net.giro.plataforma.seguridad.beans.Aplicacion" table="a15364ea8cf">
+		<id name="id" column="aa"/>
+		<property name="aplicacion" column="af"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="codigo" column="ag"/>
+		<property name="reportes" column="ah"/>
+		<property name="binarios" column="ai"/>
+		<property name="sql" column="aj"/>
+		<property name="imagenes" column="ak"/>
+	</class>
+
+	<class name="net.giro.plataforma.seguridad.beans.Auditoria" table="bc4cf7985d">
+		<id name="id" column="aa"/>
+		<property name="fechaCreacion" column="ac"/>
+		<many-to-one name="creadoPor" column="ab"  class="net.giro.plataforma.seguridad.beans.Usuario" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="acceso" column="ag"  class="net.giro.plataforma.seguridad.beans.Acceso" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<property name="bean" column="ah"/>
+		<property name="idBean" column="ai"/>
+		<property name="version" column="zz"/>
+	</class>
+
+	<class name="net.giro.plataforma.seguridad.beans.AuditoriaDetalle" table="dd53c9e45c">
+		<id name="id" column="aa"/>
+		<many-to-one name="auditoria" column="af"  class="net.giro.plataforma.seguridad.beans.Auditoria" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<property name="propiedad" column="ag"/>
+		<property name="valorAnterior" column="ah"/>
+		<property name="valorNuevo" column="ai"/>
+		<property name="version" column="zz"/>
+	</class>
+
+	<class name="net.giro.plataforma.seguridad.beans.CampoAutorizacion" table="a95e80b1a7">
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="autorizo" column="ag"/>
+		<property name="usuarioId" column="ah"/>
+		<property name="expirado" column="ai"/>
+		<property name="autorizacionUnica" column="aj"/>
+		<property name="fechaIni" column="ak"/>
+		<property name="fechaFin" column="al"/>
+	</class>
+
+	<class name="net.giro.plataforma.seguridad.beans.CampoGrupo" table="c262cb80c1">
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="grupo" column="af"/>
+		<property name="mostrar" column="ag"/>
+	</class>
+
+	<class name="net.giro.plataforma.seguridad.beans.CampoTabla" table="b7c02b6b2c">
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<many-to-one name="tabla" column="af"  class="net.giro.plataforma.beans.ConValores" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<property name="campo" column="ag"/>
+		<property name="validar" column="ah"/>
+	</class>
+
+	<class name="net.giro.plataforma.seguridad.beans.CampoTablaGrupo" table="a64fff9bf8">
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<many-to-one name="tabla" column="af"  class="net.giro.plataforma.seguridad.beans.CampoTabla" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="grupo" column="ag"  class="net.giro.plataforma.seguridad.beans.CampoGrupo" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="autorizacion" column="ah"  class="net.giro.plataforma.seguridad.beans.CampoAutorizacion" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+	</class>
+
+	<class name="net.giro.plataforma.seguridad.beans.Menu" table="aa5f83359c8">
+		<id name="id" column="aa"/>
+		<many-to-one name="aplicaciones" column="ah"  class="net.giro.plataforma.seguridad.beans.Aplicacion" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<property name="menu" column="af"/>
+		<property name="descripcion" column="ag"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+	</class>
+
+	<class name="net.giro.plataforma.seguridad.beans.MenuFuncion" table="ce97a8b6460">
+		<id name="id" column="aa"/>
+		<many-to-one name="menu" column="ak"  class="net.giro.plataforma.seguridad.beans.Menu" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<property name="promptId" column="af"/>
+		<property name="prompt" column="ag"/>
+		<property name="tipoAccion" column="ah"/>
+		<property name="tipoId" column="ai"/>
+		<property name="descripcion" column="aj"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+	</class>
+	
+	<class name="net.giro.plataforma.seguridad.beans.Funcion" table="f9e8e882aa8">
+		<id name="id" column="aa"/>
+		<property name="nombre" column="af"/>
+		<property name="descripcion" column="ag"/>
+		<property name="forma" column="ah"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="icono" column="ai"/>
+		<property name="parametros" column="ak"/>
+		<property name="version" column="version"/>
+		<many-to-one name="aplicacion" column="aj"  class="net.giro.plataforma.seguridad.beans.Aplicacion" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+	</class>
+
+	<class name="net.giro.plataforma.seguridad.beans.NivelPerfil" table="aeb38b5f91">
+		<id name="id" column="aa"/>
+		<property name="valor" column="af"/>
+		<property name="descripcion" column="ag"/>
+		<property name="prioridad" column="ah"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+	</class>
+
+	<class name="net.giro.plataforma.seguridad.beans.Perfil" table="d7729f32ba7">
+		<id name="id" column="aa"/>
+		<property name="perfil" column="af"/>
+		<property name="nivelPerfil" column="ag"/>
+		<property name="descripcion" column="ai"/>
+		<property name="tipoComponente" column="aq"/>
+		<property name="componenteSrc" column="ar"/>
+		<property name="validoDesde" column="an"/>
+		<property name="validoHasta" column="ao"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<many-to-one name="aplicacion" column="ap"  class="net.giro.plataforma.seguridad.beans.Aplicacion" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+	</class>
+
+	<class name="net.giro.plataforma.seguridad.beans.PerfilAcceso" table="d2286f84c8">
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="perfilAcceso" column="af"/>
+	</class>
+
+	<class name="net.giro.plataforma.seguridad.beans.PerfilAccesoDetalle" table="ca77b3319a">
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<many-to-one name="perfilAcceso" column="af"  class="net.giro.plataforma.seguridad.beans.PerfilAcceso" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<property name="tipoPerfil" column="ag"/>
+		<property name="valorPerfil" column="ah"/>
+	</class>
+
+	<class name="net.giro.plataforma.seguridad.beans.PerfilValor" table="b761110ccfe">
+		<id name="id" column="aa"/>
+		<many-to-one name="perfil" column="af"  class="net.giro.plataforma.seguridad.beans.Perfil" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<property name="nivel" column="ag"/>
+		<property name="valorNivel" column="ah"/>
+		<property name="valorPerfil" column="ai"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+	</class>
+	
+	<class name="net.giro.plataforma.seguridad.beans.Responsabilidad" table="f6b18386375">
+		<id name="id" column="aa"/>
+		<property name="responsabilidad" column="af"/>
+		<property name="descripcion" column="ag"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="grupoReporteId" column="ai"/>
+		<many-to-one name="menu" column="ah"  class="net.giro.plataforma.seguridad.beans.Menu" lazy="false"  fetch="join" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="aplicacion" column="aj"  class="net.giro.plataforma.seguridad.beans.Aplicacion" lazy="false"  fetch="join" insert="true" update="true" not-found="ignore"/>
+	</class>
+	
+	<class name="net.giro.plataforma.seguridad.beans.UsuarioResponsabilidad" table="b2a12997b2b">
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="fechaIni" column="ah"/>
+		<property name="fechaTerm" column="ai"/>
+		<many-to-one name="usuario" column="af"  class="net.giro.plataforma.seguridad.beans.Usuario" fetch="join" insert="true" lazy="false" update="true" not-found="ignore"/>
+		<many-to-one name="responsabilidad" column="ag"  class="net.giro.plataforma.seguridad.beans.Responsabilidad" fetch="join" lazy="false" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="perfilAcceso" column="aj"  class="net.giro.plataforma.seguridad.beans.PerfilAcceso" fetch="join" insert="true" lazy="false" update="true" not-found="ignore"/>
+	</class>
+
+	<class name="net.giro.plataforma.seguridad.beans.Usuario" table="dc8deac2731">
+		<id name="id" column="aa"/>
+		<property name="usuario" column="af"/>
+		<property name="nombre" column="ag"/>
+		<property name="puesto" column="ah"/>
+		<property name="password" column="ai"/>
+		<property name="fechaInicio" column="aj"/>
+		<property name="fechaTerminacion" column="ak"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="expirado" column="al"/>
+		<property name="fechaCambio" column="ao"/>
+		<property name="bloqueado" column="ap"/>
+		<property name="ultimoAcceso" column="aq"/>
+		<property name="usuarioSpark" column="ar"/>
+		<property name="version" column="version"/>
+		<property name="correo" column="an"/>
+		<property name="correoClave" column="email_clave"/>
+		<property name="idEmpleado" column="am"/>
+	</class>
+
+	<class name="net.giro.plataforma.ubicacion.beans.Colonia" table="aebeC25af3">
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="nombre" column="af"/>
+		<many-to-one name="localidad" column="ag"  class="net.giro.plataforma.ubicacion.beans.Localidad" lazy="false" insert="true" update="true" not-found="ignore"/>
+		<property name="cp" column="ah"/>
+	</class>
+
+	<class name="net.giro.plataforma.ubicacion.beans.Estado" table="bc3400dd42">
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="nombre" column="af"/>
+		<property name="regpob1" column="ag"/>
+		<property name="regpob2" column="ah"/>
+		<property name="regpob3" column="ai"/>
+		<property name="abreviatura" column="aj"/>
+		<property name="curp" column="ak"/>
+		<many-to-one name="zonaEconomica" column="al"  class="net.giro.plataforma.beans.ConValores" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+	</class>
+
+	<class name="net.giro.plataforma.ubicacion.beans.Localidad" table="a810505fff">
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="nombre" column="af"/>
+		<many-to-one name="municipio" column="ag"  class="net.giro.plataforma.ubicacion.beans.Municipio" lazy="false" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="zona" column="ah"  class="net.giro.plataforma.beans.ConValores" lazy="false" insert="true" update="true" not-found="ignore"/>
+		<property name="regpob1" column="ai"/>
+		<property name="regpob2" column="aj"/>
+		<property name="regpob3" column="ak"/>
+		<property name="habitantes" column="al"/>
+		<property name="lada" column="am"/>
+		<property name="indiceMarginalidad" column="an"/>
+		<property name="gradoMarginalidad" column="ao"/>
+	</class>
+
+	<class name="net.giro.plataforma.ubicacion.beans.Municipio" table="f724d6e190">
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="nombre" column="af"/>
+		<many-to-one name="estado" column="ag"  class="net.giro.plataforma.ubicacion.beans.Estado" lazy="false" insert="true" update="true" not-found="ignore"/>
+		<property name="regpob1" column="ah"/>
+		<property name="regpob2" column="ai"/>
+		<property name="regpob3" column="aj"/>
+	</class>
+
+	<class name="net.giro.ne.beans.Regiones" table="b48880f4f7">
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="region" column="af"/>
+	</class>
+	
+	<class name="net.giro.plataforma.beans.SubfamiliaImpuestos" table="subfamilia_impuestos">
+		<id column="id" name="id"/>
+		<property column="id_subfamilia" name="idSubfamilia" />
+		<property column="desc_subfamilia" name="descSubfamilia" />
+		<property column="id_impuesto" name="idImpuesto" />
+		<property column="desc_impuesto" name="descImpuesto" />
+		<property column="porcentaje" name="porcentaje"/>
+		<property column="aplica_en" name="aplicaEn"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.plataforma.beans.ImpuestoEquivalencia" table="impuesto_equivalencia">
+		<id name="id" column="id" />
+		<property name="codigoTransaccion" column="codigo_transaccion" />
+		<many-to-one name="idImpuestoOrigen" column="id_impuesto_origen" class="net.giro.plataforma.beans.ConValores" lazy="false" insert="false" update="false" not-found="ignore"/>
+		<!--property name="idImpuestoOrigen" column="id_impuesto_origen" /-->
+		<many-to-one name="idImpuestoDestino" column="id_impuesto_destino" class="net.giro.plataforma.beans.ConValores" lazy="false" insert="false" update="false" not-found="ignore"/>
+		<!--property name="idImpuestoDestino" column="id_impuesto_destino" /-->
+		<property name="creadoPor" column="creado_por" />
+		<property name="fechaCreacion" column="fecha_creacion" />
+		<property name="modificadoPor" column="modificado_por" />
+		<property name="fechaModificacion" column="fecha_modificacion" />
+	</class>
+	
+	<class name="net.giro.plataforma.beans.InventariosExcluidos" table="inventarios_excluidos">
+		<id name="id" column="id" />
+		<property name="idAlmacen" column="id_almacen" />
+		<many-to-one name="idTarget" column="id_target" class="net.giro.plataforma.beans.ConValores" lazy="false" insert="false" update="false" not-found="ignore"/>
+		<!--property name="idTarget" column="id_target" /-->
+		<property name="tipo" column="tipo" />
+		<property name="caducidad" column="caducidad" />
+		<property name="fechaDesde" column="fecha_desde" />
+		<property name="fechaHasta" column="fecha_hasta" />
+		<property name="estatus" column="estatus" />
+		<property name="creadoPor" column="creado_por" />
+		<property name="fechaCreacion" column="fecha_creacion" />
+		<property name="modificadoPor" column="modificado_por" />
+		<property name="fechaModificacion" column="fecha_modificacion" />
+	</class>
+
+	<!-- SIN USO -->
+	<!--
+	<class name="net.giro.ne.beans.Moneda" table="ae4654e72a" >
+		<id name="id" column="aa"/>
+		<property name="nombre" column="af"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="abreviacion" column="ag"/>
+		<property name="atributo1" column="ah"/>
+		<property name="atributo2" column="ai"/>
+		<property name="atributo3" column="aj"/>
+		<property name="atributo4" column="ak"/>
+		<property name="atributo5" column="al"/>
+	</class>
+
+	<class name="net.giro.ne.beans.MonedaValor" table="e517b88987" >
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<many-to-one name="monedaBase" column="ai"  class="net.giro.ne.beans.Moneda" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<many-to-one name="monedaDestino" column="aj"  class="net.giro.ne.beans.Moneda" lazy="false" fetch="join" insert="true" update="true" not-found="ignore"/>
+		<property name="desde" column="ag"/>
+		<property name="hasta" column="ah"/>
+		<property name="valor" column="af"/>
+	</class>
+	-->
+</hibernate-mapping>

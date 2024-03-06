@@ -1,0 +1,109 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlDomicilio" autosized="true" domElementAttachment="form" top="20"
+    	onshow="document.getElementById('#{rich:clientId('itemDom1')}').focus();"
+    	header="#{msg['domicilio']}">
+		<!--f:facet name="header">
+			<h:outputText value="#{msg['domicilio']}" styleClass="Titulo"/>
+		</f:facet-->
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlDomicilio')}.hide()"/>
+		</f:facet>
+
+		<h:panelGroup style="display: block; width:100%; height:22px; margin-bottom:1em;">
+			<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">	
+				<h:panelGroup style="vertical-align: middle; position:relative;">
+					<a4j:commandButton id="cmdSalvarDomicilio" style="vertical-align: middle; margin-right:5px; cursor: pointer;"
+						image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+						action="#{almacenAction.guardarDomicilio}"
+						oncomplete="salvarDomicilio(#{almacenAction.band}, '#{rich:clientId('pnlDomicilio')}', '#{rich:clientId('pnlMensajes')}');"
+						render="cmdSeleccionarDomicilio,pnlMensajes" 
+						limitRender="true" />
+				</h:panelGroup>
+			</h:panelGrid> 
+		</h:panelGroup>
+			
+		<h:panelGroup styleClass="encabezado">
+			<h:outputText value="#{almacenAction.pojoAlmacen.id != null ? almacenAction.pojoAlmacen.id : '0'} "/>
+			<h:outputText value="#{almacenAction.pojoAlmacen.nombre}"/>
+		</h:panelGroup>
+			
+		<h:panelGroup style="display:none; width:100%;" rendered="false">
+			<h:outputLabel for="cbDomPrincipal" value="#{msg['principal']}" styleClass="Titulo" style="float:right; margin-right:15px; vertical-align:center;"/>
+			<h:selectBooleanCheckbox id="cbDomPrincipal" value="#{almacenAction.pojoDomicilio.principal}" style="float:right; margin-right:2px;"/>
+			<h:outputLabel for="cbDomActivo" value="#{msg['activo']}" styleClass="Titulo" style="float:right; margin-right:10px; vertical-align:center;" />
+			<h:selectBooleanCheckbox id="cbDomActivo" value="#{almacenAction.pojoDomicilio.estatus}" style="float:right; margin-right:2px;"/>
+		</h:panelGroup>
+		
+		<h:panelGrid id="grpDomiDom0" columns="3" width="100%" columnClasses="colTituloDom, colDato, colDato">
+			<h:outputText value="#{msg['ubicacion']}1:" styleClass="Titulo"/>
+			<h:selectOneMenu value="#{almacenAction.idDom1}" styleClass="Titulo" style="width:100%;">
+				<f:selectItems value="#{almacenAction.listCatDomicilios1}" />
+			</h:selectOneMenu>
+			<h:inputText id="itemDom1" value="#{almacenAction.pojoDomicilio.descripcionDomicilio1}" style="width:400px;"/>
+			
+			<h:outputText value="#{msg['ubicacion']}2:"  styleClass="Titulo"/>
+			<h:selectOneMenu value="#{almacenAction.idDom2}" styleClass="Titulo" style="width:100%;">
+				<f:selectItems value="#{almacenAction.listCatDomicilios1 }" />
+			</h:selectOneMenu> 
+			<h:inputText value="#{almacenAction.pojoDomicilio.descripcionDomicilio2}" style="width:400px;"/>
+			
+			<h:outputText value="#{msg['ubicacion']}3:"  styleClass="Titulo"/>
+			<h:selectOneMenu value="#{almacenAction.idDom3}" styleClass="Titulo" style="width:100%;">
+				<f:selectItems value="#{almacenAction.listCatDomicilios1}" />
+			</h:selectOneMenu>
+			<h:inputText value="#{almacenAction.pojoDomicilio.descripcionDomicilio3}" style="width:400px;"/>
+			
+			<h:outputText value="#{msg['ubicacion']}4:"  styleClass="Titulo"/>
+			<h:selectOneMenu value="#{almacenAction.idDom4}" styleClass="Titulo" style="width:100%;">
+				<f:selectItems value="#{almacenAction.listCatDomicilios2}" />
+			</h:selectOneMenu>
+			<h:inputText value="#{almacenAction.pojoDomicilio.descripcionDomicilio4}" style="width:100px;"/>
+			
+			<h:outputText value="#{msg['ubicacion']}5:"  styleClass="Titulo"/>
+			<h:selectOneMenu value="#{almacenAction.idDom5}" styleClass="Titulo" style="width:100%;">
+				<f:selectItems value="#{almacenAction.listCatDomicilios2}" />
+			</h:selectOneMenu> 
+			<h:inputText value="#{almacenAction.pojoDomicilio.descripcionDomicilio5}" style="width:100px;"/>
+		</h:panelGrid>
+		 
+		<h:panelGrid id="grpDomiDom" columns="2" columnClasses="colTituloDom, colDato" width="100%">
+			<h:outputText value="#{msg['estado']}:"  styleClass="Titulo"/>
+			<h:selectOneMenu value="#{almacenAction.idEstadoDom}" styleClass="Titulo" disabled="#{!almacenAction.puedeEditar}" style="width:130px;">
+				<f:selectItems value="#{almacenAction.listEstado}"/>
+				<a4j:ajax event="change" 
+					listener="#{almacenAction.cambioEstadoDom}" 
+					render="cmdLnkMunicipioDom,cmdLnkLocalidadDom,cmdLnkColonia"/>
+			</h:selectOneMenu>
+			
+			<h:outputText value="#{msg['municipio']}:"  styleClass="Titulo"/>
+			<a4j:commandLink id="cmdLnkMunicipioDom" 
+				value="#{almacenAction.pojoMunicipio != null ? almacenAction.pojoMunicipio.nombre : 'Seleccionar'}" 
+				oncomplete="#{rich:component('pnlMunicipios')}.show()" style="font-weight: bold;" 
+				render="pnlMunicipios">
+			</a4j:commandLink>
+			
+			<h:outputText value="#{msg['localidad']}:" styleClass="Titulo"/>
+			<a4j:commandLink id="cmdLnkLocalidadDom" 
+				value="#{almacenAction.pojoLocalidad != null ? almacenAction.pojoLocalidad.nombre : 'Seleccionar'}" 
+				oncomplete="#{rich:component('pnlLocalidades')}.show()" style="font-weight: bold;" 
+				render="pnlLocalidades">
+			</a4j:commandLink>
+			
+			<h:outputText value="#{msg['colonia']}:"  styleClass="Titulo"/>
+			<a4j:commandLink id="cmdLnkColonia" 
+				value="#{almacenAction.pojoColonia != null ? almacenAction.pojoColonia.nombre : 'Seleccionar'}" 
+				oncomplete="#{rich:component('pnlColonias')}.show()" style="font-weight: bold;" 
+				render="pnlColonias"/>
+		</h:panelGrid>
+	 </rich:popupPanel>
+</ui:composition>

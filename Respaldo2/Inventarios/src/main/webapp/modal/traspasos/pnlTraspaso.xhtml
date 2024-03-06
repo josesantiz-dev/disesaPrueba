@@ -1,0 +1,224 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlTraspaso" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+		<f:facet name="header">
+			<h:outputText id="lblTitulo" value="#{msg['traspasosEntreAlmacen']}" styleClass="Titulo" style="margin-left:10px" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlTraspaso')}.hide()" />
+		</f:facet>
+		
+		<h:panelGrid id="botonera" columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+			<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+				<h:selectOneMenu id="cboTipoTraspasos" style="width:316px;"
+					disabled="#{!traspasosAction.puedeEditar}"
+					value="#{traspasosAction.tipoTraspaso}">
+					<f:selectItems value="#{traspasosAction.listTiposTraspasos}" />
+					<a4j:ajax event="change"
+						listener="#{traspasosAction.filtrarAlmacenesOrigen}"
+						render="gDatosGrales"
+						limitRender="true" />
+				</h:selectOneMenu>
+				
+				<rich:messages id="validadorTraspasos" rendered="#{true}" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" /></f:facet>
+				</rich:messages>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoBotonesDerechos" style="text-align:right; width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdSalvar" style="float:right; margin-left: 5px; vertical-align:top; position:relative;"
+					image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+					rendered="#{traspasosAction.puedeEditar}"
+					onclick="#{rich:element('cmdSalvar')}.disabled = true;" 
+					action="#{traspasosAction.guardar}" 
+					oncomplete="#{rich:element('cmdSalvar')}.disabled = false; salvar(#{traspasosAction.band}, '#{rich:clientId('pnlTraspaso')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorTraspasos')})"
+					render="validadorTraspasos,dtTraspasos,pnlMensajes"
+					limitRender="true" />
+				
+				<a4j:commandButton id="cmdImprimir" style="float:right; margin-left: 5px; vertical-align:top; position:relative;"
+					image="#{msg['imprimir22.img']}" title="#{msg['imprimir.e']}"
+					rendered="#{! traspasosAction.puedeEditar}"
+					onclick="#{rich:element('cmdImprimir')}.disabled = true;" 
+					action="#{traspasosAction.reporte}" 
+					oncomplete="#{rich:element('cmdImprimir')}.disabled = false; reporte(#{traspasosAction.band}, '#{rich:clientId('pnlMensajes')}')"
+					render="pnlMensajes"
+					limitRender="true" />
+				
+				<h:panelGroup rendered="#{traspasosAction.traspasoEstatus >= 0}" style="float:right; margin:0 5px;">
+					<h:outputText styleClass="Titulo" style="background-color:red; color:white; padding:5px;"
+						rendered="#{traspasosAction.traspasoEstatus == 0}" 
+						value="#{msg['traspaso.transito']}" title="#{msg['estatus']}" />
+					<h:outputText styleClass="Titulo"  style="background-color:orange; color:white; padding:5px;"
+						rendered="#{traspasosAction.traspasoEstatus == 1}" 
+						value="#{msg['traspaso.incompleto']}" title="#{msg['estatus']}" />
+					<h:outputText styleClass="Titulo"  style="background-color:green; color:white; padding:5px;"
+						rendered="#{traspasosAction.traspasoEstatus == 2}" 
+						value="#{msg['traspaso.completo']}" title="#{msg['estatus']}" />
+				</h:panelGroup>
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<h:panelGroup id="grupoDatos">
+			<fieldset style="margin:10px auto 0;">
+				<legend><h:outputLabel value="#{msg['datosGenerales']}" /></legend>
+				
+				<h:panelGrid id="gDatosGrales" columns="4" columnClasses="colTitulo,colDato,colTitulo,colDato" style="width:100%; margin:0 auto; text-align:left;">
+					<h:outputText value="#{msg['fecha']}:" styleClass="Titulo" />
+		            <rich:calendar enableManualInput="false" datePattern="dd-MMM-yyyy" 
+		            	disabled="#{!traspasosAction.puedeEditar}"
+		            	value="#{traspasosAction.fecha}" 
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}"
+						requiredMessage="#{msg['fecha']} #{msg['mensaje.error.requerido']}" />
+		            
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+		            
+		            <h:outputText value="#{msg['almacenOrigen']}:" styleClass="Titulo"/>
+					<h:selectOneMenu id="cboAlmacenOrigen" style="width:316px;"
+						disabled="#{!traspasosAction.puedeEditar}"
+						value="#{traspasosAction.idAlmacenSalida}"
+		            	required="#{!empty param[rich:clientId('cmdSalvar')] || !empty param[rich:clientId('cmdAgregarProducto')]}"
+						requiredMessage="#{msg['almacenOrigen']} #{msg['mensaje.error.requerido']}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{traspasosAction.listaCboAlmacenSalida}" />
+						<a4j:ajax event="change"
+							listener="#{traspasosAction.filtrarAlmacenesDestino}"
+							execute="@this"
+							oncomplete="validaCambioAlmacen(#{traspasosAction.cantidadProductoDetalles}, '#{rich:clientId('pnlAvisoCambioAlmacen')}', #{traspasosAction.almacenAnterior} );" 
+							render="cbEmpleadosEntrega,cbAlmacenDestino"
+							limitRender="true" />
+					</h:selectOneMenu>
+					
+		            <h:outputText value="#{msg['entrega']}:" styleClass="Titulo" />
+					<h:selectOneMenu id="cbEmpleadosEntrega" style="width:316px;" 
+						disabled="#{!traspasosAction.puedeEditar}"
+						value="#{traspasosAction.idEmpleadoEntrega}"
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}"
+						requiredMessage="#{msg['entrega']} #{msg['mensaje.error.requerido']}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{traspasosAction.listaCboEmpleadoEntrega}" />
+					</h:selectOneMenu>
+					
+		            <h:outputText value="#{msg['almacenDestino']}:" styleClass="Titulo"/>
+					<h:selectOneMenu id="cbAlmacenDestino" style="width:316px;" 
+						disabled="#{!traspasosAction.puedeEditar}"
+						value="#{traspasosAction.idAlmacenDestino}"
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}"
+						requiredMessage="#{msg['almacenDestino']} #{msg['mensaje.error.requerido']}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{traspasosAction.listaCboAlmacenDestino}" /> 
+						<a4j:ajax event="change"
+							listener="#{traspasosAction.seleccionaEncargado}"
+							render="cbEmpleadosRecibe"
+							limitRender="true" />
+					</h:selectOneMenu>
+					
+		            <h:outputText value="#{msg['recibe']}:" styleClass="Titulo" />
+					<h:selectOneMenu id="cbEmpleadosRecibe" style="width:316px;" 
+						disabled="#{!traspasosAction.puedeEditar}"
+						value="#{traspasosAction.idEmpleadoRecibe}"
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}"
+						requiredMessage="#{msg['recibe']} #{msg['mensaje.error.requerido']}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{traspasosAction.listaCboEmpleadoRecibe}" /> 
+					</h:selectOneMenu>
+				</h:panelGrid>
+			</fieldset>
+		</h:panelGroup>
+		
+		<h:panelGroup id="grupoDetalles">
+			<fieldset style="margin:10px auto 0;">
+				<legend><h:outputLabel value="#{msg['productos']}" /></legend>
+				
+				<a4j:commandButton id="cmdAgregarProducto" style="float:right; vertical-align: middle; cursor: pointer; margin: 0 5px 10px 0;" 
+					image="#{msg['agregar22.img']}" title="#{msg['agregar.e']} #{msg['producto']}"
+					rendered="#{traspasosAction.puedeEditar}"
+					action="#{traspasosAction.validaCabeceraTraspaso}"
+					oncomplete="validaCabeceraTraspaso(#{traspasosAction.band}, '#{rich:clientId('pnlBusquedaProductos')}', '#{rich:clientId('pnlMensajes')}');"
+					render="validadorTraspasos,pnlBusquedaProductos,pnlMensajes"
+					execute="@this"
+					limitRender="true" />
+					
+				<rich:dataTable id="dtDetalles" value="#{traspasosAction.listaTraspasoDetalleGrid}" var="var" iterationStatusVar="it"
+					cellpadding="0" cellspacing="0" rows="12"  border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" style="margin:10px auto 0; width: 100%;">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column style="text-align:center; width:70px;" styleClass="Titulo">
+								<h:outputText value="#{msg['id']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:70px;" styleClass="Titulo">
+								<h:outputText value="#{msg['clave']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; min-width:200px;" styleClass="Titulo">
+								<h:outputText value="#{msg['descripcion']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:60px;" styleClass="Titulo">
+								<h:outputText value="#{msg['productos.um']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:60px;" styleClass="Titulo">
+								<h:outputText value="#{msg['existencia']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:60px;" styleClass="Titulo">
+								<h:outputText value="#{msg['cantidad']}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+	
+					<rich:column style="text-align:center; width:70px;">
+						<h:outputText value="#{var.idProducto.id}"/>
+					</rich:column>
+	
+					<rich:column style="text-align:center; width:70px;">
+						<h:outputText value="#{var.idProducto.clave}"/>
+					</rich:column>
+					
+					<rich:column style="text-align:left; padding:5px; min-width:200px;">
+						<h:outputText value="#{var.idProducto.descripcion}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; padding:5px; width:60px;">
+						<h:outputText value="#{var.idProducto.unidadMedida.valor}"/>
+					</rich:column>
+					
+					<rich:column style="text-align:right; padding:5px; width:60px;">
+						<h:outputText value="#{var.idProducto.existencia}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; width:60px;">
+						<h:outputText value="#{var.cantidad}" rendered="#{!traspasosAction.puedeEditar}" />
+						<h:inputText id="txtCantidadProducto" style="text-align:right; width:60px;"
+							rendered="#{traspasosAction.puedeEditar}"
+							value="#{var.cantidad}"
+					    	onkeypress="return soloDecimales(event, this.value, 10, 2);">
+							<a4j:ajax event="blur" 
+								listener="#{traspasosAction.validaCantidadProducto}" 
+								oncomplete="validaCantidadProducto(#{var.cantidad}, #{traspasosAction.cantidadProductoSeleccionado}, '#{rich:clientId('pnlAvisoCantidad')}', '#{rich:clientId('pnlAvisoCantidadCero')}');" />
+							<f:attribute name="currentIndex" value="#{it.index}" /> 
+						</h:inputText>
+					</rich:column>
+					
+					<f:facet name="footer">
+						<rich:dataScroller id="dScrollTraspasoDetalles" for="dtDetalles" page="#{traspasosAction.pagDetalles}" 
+							align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</fieldset>
+		</h:panelGroup>
+		
+		<a4j:log rendered="false" />
+	</rich:popupPanel>
+</ui:composition>

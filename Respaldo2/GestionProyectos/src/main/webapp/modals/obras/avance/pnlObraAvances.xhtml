@@ -1,0 +1,163 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <h:outputStylesheet>
+        .everyThirdDay {
+            background-color: gray;
+        }
+    </h:outputStylesheet>
+    
+    <h:outputScript>
+        var curDt = new Date();
+         
+        function disablementFunction(day) {
+            if (curDt == undefined)
+                curDt = day.date.getDate();
+            return (curDt.getTime() &lt; day.date.getTime());
+        }
+ 
+        function disabledClassesProv(day){
+            var res = '';
+            
+            if (curDt.getTime() - day.date.getTime() &gt;= 0) 
+            	return 'rf-cal-boundary-day';
+            if (curDt == undefined)
+                curDt = day.date.getDate();
+            if (curDt.day &lt; day.day) 
+            	res += 'everyThirdDay';
+            return res;
+        }
+    </h:outputScript>
+    
+    <rich:popupPanel id="pnlObraAvances" autosized="true" domElementAttachment="form" style="min-width:500px; max-width:1024px;" top="20">
+    	<f:facet name="header">
+			<h:outputText value="#{msg['avancesDeObra']}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlObraAvances')}.hide()" />
+		</f:facet>
+		
+		<h:panelGrid id="botonera" columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+			<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+				<rich:messages id="msgErrorObraAvance" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+				</rich:messages>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdSalvarObraAvance" style="float:right; margin-left: 5px; vertical-align:top; position:relative;" 
+					image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+					action="#{avanceAction.guardar}"
+					oncomplete="salvar(#{avanceAction.operacion}, '#{rich:clientId('pnlObraAvances')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrorObraAvance')})"
+					render="pnlMensajes, msgErrorObraAvance"
+					limitRender="true" />
+			</h:panelGroup>
+		</h:panelGrid>
+
+		<div style="margin:10px auto 0;">
+			<h:panelGroup styleClass="encabezado" style="min-height: 1em;">
+				<h:outputText value="#{avanceAction.pojoObra.id != null ? avanceAction.pojoObra.id : '0'} "/>
+				<h:outputText value="#{avanceAction.pojoObra.nombre}" />
+			</h:panelGroup>
+		
+			<h:panelGroup id="divAgregarObraAvance">
+				<fieldset>
+					<legend><h:outputText value="#{msg['agregar.e']}" styleClass="Titulo" /></legend>
+					
+					<a4j:region>
+						<h:panelGrid columns="4" columnClasses="colTitulo, colDato, colTitulo, colDato">
+							<h:outputText value="#{msg['fecha']}:" />
+							<rich:calendar id="txtObraAvanceFecha" enableManualInput="true" datePattern="dd/MMM/yyyy"
+								dayDisableFunction="disablementFunction" dayClassFunction="disabledClassesProv" boundaryDatesMode="scroll"
+								value="#{avanceAction.pojoObraAvance.fecha}"
+								required="#{!empty param[rich:clientId('cmdAgregarObraAvance')]}" 
+								requiredMessage="#{msg['fecha']} #{msg['mensaje.error.requerido']}" />
+							
+							<h:outputText value="#{msg['avance']}:" />
+							<h:outputText value="#{avanceAction.avance} %" />
+												
+							<h:outputText value="#{msg['%']} #{msg['avanceObra']}:" />
+							<h:panelGroup>
+								<h:inputText id="txtObraAvancePorcentaje" style="width: 50px; text-align: right"
+									value="#{avanceAction.pojoObraAvance.porcentaje}"
+									onkeydown="return soloNumeros(event);"
+									required="#{!empty param[rich:clientId('cmdAgregarObraAvance')]}" 
+									requiredMessage="#{msg['%']} #{msg['avanceObra']} #{msg['mensaje.error.requerido']}"
+									validatorMessage="#{msg['%']} #{msg['avanceObra']}: #{msg['mensaje.validacion.valorCeroCien']}">
+									<f:convertNumber pattern="###,###,##0" for="txtObraAvancePorcentaje" />
+									<f:validateLongRange minimum="0" maximum="100" for="txtObraAvancePorcentaje" />
+									<a4j:ajax event="change" execute="@this" render="txtObraAvancePorcentaje" immediate="true" limitRender="true" />
+								</h:inputText>
+								
+								<a4j:commandButton id="cmdAgregarObraAvance" style="margin:0 5px; vertical-align: middle; cursor: pointer;" 
+									image="#{msg['agregar22.img']}" title="#{msg['agregar.e']}"
+									action="#{avanceAction.agregar}"
+									oncomplete="agregar(#{avanceAction.operacion}, '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrorObraAvance')})"
+									render="pnlMensajes, msgErrorObraAvance, divAgregarObraAvance, dtObraAvances"
+									limitRender="true"
+									execute="@region" />
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['restante']}:" /> 
+							<h:outputText value="#{avanceAction.restante} %" />
+						</h:panelGrid>
+					</a4j:region>
+				</fieldset>
+			</h:panelGroup>
+
+			<fieldset style="margin: 10px 0 0;">
+				<legend><h:outputText value="#{msg['porcentajesAvance']}" styleClass="Titulo" /></legend>
+				
+				<div style="margin:0 auto; width:300px;">
+					<rich:dataTable id="dtObraAvances" value="#{avanceAction.listObraAvances}" var="var" style="margin:0 auto;"
+						cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+						<f:facet name="header">
+							<rich:columnGroup>
+								<rich:column style="width:80px; text-align:center;" styleClass="Titulo">
+									<h:outputText value="#{msg['fecha']}" />
+								</rich:column>
+								
+								<rich:column style="width:50px; text-align:center;" styleClass="Titulo">
+									<h:outputText value="#{msg['porcentaje']}" />
+								</rich:column>
+		
+								<rich:column style="width:20px; text-align:center;" styleClass="Titulo" />
+							</rich:columnGroup>
+						</f:facet>
+						
+						<rich:column styleClass="Descripcion" style="width:80px; text-align:center;">
+							<h:outputText value="#{var.fecha}"><f:convertDateTime type="date" pattern="dd-MMM-yyyy" /></h:outputText>
+						</rich:column>
+						
+						<rich:column styleClass="Descripcion" style="width:50px; text-align:center; padding:5px;">
+							<h:outputText value="#{var.porcentaje}"><f:convertNumber pattern="###,###,##0" /></h:outputText>
+						</rich:column>
+						
+						<rich:column style="width:20px; text-align:center;" styleClass="Descripcion">
+						   	<a4j:commandButton id="cmdBorrarObraAvance" 
+						   		image="#{msg['eliminar16.img']}" title="#{msg['eliminar']}"
+								oncomplete="#{rich:component('pnlEliminar')}.show()" 
+								render="pnlEliminar"
+								limitRender="true">
+								<f:setPropertyActionListener target="#{avanceAction.pojoObraAvanceBorrar}" value="#{var}" for="cmdBorrarObraAvance" />
+						   	</a4j:commandButton>
+						</rich:column>
+		
+						<f:facet name="footer">
+							<rich:dataScroller id="dScrollObraAvances" for="dtObraAvances" page="#{avanceAction.paginaObraAvance}" 
+								align="center" ajaxSingle="true" maxPages="10" fastStep="10" styleClass="Titulo" />
+						</f:facet>
+					</rich:dataTable>
+				</div>
+			</fieldset>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

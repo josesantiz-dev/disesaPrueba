@@ -1,0 +1,139 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    <p/>
+    <ui:define name="title">
+		<h:outputText value="Puestos Categorias"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" image="#{msg['buscar22.img']}" styleClass="Titulo" style="cursor:pointer;"
+				action="#{puestoCategoriaAction.buscar}" 
+				oncomplete="buscar('#{puestoCategoriaAction.resOperacion}','#{rich:clientId('pnlMsgGralPuestos')}');"
+				render="dtPuestosCategorias,pnlMsgGralPuestos">
+				<rich:tooltip id="ttBuscar" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscar" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+		
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" image="#{msg['nuevo22.img']}" styleClass="Titulo" style="cursor:pointer;"
+				action="#{puestoCategoriaAction.nuevo}" 
+				oncomplete="#{rich:component('pnlNuevoEditarPuestoCategoria')}.show()"
+				render="pnlNuevoEditarPuestoCategoria, dtPuestosCategorias">
+				<rich:tooltip id="ttNuevo" showDelay="300" value="#{msg['nuevo.e']}" for="cmdNuevo" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css/acc" name="acc.css" />
+		<h:outputStylesheet library="css/acc" name="cuentasporcobrar.css" />
+		<h:outputScript library="scripts/puestoscategorias" name="puestoscategorias.js" />
+			
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText value="#{msg['puestoscategorias']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+	
+		<div class="div_pagina" style=" text-align: left; ">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="display:block; width: 720px; text-align: left;">
+				<h:outputText value="#{msg['puesto']}:" styleClass="Titulo"/>
+				<h:selectOneMenu value="#{puestoCategoriaAction.idPuesto}" style="width:216px;">
+					<f:selectItems value="#{puestoCategoriaAction.listaCboPuestos}"/>	  					
+				</h:selectOneMenu>
+			
+				<h:outputText value="  #{msg['categoria']}:" styleClass="Titulo"/>
+				<h:selectOneMenu value="#{puestoCategoriaAction.idCategoria}" style="width:216px;">
+					<f:selectItems value="#{puestoCategoriaAction.listaCboCategorias}"/>	
+				</h:selectOneMenu>
+			</h:panelGrid>
+		</div>
+	
+		<div class="div_pagina" style="margin-top: 10px;">
+			<rich:dataTable id="dtPuestosCategorias" cellpadding="0" cellspacing="0" rows="20"  border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+				var="var" value="#{puestoCategoriaAction.listaPuestosCategoriasGrid}" style="margin:0 auto; width: 100%;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['puesto']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['categoria']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['estatus']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="" />
+						</rich:column>
+						
+						<!--rich:column colspan="2" style="text-align:center; width:40px" styleClass="Titulo" /-->
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align: center; width: 60px;">
+					<h:outputText value="#{var.id}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding-left: 5px; width: 60px;">
+					<h:outputText value="#{var.puesto.descripcion}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding-left: 5px; width: 60px;">
+					<h:outputText value="#{var.categoria.descripcion}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding-left: 5px; width: 60px;">
+					<h:outputText value="#{var.estatus == 0 ? 'Activo' : 'Cancelado'}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEditar" image="#{msg['editar16.img']}" 
+						rendered="#{var.estatus == 0}"
+						action="#{puestoCategoriaAction.editar}" 
+						oncomplete="#{rich:component('pnlNuevoEditarPuestoCategoria')}.show()" 
+						render="pnlNuevoEditarPuestoCategoria">
+						<f:setPropertyActionListener target="#{puestoCategoriaAction.pojoPuestoCategoria}" value="#{var}" />
+						<rich:tooltip showDelay="300" value="#{msg['editar']}" for="cmdEditar" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEliminar" image="#{msg['cancelar16.img']}" 
+						rendered="#{var.estatus == 0}"
+						oncomplete="#{rich:component('pnlMsgConfElimPuestoCategoria')}.show()" 
+						render="pnlMsgConfElimPuestoCategoria">
+						<rich:tooltip showDelay="300" value="#{msg['cancelar']}" for="cmdEliminar" />
+						<f:setPropertyActionListener target="#{puestoCategoriaAction.pojoPuestoCategoria}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+ 				
+				<f:facet name="footer">
+					<rich:dataScroller align="center" for="dtPuestosCategorias" maxPages="10" ajaxSingle="true" page="#{puestoCategoriaAction.numPagina}" id="dScroll" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">		
+		<ui:include src="/modal/puestoscategorias/pnlMsgGralPuestoCategoria.xhtml" />  
+		<ui:include src="/modal/puestoscategorias/pnlNuevoEditarPuestoCategoria.xhtml" /> 
+		<ui:include src="/modal/puestoscategorias/pnlMsgConfElimPuestoCategoria.xhtml" />  
+		<ui:include src="/modal/puestoscategorias/pnlErrores.xhtml" />  
+	</ui:define>
+</ui:composition>

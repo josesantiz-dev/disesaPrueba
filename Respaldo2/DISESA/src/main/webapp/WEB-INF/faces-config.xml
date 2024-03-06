@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config version="1.2" 
+	xmlns="http://java.sun.com/xml/ns/javaee" 
+	xmlns:xi="http://www.w3.org/2001/XInclude" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd">
+	<application>
+		<view-handler>com.sun.facelets.FaceletViewHandler</view-handler>
+		<locale-config>
+			<default-locale>es_MX</default-locale>
+			<supported-locale>en_US</supported-locale>
+		</locale-config>
+		<resource-bundle>
+			<base-name>net.giro.messages</base-name>
+			<var>msg</var>
+		</resource-bundle>
+	</application>
+	
+	<managed-bean>
+		<managed-bean-name>moduloManager</managed-bean-name>
+		<managed-bean-class>net.giro.ModuloManager</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>appMediator</managed-bean-name>
+		<managed-bean-class>net.giro.navegador.AppMediator</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+		<managed-property>
+			<property-name>navegador</property-name>
+			<value>#{navegador}</value>
+		</managed-property>
+		<managed-property>
+			<property-name>loginManager</property-name>
+			<value>#{loginManager}</value>
+		</managed-property>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>localeManager</managed-bean-name>
+		<managed-bean-class>net.giro.navegador.LocaleManager</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>loginManager</managed-bean-name>
+		<managed-bean-class>net.giro.navegador.LoginManager</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>navegador</managed-bean-name>
+		<managed-bean-class>net.giro.navegador.Navegador</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+</faces-config>

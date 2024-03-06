@@ -1,0 +1,153 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['modulo']} - #{msg['cargar']} #{msg['ordenCompra']}"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+	</ui:define>
+	
+	<ui:define name="scripts">
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="compras.css" />
+		<h:outputScript library="scripts" name="carga.js" />
+		
+		<a4j:jsFunction id="jsFunProcesamiento" 
+			name="procesamiento" 
+			data="#{cargaOCAction.procesando}"
+			oncomplete="reporta(event.data);"
+			render="txtBitacora,pnlMensajes" 
+			limitRender="true" />
+
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 10px;">
+			<h:outputText value="#{msg['cargar']} #{msg['ordenCompra']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina" style="margin: 0 auto; width: 500px;">
+			<fieldset id="fsCargaOC">
+				<a4j:region id="loadCargandoArchivo">
+					<h:panelGrid columns="3" style="width: 100%">
+						<h:panelGroup>
+							<a4j:status for="loadCargandoArchivo" >
+								<f:facet name="start">
+									<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;" />
+								</f:facet> 
+								
+								<f:facet name="stop">
+									<h:outputLabel value="#{msg['navegacion.label.vacio']}" style="cursor:pointer;"  styleClass="Titulo" />
+								</f:facet>
+							</a4j:status>
+						</h:panelGroup>
+						
+						<h:panelGroup>			
+							<rich:messages id="msgErrores" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+								<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+							</rich:messages>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+							<a4j:commandButton id="cmdUploadFile" style="float: right; margin: 5px;" 
+					   			image="#{msg['aplicar22.img']}" 
+					   			action="#{cargaOCAction.procesar}"
+					   			oncomplete="cargar(#{cargaOCAction.operacion}, '#{rich:clientId('pnlMensajes')}');"
+								render="pnlMensajes,txtBitacora"
+								limitRender="true">
+								<rich:tooltip showDelay="300" value="#{msg['salvar.e']}" styleClass="Descripcion" />
+							</a4j:commandButton>
+						</h:panelGroup>
+					</h:panelGrid>
+				</a4j:region>
+				
+				<fieldset>
+					<legend><h:outputText value="#{msg['cargaArchivo']}" /></legend>
+					
+					<rich:fileUpload id="miUploadFile" listWidth="100%" listHeight="120" style="text-align: left; width:100%; min-height:105px"
+						acceptedTypes=".xls, .xlsx"
+						addControlLabel="#{msg['navegacion.label.anadirArchivo']}" 
+						addLabel="#{msg['agregar.e']}"
+						cancelEntryControlLabel="#{msg['navegacion.boton.eliminar.e']}" 
+						cleanButtonClass="Titulo"
+						clearAllControlLabel="#{msg['navegacion.label.eliminarTodo']}"
+						clearAllLabel="#{msg['borrarTodo']}"
+						clearLabel="#{msg['borrar']}"
+						doneLabel="#{msg['navegacion.label.archivoEnviado']}" 
+						fileEntryControlClass="Descripcion"
+						fileUploadListener="#{cargaOCAction.uploadListener}"
+						immediateUpload="true"
+						maxFilesQuantity="#{cargaOCAction.maxCargas}"
+						ontyperejected="alert('#{msg['soloExcelXLS']}');"
+						progressLabel="#{msg['navegacion.label.enviando']}"
+						stopButtonClass="Titulo"
+						stopControlLabel="#{msg['navegacion.label.detener']}"
+						uploadButtonClass="Titulo" 
+						uploadButtonClassDisabled="true" 
+						uploadControlLabel="#{msg['navegacion.label.enviarArchivo']}">
+						<a4j:ajax event="uploadcomplete" execute="@none" 
+							render="txtBitacora" />
+			   		</rich:fileUpload>
+			   								
+					<h:panelGroup rendered="#{cargaOCAction.maxCargas == 1}">
+						<h:panelGrid columns="3">
+							<h:selectBooleanCheckbox value="#{cargaOCAction.reemplazarOrdenCompra}">
+								<a4j:ajax event="change"
+									listener="#{cargaOCAction.nuevoReemplazoOrdenCompra}" 
+									render="cmdSeleccionarOrdenCompra" 
+									limitRender="true" />
+							</h:selectBooleanCheckbox>
+							
+							<h:outputText value="#{msg['reemplazaA']} #{msg['ordenCompra']}:" styleClass="Descripcion"/>
+	
+							<h:panelGroup>
+								<h:panelGrid id="pnlOrdenCompraReemplazarDatos" columns="2">
+									<h:outputText id="txtOrdenCompraReemplazar" value="#{cargaOCAction.ordenCompraReemplazar}" styleClass="Titulo" />
+									<h:panelGroup>
+										<a4j:commandLink id="cmdSeleccionarOrdenCompra" styleClass="Descripcion"
+											disabled="#{! cargaOCAction.reemplazarOrdenCompra}"
+											value="#{cargaOCAction.ordenCompraReemplazar == '' ? msg['seleccionar'] : msg['cambiar']}" 
+											action="#{cargaOCAction.nuevaBusquedaOrdenCompra}" 
+											oncomplete="#{rich:component('pnlBusquedaOrdenCompra')}.show();"
+											render="pnlBusquedaOrdenCompra"
+											limitRender="true" />
+										
+										<!-- Este input es solo con propósito de que se permita hacer validator al proyecto -->
+										<h:inputText id="txtOrdenCompraReemplazarHidden" style="text-align:left;  display:none;"
+											value="#{cargaOCAction.ordenCompraReemplazar}"
+											required="#{cargaOCAction.reemplazarOrdenCompra ? !empty param[rich:clientId('cmdDoTimbrar')] : false}" 
+											requiredMessage="#{msg['ordenCompra']} #{msg['mensaje.error.requerido']}">
+										</h:inputText>
+									</h:panelGroup>
+								</h:panelGrid>
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGroup>
+				</fieldset>
+				
+				<fieldset>
+					<legend><h:outputText value="#{msg['bitacora']}" /></legend>
+					
+					<h:panelGroup>
+						<h:inputTextarea id="txtBitacora" readonly="true" 
+							style="font-size:0.9em; width:98%; min-height:120px; max-height:300px; height:100%; resize:none;"
+							value="#{cargaOCAction.bitacora}" />
+					</h:panelGroup>
+				</fieldset>
+			</fieldset>
+		</div>
+		
+		<a4j:log level="ALL" mode="popup" style="margin:0 auto; min-width:800px; max-height:500px;" />
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modals/carga/pnlMensajes.xhtml" />
+		<ui:include src="/modals/carga/pnlBusquedaOrdenCompra.xhtml" />
+	</ui:define>
+</ui:composition>

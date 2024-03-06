@@ -1,0 +1,116 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlBusquedaOrdenCompra" autosized="true">
+		<f:facet name="header">
+			<h:panelGroup>		           
+				<h:outputText style="margin:0 auto;" value="#{msg['busqueda']} #{msg['ordenCompra']}" styleClass="Titulo"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage id="cerrarBusquedaOrdenCompra" value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" />
+				<rich:componentControl for="pnlBusquedaOrdenCompra" attachTo="cerrarBusquedaOrdenCompra" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmBusquedaOrdenCompra">
+			<a4j:region id="regBusquedaOrdenCompra">
+				<div style="display: block; min-width: 500px; width:100%; height: 22px;">
+					<h:panelGroup style="vertical-align: middle; position:relative; ">
+						<a4j:commandButton id="cmdBuscarOrdenCompra" image="#{msg['buscar22.img']}" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+							onclick="#{rich:element('cmdBuscarOrdenCompra')}.disabled = true;" 
+							action="#{registroGastosAction.ordenCompraBuscar}" 
+							oncomplete="msgRevisando(#{rich:element('msgErrorRegistroGastos')},'pnlBusquedaOrdenCompra','pnlMensajes2',#{registroGastosAction.encontroMismoGrupo},'buscarObras','#{registroGastosAction.resOperacion}'); #{rich:element('cmdBuscarOrdenCompra')}.disabled = false"
+							reRender="dtBusquedaOrdenCompra,pnlMensajes2"
+							limitToList="true">
+							<rich:toolTip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarOrdenCompra"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</div>
+				
+				<h:panelGrid id="panelBusquedaOpcionesOrdenCompra" columns="2" columnClasses="tygCompGtosColIzq, tygCompGtosColDer" style="margin: 10px auto; display:block;">
+					<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>	
+					<rich:comboBox id="cmbOpcionesBusquedaOrdenCompra" enableManualInput="false" eventsQueue="suggQRepCaja"
+						value="#{registroGastosAction.campoBusquedaOrdenCompra}" 
+						listStyle="text-align:left;" 
+						suggestionValues="#{registroGastosAction.opcionesBusquedaOrdenCompra}" 
+						width="210" />
+					
+					<h:outputText value="#{msg['navegacion.label.valor']}:" styleClass="Titulo"/>
+					<h:inputText id="txtValorBusquedaOrdenCompra" maxlength="35" style="width:210px;" 
+						value="#{registroGastosAction.valorBusquedaOrdenCompra}" />
+				</h:panelGrid>
+				
+				<rich:dataTable id="dtBusquedaOrdenCompra" value="#{registroGastosAction.listOrdenCompra}" var="var" 
+					rows="5" cellpadding="0" cellspacing="0" width="780" border="0" rowClasses="Row1, Row2">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column width="80" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['id']}"/>
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['folio']}"/>
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['proveedor']}"/>
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['total']}"/>
+							</rich:column>
+							
+							<rich:column width="30" style="text-align:center; margin-left:10px;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['seleccionar']}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column width="80" style="text-align:center;" styleClass="tygCompGtosDesc">
+						<h:outputText value="#{var.id}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center;" styleClass="tygCompGtosDesc">
+						<h:outputText value="#{var.folio}" />
+					</rich:column>
+					
+					<rich:column style="text-align:left;" styleClass="tygCompGtosDesc">
+						<h:outputText value="#{var.proveedorNombre}" />
+					</rich:column>
+					
+					<rich:column style="text-align:right;" styleClass="tygCompGtosDesc">
+						<h:outputText value="#{var.total}">
+							<f:convertNumber pattern="$###,###.00" /> 
+						</h:outputText>
+					</rich:column>
+					
+					<rich:column width="30" style="text-align:center;" styleClass="tygCompGtosDesc">
+						<a4j:commandButton id="cmdBusquedaSeleccionarOrdenCompra" 
+							image="#{msg['agregar16.img']}"
+							onclick="#{rich:component('pnlBusquedaOrdenCompra')}.hide()"
+							action="#{registroGastosAction.ordenCompraSeleccionar}" 
+							oncomplete="seleccionar(#{registroGastosAction.encontroMismoGrupo}, 'pnlBusquedaOrdenCompra', '')"
+							reRender="dtBusquedaOrdenCompra,pnlDatosOrdenCompra"  >
+							<rich:toolTip showDelay="300" value="#{msg['agregar.e']}" for="cmdAgregar" />	
+							<f:setPropertyActionListener target="#{registroGastosAction.pojoOrdenCompra}" value="#{var}" />
+						</a4j:commandButton>
+					</rich:column>
+
+					<f:facet name="footer">
+						<rich:datascroller align="center" for="dtBusquedaOrdenCompra" maxPages="10"
+							ajaxSingle="true" page="#{registroGastosAction.paginacionOrdenCompra}" id="dScroll"
+							styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

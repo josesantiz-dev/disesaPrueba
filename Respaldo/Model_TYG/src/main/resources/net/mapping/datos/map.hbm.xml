@@ -1,0 +1,350 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="net.giro.co.beans.Correlativo" table="bbb4420d88">
+		<composite-id name="id" class="net.giro.co.beans.CorrelativoId"
+			unsaved-value="none">
+			<key-property name="codigoEmpresa" type="long" column="c_codemp" />
+			<key-property name="nombreTabla" type="string" column="c_nomtab" />
+		</composite-id>
+		<property name="cbEmpresa" column="c_codemp" insert="false"
+			update="false" />
+		<property name="descriTabla" column="c_destab" />
+		<property name="fechaInsercion" column="a_fecins" />
+		<property name="fechaModificacion" column="a_fecmod" />
+		<property name="ipInsercion" column="a_ipeins" />
+		<property name="ipModificacion" column="a_ipemod" />
+		<property name="numeroCorrelativo" column="n_numcor" />
+		<property name="terminalInsercion" column="a_terins" />
+		<property name="terminalModificacion" column="a_termod" />
+		<property name="usuarioInsercion" column="a_usuins" />
+		<property name="usuarioModificacion" column="a_usumod" />
+	</class>
+
+	<class name="net.giro.tyg.admon.Moneda" table="moneda">
+		<id name="id" column="clave" />
+		<property name="nombre" column="nombre" />
+		<property name="creadoPor" column="creado_por" />
+		<property name="fechaCreacion" column="fecha_creacion" />
+		<property name="modificadoPor" column="modificado_por" />
+		<property name="fechaModificacion" column="fecha_modificacion" />
+		<property name="abreviacion" column="abreviacion" />
+		<property name="sinonimos" column="sinonimos" />
+		<property name="idShf" column="id_shf" />
+	</class>
+
+	<class name="net.giro.tyg.admon.MonedasValores" table="monedas_valores" >
+		<id name="id" column="id" />
+		<many-to-one name="monedaBase" column="moneda_base" class="net.giro.tyg.admon.Moneda" lazy="false" fetch="join" insert="true" update="true" />
+		<many-to-one name="monedaDestino" column="moneda_destino" class="net.giro.tyg.admon.Moneda" lazy="false" fetch="join" insert="true" update="true" />
+		<property name="fechaDesde" column="fecha_desde"/>
+		<property name="fechaHasta" column="fecha_hasta"/>
+		<property name="valor" column="valor"/>
+		<property name="creadoPor" column="creado_por"/>
+		<property name="fechaCreacion" column="fecha_creacion"/>
+		<property name="modificadoPor" column="modificado_por"/>
+		<property name="fechaModificacion" column="fecha_modificacion"/>
+	</class>
+
+	<class name="net.giro.tyg.admon.CatBancos" table="cat_bancos">
+		<id name="id" column="cat_banco_id" />
+		<property name="nombreCorto" column="nombre_corto" />
+		<property name="nombreLargo" column="nombre_largo" />
+		<property name="creadoPor" column="creado_por" />
+		<property name="fechaCreacion" column="fecha_creacion" />
+		<property name="modificadoPor" column="modificado_por" />
+		<property name="fechaModificacion" column="fecha_modificacion" />
+	</class>
+
+	<class name="net.giro.tyg.admon.SucursalBancaria" table="sucurales_bancarias">
+		<id name="id" column="sucurales_bancarias_pk" />
+		<property name="nombre" column="nombre" />
+		<property name="domicilio" column="domicilio" />
+		<property name="estado" column="estado" />
+		<property name="creadoPor" column="creado_por" />
+		<property name="fechaCreacion" column="fecha_creacion" />
+		<property name="modificadoPor" column="modificado_por" />
+		<property name="fechaModificacion" column="fecha_modificacion" />
+		<many-to-one name="catBancoId" column="cat_banco_id" class="net.giro.tyg.admon.CatBancos" lazy="false" fetch="join"	insert="true" update="true" />
+		<property name="sucursalBancariaId" column="sucurales_bancarias_id" />
+	</class>
+
+	<class name="net.giro.tyg.admon.CtasBanco" table="a95f1327c6">
+		<id name="id" column="aa" />
+		<property name="creadoPor" column="ab" />
+		<property name="fechaCreacion" column="ac" />
+		<property name="modificadoPor" column="ad" />
+		<property name="fechaModificacion" column="ae" />
+		<property name="numeroDeCuenta" column="af" />
+		<property name="clave" column="ag" />
+		<many-to-one name="institucionBancaria" column="ah" class="net.giro.tyg.admon.CatBancos" lazy="false" fetch="join"	insert="true" update="true" />
+		<many-to-one name="sucursalBancaria" column="ai" class="net.giro.tyg.admon.SucursalBancaria" lazy="false" fetch="join"	insert="true" update="true" />
+		<property name="saldo" column="al" />
+		<property name="saldoMinimo" column="am" />
+		<property name="empresa" column="an" />
+		<property name="validaSaldo" column="ap" />
+		<property name="validaReferencia" column="aq" />
+		<many-to-one name="moneda" column="av" class="net.giro.tyg.admon.Moneda" lazy="false" fetch="join" insert="true" update="true" />
+	</class>
+
+	<class name="net.giro.tyg.admon.Cheques" table="cheques" >
+		<id name="id" column="cheques_id"/>
+		<property name="control" column="control"/>
+		<property name="bancoId" column="banco_id" />
+		<property name="fecha" column="fecha"/>
+		<property name="importe" column="importe"/>
+		<property name="folio" column="folio"/>
+		<property name="tipo" column="tipo"/>
+		<property name="estatus" column="estatus"/>
+		<property name="creadoPor" column="creado_por"/>
+		<property name="fechaCreacion" column="fecha_creacion"/>
+		<property name="modificadoPor" column="modificado_por"/>
+		<property name="fechaModificacion" column="fecha_modificacion"/>
+		<property name="ministracion" column="ministracion"/>
+		<property name="concMensaje" column="conc_mensaje"/>
+		<property name="concUsuarioId" column="conc_usuario_id"/>
+		<property name="concFecha" column="conc_fecha"/>
+		<property name="poliza" column="poliza"/>
+		<property name="grupo" column="grupo"/>
+		<property name="transaccionId" column="transaccion_id"/>
+		<property name="tarjetaOperativaId" column="tarjeta_operativa_id"/>
+		<property name="app" column="app"/>
+		<property name="transaccionVersionId" column="transaccion_version_id"/>
+		<property name="disposicion" column="disposicion"/>
+		<property name="tipoTrans" column="tipo_trans"/>
+	</class>
+
+	<class name="net.giro.tyg.admon.FormasPagos" table="formas_pagos" >
+		<id name="id" column="forma_pago_id"/>
+		<property name="formaPago" column="forma_pago"/>
+		<property name="aplicarAutomaticamente" column="aplicar_automaticamente"/>
+		<property name="ahorro" column="ahorro"/>
+		<property name="creadoPor" column="creado_por"/>
+		<property name="fechaCreacion" column="fecha_creacion"/>
+		<property name="modificadoPor" column="modificado_por"/>
+		<property name="fechaModificacion" column="fecha_modificacion"/>
+	</class>
+
+	<class name="net.giro.tyg.admon.Importacion" table="importacion" >
+		<id name="id" column="importacion_s"/>
+		<property name="idNumero" column="id_numero"/>
+		<property name="referencia" column="referencia"/>
+		<property name="referenciaOriginal" column="referencia_original"/>
+		<property name="fechapago" column="fechapago"/>
+		<property name="control" column="control"/>
+		<property name="capital" column="capital"/>
+		<property name="normal" column="normal"/>
+		<property name="moratorio" column="moratorio"/>
+		<property name="intermediario" column="intermediario"/>
+		<property name="gastos" column="gastos"/>
+		<property name="impuesto" column="impuesto"/>
+		<property name="vencimiento" column="vencimiento"/>
+		<property name="fecVenc" column="fec_venc"/>
+		<property name="creadoPor" column="creado_por"/>
+		<property name="fechaCreacion" column="fecha_creacion"/>
+		<property name="banco" column="banco"/>
+		<property name="aportaciones" column="aportaciones"/>
+		<property name="secPro" column="sec_pro"/>
+		<property name="agenteId" column="agente_id"/>
+		<property name="sucursal" column="sucursal"/>
+		<property name="fechaConci" column="fecha_conci"/>
+		<property name="devolucion" column="devolucion"/>
+		<property name="transaccionId" column="transaccion_id"/>
+		<property name="tarjetaOperativaId" column="tarjeta_operativa_id"/>
+		<property name="app" column="app"/>
+		<property name="transaccionVersionId" column="transaccion_version_id"/>
+		<property name="estatus" column="estatus"/>
+		<property name="cheque" column="cheque"/>
+		<property name="bancoOrigen" column="banco_origen"/>
+		<property name="fechaDeposito" column="fecha_deposito"/>
+		<property name="observaciones" column="observaciones"/>
+		<property name="garantiaLiquida" column="garantia_liquida"/>
+		<property name="formaPagoId" column="forma_pago_id"/>
+	</class>
+
+	<class name="net.giro.tyg.admon.Ministra" table="ministra" >
+		<id name="id" column="ministra_id"/>
+		<property name="control" column="control"/>
+		<property name="fecMin" column="fec_min"/>
+		<property name="mtoMin" column="mto_min"/>
+		<property name="numero" column="numero"/>
+		<property name="creadoPor" column="creado_por"/>
+		<property name="fechaCreacion" column="fecha_creacion"/>
+		<property name="modificadoPor" column="modificado_por"/>
+		<property name="fechaModificacion" column="fecha_modificacion"/>
+		<property name="cheque" column="cheque"/>
+		<property name="banco" column="banco"/>
+		<property name="chequeRet" column="cheque_ret"/>
+		<property name="bancoRet" column="banco_ret"/>
+		<property name="fechaDeposito" column="fecha_deposito"/>
+		<property name="bancoDeposito" column="banco_deposito"/>
+		<property name="montoDeposito" column="monto_deposito"/>
+		<property name="poliza" column="poliza"/>
+		<property name="polizaReg" column="poliza_reg"/>
+		<property name="transaccionId" column="transaccion_id"/>
+		<property name="tarjetaOperativaId" column="tarjeta_operativa_id"/>
+		<property name="app" column="app"/>
+		<property name="transaccionVersionId" column="transaccion_version_id"/>
+	</class>
+
+	<class name="net.giro.tyg.admon.Timportacion" table="timportacion" >
+		<id name="id" column="timportacion_id"/>
+		<property name="vfec" column="vfec"/>
+		<property name="wreferencia" column="wreferencia"/>
+		<property name="vvmonto" column="vvmonto"/>
+		<property name="tmovimiento" column="tmovimiento"/>
+		<property name="wsucursal" column="wsucursal"/>
+		<property name="aplica" column="aplica"/>
+		<property name="idGasto" column="id_gasto"/>
+		<property name="secuencias" column="secuencias"/>
+		<property name="noRecibo" column="no_recibo"/>
+		<property name="transaccionId" column="transaccion_id"/>
+		<property name="tarjetaOperativaId" column="tarjeta_operativa_id"/>
+		<property name="app" column="app"/>
+		<property name="transaccionVersionId" column="transaccion_version_id"/>
+	</class>
+
+	<class name="net.giro.tyg.admon.TipoCredito" table="tipocredito" >
+		<id name="id" column="clave"/>
+		<property name="descripcion" column="descripcion"/>
+		<property name="creadoPor" column="creado_por"/>
+		<property name="fechaCreacion" column="fecha_creacion"/>
+		<property name="modificadoPor" column="modificado_por"/>
+		<property name="fechaModificacion" column="fecha_modificacion"/>
+	</class>
+
+	<class name="net.giro.tyg.admon.AsignacionCheque" table="asignacion_cheque" >
+		<id name="id" column="asignacion_cheque_id"/>
+		<property name="sucursalId" column="region_id" />
+
+		<property name="bancoId" column="banco_id" />
+
+		<property name="folioIni" column="folio_ini"/>
+		<property name="folioFin" column="folio_fin"/>
+		<property name="tipo" column="tipo"/>
+		<property name="creadoPor" column="creado_por"/>
+		<property name="fechaCreacion" column="fecha_creacion"/>
+		<property name="modificadoPor" column="modificado_por"/>
+		<property name="fechaModificacion" column="fecha_modificacion"/>
+	</class>
+
+	<class name="net.giro.tyg.admon.ProgMinistra" table="prog_ministraciones" >
+		<id name="id" column="prog_ministra_id"/>
+		<property name="sucursal" column="agente"/>
+		<property name="creadoPor" column="creado_por"/>
+		<property name="fechaCreacion" column="fecha_creacion"/>
+		<property name="modificadoPor" column="modificado_por"/>
+		<property name="fechaModificacion" column="fecha_modificacion"/>
+		<property name="del" column="del"/>
+		<property name="al" column="al"/>
+		<property name="total" column="total"/>
+		<property name="estatus" column="estatus"/>
+		<property name="transferenciaId" column="transferencia_id"/>
+		<property name="montoAutorizado" column="monto_autorizado"/>
+		<property name="observaciones" column="observaciones"/>
+		<property name="montoRevisado" column="monto_revisado"/>
+		<property name="numLote" column="num_lote"/>
+		<property name="fechaRevision" column="fecha_revision"/>
+	</class>
+
+	<class name="net.giro.tyg.admon.ProgMinistraDetalleCasos" table="prog_ministra_detalle_casos" >
+		<id name="id" column="prog_ministra_detalle_casos_id"/>
+		<property name="progMinistraId" column="prog_ministra_det_id"/>
+		<property name="monto" column="monto"/>
+		<property name="fechaCreacion" column="fecha_creacion"/>
+		<property name="creadoPor" column="creado_por"/>
+		<property name="fechaModificacion" column="fecha_modificacion"/>
+		<property name="modificadoPor" column="modificado_por"/>
+		<property name="idSolicitud" column="id_solicitud"/>
+		<property name="tipo" column="tipo"/>
+		<property name="estatus" column="estatus"/>
+		<property name="idSolicitante" column="id_solicitante"/>
+		<property name="canceladoPor" column="cancelado_por"/>
+		<property name="tipoTran" column="tipo_tran"/>
+	</class>
+
+	<class name="net.giro.tyg.admon.Tasas" table="f134392853">
+		<id name="id" column="aa" />
+		<property name="creadoPor" column="ab" />
+		<property name="fechaCreacion" column="ac" />
+		<property name="modificadoPor" column="ad" />
+		<property name="fechaModificacion" column="ae" />
+		<property name="descripcion" column="af" />
+	</class>
+
+	<class name="net.giro.tyg.admon.TiposTasas" table="ea047eb7cc">
+		<id name="id" column="aa" />
+		<property name="creadoPor" column="ab" />
+		<property name="fechaCreacion" column="ac" />
+		<property name="modificadoPor" column="ad" />
+		<property name="fechaModificacion" column="ae" />
+		<property name="clave" column="af" />
+		<property name="valorTasa" column="ag" />
+		<many-to-one name="tasas" column="ah" class="net.giro.tyg.admon.Tasas" lazy="false" fetch="join" insert="true" update="true" />
+	</class>
+
+	<class name="net.giro.tyg.admon.ValoresTasas" table="e436f99d92" >
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="anio" column="af"/>
+		<property name="enero" column="ag"/>
+		<property name="febrero" column="ah"/>
+		<property name="marzo" column="ai"/>
+		<property name="abril" column="aj"/>
+		<property name="mayo" column="ak"/>
+		<property name="junio" column="al"/>
+		<property name="julio" column="am"/>
+		<property name="agosto" column="an"/>
+		<property name="septiembre" column="ao"/>
+		<property name="octubre" column="ap"/>
+		<property name="noviembre" column="aq"/>
+		<property name="diciembre" column="ar"  />
+		<many-to-one name="tasas" column="au" class="net.giro.tyg.admon.Tasas" lazy="false" fetch="join" insert="true" update="true" />
+	</class>
+
+	<class name="net.giro.tyg.admon.GastoDeCobranza" table="fae7c9d463">
+		<id name="id" column="aa" />
+		<property name="creadoPor" column="ab" />
+		<property name="fechaCreacion" column="ac" />
+		<property name="modificadoPor" column="ad" />
+		<property name="fechaModificacion" column="ae" />
+		<property name="nombre" column="af" />
+		<property name="cuentaContable" column="ag" />
+		<property name="costo" column="ah" />
+	</class>
+
+  	<class name="net.giro.tyg.admon.MovimientosCuentas" table="b5815d56e0">
+                <id  name="id" column="aa"/>
+                <property name="creadoPor" column="ab"/>
+                <property name="fechaCreacion" column="ac"/>
+                <property name="modificadoPor" column="ad"/>
+                <property name="fechaModificacion" column="ae"/>
+                <property name="idCuentaOrigen" column="af"/>
+                <property name="fecha" column="ag"/>
+                <property name="tipo" column="ah"/>
+                <property name="estatus" column="ai"/>
+                <property name="noCheque" column="aj"/>
+                <property name="monto" column="ak"/>
+                <property name="idSucursal" column="al"/>
+                <property name="idBeneficiario" column="am"/>
+                <property name="operacion" column="an"/>
+                <property name="tipoBeneficiario" column="ao"/>
+                <property name="idCuentaDestino" column="ap"/>
+                <property name="idCuentaDestinoTerceros" column="aq"/>
+                <property name="idPagosGastosRef" column="ar"/>
+                <property name="idTiposMovimiento" column="au"/>
+                <property name="idPagoMultiple" column="av"/>
+                <property name="nota" column="aw"/>
+                <property name="concepto" column="ax"/>
+                <property name="folioAutorizacion" column="ay"/>
+                <property name="idCuentaOrigenTerceros" column="az"/>
+                <property name="tipoCambio" column="ba"/>
+                <property name="segmento" column="bb"/>
+        </class>
+</hibernate-mapping>

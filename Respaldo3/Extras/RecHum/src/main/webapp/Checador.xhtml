@@ -1,0 +1,125 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    <p/>
+    <ui:define name="title">
+		<h:outputText value="#{msg['modulo']} - #{msg['checador']}"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="rechum.css" />
+		
+		<h:outputScript library="scripts" name="checador.js" />
+		
+		<div class="div_pagina" style="text-align: left;">
+			<fieldset style="margin: 5px auto; max-width: 400px;">
+				<legend><h:outputText value="#{msg['checador']}" styleClass="Titulo" /></legend>
+		
+				<rich:messages id="msgErrores" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+				</rich:messages>
+				
+				<h:panelGrid columns="2" style="width: 100%">
+					<a4j:region id="loadCargandoArchivo">
+						<h:panelGroup>
+							<a4j:status for="loadCargandoArchivo" >
+								<f:facet name="start">
+									<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;" />
+									<h:outputLabel value="#{msg['procesando']}" style="cursor:pointer;"  styleClass="Titulo" />
+								</f:facet> 
+								
+								<f:facet name="stop">
+									<h:outputLabel value="#{msg['navegacion.label.vacio']}" style="cursor:pointer;"  styleClass="Titulo" />
+								</f:facet>
+								
+								<f:facet name="success">
+									<h:graphicImage value="#{msg['aplicar22.img']}" style="vertical-align: middle; position:relative;" />
+									<h:outputLabel value="Proceso terminado" style="cursor:pointer;"  styleClass="Titulo" />
+								</f:facet>
+							</a4j:status>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+					   		<a4j:commandButton id="cmdUploadFile" image="#{msg['aplicar22.img']}" style= "float: right; margin: 5px;"
+								action="#{checadorAction.guardar}"
+								oncomplete="salvar(#{checadorAction.operacion}, #{checadorAction.tipoMensaje}, '#{rich:clientId('pnlLogUpload')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrores')})"
+								render="pnlLogUpload, pnlMensajes, msgErrores, pnlObraDatos, miUploadFile, dtListaAsistencia">
+								<rich:tooltip showDelay="300" value="#{msg['salvar.e']}" styleClass="Descripcion" />
+							</a4j:commandButton>
+						</h:panelGroup>
+					</a4j:region>
+				</h:panelGrid>
+				
+				<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+					<h:outputLabel value="#{msg['fecha']}:" styleClass="Titulo" />
+					<rich:calendar id="txtFecha" enableManualInput="true" datePattern="dd/MM/yyyy" style="width: 90px;"
+						value="#{checadorAction.pojoChecador.fecha}"
+						required="#{!empty param[rich:clientId('cmdUploadFile')]}" 
+						requiredMessage="#{msg['fecha']} #{msg['mensaje.error.requerido']}">
+						<rich:placeholder value="dd/mm/yyyy" />
+					</rich:calendar>
+					
+					<h:outputText value="#{msg['obra']}:" styleClass="Titulo" />
+					<h:panelGroup id="pnlObraDatos">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtObra" value="#{checadorAction.obraNombre}" styleClass="Titulo" style="text-align:left; display:block;" />
+							<h:panelGroup>
+								<a4j:commandLink id="cmdSeleccionarObra" styleClass="linkColor"
+									action="#{checadorAction.nuevaBusquedaObras}" 
+									value="#{checadorAction.pojoObra == null ? msg['seleccionar'] : msg['cambiar'] }"
+									oncomplete="#{rich:component('pnlBusquedaObras')}.show()"
+									render="pnlBusquedaObras, pnlBusquedaObrasPrincipal, dtBusquedaObras" />
+									
+								<h:inputText id="txtObraHidden" style="text-align:left;  display:none;"
+									value="#{checadorAction.obraNombre}"
+									required="#{!empty param[rich:clientId('cmdUploadFile')]}" 
+									requiredMessage="#{msg['obra']} #{msg['mensaje.error.requerido']}" />
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGroup>
+				</h:panelGrid>
+				
+				<div style="display: block; padding:0; min-width: 400px; min-height: 22px; text-align: left; background-color: none;">
+					<rich:fileUpload id="miUploadFile" listWidth="100%" listHeight="120"
+						acceptedTypes="xls"
+						addControlLabel="#{msg['navegacion.label.anadirArchivo']}" 
+						addLabel="#{msg['agregar.e']}"
+						cancelEntryControlLabel="#{msg['navegacion.boton.eliminar.e']}" 
+						cleanButtonClass="Titulo"
+						clearAllControlLabel="#{msg['navegacion.label.eliminarTodo']}"
+						clearAllLabel="#{msg['borrarTodo']}"
+						clearLabel="#{msg['borrar']}"
+						doneLabel="#{msg['navegacion.label.archivoEnviado']}" 
+						fileEntryControlClass="Descripcion"
+						fileUploadListener="#{checadorAction.uploadListener}"
+						immediateUpload="true"
+						maxFilesQuantity="1" 
+						ontyperejected="alert('#{msg['soloExcel']}');"
+						progressLabel="#{msg['navegacion.label.enviando']}"
+						stopButtonClass="Titulo"
+						stopControlLabel="#{msg['navegacion.label.detener']}"
+						style="text-align: left;"
+						uploadButtonClass="Titulo"
+						uploadButtonClassDisabled="true" 
+						uploadControlLabel="#{msg['navegacion.label.enviarArchivo']}">
+						<f:facet name="label"><h:outputText value="{_KB}KB de {KB}KB enviado - {mm}:{ss}" styleClass="Descripcion" /></f:facet>
+			   		</rich:fileUpload>
+				</div>
+			</fieldset>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<!--ui:include src="/modal/checador/pnlLogUpload.xhtml" /-->
+		<ui:include src="/modal/checador/pnlMensajes.xhtml" />  
+		<ui:include src="/modal/checador/pnlBusquedaObras.xhtml" />
+	</ui:define>
+</ui:composition>

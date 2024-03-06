@@ -1,0 +1,3 @@
+<connector name="https" protocol="HTTP/1.1" scheme="https" socket-binding="https" secure="true">
+	<ssl key-alias="app4giro.condese.net" password="changeit" certificate-key-file="/root/jboss.keystore"/>
+</connector>

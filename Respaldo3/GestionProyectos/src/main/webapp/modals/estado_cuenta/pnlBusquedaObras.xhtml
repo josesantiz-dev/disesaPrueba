@@ -1,0 +1,118 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlBusquedaObras" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20"
+		onshow="document.getElementById('#{rich:clientId('txtBusquedaObras')}').focus();">
+		<f:facet name="header">
+			<h:outputText value="#{msg['busqueda']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;"
+				value="#{msg['navegacion.gral.cerrar.img']}"
+				onclick="#{rich:component('pnlBusquedaObras')}.hide()" />
+		</f:facet>
+		
+		<rich:hotKey id="richHotKeyObras" enabledInInput="true" preventDefault="true" 
+			selector="#txtBusquedaObras" key="return" 
+			onkeydown="#{rich:element('frmPrincipal:cmdBuscarObra')}.click()" />
+		
+		<a4j:region>
+			<h:panelGroup style="width:100%; margin:0 auto; padding:0;">
+				<h:panelGrid columns="2" columnClasses="colLayoutTop,colLayoutBottom" style="width:100%; margin:0 auto; padding:0; min-height:22px; text-align:left;">
+					<h:panelGroup style="width:100%;">
+						<h:panelGrid columns="3" cellpadding="0" cellspacing="0">
+							<h:inputText id="txtBusquedaObras" maxlength="50" style="width:210px;"
+								value="#{edoCuentaAction.valorBusquedaObra}">
+								<rich:placeholder value="#{msg['busqueda']}" />
+							</h:inputText>
+							
+							<a4j:commandButton id="cmdBuscarObra" style="margin:0 5px; vertical-align: middle; cursor: pointer;"  
+								image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+								action="#{edoCuentaAction.buscarObras}" 
+								oncomplete="buscar(#{edoCuentaAction.band}, '#{rich:clientId('pnlMensajes')}');" 
+								render="dtObras,pnlMensajes"
+								limitRender="true" />
+							
+							<a4j:commandButton id="cmdBusquedaObrasAvanzada" 
+								image="#{msg['toggle.img']}" title="#{msg['busqueda']} #{msg['avanzada']}"
+								onclick="toggleAvanzado(this.id, 'gBusquedaObrasAvanzada', 'cbTipoBusquedaObras', 'txtBusquedaObras');" />
+						</h:panelGrid>
+					</h:panelGroup>
+					
+					<h:panelGroup style="width:100%;">
+					</h:panelGroup>
+				</h:panelGrid>
+				
+				<h:panelGroup id="gBusquedaObrasAvanzada" style="display:none; backgroud-color:#e9e9e9; width:100%; margin:5px auto 0; padding:0;">
+					<h:panelGrid columns="2" style="margin:0; padding:0; text-align:left;">
+						<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+						<h:selectOneMenu id="cbTipoBusquedaObras" style="width:216px"
+							value="#{edoCuentaAction.campoBusquedaObra}">
+							<f:selectItems value="#{edoCuentaAction.opcionesBusquedaObra}" />
+						</h:selectOneMenu>
+						
+						<!--h:outputText value="#{msg['administrativa']}:" styleClass="Titulo" rendered="#{edoCuentaAction.esAdministrativo}" />
+						<h:selectBooleanCheckbox value="#{edoCuentaAction.obraAdministrativa}" rendered="#{edoCuentaAction.esAdministrativo}" /-->
+					</h:panelGrid>
+				</h:panelGroup> 
+				
+				<div class="tableParent" style="display:block; margin:10px auto 0; width:100%; padding:0; height:auto; max-height:480px; overflow-y:auto;"> 
+					<rich:dataTable id="dtObras" value="#{edoCuentaAction.listObras}" var="var" style="margin:0 auto;"
+						cellpadding="0" cellspacing="0" rows="25" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+						<f:facet name="header">
+							<rich:columnGroup>
+								<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:80px;">
+									<h:outputText value="#{msg['id']}" />
+								</rich:column>
+								
+								<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+									<h:outputText value="#{msg['nombre']}" />
+								</rich:column>
+								
+								<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+									<h:outputText value="#{msg['cliente']}" />
+								</rich:column>
+								
+								<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:20px;" />
+							</rich:columnGroup>
+						</f:facet>
+						
+						<rich:column styleClass="Descripcion" style="text-align:center;">
+							<h:outputText value="#{var.id}" />
+						</rich:column>
+						
+						<rich:column styleClass="Descripcion" style="text-align:left;">
+							<h:outputText value="#{var.nombre}" />
+						</rich:column>
+						
+						<rich:column styleClass="Descripcion" style="text-align:left;">
+							<h:outputText value="#{var.nombreCliente}" />
+						</rich:column>
+						
+						<rich:column styleClass="Descripcion" style="text-align:center;">
+						   	<a4j:commandButton id="cmdAgregar" 
+						   		image="#{msg['agregar16.img']}" title="#{msg['seleccionar']}"
+								action="#{edoCuentaAction.seleccionarObra}" 
+								oncomplete="seleccionar(#{edoCuentaAction.band}, '#{rich:clientId('pnlBusquedaObras')}', '#{rich:clientId('pnlMensajes')}');" 
+								render="pnlMensajes,groupObra,txtCliente,groupPorcetajes,groupBotones,dtCobranza"
+								limitRender="true">
+								<f:setPropertyActionListener target="#{edoCuentaAction.pojoObraSeleccionada}" value="#{var}" />
+						   	</a4j:commandButton>
+						</rich:column>
+		
+						<f:facet name="footer"> 
+							<rich:dataScroller for="dtObras" page="#{edoCuentaAction.paginacionObras}" renderIfSinglePage="false"
+								maxPages="10" fastStep="10" ajaxSingle="true" align="center" styleClass="Titulo" />
+						</f:facet>
+					</rich:dataTable>
+				</div>
+			</h:panelGroup>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

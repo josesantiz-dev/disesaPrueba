@@ -1,0 +1,261 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlInsumo" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="5">
+    	<f:facet name="header">
+			<h:outputText value="#{insumosAction.titulo}" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlInsumo')}.hide()" />
+		</f:facet>
+		
+		<h:panelGrid id="botonera" columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+			<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+				<rich:messages id="msgErrorInsumo" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+				</rich:messages>
+				
+				<h:panelGroup rendered="#{insumosAction.pojoInsumo.estatus == 2}" style="float:left; margin:0 5px 0 0;">
+					<h:outputText styleClass="Titulo" style="color:#535353; padding:5px 0; background-color:none;"
+						value="#{msg['suministrada']}" title="#{msg['estatus']}" />
+				</h:panelGroup>
+					
+				<a4j:commandButton id="cmdAgregarProducto" style="margin:0 5px; vertical-align: middle; position:relative;"
+					rendered="#{insumosAction.permisoAdmin}"
+					image="#{msg['agregar22.img']}" title="#{msg['agregar.e']} #{msg['producto']}"
+					action="#{insumosAction.nuevaBusquedaProductos}" 
+					oncomplete="#{rich:component('pnlBusquedaProducto')}.show()"
+					render="pnlBusquedaProducto" limitRender="true" />
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdSalvar" style="float:right; margin:0 5px; vertical-align: middle; position:relative;"
+					rendered="#{(insumosAction.debugging || not insumosAction.imprimible) ? (insumosAction.pojoInsumo.estatus == 0) : false}"
+					image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+					action="#{insumosAction.guardar}" 
+					oncomplete="salvar(#{insumosAction.band}, '#{rich:clientId('pnlInsumo')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrorInsumo')});"
+					render="dtResults, msgErrorInsumo, pnlMensajes" />
+					
+				<a4j:commandButton id="cmdImprimir" style="float:right; margin:0 5px; vertical-align: middle; position:relative;"
+					rendered="#{insumosAction.imprimible}"
+					image="#{msg['imprimir22.img']}" title="#{msg['imprimir.e']}"
+					action="#{insumosAction.exportar}" 
+					oncomplete="reporte(#{insumosAction.band}, '#{rich:clientId('pnlMensajes')}')"
+					render="pnlMensajes" limitRender="true" />
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<div style="display:block; margin:5px auto; width:1000px; max-width:1000px; padding:0; text-align:left;">
+			<h:panelGroup id="grupoDatosGenerales">
+				<fieldset style="margin:5px auto 0; width:982px; text-align:center;">
+					<legend><h:outputText value="#{msg['datosGenerales']}" styleClass="Titulo" /></legend>
+					
+					<h:panelGrid columns="2" columnClasses="colTitulo, colDato" style="margin:5px auto 0; min-width:500px; width:100%; text-align:left;">
+						<h:outputText value="#{msg['obra']}:" styleClass="Titulo" />
+						<h:panelGroup id="pnlObraDatos">
+							<h:panelGrid columns="2">
+								<h:outputText id="txtObra" value="#{insumosAction.pojoInsumo.obra}" styleClass="Titulo" style="text-align:left; display:block;" />
+								<h:panelGroup>
+									<a4j:commandLink id="cmdSeleccionarObraPrincipal" immediate="true"
+										rendered="#{! insumosAction.imprimible}"
+										value="#{insumosAction.pojoInsumo.idObra == null ? msg['seleccionar'] : msg['cambiar'] }" 
+										action="#{insumosAction.nuevaBusquedaObras}" 
+										oncomplete="#{rich:component('pnlBusquedaObras')}.show();"
+										render="pnlBusquedaObras,pnlBusquedaObrasPrincipal,dtObras" />
+										
+									<h:inputText id="txtObraHidden" style="text-align:left;  display:none;"
+										value="#{insumosAction.pojoInsumo.obra}"
+										required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+										requiredMessage="#{msg['obra']} #{msg['mensaje.error.requerido']}" />
+								</h:panelGroup>
+							</h:panelGrid>
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['moneda']}:" styleClass="Titulo"/>
+						<h:panelGroup id="grupoMoneda">
+							<h:selectOneMenu id="cbMoneda" style="width:162px;"
+								disabled="#{not (insumosAction.editable)}"
+								value="#{insumosAction.pojoInsumo.idMoneda}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['moneda']} #{msg['mensaje.error.requerido']}">
+								<f:selectItem itemLabel="#{msg['seleccione']}" />
+								<f:selectItems value="#{insumosAction.listMonedasItems}" />
+					            <a4j:ajax event="change"
+					            	listener="#{insumosAction.evaluaTipoCambio}"
+					            	render="groupTipoCambio"
+					            	limitRender="true" />
+							</h:selectOneMenu>
+							
+							<h:panelGroup id="groupTipoCambio" style="margin:auto 5px auto 10px;">
+								<h:outputText value="#{msg['tc']}: " title="#{msg['tipoCambio']}" styleClass="Titulo" />
+								<h:inputText value="#{insumosAction.tipoCambio}" style="text-align:right; width:60px;" disabled="#{(not (insumosAction.mostrarTipoCambio))}">
+									<f:convertNumber pattern="##0.0000" />
+								</h:inputText>
+							</h:panelGroup>
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['totales']}:" styleClass="Titulo" />
+						<h:panelGroup>
+							<h:panelGrid columns="7" style="margin:0 auto; width:100%;" cellpadding="5" cellspacing="0">
+								<h:panelGroup><h:outputText value="#{msg['materiales']}" styleClass="Descripcion" />
+								<h:inputText id="txtTotalMateriales" styleClass="Descripcion" style="width:90px; text-align: right" readonly="true" 
+									value="#{insumosAction.pojoInsumo.montoMateriales}">
+									<f:convertNumber pattern="$ ###,###,##0.00" />
+								</h:inputText></h:panelGroup>
+								
+								<h:panelGroup><h:outputText value="#{msg['manoDeObra']}" styleClass="Descripcion" />
+								<h:inputText id="txtTotalManoDeObra" styleClass="Descripcion" style="width:90px; text-align: right" readonly="true" 
+									value="#{insumosAction.pojoInsumo.montoManoDeObra}">
+									<f:convertNumber pattern="$ ###,###,##0.00" />
+								</h:inputText></h:panelGroup>
+								
+								<h:panelGroup><h:outputText value="#{msg['herramientas']}" styleClass="Descripcion" />
+								<h:inputText id="txtTotalHerramientas" styleClass="Descripcion" style="width:90px; text-align: right" readonly="true" 
+									value="#{insumosAction.pojoInsumo.montoHerramientas}">
+									<f:convertNumber pattern="$ ###,###,##0.00" />
+								</h:inputText></h:panelGroup>
+								
+								<h:panelGroup><h:outputText value="#{msg['equipos']}" styleClass="Descripcion" />
+								<h:inputText id="txtTotalEquipos" styleClass="Descripcion" style="width:90px; text-align: right" readonly="true" 
+									value="#{insumosAction.pojoInsumo.montoEquipos}">
+									<f:convertNumber pattern="$ ###,###,##0.00" />
+								</h:inputText></h:panelGroup>
+								
+								<h:panelGroup><h:outputText value="#{msg['otrosProductos']}" styleClass="Descripcion" />
+								<h:inputText id="txtTotalOtros" styleClass="Descripcion" style="width:90px; text-align: right" readonly="true" 
+									value="#{insumosAction.pojoInsumo.montoOtros}">
+									<f:convertNumber pattern="$ ###,###,##0.00" />
+								</h:inputText></h:panelGroup>
+						
+								<h:panelGroup><h:outputText value="#{msg['total']}" styleClass="Descripcion" />
+								<h:inputText id="txtTotal" styleClass="Descripcion" style="width:90px; text-align: right" readonly="true"
+									value="#{insumosAction.pojoInsumo.total}">
+									<f:convertNumber pattern="$ ###,###,###,##0.00" />
+								</h:inputText></h:panelGroup>
+								
+								<h:panelGroup><h:outputText value="#{msg['porcentaje']}" styleClass="Descripcion" />
+								<h:inputText id="txtPorcentajes" styleClass="Descripcion" style="width:50px; text-align: right" readonly="true"
+									value="#{insumosAction.insumosPorcentaje}">
+									<f:convertNumber pattern="##0.00" />
+								</h:inputText></h:panelGroup>
+							</h:panelGrid>
+						</h:panelGroup>
+					</h:panelGrid>
+					
+					<div class="tableParent" style="display:block; margin:5px auto 0; padding:0; min-width:700px; width:100%; height:auto; max-height:380px; overflow-y:auto;">
+						<rich:dataTable id="dtInsumos" value="#{insumosAction.listInsumosItems}" var="item" style="margin:0 auto;"
+							cellpadding="0" cellspacing="0" rows="50" border="0" rowClasses="Row2" styleClass="tabla_pagina">
+							<f:facet name="header">
+								<rich:columnGroup>
+									<rich:column styleClass="Titulo" style="text-align:center; width:70px;">
+										<h:outputText value="#{msg['id']}" /> 
+									</rich:column>
+									
+									<rich:column styleClass="Titulo" style="text-align:center; width:90px;">
+										<h:outputText value="#{msg['clave']}" /> 
+									</rich:column>
+									
+									<rich:column styleClass="Titulo" style="text-align:center;">
+										<h:outputText value="#{msg['descripcion']}" />
+									</rich:column>
+									
+									<rich:column styleClass="Titulo" style="text-align:center; width:100px;">
+										<h:outputText value="#{msg['unidad']}" />
+									</rich:column>
+									
+									<rich:column styleClass="Titulo" style="text-align:center; width:90px;">
+										<h:outputText value="#{msg['cantidad']}" />
+									</rich:column>
+									
+									<rich:column styleClass="Titulo" style="text-align:center; width:100px;">
+										<h:outputText value="#{msg['costoUnitario']}" />
+									</rich:column>
+									
+									<rich:column styleClass="Titulo" style="text-align:center; width:100px;">
+										<h:outputText value="#{msg['importe']}" />
+									</rich:column>
+									
+									<rich:column styleClass="Titulo" style="text-align:center; width:50px;">
+										<h:outputText value="#{msg['%']}" />
+									</rich:column>
+									
+									<rich:column styleClass="Titulo" style="text-align:center; width:50px;">
+										<h:outputText value="#{msg['suministro']}" />
+									</rich:column>
+								</rich:columnGroup>
+							</f:facet>
+							
+							<rich:column styleClass="Titulo" style="text-align:left;" colspan="6">
+								<rich:collapsibleSubTableToggler for="stInsumos" />
+								<h:outputText value="#{item.nombre}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:right;">
+								<h:outputText value="#{item.monto}"><f:convertNumber pattern="###,###,##0.00" /></h:outputText>
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center;">
+								<h:outputText value="#{item.porcentaje}"><f:convertNumber pattern="##0.00" /></h:outputText>
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center;">
+								<h:outputText value="#{msg['navegacion.label.vacio']}" />
+							</rich:column>
+							
+							<rich:collapsibleSubTable id="stInsumos" value="#{item.detalles}" var="var" expandMode="client" rowClasses="Row1, Row2">
+								<rich:column styleClass="Descripcion" style="text-align:center;">
+									<h:outputText value="#{var.idProducto.id}" /> 
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:center;">
+									<h:outputText value="#{var.idProducto.clave}" /> 
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:left;">
+									<h:outputText value="#{var.nombreProducto}" />
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:center;">
+									<h:outputText value="#{var.unidad}" />
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:right;">
+									<h:outputText value="#{var.cantidad}"><f:convertNumber pattern="#0.00"/></h:outputText>
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:right;">
+									<h:outputText value="#{var.precioUnitario}"><f:convertNumber pattern="###,###,##0.00"/></h:outputText>
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:right;">
+									<h:outputText value="#{var.monto}"><f:convertNumber pattern="###,###,##0.00"/></h:outputText>
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:center;">
+									<h:outputText value="#{var.porcentaje}"><f:convertNumber pattern="#0.00"/></h:outputText>
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:right;">
+									<h:outputText value="#{var.suministrado}" title="#{var.cantidadSurtida}"><f:convertNumber pattern="#0.00 %"/></h:outputText>
+								</rich:column>
+							</rich:collapsibleSubTable>
+							
+							<f:facet name="footer">
+								<rich:dataScroller page="#{insumosAction.numPaginaMateriales}" for="dtInsumos" renderIfSinglePage="false" 
+									align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+							</f:facet>
+						</rich:dataTable>
+					</div>
+				</fieldset>
+			</h:panelGroup>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

@@ -1,0 +1,104 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlBusquedaConceptos" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+		<f:facet name="header">
+			<h:outputText value="#{msg['busqueda']} #{msg['conceptoFacturacion']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlBusquedaConceptos')}.hide()" />
+		</f:facet>
+		
+		<div style="display: block; min-width:500px; height: 22px;">
+			<a4j:commandButton id="cmdBuscarConceptos" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+				image="#{msg['buscar22.img']}"  
+				action="#{facturaAction.buscarConceptos}"
+				oncomplete="buscarConceptos(#{facturaAction.band}, '#{rich:clientId('pnlMensajes')}');" 
+				render="dtConceptos,pnlMensajes"
+				limitRender="true">
+				<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarConceptos"/>
+			</a4j:commandButton>
+		</div>
+
+		<div class="div_pagina" style="margin:10px auto 0; padding:0;">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin:0 auto 10px; display:block;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+				<h:selectOneMenu value="#{facturaAction.campoBusquedaConceptos}" style="width: 216px">
+					<f:selectItems value="#{facturaAction.tiposBusquedaConceptos}" />
+				</h:selectOneMenu>
+	        
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText maxlength="50" style="width: 210px"
+					value="#{facturaAction.valBusquedaConceptos}" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtConceptos" value="#{facturaAction.listConceptoFacturacion}" var="var" style="margin:0 auto;"
+				rowClasses="Row1, Row2" cellpadding="0" cellspacing="0" rows="5" border="0" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="text-align:center; width:auto; max-width:100px;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:auto; max-width:450px;" styleClass="Titulo">
+							<h:outputText value="#{msg['descripcion']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:auto; max-width:120px;" styleClass="Titulo">
+							<h:outputText value="#{msg['cuentaContable']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:auto; max-width:100px;" styleClass="Titulo">
+							<h:outputText value="#{msg['claveSat']}" />
+						</rich:column>
+
+						<rich:column style="text-align:center; width:auto; max-width:60px;" styleClass="Titulo">
+							<h:outputText value="#{msg['seleccionar']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="width:auto; max-width:100px; text-align:center; padding-left: 5px;">
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="width:auto; max-width:450px; text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.descripcion}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="width:auto; max-width:120px; text-align:center; padding-left: 5px;">
+					<h:outputText value="#{var.cuentaContable}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="width:auto; max-width:100px; text-align:center; padding-left: 5px;">
+					<h:outputText value="#{var.claveSat}" />
+				</rich:column>
+				
+				<rich:column style="width:auto; max-width:60px; text-align:center;" styleClass="Descripcion">
+				   <a4j:commandButton id="cmdSelConcepto" image="#{msg['agregar16.img']}" 
+						onclick="#{rich:component('pnlBusquedaConceptos')}.hide();" 
+						action="#{facturaAction.seleccionarConcepto}"
+						render="pnlConceptoDatos,txtConcepto,cmdSeleccionarConcepto"
+						limitRender="true">
+						<rich:tooltip showDelay="300" value="#{msg['seleccionar']}" for="cmdSelConcepto" />	
+						<f:setPropertyActionListener target="#{facturaAction.pojoConcepto}" value="#{var}" />
+				   </a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller id="dScroll" align="center" for="dtConceptos" maxPages="10"
+						ajaxSingle="true" page="#{facturaAction.numPaginaConceptos}" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+    
+</ui:composition>

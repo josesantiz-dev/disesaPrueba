@@ -1,0 +1,183 @@
+<!DOCTYPE composition>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich"
+	template="/layout/template.xhtml">
+
+	<ui:define name="title">
+		<h:outputText value="#{msg['navegacion.modulo']} - Registro de Gastos" />
+	</ui:define>
+
+	<ui:define name="menuFrag">
+		<rich:toolBarGroup location="right" style="padding:0 2px 0 2px;">
+			<a4j:commandButton id="cmdBuscar" style="margin:0 0 0 5px; cursor: pointer;"
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+				onclick="#{rich:element('cmdBuscar')}.disabled = true;" 
+				action="#{registroGastosAction.buscar}" 
+				oncomplete="#{rich:element('cmdBuscar')}.disabled = false; buscar(#{registroGastosAction.encontroMismoGrupo},'pnlMensajes')"
+				reRender="dtResultsGastos,pnlMensajes"
+				limitToList="true" />
+		</rich:toolBarGroup>
+		
+		<rich:toolBarGroup location="right" style="padding:0 2px 0 2px;">
+			<a4j:commandButton id="cmdNuevo" style="margin:0 0 0 5px; cursor: pointer;"
+				image="#{msg['nuevo22.img']}" title="#{msg['nuevo.e']}"
+				onclick="#{rich:element('cmdNuevo')}.disabled = true;" 
+				action="#{registroGastosAction.nuevo}"  
+				oncomplete ="Richfaces.showModalPanel('pnlGasto'); #{rich:element('cmdNuevo')}.disabled = false;" 
+				reRender="pnlGasto" />
+		</rich:toolBarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<a4j:keepAlive beanName="registroGastosAction" />
+		<a4j:loadStyle src="resource:///resources/css/gastos/acc.css" />
+		<a4j:loadStyle src="resource:///resources/css/gastos/comprobacionGastos.css" />
+		<a4j:loadScript src="resource:///resources/scripts/gastos/registroGastos.js"/>
+		<br/>
+		
+		<h:panelGrid columns="2" style="margin: 10px auto; display:block;" width="720">
+			<h:outputText value="#{msg['navegacion.label.beneficiario']}:" styleClass="Titulo" />	  				
+			<rich:comboBox id="cmbTipoBusqueda" listStyle="text-align:left;" enableManualInput="false"
+				value="#{registroGastosAction.valTipoBusqueda}" 
+				suggestionValues="#{registroGastosAction.tipoBusqueda}" />
+			
+			<h:outputText value="#{msg['navegacion.label.valor']}:" styleClass="Titulo" />
+			<h:inputText id="txtvalor" maxlength="15" 
+				value="#{registroGastosAction.campoBusqueda}" />
+		</h:panelGrid>
+
+		<rich:dataTable id="dtResultsGastos" var="gasto" value="#{registroGastosAction.listGastos}" rows="100" 
+			cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" style="margin:0 auto 20px; min-width:720px; width:100%;">
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column colspan="#{registroGastosAction.debugging ? 10 : 8}" styleClass="Titulo">
+						<h:outputText value="#{msg['navegacion.label.gastos']}"/>
+					</rich:column>
+					
+					<rich:column breakBefore="true" style="text-align:center; width:100px;" styleClass="Titulo">
+						<h:outputText value="#{msg['navegacion.label.id']}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+						<h:outputText value="#{msg['navegacion.label.cheque']}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+						<h:outputText value="#{msg['navegacion.label.fecha']}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['navegacion.label.beneficiario']}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+						<h:outputText value="#{msg['navegacion.label.monto']}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['navegacion.label.concepto']}" />
+					</rich:column>
+					
+					<rich:column colspan="#{registroGastosAction.debugging ? 4 : 2}" style="text-align:center; width:40px;" styleClass="tygImpTit">
+						<h:outputText value="" />
+					</rich:column>  
+				</rich:columnGroup>
+			</f:facet>
+			
+			<rich:column style="text-align:center; width:100px;">
+				<h:outputText value="#{gasto.id}" styleClass="#{gasto.estatus == 'C' ? 'Descripcion' : 'tygRowCancelado'}" />
+			</rich:column>
+			
+			<rich:column style="text-align:center; width:100px;">
+				<h:outputText value="#{gasto.noCheque}" styleClass="#{gasto.estatus == 'C' ? 'Descripcion' : 'tygRowCancelado'}" />
+			</rich:column>
+			
+			<rich:column style="text-align:center; width:100px;">
+				<h:outputText value="#{gasto.fecha}" styleClass="#{gasto.estatus == 'C' ? 'Descripcion' : 'tygRowCancelado'}">
+					<f:convertDateTime pattern="dd-MM-yyyy" />
+				</h:outputText>
+			</rich:column>
+			
+			<rich:column style="text-align:left;">
+				<h:outputText value="#{gasto.beneficiario}" styleClass="#{gasto.estatus == 'C' ? 'Descripcion' : 'tygRowCancelado'}" />
+			</rich:column>
+			
+			<rich:column style="text-align:right; width:100px;">
+				<h:outputText value="#{gasto.monto}" styleClass="#{gasto.estatus == 'C' ? 'Descripcion' : 'tygRowCancelado'}">
+					<f:convertNumber pattern="###,###,##0.00" /> 
+				</h:outputText>
+			</rich:column>
+			
+			<rich:column style="text-align:left;">
+				<h:outputText value="#{gasto.concepto}" styleClass="#{gasto.estatus == 'C' ? 'Descripcion' : 'tygRowCancelado'}"/>
+			</rich:column>
+			
+			<rich:column style="text-align:center; width:20px;" rendered="#{registroGastosAction.debugging}">
+				<a4j:commandButton id="btnMensajeTRegistroGasto" style="cursor: pointer;" 
+					image="#{msg['devolucion16.img']}" title="#{msg['enviar']}"
+					rendered="#{gasto.estatus == 'C'}" 
+					action="#{registroGastosAction.mensajeTransaccion}"> 
+					<f:setPropertyActionListener target="#{registroGastosAction.pojoGtosComp}" value="#{gasto}" />
+				</a4j:commandButton>
+			</rich:column>
+			
+			<rich:column style="text-align:center; width:20px;" >
+				<a4j:commandButton id="btnImprimirRegistroGasto"
+					image="#{msg['imprimir16.img']}" title="#{msg['imprimir.e']}"
+					rendered="#{gasto.estatus == 'C'}"
+					onclick="Richfaces.showModalPanel('pnlReportes1');">
+					<f:setPropertyActionListener target="#{registroGastosAction.pojoGtosComp}" value="#{gasto}" />
+				</a4j:commandButton>
+			</rich:column>
+			
+			<rich:column style="text-align:center; width:20px;" rendered="#{registroGastosAction.debugging}">
+				<a4j:commandButton id="btnEditarRegistogastos"
+					image="#{msg['editar16.img']}" title="#{msg['editar.e']}"
+					rendered="#{gasto.estatus == 'C'}" 
+					action="#{registroGastosAction.editar}" 
+					oncomplete="editar(#{registroGastosAction.encontroMismoGrupo}, 'pnlGasto', 'pnlMensajes2')" 
+					reRender="pnlGasto,pnlMensajes2,txtCta">
+					<f:setPropertyActionListener target="#{registroGastosAction.pojoGtosComp}" value="#{gasto}" />
+				</a4j:commandButton>
+			</rich:column>
+			
+			<rich:column style="text-align:center; width:20px;" >
+				<a4j:commandButton id="btnEliminarRegistroGasto"
+					image="#{msg['cancelar16.img']}" title="#{msg['cancelar.e']}"
+					rendered="#{gasto.estatus == 'C'}" 
+					action="#{registroGastosAction.checaCancelado}" 
+					oncomplete="borrar(#{registroGastosAction.encontroMismoGrupo}, 'pnlCancelar', 'pnlMensajes2')" 
+					reRender="pnlCancelar, pnlMensajes2">
+					<f:setPropertyActionListener target="#{registroGastosAction.pojoGtosComp}" value="#{gasto}" />
+				</a4j:commandButton>
+			</rich:column>
+			
+			<f:facet name="footer">
+				<rich:datascroller align="center" for="dtResultsGastos" maxPages="10" ajaxSingle="true" 
+				page="#{registroGastosAction.numPagina}" id="dScroll" styleClass="tygImpTit" />
+			</f:facet>
+		</rich:dataTable>
+		
+		<a4j:log rendered="false" popup="false" level="ALL" mode="inline" style="max-height:150px; max-width: 500px;" />
+	</ui:define>
+
+	<ui:define name="modals">
+		<ui:include src="/modal/RegistroGastos/pnlMensajes.xhtml" />
+		<ui:include src="/modal/RegistroGastos/pnlMensajes2.xhtml" />
+		<ui:include src="/modal/RegistroGastos/pnlGasto.xhtml" />
+		<ui:include src="/modal/RegistroGastos/pnlFactura.xhtml" />
+		<ui:include src="/modal/RegistroGastos/pnlUploadFile.xhtml" /> 
+		<ui:include src="/modal/RegistroGastos/pnlBusquedaConceptos.xhtml" />
+		<ui:include src="/modal/RegistroGastos/pnlBusquedaObras.xhtml" />
+		<ui:include src="/modal/RegistroGastos/pnlBusquedaOrdenCompra.xhtml" />
+		<ui:include src="/modal/RegistroGastos/pnlBusquedaRetenciones.xhtml" />
+		<ui:include src="/modal/RegistroGastos/pnlCancelarCheque.xhtml" />
+		<ui:include src="/modal/RegistroGastos/pnlCancelar.xhtml" />
+		<ui:include src="/modal/RegistroGastos/pnlEliminar.xhtml" />
+		<ui:include src="/modal/RegistroGastos/pnlReportes.xhtml" />
+	</ui:define>
+</ui:composition>

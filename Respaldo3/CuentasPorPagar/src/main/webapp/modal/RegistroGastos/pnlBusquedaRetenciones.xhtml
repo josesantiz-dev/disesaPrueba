@@ -1,0 +1,110 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:rich="http://richfaces.org/rich" 
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+	<rich:modalPanel autosized="true" id="pnlBusquedaRetenciones">
+		<f:facet name="header">
+			<h:outputText styleClass="Titulo" value="#{msg['navegacion.label.buscarRetencion']}"/>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage id="imgCerrarBuscarRetenciones" style="cursor:pointer;" value="#{msg['navegacion.panel.cerrar.img']}"/>
+				<rich:componentControl attachTo="imgCerrarBuscarRetenciones" event="onclick" for="pnlBusquedaRetenciones" operation="hide"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmBuscarRetenciones">
+			<a4j:region id="loadBuscarRetenciones">
+				<div style="display: block; width:380px; height: 22px;margin-bottom:10px;">
+					<h:panelGrid columns="2" style="float:right; margin-right:5px;">
+						<h:panelGroup style="vertical-align: middle; position:relative; ">
+							<a4j:commandButton id="cmdBusquedaRet" style="vertical-align: middle; position:relative; cursor: pointer;"
+								image="#{msg['buscar22.img']}" 
+								action="#{registroGastosAction.buscarRet}" 
+								oncomplete="msgRevisando(#{rich:element('msgErrorGasto')},'pnlBusquedaRetenciones','pnlMensajes',#{registroGastosAction.encontroMismoGrupo},'buscar','#{registroGastosAction.resOperacion}'); #{rich:element('cmdBusquedaRet')}.disabled = false;" 
+								reRender="dtRetEncontradas,pnlMensajes" />
+							<h:outputLabel for="cmdBusquedaRet" style="vertical-align:middle; position:relative; cursor:pointer;" styleClass="Titulo" value="#{msg['buscar.e']}"/>
+						</h:panelGroup>
+						
+						<h:panelGroup style="vertical-align: middle; position:relative;">
+							<a4j:status for="loadBuscarRetenciones">
+								<f:facet name="start">
+									<h:graphicImage style="vertical-align: middle; position:relative;" value="#{msg['navegacion.loading.loading16.img']}"/>
+								</f:facet>
+								<f:facet name="stop">
+									<h:graphicImage style="vertical-align: middle; position:relative;" value="#{msg['navegacion.loading.loading_stop16.img']}"/>
+								</f:facet>
+							</a4j:status>
+						</h:panelGroup>
+					</h:panelGrid>
+				</div>
+				
+				<h:panelGrid id="pnlDatosBusquedaRet" columns="2">
+					<h:outputText styleClass="Titulo" value="#{msg['navegacion.label.tipoBusqueda']}"/>
+					<rich:comboBox enableManualInput="false" 
+						value="#{registroGastosAction.campoBusqRet}"
+						suggestionValues="#{registroGastosAction.listBusqRet}" />
+						
+					<h:outputText styleClass="Titulo" value="#{msg['navegacion.label.valor']}" />
+					<h:inputText value="#{registroGastosAction.valBusqRet}" />
+				</h:panelGrid>
+				
+				<rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtRetEncontradas" rowClasses="Row1, Row2" rows="6" style="margin:auto;" value="#{registroGastosAction.listRetEncontradas}" var="retEnc" width="320">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column colspan="4" styleClass="Titulo">
+								<h:outputText value="#{msg['retencion']}"/>
+							</rich:column>
+							
+							<rich:column breakBefore="true" styleClass="Titulo">
+								<h:outputText value="#{msg['navegacion.label.clave']}"/>
+							</rich:column>
+							
+							<rich:column styleClass="Titulo">
+								<h:outputText value="#{msg['navegacion.label.concepto']}"/>
+							</rich:column>
+							
+							<rich:column styleClass="Titulo">
+								<h:outputText value="#{msg['navegacion.label.ctaCont']}"/>
+							</rich:column>
+							
+							<rich:column styleClass="Titulo">
+								<h:outputText value=""/>
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column style="text-align:center;" styleClass="tygCompGtosDesc" width="200">
+						<h:outputText value="#{retEnc.valorId}"/>
+					</rich:column>
+					
+					<rich:column style="text-align:center;" styleClass="tygCompGtosDesc" width="200">
+						<h:outputText value="#{retEnc.descripcion}"/>
+					</rich:column>
+					
+					<rich:column styleClass="tygCompGtosDesc" width="100">
+						<h:outputText styleClass="tygCompGtosDesc" value="#{retEnc.valor}"/>
+					</rich:column>
+					
+					<rich:column style="text-align:center; " width="20">
+						<a4j:commandButton id="cmdAgregaRet" 
+							image="#{msg['agregar16.img']}" 
+							onclick="#{rich:element('cmdAgregaRet')}.disabled = true;" 
+							action="#{registroGastosAction.agregaRet}" 
+							oncomplete="agregaRet('pnlBusquedaRetenciones','pnlMensajes','#{registroGastosAction.resOperacion}'); #{rich:element('cmdAgregaRet')}.disabled = false;" 
+							reRender="dtDesgloseImpuestos,pnlMensajes,txtTotalRet">
+							<f:setPropertyActionListener target="#{registroGastosAction.pojoNvaRet}" value="#{retEnc}"/>
+							<rich:toolTip showDelay="300">
+								<h:outputText styleClass="Descripcion" value="#{msg['agregar.e']}"/>
+							</rich:toolTip>
+						</a4j:commandButton>
+					</rich:column>
+				</rich:dataTable>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

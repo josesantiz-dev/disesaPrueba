@@ -1,0 +1,168 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    template="../template/template-operaciones.xhtml">
+
+	<h:head>
+		<meta http-equiv="X-UA-Compatible" content="EmulateIE8" />
+		<meta content='text/html; charset=UTF-8' http-equiv="Content-Type" />
+		<title>::.PROCESOS.::</title>
+		<h:outputStylesheet library="css" name="Main.css" />
+		<h:outputScript library="javascript" name="Main.js" />
+	</h:head>
+
+    <ui:define name="content">
+		<rich:dataTable id="dtProcesos" value="#{procesos.lista}" var="pro" rows="50" rowClasses="letra-row1, letra-row2" style="width:100%">
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column >id</rich:column>
+					<rich:column >Programa</rich:column>
+					<rich:column >Fecha Inicio</rich:column>
+					<rich:column >Fecha finaliza</rich:column>
+					<rich:column >Estatus</rich:column>
+					<rich:column colspan="5"/>
+				</rich:columnGroup>
+			</f:facet>
+			
+			<rich:column>
+				<h:outputText value="#{pro.id}" />
+			</rich:column>
+			
+			<rich:column>
+				<h:outputText value="#{pro.programa}" />
+			</rich:column>
+			
+			<rich:column>
+				<h:outputText value="#{pro.startTime}"><f:convertDateTime pattern="dd-MMM-yyyy HH:mm" /></h:outputText>
+			</rich:column>
+			
+			<rich:column>
+				<h:outputText value="#{pro.endTime}"><f:convertDateTime pattern="dd-MMM-yyyy HH:mm" /></h:outputText>
+			</rich:column>
+			
+			<rich:column>
+				<h:outputText value="#{pro.phaseCompleto}" />
+			</rich:column>
+			
+			<rich:column>
+				<a4j:commandButton rendered="#{pro.phase == 'R' || pro.phase == 'S'}" style="margin-right:6px;"
+					image="/resources/#{msgProc['comun.ruta._16']}#{pro.phase == 'R' ? msgProc['comun.img.symbolBluePause'] : msgProc['comun.img.symbolBluePlay']}" 
+					action="#{procesos.pausaRanudarJob}" 
+					oncomplete="#{rich:component('popDesc')}.show()">
+					<rich:tooltip value="#{pro.phase == 'R' ? 'Suspender' : 'Reanudar'}" styleClass="letra-titulo-body"/>
+					<f:setPropertyActionListener target="#{procesos.job}" value="#{pro}"/>
+				</a4j:commandButton>
+			</rich:column>
+			
+			<rich:column>
+				<a4j:commandButton rendered="#{pro.phase == 'R' || pro.phase == 'S'}" style="margin-right:6px;"
+					image="/resources/#{msgProc['comun.ruta._16']}#{msgProc['comun.img.symbolBlueStop']}"
+					action="#{procesos.cancelarJob}" 
+					oncomplete="#{rich:component('popDesc')}.show()">
+					<rich:tooltip value="Interrumpir" styleClass="letra-titulo-body"/>
+					<f:setPropertyActionListener target="#{procesos.job}" value="#{pro}"/>
+				</a4j:commandButton>
+			</rich:column>
+			
+			<rich:column>
+				<a4j:commandButton style="margin-right:6px;"
+					image="/resources/#{msgProc['comun.ruta._16']}#{msgProc['comun.img.editTextDocument']}"
+					oncomplete="#{rich:component('popDesc')}.show()" 
+					render="popDesc">
+					<rich:tooltip value="Detalles" styleClass="letra-titulo-body"/>
+					<f:setPropertyActionListener target="#{procesos.job}" value="#{pro}"/>
+				</a4j:commandButton>
+			</rich:column>
+			
+			<rich:column>
+				<a4j:commandButton style="margin-right:6px;"
+					image="/resources/#{msgProc['comun.ruta._16']}#{msgProc['comun.img.arrowDown']}"
+					action="#{procesos.obtenerSalida}"
+					oncomplete="javascript:window.open('#{msgAdminProc['urlapp']}/documentos/ReporteGeneric.faces', 'Documentos', 'menubar=0, toolbar=0, scrollbars=1, location=0, status=1');">
+					<rich:tooltip value="Salida" styleClass="letra-titulo-body"/>
+					<f:setPropertyActionListener target="#{procesos.job}" value="#{pro}"/>	
+				</a4j:commandButton>
+			</rich:column>
+			
+			<rich:column>
+				<a4j:commandButton style="margin-right:6px;"
+					image="/resources/#{msgProc['comun.ruta._16']}#{msgProc['comun.img.arrowDown']}"
+					action="#{procesos.obtenerLog}"
+					oncomplete="javascript:window.open('#{msgAdminProc['urlapp']}/documentos/ReporteGeneric.faces', 'Documentos', 'menubar=0, toolbar=0, scrollbars=1, location=0, status=1');">
+					<rich:tooltip value="Log" styleClass="letra-titulo-body" />
+					<f:setPropertyActionListener target="#{procesos.job}" value="#{pro}" />	
+				</a4j:commandButton>	
+			</rich:column>
+		</rich:dataTable>
+		
+		<rich:popupPanel id="popDesc" header="#{procesos.job.programa}" headerClass="letra-titulo-header" modal="true" autosized="true" resizeable="false" domElementAttachment="form">
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage style="cursor:pointer;" 
+						value="/resources/#{msgProc['comun.ruta.app']}#{msgProc['comun.img.cerrar']}" 
+						onclick="#{rich:component('popDesc')}.hide();" />
+				</h:panelGroup>
+			</f:facet>
+			
+			<div style="display:block; width: 300px; float:center;" align="center">
+				<h:panelGrid columns="2">
+					<h:outputText value="Id:" />
+					<h:outputText value="#{procesos.job.id}" />
+					
+					<h:outputText value="Programa:" />
+					<h:outputText value="#{procesos.job.programa}" />
+					
+					<h:outputText value="Fecha Inicio:" />
+					<h:outputText value="#{procesos.job.startTime}" >
+						<f:convertDateTime pattern="dd-MMM-yyyy HH:mm" />
+					</h:outputText>
+					
+					<h:outputText value="Fecha finaliza:" />
+					<h:outputText value="#{procesos.job.startTime}" >
+						<f:convertDateTime pattern="dd-MMM-yyyy HH:mm" />
+					</h:outputText>
+					
+					<h:outputText value="Fecha previa ejecucion:" />
+					<h:outputText value="#{procesos.job.prevFireTime}" >
+						<f:convertDateTime pattern="dd-MMM-yyyy HH:mm" />
+					</h:outputText>
+					
+					<h:outputText value="Fecha siguiente ejecucion:" />
+					<h:outputText value="#{procesos.job.nextFireTime}" >
+						<f:convertDateTime pattern="dd-MMM-yyyy HH:mm" />
+					</h:outputText>
+					
+					<h:outputText value="Estatus:" />
+					<h:outputText value="#{procesos.job.phaseCompleto}" />
+				</h:panelGrid>
+				
+				<a4j:commandButton immediate="false" style="margin-top:10px; cursor:pointer;" 
+					onclick="#{rich:component('popDesc')}.hide()"
+					value="#{msgProc['message.aceptar']}" />
+			</div>
+		</rich:popupPanel>
+		
+		<rich:popupPanel id="pnlPopupMensajes" header="#{procesos.resOperacion == '' ? msgProc['message.informacion'] : msgProc['message.atencion']}" headerClass="letra-titulo-header" modal="true" autosized="true" width="350" resizeable="false" domElementAttachment="form">
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage style="cursor:pointer;" 
+						value="/resources/#{msgProc['comun.ruta.app']}#{msgProc['comun.img.cerrar']}" 
+						onclick="#{rich:component('pnlPopupMensajes')}.hide();" />
+				</h:panelGroup>
+			</f:facet>
+			
+			<div style="display:block; width: 300px; float:center;" align="center">
+				<h:panelGroup>
+					<h:outputText value="#{msgProc['message.informacionReg']}" rendered="#{procesos.resOperacion == ''}" style="display:block;" styleClass="letra-titulo-body" />
+			       	<h:outputText value="#{procesos.resOperacion}" rendered="#{procesos.resOperacion != ''}" style="display:block;" styleClass="letra-titulo-body"/>
+				</h:panelGroup>
+				<a4j:commandButton immediate="false" style="margin-top:10px; cursor:pointer;"
+					onclick="#{rich:component('pnlPopupMensajes')}.hide()"
+					value="#{msgProc['message.aceptar']}" />
+			</div>
+		</rich:popupPanel>
+	</ui:define>
+</ui:composition>

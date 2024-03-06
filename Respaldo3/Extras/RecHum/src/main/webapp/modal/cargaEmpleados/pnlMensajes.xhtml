@@ -1,0 +1,45 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlMensajes" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText style="cursor:pointer;"
+				value="#{cargaEmp.operacion ? msg['atencion'] : msg['informacion']}" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.panel.cerrar.img']}" 
+				onclick="#{rich:component('pnlMensajes')}.hide()" />
+		</f:facet>
+
+		<h:panelGrid columns="1" style="text-align:center; min-width:200px;" cellspacing="10">
+			<h:outputText styleClass="Descripcion" rendered="#{cargaEmp.tipoMensaje ==  0}" value="#{msg['mensaje.info.infoReg']} #{cargaEmp.mensaje}" />
+			<h:outputText styleClass="Descripcion" rendered="#{cargaEmp.tipoMensaje ==  1}" value="#{msg['mensaje.error.inesperado']}" /> 
+			
+			<h:outputText styleClass="Descripcion" rendered="#{cargaEmp.tipoMensaje == -1}" 
+				value="#{cargaEmp.mensaje}" escape="#{cargaEmp.escapeForInputMesssage}" />
+			
+			<h:outputText styleClass="Descripcion" rendered="#{cargaEmp.resRegistros != ''}" 
+				value="#{cargaEmp.resRegistros}" escape="false" /> 
+			
+			<a4j:commandButton value="#{msg['navegacion.label.aceptar']}"
+				rendered="#{cargaEmp.operacion == false}"
+				onclick="#{rich:component('pnlMensajes')}.hide()"
+				action="#{cargaEmp.nuevo}"
+				render="fsCargaEmpleados,miUploadFile"
+				limitRender="true" />
+				
+			<a4j:commandButton value="#{msg['cerrar.e']}" 
+				rendered="#{cargaEmp.operacion == true}"
+				onclick="#{rich:component('pnlMensajes')}.hide()"
+				render="fsCargaEmpleados,miUploadFile"
+				limitRender="true" />
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

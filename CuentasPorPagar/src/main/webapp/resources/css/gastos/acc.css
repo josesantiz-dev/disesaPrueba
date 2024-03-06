@@ -1,0 +1,93 @@
+.Row1{
+	background: #FFFFFF;
+}
+.Row2{
+	background: #F1F1F1;
+}
+.Row3{
+	background: #D1D1D1;
+}
+.Row4{
+	background: #DDDDDD;
+}
+.Titulo{
+	font-weight: bold;
+	font-size: 12px;
+	color:#525252;
+}
+.Titulo10{
+	font-weight: bold;
+	font-size: 10px;
+	color:#525252;
+}
+.Titulo8{
+	font-weight: bold;
+	font-size: 8px;
+	color:#525252;
+}
+.Descripcion{
+	font-weight: bold;
+	font-size: 12px;
+	color:#808080;
+}
+.Descripcion10{
+	font-weight: bold;
+	font-size: 10px;
+	color:#808080;
+}
+.Descripcion8{
+	font-weight: bold;
+	font-size: 8px;
+	color:#808080;
+}
+.Observacion{
+	font-weight: bold;
+	font-size: 12px;
+	color:#C0C0C0;
+}
+.Err{
+	text-align:left;
+	font-size: 12px;
+	color:red;
+}
+.tygRowCancelado{
+	color: #FF5959;
+}
+
+.colLayout, .colLayoutTop {
+	vertical-align:top;
+}
+
+.colLayoutMiddle {
+	vertical-align:middle;
+}
+
+.colLayoutBottom {
+	vertical-align:bottom;
+}
+.tdToLeft {
+	text-align: left;
+	vertical-align:center;
+	width:50%;
+}
+.tdToRight {
+	text-align: right;
+	vertical-align:center;
+	width:50%;
+}
+
+.tableParent .tabla_pagina thead {
+	position: -webkit-sticky;
+	position: sticky;
+	top:0;
+}
+
+hr {
+	height:1px; 
+	border:none; 
+	color:#cccccc; 
+	background-color:#cccccc;
+	width:90%; 
+	text-align:center;
+	margin:5px auto;
+}

@@ -1,0 +1,30 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlMensajes" autosized="true"
+		onshow="document.getElementById('#{rich:clientId('pnlMensajesOk')}').focus();">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<a4j:form id="frmMensajes" style="text-align:center; margin:0; padding:0; min-width:300px; max-width:500px; width:auto;">
+			<h:panelGrid columns="1" style="text-align:center; margin:0; padding:0; width:100%;" cellspacing="0">
+				<h:outputText style="display:block;" styleClass="Descripcion"
+					value="#{msg['mensaje.info.infoReg']}" 
+					rendered="#{reegAction.tipoMensaje eq 0}" />
+				
+				<h:outputText style="display:block;" styleClass="Descripcion" escape="false"
+					value="#{reegAction.mensaje}" 
+					rendered="#{not (reegAction.tipoMensaje eq 0)}" />
+			</h:panelGrid>
+			
+			<a4j:commandButton id="pnlMensajesOk" style="margin:10px auto 0; width:100px; cursor:pointer;" 
+				onclick="#{rich:component('pnlMensajes')}.hide()" 
+				value="#{msg['navegacion.label.aceptar']}" />
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

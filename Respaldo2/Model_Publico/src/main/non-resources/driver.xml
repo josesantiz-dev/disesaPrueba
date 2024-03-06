@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<driver name="postgresql" module="org.postgresql">
+	<xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+</driver>

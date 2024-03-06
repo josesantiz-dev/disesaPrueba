@@ -1,0 +1,36 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlMensajes" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" />
+		</f:facet>
+
+		<h:panelGrid columns="1" style="text-align:center; min-width:300px; max-width:500px;" cellspacing="0" cellpadding="0">
+			<h:outputText rendered="#{insumosAction.tipoMensaje == -1}" value="#{insumosAction.mensaje}" styleClass="Descripcion" escape="#{insumosAction.escapeForInputMesssage}" />
+			<h:outputText rendered="#{insumosAction.tipoMensaje ==  0}" value="#{msg['mensaje.info.infoReg']}" styleClass="Descripcion" />       			
+			<h:outputText rendered="#{insumosAction.tipoMensaje ==  1}" value="#{msg['mensaje.error.inesperado']}" styleClass="Descripcion" />
+			<h:outputText rendered="#{insumosAction.tipoMensaje ==  2}" value="#{msg['mensaje.info.busquedaVacia']}" styleClass="Descripcion" />
+			<h:outputText rendered="#{insumosAction.tipoMensaje ==  3}" value="#{msg['mensaje.error.requerido']}" styleClass="Descripcion" />
+			<h:outputText rendered="#{insumosAction.tipoMensaje ==  4}" value="#{msg['maestroNoActualizado']}" styleClass="Descripcion" />
+			<h:outputText rendered="#{insumosAction.tipoMensaje ==  5}" value="#{msg['existenInsumosObra']}" styleClass="Descripcion" />
+			
+			<a4j:commandButton style="margin:10px auto 0; width:100px;"
+				value="#{msg['navegacion.label.aceptar']}" 
+				onclick="#{rich:component('pnlMensajes')}.hide()"
+				execute="@none"
+				render="miUploadExcel" />
+		</h:panelGrid>
+			
+		<rich:collapsiblePanel header="#{msg['detalles']}" expanded="false" switchType="client" styleClass="Descripcion" 
+			rendered="#{insumosAction.mensajeDetalles != ''}" 
+			style="width:100%; margin:5px auto 0; padding:0; max-height:500px; overflow:auto;">
+			<h:outputText value="#{insumosAction.mensajeDetalles}" styleClass="Descripcion" escape="false" />
+      		</rich:collapsiblePanel>
+	</rich:popupPanel>
+</ui:composition>

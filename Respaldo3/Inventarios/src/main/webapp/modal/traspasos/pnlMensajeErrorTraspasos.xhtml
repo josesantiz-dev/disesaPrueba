@@ -1,0 +1,32 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlMensajeErrorTraspasos" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['atencion']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<h:panelGroup id="grupoResOperacion1" style="display:block; min-width:300px; float:center; text-align:center;">
+			<h:outputText value="#{msg['mensaje.errorTraspasos10']}" styleClass="Descripcion"  rendered="#{traspasosAction.tipoMensaje == -10}" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos11']}" styleClass="Descripcion"  rendered="#{traspasosAction.tipoMensaje == -11}" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos12']}" styleClass="Descripcion"  rendered="#{traspasosAction.tipoMensaje == -12}" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos13']}" styleClass="Descripcion"  rendered="#{traspasosAction.tipoMensaje == -13}" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos14']}" styleClass="Descripcion"  rendered="#{traspasosAction.tipoMensaje == -14}" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos15']}" styleClass="Descripcion"  rendered="#{traspasosAction.tipoMensaje == -15}" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos16']}" styleClass="Descripcion"  rendered="#{traspasosAction.tipoMensaje == -16}" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos17']}" styleClass="Descripcion"  rendered="#{traspasosAction.tipoMensaje == -17}" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos18']}" styleClass="Descripcion"  rendered="#{traspasosAction.tipoMensaje == -18}" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos19']}" styleClass="Descripcion"  rendered="#{traspasosAction.tipoMensaje == -19}" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos20']}" styleClass="Descripcion"  rendered="#{traspasosAction.tipoMensaje == -20}" />
+		</h:panelGroup>
+		
+		<a4j:commandButton style="margin:10px auto 0; min-width:100px; cursor:pointer;"
+			value="#{msg['aceptar']}"
+			onclick="#{rich:component('pnlMensajeErrorTraspasos')}.hide()" />	
+	</rich:popupPanel>
+</ui:composition>

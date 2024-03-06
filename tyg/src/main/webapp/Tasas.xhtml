@@ -1,0 +1,211 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+<ui:define name="menuFrag" >
+
+	<rich:toolBarGroup id = "tbgBuscar" location= "right">
+		<a4j:commandButton id = "cmdBuscar" action = "#{tasasAction.buscar}" image= "#{msgTyg['navegacion.boton.buscar.img']}"
+			 oncomplete = "buscar('#{tasasAction.resOperacion}','pnlMsgGralTasas');"
+			 reRender= "dtTasas,pnlMsgGralTasas" styleClass= "Titulo" style = "cursor:pointer;">
+			<rich:toolTip id = "ttBuscar" showDelay= "300" value = "#{msgTyg['navegacion.boton.buscar.e']}" for = "cmdBuscar"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>
+
+	<rich:toolBarGroup id = "tbgNuevo" location= "right">
+		<a4j:commandButton id = "cmdNuevo" action = "#{tasasAction.nuevo}" image= "#{msgTyg['navegacion.boton.nuevo.img']}"
+			oncomplete = "Richfaces.showModalPanel('pnlEditarTasa');" reRender= "pnlEditarTasa" styleClass= "Titulo" style = "cursor:pointer;">
+			<rich:toolTip id = "ttNuevo" showDelay= "300" value = "#{msgTyg['navegacion.boton.nuevo.e']}" for = "cmdNuevo"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>
+	
+</ui:define>
+
+<ui:define name= "body">
+	<a4j:loadScript src= "resource:///resources/scripts/tyg/Tasas.js"/>	
+	<a4j:loadStyle src= "resource:///resources/css/tyg/tyg.css"/>
+	<a4j:loadStyle src= "resource:///resources/css/tyg/tasas.css"/>
+	<a4j:loadStyle src="resource:///resources/css/general/general.css"/>
+	
+	<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+		<h:outputText value="#{msg['tasas']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+	</div>
+			
+	<div class= "div_pagina">					        
+		        
+			  <h:panelGrid id="pnlResponsabil" columns="2" style="margin-bottom:10px; margin-top:10px; display:block;" width="740">
+		           <h:outputText value="#{msgTyg['tipo']}:" styleClass="Titulo"/>
+		 		  <h:selectOneMenu value="#{tasasAction.campoBusqueda}" styleClass="Titulo" style="margin-left:5px;">
+			
+				<f:selectItem itemLabel="#{msg['descripcion']}" itemValue="descripcion"/>
+			</h:selectOneMenu>
+	             <h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+			<h:inputText id="txtvalor" value="#{tasasAction.valTipoBusqueda}" maxlength="45" size="45"/>
+	  </h:panelGrid>	
+			    <rich:dataTable id = "dtTasas" cellpadding= "0" cellspacing= "0"  rows= "20" 
+	               border= "0" var= "tas" rowClasses= "Row1, Row2" styleClass= "tabla_pagina"
+	               value = "#{tasasAction.listTasas}">
+	           		
+	            <f:facet name= "header">
+	                 <rich:columnGroup>
+	                       <rich:column colspan= "4" styleClass= "Titulo">
+	                           <h:outputText value = "#{msgTyg['navegacion.label.tasas']}"/>
+	                       </rich:column>
+	                       
+	                       <rich:column breakBefore= "true" style = "text-align:center;" styleClass= "Titulo">
+	                           <h:outputText value = "#{msgTyg['navegacion.label.id']}"/>
+	                       </rich:column>
+	                       
+	                       <rich:column style = "text-align:center;" styleClass= "Titulo">
+	                           <h:outputText value = "#{msgTyg['navegacion.label.tasa']}"/>
+	                       </rich:column>
+	                       
+	                       <rich:column colspan = "2" style = "text-align:center;" styleClass= "Titulo"/>                                 
+	                 </rich:columnGroup>
+	            </f:facet>
+	               
+	           	//Columnas de datos
+	           	
+	            <rich:column width= "50" style = "text-align:center;" styleClass= "Descripcion">
+	                   <h:outputText value = "#{tas.id}"/>
+	            </rich:column>
+	            
+	            <rich:column styleClass= "Descripcion">	               		
+	                   <h:outputText value = "#{tas.descripcion}" />	                   
+	            </rich:column>
+	            
+	            <rich:column width= "20" style = "text-align:center;" styleClass= "Descripcion">
+	                   <a4j:commandButton id = "cmdEditar" image= "#{msgTyg['navegacion.boton.editar.img']}" action = "#{tasasAction.editar}" oncomplete = "Richfaces.showModalPanel('pnlEditarTasa')" reRender= "pnlEditarTasa">
+	                   		<rich:toolTip showDelay= "300" value = "#{msgTyg['navegacion.boton.editar.e']}" for = "cmdEditar"/>	
+	                   		<f:setPropertyActionListener target= "#{tasasAction.pojoTasas}" value = "#{tas}" />
+	                   </a4j:commandButton>
+	            </rich:column>
+	            
+	            <rich:column width= "20" style = "text-align:center;" styleClass= "Descripcion">
+	                   <a4j:commandButton id = "cmdEliminar" image= "#{msgTyg['navegacion.boton.eliminar.img']}" oncomplete = "Richfaces.showModalPanel('pnlEliminarTas')" reRender= "pnlMsgGralTasas">
+	                   		<rich:toolTip showDelay= "300" value = "#{msgTyg['navegacion.boton.eliminar.e']}" for = "cmdEliminar"/>
+	                   		<f:setPropertyActionListener target= "#{tasasAction.pojoTasas}" value = "#{tas}" />
+	                   </a4j:commandButton>
+	            </rich:column>
+	            
+	            <f:facet name= "footer" >
+		               	<rich:datascroller align= "center" for = "dtTasas" maxPages= "10" ajaxSingle= "true"
+		            		page= "#{tasasAction.numPagina}" id = "dScroll" styleClass= "Titulo"/>
+	            </f:facet>
+	            
+	           </rich:dataTable>		  	
+	</div>
+</ui:define>
+
+<ui:define name= "modals">
+
+ 	 <!--  INICIO PANEL NUEVO Y EDITAR TASA -->
+	 <rich:modalPanel id = "pnlEditarTasa" autosized= "true">
+		
+		<f:facet name= "header">
+			<h:outputText id = "lblTitulo" value = "#{msgTyg['navegacion.label.tasas']}" styleClass= "Titulo" style = "margin-left:10px"/>
+		</f:facet>
+		<f:facet name= "controls">
+            <h:panelGroup>
+               <h:graphicImage value = "#{msg['navegacion.panel.cerrar.img']}" style = "cursor: pointer;" id = "imgCerrarEditar"/>    
+               	 <rich:componentControl for = "pnlEditarTasa" attachTo= "imgCerrarEditar" operation= "hide" event= "onclick"/> 
+            </h:panelGroup>
+         </f:facet>
+         <a4j:form id = "frmEditarTasas">  
+         	<div style = "display: block; width:100%; height: 22px;">						
+	   				<!-- botones izquierda ARRIBA.........................botones derecha ABAJO -->  
+	   				<a4j:commandButton id = "cmdSalvar" 
+	   					action = "#{tasasAction.guardar}" 
+	   					image= "#{msgTyg['navegacion.boton.salvar.img']}" 
+	   					style = "float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"	   					         					
+	   					oncomplete = "salvar('#{tasasAction.resOperacion}', 'pnlEditarTasa', 'pnlMsgGralTasas', #{rich:element('msgErrorTasa')});"
+	   					reRender= "lblTitulo,dtTasas,pnlMsgGralTasas" >	   					
+	   					<rich:toolTip value = "#{msgTyg['navegacion.boton.salvar.e']}" />
+	   				</a4j:commandButton>          				
+			</div>	
+			
+			<h:panelGroup styleClass="encabezado" rendered="#{tasasAction.pojoTasas.id != null}">
+	        	<h:outputText value = "#{tasasAction.pojoTasas.id != null ? tasasAction.pojoTasas.id : ' '} "/>
+	        	<h:outputText value = "#{tasasAction.pojoTasas.descripcion}"/>
+       		</h:panelGroup>
+       		
+			<rich:messages id = "msgErrorTasa" showDetail= "false" showSummary= "true" title= "Campos requeridos!" >
+				<f:facet name= "errorMarker">
+                    <h:graphicImage value = "#{msgTyg['navegacion.boton.alert.img']}" style = "margin-right:1em;"/>
+                </f:facet>
+			</rich:messages>
+			<h:panelGroup styleClass="encabezado">  	
+			    <h:panelGrid columns = "2" width= "100%" columnClasses= "colModalIzq, colModalDer">
+			  		  
+						<h:outputText value = "#{msgTyg['navegacion.label.id']}:" styleClass= "Titulo"/>
+						<h:outputText value = "#{tasasAction.pojoTasas.id}" styleClass= "Descripcion"/>
+	
+			            <h:outputText value = "#{msgTyg['navegacion.label.tasa']}:"  styleClass= "Titulo"/>
+			           	<h:inputText
+			           			value = "#{tasasAction.pojoTasas.descripcion}"
+			           			required = "#{!empty param[rich:clientId('cmdSalvar')]}"
+			           			requiredMessage= "#{msgTyg['navegacion.label.campo']} #{msgTyg['navegacion.label.tasa']} #{msg['mensaje.error.requerido']}"
+			           			 maxlength="100" size="40">
+			           			<f:validateLength minimum = "1"/>
+			           	</h:inputText>
+			    </h:panelGrid>
+		    </h:panelGroup>
+	  	</a4j:form>
+	</rich:modalPanel>
+	<!--  FIN PANEL NUEVO Y EDITAR TASA -->
+	
+       
+    <!-- INICIO PANEL ELIMINAR TASA -->		
+    <rich:modalPanel id = "pnlEliminarTas" autosized= "true">
+	 <f:facet name= "header">
+		<h:outputText value = "#{msgTyg['navegacion.label.atencion']}" styleClass= "Titulo"/>
+	 </f:facet>
+	 <f:facet name= "controls">
+         <h:panelGroup>
+             <h:graphicImage value = "#{msg['navegacion.panel.cerrar.img']}" style = "cursor:pointer;" id = "imgCerrarEval"/>
+             	<rich:componentControl for = "pnlEliminarTas" attachTo= "imgCerrarEval" operation= "hide" event= "onclick"/>
+          </h:panelGroup>
+       </f:facet>
+       <a4j:form id = "frmEliminarTas">
+       		<h:panelGrid columns = "1" width= "200" style = "text-align:center;" cellspacing= "10">
+       			<h:outputText value = "#{msgTyg['navegacion.label.deseaEliminar']}" style = "display:block;"  styleClass= "Descripcion"/>
+	       		<h:panelGroup style = "margin-top:10px; text-align:center; display:block;">
+		       		<a4j:commandButton id = "cmdEliminar" action = "#{tasasAction.eliminar}" value = "#{msgTyg['navegacion.label.aceptar']}" reRender= "dtTasas, pnlMsgGralTasas"
+		       			oncomplete = "eliminar('#{tasasAction.resOperacion}', 'pnlEliminarTas', 'pnlMsgGralTasas');"/>
+		       		<a4j:commandButton onclick= "#{rich:component('pnlEliminarTas')}.hide()" value = "#{msgTyg['navegacion.label.cancelar']}" style = "margin-left:10px;"/>
+	       		</h:panelGroup>
+       		</h:panelGrid>
+       </a4j:form>
+     </rich:modalPanel>	 
+    <!-- FIN PANEL ELIMINAR TASA --> 
+     	
+    <!-- INICIO PANEL MENSAGE GENERAL TASA -->  	
+	<rich:modalPanel id = "pnlMsgGralTasas" autosized= "true" width= "350">
+			  <f:facet name= "header">
+			 	<h:panelGroup>
+					<h:outputText value = "#{tasasAction.resOperacion == '' ? msgTyg['navegacion.label.informacion'] : msgTyg['navegacion.label.atencion'] }" styleClass= "Titulo" />
+				</h:panelGroup>
+			  </f:facet>	
+			  <f:facet name= "controls">
+		         <h:panelGroup>
+		             <h:graphicImage value = "#{msg['navegacion.panel.cerrar.img']}" styleClass= "cursor:pointer;" id = "imgCerrarMsg"/>
+		             	<rich:componentControl for = "pnlMsgGralTasas" attachTo= "imgCerrarMsg" operation= "hide" event= "onclick"/>
+		          </h:panelGroup>
+		       </f:facet>
+		       <a4j:form id = "frmMsgBan" style = "text-align:center;" >
+		       		<h:panelGroup style = "display:block; width:300px; float:center;">
+			       		<h:outputText value = "#{tasasAction.resOperacion != '' ? tasasAction.resOperacion : msg['mensaje.info.infoReg']}" style = "display:block;" styleClass= "Descripcion"/>
+		       		</h:panelGroup>
+		       		<a4j:commandButton value = "#{msgTyg['navegacion.label.aceptar']}" onclick= "#{rich:component('pnlMsgGralTasas')}.hide()" style = "margin-top:10px; cursor:pointer;"/>
+		       </a4j:form>
+	 </rich:modalPanel>	
+     <!-- FIN PANEL MENSAGE GENERAL TASA --> 	
+</ui:define>
+
+</ui:composition>

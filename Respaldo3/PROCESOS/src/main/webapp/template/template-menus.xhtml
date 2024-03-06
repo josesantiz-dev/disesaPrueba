@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsp/jstl/core">
+    
+<h:head>
+	<meta http-equiv="X-UA-Compatible" content="EmulateIE8" />
+	<meta content='text/html; charset=UTF-8' http-equiv="Content-Type" />
+	<h:outputStylesheet library="css" name="Main.css" />
+	<h:outputScript library="javascript" name="Main.js" />
+</h:head>
+
+<h:body>
+	<h:form style="padding:0px; position:absolute: top:0px; left:0px;">
+		<div id="divHeader" class="div-header">
+			<ui:insert name="header"><ui:include src="header.xhtml" /></ui:insert>
+		</div>
+		
+		<h:panelGroup styleClass="body-principal">
+			<ui:insert name="content" />
+		</h:panelGroup>
+	</h:form>
+</h:body>
+</html>

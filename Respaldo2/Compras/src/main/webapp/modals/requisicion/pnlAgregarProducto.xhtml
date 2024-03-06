@@ -1,0 +1,64 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlAgregarProducto" autosized="true" domElementAttachment="form" top="15"
+		onshow="document.getElementById('#{rich:clientId('cmdSeleccionarProducto')}').focus();"
+		header="#{msg['agregar.e']} #{msg['producto']}">
+		
+		<a4j:region id="regAgregarProducto">
+			<rich:messages id="validadorAgregarProducto" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+				<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+			</rich:messages>
+					
+			<h:panelGroup style="display:block; min-width:300px; width:auto; max-width:500px; text-align:center;">
+				<fieldset style="margin:0 auto;">
+					<h:panelGrid columns="2" columnClasses="colTitulo, colDato" style="margin:0 auto; width:100%;">
+						<h:outputText value="#{msg['producto']}:" styleClass="Titulo" />
+						<h:panelGroup id="pnlProductoDatos">
+							<h:panelGrid columns="2">
+								<h:outputText id="txtProducto" value="#{reqAction.producto}" style="text-align:left; display:block;" />
+								<h:panelGroup>
+									<a4j:commandLink id="cmdSeleccionarProducto" styleClass="linkColor" 
+										value="#{reqAction.pojoProducto == null ? msg['seleccionar'] : msg['cambiar'] }"
+										action="#{reqAction.nuevaBusquedaProductos}" 
+										oncomplete="nuevaBusquedaProductos(#{reqAction.operacion}, '#{rich:clientId('pnlBusquedaProductos')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorAgregarProducto')});"
+										render="validadorAgregarProducto,pnlBusquedaProductos,pnlMensajes,pnlBusquedaProductosPrincipal,dtProductos" 
+										limitRender="true" />
+										
+									<h:inputText id="txtProductoHidden" style="text-align:left;  display:none;"
+										value="#{reqAction.producto}"
+										required="#{!empty param[rich:clientId('pnlAgregarProductoAceptar')]}" 
+										requiredMessage="#{msg['producto']} #{msg['mensaje.error.requerido']}" />
+								</h:panelGroup>
+							</h:panelGrid>
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['cantidad']}:" styleClass="Titulo" />
+						<h:inputText id="txtCantidadProducto" style="text-align:right; width:130px;" 
+							value="#{reqAction.cantidadProducto}"
+							required="#{!empty param[rich:clientId('pnlAgregarProductoAceptar')]}" 
+							requiredMessage="#{msg['cantidad']} #{msg['mensaje.error.requerido']}"
+							onkeypress="return soloDecimales(event, this.value, 6, 2);" />
+					</h:panelGrid>
+				</fieldset>
+				
+				<h:panelGrid columns="2" style="margin:10px auto 0; width:200px; text-align:center;">
+					<a4j:commandButton id="pnlAgregarProductoAceptar" style="margin:0 auto; cursor:pointer; width:100px;"
+						value="#{msg['aceptar']}" 
+						action="#{reqAction.agregarReqDetalle}" execute="regAgregarProducto"
+						oncomplete="agregarReqDetalle(#{reqAction.operacion}, '#{rich:clientId('pnlAgregarProducto')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorAgregarProducto')});"
+						render="validadorAgregarProducto,pnlMensajes,dtReqDetalles" />
+						
+					<a4j:commandButton id="pnlAgregarProductoCancelar" style="margin:0 auto; cursor:pointer; width:90px;" 
+						value="#{msg['cancelar.e']}" 
+						onclick="#{rich:component('pnlAgregarProducto')}.hide()" />
+				</h:panelGrid>
+			</h:panelGroup>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

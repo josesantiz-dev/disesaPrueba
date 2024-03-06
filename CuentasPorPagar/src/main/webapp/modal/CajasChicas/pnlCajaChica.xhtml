@@ -1,0 +1,411 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlCajaChica" autosized="true" top="10">
+		<f:facet name="header">
+			<h:outputText value="#{cajaAction.titulo}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}"
+      	  		onclick="#{rich:component('pnlCajaChica')}.hide()" />
+		</f:facet>
+		
+		<a4j:form id="frmCajaChica" style="margin:0; padding:0; min-width:800px; width:auto; max-width:1024px;">
+			<a4j:region id="regionCajaChica">
+				<div style="margin:0 auto; display:block; min-height: 42px; height:auto;">
+					<h:panelGrid columns="2" columnClasses="tygCompGtosColDer, tygCompGtosColDer" style="margin:0 auto;" >
+						<h:panelGroup style="float:left; vertical-align:top; position:relative; min-height:42px;">
+							<h:panelGroup rendered="#{cajaAction.permisoAdmin}">
+								<h:panelGroup rendered="#{cajaAction.permiteAsignarCuentaBancaria}">
+									<h:selectBooleanCheckbox id="chkUsarAsignacionCuentaBancaria" value="#{cajaAction.usarAsignacionCuentaBancaria}">
+										<a4j:support event="onchange" reRender="pnlDatos2" limitToList="true" />
+									</h:selectBooleanCheckbox>
+									<h:outputLabel for="chkUsarAsignacionCuentaBancaria" value="Asignar Cuenta Bancaria" styleClass="Titulo" /> 
+								</h:panelGroup>
+							</h:panelGroup>
+							
+							<rich:messages id="validadorCajasChicas" showDetail="true" showSummary="false" />
+						</h:panelGroup>
+						
+						<h:panelGroup style="float:right; vertical-align:top; position:relative; min-height:42px;">
+							<a4j:status id="statusCajaChica" name="statusCajaChica" for="regionCajaChica">
+								<f:facet name="start"><h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;" /></f:facet>
+								<f:facet name="stop" ><h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: middle; position:relative;" /></f:facet>
+							</a4j:status>
+							
+							<a4j:commandButton id="cmdSalvar" style="cursor:pointer; margin:0 5px;"
+								image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+								onclick="#{rich:element('cmdSalvar')}.disabled = true;" 
+								action="#{cajaAction.guardar}" 
+								oncomplete="#{rich:element('cmdSalvar')}.disabled = false; salvar(#{cajaAction.operacionCancelada}, '#{rich:clientId('pnlCajaChica')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorCajasChicas')});"
+								reRender="validadorCajasChicas,dtResults,pnlMensajes" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</div>
+				
+				<rich:tabPanel id="tabsCajaChica" selectedTab="#{cajaAction.tabSelected}" switchType="client" style="min-height:280px; min-width:800px; width:100%;">
+					<rich:tab id="tab1" name="tab1" label="#{msg['datosGenerales']}">
+						<h:panelGrid id="pnlDatos2" columns="2" columnClasses="tygCompGtosColIzq, tygCompGtosColDer" 
+							style="display:block; position:relative; margin-top:5px; margin-left:10px;">
+							<h:outputText styleClass="Titulo" value="#{msg['numCajaChica']}:" />
+							<h:panelGroup>
+								<h:panelGrid columns="2" columnClasses="tygCompGtosColDer, tygCompGtosColDer">
+									<h:outputText value="#{cajaAction.numCajaChica}" styleClass="Titulo" />
+									
+									<h:panelGroup style="float:right; text-align:right;">
+										<h:outputText styleClass="Titulo" for="chkVoBo" 
+											rendered="#{cajaAction.perfilCajaChicaVoBo}" 
+											value="#{msg['vobo']}:" /> 
+										<h:selectBooleanCheckbox id="chkVoBo" 
+											rendered="#{cajaAction.perfilCajaChicaVoBo}" 
+											value="#{cajaAction.vobo}" />
+										
+										<h:outputText styleClass="Titulo" for="chkAutorizar" style="margin-left: 20px;"
+											rendered="#{cajaAction.perfilCajaChicaAutorizacion}"  
+											value="#{msg['autorizar']}:" />
+										<h:selectBooleanCheckbox id="chkAutorizar"
+											rendered="#{cajaAction.perfilCajaChicaAutorizacion}" 
+											value="#{cajaAction.autorizado}" />
+									</h:panelGroup>
+								</h:panelGrid>
+							</h:panelGroup>
+							
+							<h:outputText styleClass="Titulo" value="#{msg['navegacion.label.fecha']}:" />
+							<h:panelGroup>
+								<rich:calendar id="cmbFecha" inputSize="9" zindex="100" enableManualInput="true"
+									showWeekDaysBar="false" showWeeksBar="false"
+									value="#{cajaAction.fecha}" datePattern="dd/MMM/yyyy" 
+									required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+									requiredMessage="#{msg['navegacion.label.fecha']} #{msg['mensaje.error.requerido']}">
+									<f:validateLength minimum="1"/>
+								</rich:calendar>
+								
+								<rich:message for="cmbFecha" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:panelGroup>
+											<h:graphicImage value="#{msg['cancelar16.img']}" title="#{msg['mensaje.error.requerido']}" />
+										</h:panelGroup>
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+							
+							<h:outputText styleClass="Titulo" value="#{msg['tipo']}:" rendered="#{cajaAction.perfilRequiereObra}" />
+							<h:panelGroup id="pnlTipoCajaChica" rendered="#{cajaAction.perfilRequiereObra}">
+								<h:selectOneRadio value="#{cajaAction.tipoCajaChica}" styleClass="Titulo"> 
+									<f:selectItem itemLabel="#{msg['obra']}" itemValue="0"/>
+									<f:selectItem itemLabel="#{msg['oficina']}" itemValue="1"/>
+									<a4j:support event="onchange" 
+										action="#{cajaAction.quitarObra}" 
+										reRender="pnlDatos2,pnlCajaChicaObraDatos,txtCajaChicaObra" />
+								</h:selectOneRadio>
+							</h:panelGroup>
+							
+							<h:outputText styleClass="Titulo" value="#{msg['obra']}:" rendered="#{cajaAction.perfilRequiereObra}" />
+							<h:panelGroup id="pnlCajaChicaObraDatos" style="font-size:12px" rendered="#{cajaAction.perfilRequiereObra}">
+								<h:panelGrid columns="2">
+									<h:outputText id="txtCajaChicaObra" value="#{cajaAction.cajaChicaObra}" rendered="#{cajaAction.perfilRequiereObra}" escape="false" />
+									<h:panelGroup>
+										<a4j:commandLink id="linkCajaChicaSeleccionarObra" 
+											onclick="#{rich:element('linkCajaChicaSeleccionarObra')}.disabled = true;"
+											value="#{cajaAction.cajaChicaObra eq '' ? msg['seleccionar'] : msg['cambiar']}"
+											action="#{cajaAction.nuevaBusquedaObras}"
+											oncomplete="#{rich:element('linkCajaChicaSeleccionarObra')}.disabled = false; nuevaBusqueda(#{cajaAction.operacionCancelada},'pnlBusquedaObras','pnlMensajes')"
+											reRender="pnlMensajes,pnlBusquedaObras" />
+											
+										<!-- Este input es solo con propósito de que se permita hacer validator al proyecto -->
+										<h:inputText id="txtCajaChicaObraHidden" style="display:none;"
+											value="#{cajaAction.cajaChicaObra}"
+											required="#{cajaAction.tipoCajaChica eq 0 ? !empty param[rich:clientId('cmdSalvar')] : false}"
+											requiredMessage="#{msg['obra']} #{msg['mensaje.error.requerido']}" />
+										
+										<rich:message for="txtCajaChicaObraHidden" showSummary="false" showDetail="false" style="color:red">
+											<f:facet name="errorMarker">
+												<h:panelGroup>
+													<h:graphicImage value="#{msg['cancelar16.img']}" title="#{msg['mensaje.validacion.selectItem']}" />
+												</h:panelGroup>
+											</f:facet>
+										</rich:message>
+									</h:panelGroup>
+								</h:panelGrid>
+							</h:panelGroup>
+							
+							<h:outputText styleClass="Titulo" value="#{msg['sucursal']}:" />
+							<h:panelGroup>
+								<h:selectOneMenu id="txtSucursal" style="width:216px;"
+									value="#{cajaAction.idSucursal}" 
+				                   	required="#{!empty param[rich:clientId('cmdSalvar')] || !empty param[rich:clientId('cmdComprobacionConFactura')] || !empty param[rich:clientId('cmdComprobacionSinFactura')]}" 
+						           	requiredMessage="#{msg['sucursal']} #{msg['mensaje.error.requerido']}">
+									<f:selectItem itemLabel="#{msg['seleccione']}" />
+									<f:selectItems value="#{cajaAction.listSucursalesItems}" />
+								</h:selectOneMenu>
+								
+								<rich:message for="txtSucursal" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:panelGroup>
+											<h:graphicImage value="#{msg['cancelar16.img']}" title="#{msg['mensaje.validacion.selectItem']}" />
+										</h:panelGroup>
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+							
+							<h:outputText styleClass="Titulo" value="#{msg['navegacion.label.operacion']}:" rendered="#{cajaAction.permiteAsignarCuentaBancaria}" />
+							<h:panelGroup rendered="#{cajaAction.permiteAsignarCuentaBancaria}">
+								<h:selectOneMenu id="optionOpera" style="width:216px;"
+									value="#{cajaAction.operacion}" 
+									required="#{cajaAction.usarAsignacionCuentaBancaria ? (!empty param[rich:clientId('cmdSalvar')]) : false}"
+									requiredMessage="#{msg['navegacion.label.operacion']} #{msg['mensaje.error.requerido']}">
+									<f:selectItem itemLabel="#{msg['seleccione']}" />
+									<f:selectItems value="#{cajaAction.listFormasPagosItems}" />
+									<a4j:support event="onchange" reRender="txtCheque" limitToList="true" />
+								</h:selectOneMenu>
+								
+								<rich:message for="optionOpera" showSummary="false" showDetail="false" style="color:red">
+									<f:facet name="errorMarker">
+										<h:panelGroup>
+											<h:graphicImage value="#{msg['cancelar16.img']}" title="#{msg['mensaje.validacion.selectItem']}" />
+										</h:panelGroup>
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>	
+							
+							<h:outputText styleClass="Titulo" value="#{msg['navegacion.label.ctaOrigen']}:" rendered="#{cajaAction.permiteAsignarCuentaBancaria}" />
+							<h:panelGroup rendered="#{cajaAction.permiteAsignarCuentaBancaria}">
+								<h:selectOneMenu id="txtCta" style="width:316px;"
+									value="#{cajaAction.idCuentaBancaria}" 
+									required="#{cajaAction.usarAsignacionCuentaBancaria ? (cajaAction.operacion != 'G' ? !empty param[rich:clientId('cmdSalvar')] : false) : false}"
+									requiredMessage="#{msg['navegacion.label.ctaOrigen']} #{msg['mensaje.error.requerido']}">
+									<f:selectItem itemLabel="#{msg['seleccione']}" />
+									<f:selectItems value="#{cajaAction.listCuentasBancariasItems}" />
+									<a4j:support event="onchange" reRender="txtCheque" limitToList="true" />
+								</h:selectOneMenu>
+								
+								<rich:message for="txtCta" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:panelGroup>
+											<h:graphicImage value="#{msg['cancelar16.img']}" title="#{msg['mensaje.validacion.selectItem']}" />
+										</h:panelGroup>
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+							
+							<h:outputText styleClass="Titulo" value="#{msg['referencia']}:" rendered="#{cajaAction.permiteAsignarCuentaBancaria}" />
+							<h:panelGroup rendered="#{cajaAction.permiteAsignarCuentaBancaria}">
+								<h:inputText id="txtCheque" maxlength="50" style="width:316px;"
+									disabled="#{cajaAction.idCuentaBancaria le 0}"
+									value="#{cajaAction.referenciaOperacion}" 
+									required="#{cajaAction.usarAsignacionCuentaBancaria ? (!empty param[rich:clientId('cmdSalvar')]) : false}"
+									requiredMessage="#{msg['referencia']} #{msg['mensaje.error.requerido']}">
+									<f:validator validatorId="SoloNum" />
+								</h:inputText>
+								
+								<rich:message for="txtCheque" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:panelGroup>
+											<h:graphicImage value="#{msg['cancelar16.img']}" title="#{msg['mensajes.error.reqSoloNum']}" />
+										</h:panelGroup>
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+							
+							<h:outputText styleClass="Titulo" value="#{msg['navegacion.label.monto']}:" />
+							<h:panelGroup>
+								<h:inputText id="txtMonto" maxlength="15" styleClass="Titulo"  
+									disabled="#{cajaAction.perfilRequiereObra}"
+									value="#{cajaAction.monto}" 
+									required="#{cajaAction.perfilRequiereObra ? false : !empty param[rich:clientId('cmdSalvar')]}"
+									requiredMessage="#{msg['navegacion.label.monto']} #{msg['mensaje.error.requerido']}">
+									<f:convertNumber pattern="$ ###,###,##0.00" /> 
+								</h:inputText>
+								
+								<rich:message for="txtMonto" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:panelGroup>
+											<h:graphicImage value="#{msg['cancelar16.img']}" title="#{msg['mensaje.error.requerido']}" />
+										</h:panelGroup>
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>	
+							
+							<h:outputText styleClass="Titulo" value="#{msg['navegacion.label.beneficiario']}:" />
+							<h:panelGroup>
+								<h:inputText id="txtBene" maxlength="100" style="width:384px;"
+									value="#{cajaAction.beneficiario}" title="Indique empleado"
+									required="#{!empty param[rich:clientId('cmdSalvar')] || !empty param[rich:clientId('cmdComprobacionConFactura')] || !empty param[rich:clientId('cmdComprobacionSinFactura')]}" 
+									requiredMessage="#{msg['navegacion.label.beneficiario']} #{msg['mensaje.error.requerido']}"
+									onkeypress="keyF9(event, #{rich:component('suggBenes')})">
+									<f:validator validatorId="valClaveValor" />
+								</h:inputText>
+		
+								<h:graphicImage style="margin-left:0px; vertical-align:bottom; cursor:pointer;" 
+									value="#{msg['despliega.img']}" alt="desplegar"
+									onclick="#{rich:component('suggBenes')}.callSuggestion(true)" />
+		
+								<rich:suggestionbox id="suggBenes" eventsQueue="suggQRepCaja" minChars="2" width="394"
+									for="txtBene" suggestionAction="#{cajaAction.autoacompletaBeneficiario}"  
+									var="ben" fetchValue="#{ben.id} - #{ben.nombre}">
+									<h:column><h:outputText value="#{ben.id}" /></h:column>
+									<h:column><h:outputText value="#{ben.nombre}" /></h:column>
+								</rich:suggestionbox>
+		
+								<rich:message for="txtBene" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:panelGroup>
+											<h:graphicImage value="#{msg['cancelar16.img']}" title="#{msg['mensaje.validacion.selectItem']}" />
+										</h:panelGroup>
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>	
+						</h:panelGrid>
+					</rich:tab>
+					
+					<rich:tab id="tab2" name="tab2" label="#{msg['navegacion.label.comprobado']}">
+						<a4j:support event="ontabenter"
+							action="#{cajaAction.cargarComprobantes}" 
+							oncomplete="validar(#{cajaAction.operacionCancelada}, '#{rich:clientId('pnlMensajes')}');" 
+							reRender="pnlMensajes,dtResultsComprobado,txtMonto" />
+						
+						<h:panelGroup style="display:block; width:100%; min-height:22px; margin:0 auto 5px; overflow:hidden;">
+							<h:panelGroup style="vertical-align:middle; position:relative; margin:0 auto; float:left;">
+								<a4j:commandButton id="cmdRecargarComprobaciones" style="vertical-align:middle; position:relative; cursor:pointer; margin:auto 5px;"
+									image="#{msg['actualizar22.img']}" title="Recargar Comprobaciones"
+									action="#{cajaAction.actualizaTotalComprobado}"
+									reRender="dtResultsComprobado" limitToList="true" />
+							</h:panelGroup>
+							
+							<h:panelGroup style="vertical-align:middle; position:relative; margin:0 auto; float:right;">
+								<a4j:commandButton id="cmdComprobacionConFactura" style="vertical-align:middle; position:relative; cursor:pointer; margin:auto 5px;"
+									image="#{msg['factura22.img']}" title="Comprobacion con Factura"
+									action="#{cajaAction.nuevaComprobacionConFactura}"
+									oncomplete="validarNuevaComprobacion(#{cajaAction.operacionCancelada}, 'pnlCargarXML', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorCajasChicas')})" 
+									reRender="validadorCajasChicas,pnlCargarXML,pnlMensajes" limitToList="true" />
+									
+								<a4j:commandButton id="cmdComprobacionSinFactura" style="vertical-align:middle; position:relative; cursor:pointer; margin:auto 5px;"
+									image="#{msg['nota22.img']}" title="Comprobacion sin Factura"
+									action="#{cajaAction.nuevaComprobacionSinFactura}"
+									oncomplete="validarNuevaComprobacion(#{cajaAction.operacionCancelada}, 'pnlComprobacionSinFactura', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorCajasChicas')})" 
+									reRender="validadorCajasChicas,pnlComprobacionSinFactura,pnlMensajes" limitToList="true" />
+							</h:panelGroup>
+						</h:panelGroup>
+						
+						<div style="display:block; margin:5px auto 0; padding:0; min-width:800px; width:100%; height:auto; max-height:440px; overflow-y:auto;">
+							<rich:dataTable id="dtResultsComprobado" value="#{cajaAction.listComprobaciones}" var="comprobado" rowKeyVar="rowKey" stateVar="state"
+								rows="50" cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" style="min-width:700px; width:100%; margin:0 auto;" styleClass="tabla_pagina">
+								<f:facet name="header">
+									<rich:columnGroup>
+										<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:20px;">
+											<h:outputText value="#" />
+										</rich:column>
+										
+										<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:60px;">
+											<h:outputText value="#{msg['fecha']}" />
+										</rich:column> 
+										
+										<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:100px;">
+											<h:outputText value="#{msg['egreso']}" />
+										</rich:column>
+										
+										<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:120px;">
+											<h:outputText value="#{msg['razonSocial']}" />
+										</rich:column>
+										
+										<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+											<h:outputText value="#{msg['folioDocumento']}" />
+										</rich:column>
+										
+										<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:100px;">
+											<h:outputText value="#{msg['navegacion.label.monto']}" />
+										</rich:column>
+										
+										<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:60px;" colspan="3" />	
+									</rich:columnGroup>
+								</f:facet>
+								
+								<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+									<h:outputText value="#{comprobado.pojoFactura.id le 0 ? '*' : ''}#{rowKey + 1}" title="#{comprobado.pojoFactura.id}"><f:convertNumber pattern="00" /></h:outputText>
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:center; width:60px;">
+									<h:outputText value="#{comprobado.pojoFactura.fecha}"><f:convertDateTime pattern="dd-MMM-yyyy" /></h:outputText>
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:left;">
+									<h:outputText value="#{comprobado.pojoFactura.concepto}" />
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:left;">
+									<h:outputText value="#{comprobado.pojoFactura.proveedor}" />
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:center;">
+									<h:outputText value="#{comprobado.pojoFactura.referencia}"/>
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:right; width:100px;">
+									<h:outputText value="#{comprobado.pojoFactura.total}"><f:convertNumber pattern="$ ###,###,##0.00" /></h:outputText>
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+									<a4j:commandButton id="btnDescargarXML" rendered="#{comprobado.pojoFactura.idCfdi > 0}"
+										image="#{msg['xml16.img']}" title="#{msg['descargar.e']} #{msg['xml']}"
+										action="#{cajaAction.descargarXML}" 
+										oncomplete="reporte(#{cajaAction.operacionCancelada}, '#{rich:clientId('pnlMensajes')}', '#{msg['urlapp']}')"
+										reRender="pnlMensajes"> 
+										<f:setPropertyActionListener target="#{cajaAction.pojoComprobacion}" value="#{comprobado}" />
+									</a4j:commandButton>
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+									<a4j:commandButton id="btnEditarFactura"
+										image="#{msg['editar16.img']}" title="#{msg['editar.e']}"
+										action="#{cajaAction.editarComprobacion}" 
+										oncomplete="evaluaEditar(#{cajaAction.operacionCancelada}, #{cajaAction.comprobacionConFactura}, '#{rich:clientId('pnlComprobacionConFactura')}', '#{rich:clientId('pnlComprobacionSinFactura')}', '#{rich:clientId('pnlMensajes')}');"
+										reRender="pnlComprobacionConFactura,pnlComprobacionSinFactura,pnlMensajes"> 
+										<f:setPropertyActionListener target="#{cajaAction.pojoComprobacion}" value="#{comprobado}" />
+									</a4j:commandButton>
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+									<a4j:commandButton id="btnEliminarFactura"
+										image="#{msg['eliminar16.img']}" title="#{msg['eliminar.e']}"
+										action="#{cajaAction.evaluaEliminar}"
+										onclick="console.log('# rowKey:',#{rowKey});"
+										oncomplete="evalua(#{cajaAction.operacionCancelada},'#{rich:clientId('pnlEliminarComprobacion')}','#{rich:clientId('pnlMensajes')}');"
+										reRender="pnlEliminarComprobacion,pnlMensajes">
+										<f:setPropertyActionListener target="#{cajaAction.pojoComprobacion}" value="#{comprobado}" />
+										<f:setPropertyActionListener target="#{cajaAction.indexComprobacionEliminar}" value="#{rowKey}" />
+									</a4j:commandButton>
+								</rich:column>
+								
+								<f:facet name="footer">
+									<rich:columnGroup>
+										<rich:column style="text-align:left;" colspan="4">
+											<rich:datascroller for="dtResultsComprobado" page="#{cajaAction.paginacionComprobaciones}" renderIfSinglePage="false" 
+												align="left" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo"  />
+										</rich:column>
+										
+										<rich:column style="text-align:right;">
+											<h:outputText value="#{msg['navegacion.label.comprobado']}:" />
+										</rich:column>
+										
+										<rich:column style="text-align:right;">
+											<h:outputText value="#{cajaAction.totalComprobaciones}"><f:convertNumber pattern="$ ###,###,##0.00" /></h:outputText>
+										</rich:column>
+										
+										<rich:column style="text-align:center;" colspan="3" />
+									</rich:columnGroup>
+								</f:facet>
+							</rich:dataTable>
+						</div>
+					</rich:tab>
+				</rich:tabPanel>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

@@ -1,0 +1,80 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlObraContrato" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+    	<f:facet name="header">
+			<h:outputText value="#{msg['obra']} #{msg['contrato']}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" onclick="#{rich:component('pnlObraContrato')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+		
+		<a4j:region>
+			<div style="display: block; min-width:500px; overflow: auto; text-align: left;">
+				<a4j:commandButton id="cmdGuardarObraContrato" 
+					image="#{msg['salvar22.img']}" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+					action="#{contratoAction.guardar}" 
+					oncomplete="salvar(#{contratoAction.operacion}, '#{rich:clientId('pnlObraContrato')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrorObrasContratos')});"
+					render="pnlMensajes, msgErrorObrasContratos, dtObraContratos"
+					limitRender="true" execute="@region">
+					<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['salvar.e']}" for="cmdGuardarObraContrato"/>
+				</a4j:commandButton>
+			</div>
+			
+			<rich:messages id="msgErrorObrasContratos"  showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+				<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+			</rich:messages>
+	
+			<div style="margin: 10px auto 0;">
+				<h:panelGroup styleClass="encabezado" style="min-height: 1em;">
+					<h:outputText value="#{contratoAction.pojoObra.id != null ? contratoAction.pojoObra.id : '0'} "/>
+					<h:outputText value="#{contratoAction.pojoObra.nombre}" />
+				</h:panelGroup>
+	
+				<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+					<h:outputText value="#{msg['empresa']} #{msg['subcontratante']}:" styleClass="Titulo" /> 
+					<h:selectOneMenu id="cmbObraContratoSubcontratantes" style="width: 360px"
+						value="#{contratoAction.subcontratanteId}" 
+						required="#{!empty param[rich:clientId('cmdGuardarObraContrato')]}" 
+						requiredMessage="#{msg['empresa']} #{msg['mensaje.error.requerido']}">
+			            <f:selectItem itemLabel="#{msg['seleccione']}" />
+			            <f:selectItems value="#{contratoAction.listSubcontratantesItems}" />
+			        </h:selectOneMenu>
+							
+					<h:outputText value="#{msg['monto']}:" styleClass="Titulo" />
+					<h:inputText id="txtObraContratoMonto" class="decimales" style="text-align:right; width: 110px" maxlength="13"
+						value="#{contratoAction.pojoObraContrato.monto}" 
+						required="#{!empty param[rich:clientId('cmdGuardarObraContrato')]}" 
+						requiredMessage="#{msg['monto']} #{msg['mensaje.error.requerido']}"
+						onkeypress="return  soloDecimales(event, this.value, 10, 2);"
+						onblur="soloNumerosPostvalidate(this.id, this.value, 10, 2);">
+						<f:convertNumber pattern="###,###,###,##0.00" />
+						<a4j:ajax event="blur" execute="@this" render="txtObraContratoMonto" limitRender="true" />
+					</h:inputText>
+							
+					<h:outputText value="#{msg['iva']}:" styleClass="Titulo" />
+					<h:inputText id="txtObraContratoIva" class="decimales" style="text-align:right; width: 110px" maxlength="11"
+						value="#{contratoAction.pojoObraContrato.iva}"
+						required="#{!empty param[rich:clientId('cmdGuardarObraContrato')]}" 
+						requiredMessage="#{msg['iva']} #{msg['mensaje.error.requerido']}"
+						onkeypress="return  soloDecimales(event, this.value, 8, 2);"
+						onblur="soloNumerosPostvalidate(this.id, this.value, 8, 2);">
+						<f:convertNumber pattern="###,###,##0.00" />
+						<a4j:ajax event="blur" execute="@this" render="txtObraContratoIva" limitRender="true" />
+					</h:inputText>
+					
+					<h:outputText value="#{msg['observaciones']}" styleClass="Titulo" />
+					<h:inputTextarea id="txtObraContratoObservaciones" 
+						value="#{contratoAction.pojoObraContrato.observaciones}" 
+						style="min-width: 352px; width: 98%; height: 60px; resize: none;" />
+				</h:panelGrid>
+			</div>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

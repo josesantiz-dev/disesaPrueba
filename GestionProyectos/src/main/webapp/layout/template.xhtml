@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+	<h:head>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<meta http-equiv="Cache-Control" content="no-store" />
+		<meta http-equiv="Cache-Control" content="no-cache" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="Expires" content="-1" />
+	    <title><ui:insert name="title"/></title>
+	    <ui:insert name="metas" />
+	    <h:outputStylesheet library="css/general"  name="general.css" />
+	  	<h:outputScript library="scripts/general" name="general.js" />
+		<h:outputScript library="scripts" name="gestion_proyectos.js" />
+	    <script>
+		    A4J.AJAX.onExpired = function(loc, expiredMsg){
+		    	console.info(loc);
+		    	console.error(expiredMsg);
+			    document.location="/cas/logout"; 
+			};
+			
+			A4J.AJAX.onError = function(req, status, message) {
+		    	console.info(req);
+		    	console.info(status);
+		    	console.error("Custom onError handler " + message);
+			};
+			
+	    	function toggleAvanzado(btnId, panelId, itemOnId, itemOffId) {
+	    		var base = '';
+	    		var selector = '';
+	    		var splitted = [];
+	    		var panel = '';
+	    		var itemFocus = '';
+	    		
+	    		splitted = btnId.split(":");
+	    		splitted.pop();
+	    		base = splitted.join(":") + ":";
+	    		itemOnId  = itemOnId  || '';
+	    		itemOffId = itemOffId || '';
+	    		
+	    		console.log('btnId     : ' + btnId);
+	    		console.log('panelId   : ' + panelId);
+	    		console.log('itemOnId  : ' + itemOnId);
+	    		console.log('itemOffId : ' + itemOffId);
+	    		console.log('base      : ' + base);
+	    		
+				// Panel Toggle;
+				selector = base + panelId;
+	    		console.log('------------------------------\nToggling ... ' + selector);
+				panel = $(document.getElementById(selector));
+				panel.toggle();
+
+	    		console.log('------------------------------\n' + panel.hidden + ":" + (panel.hidden == false &amp;&amp; itemOnId != '') + ":" + (panel.hidden == true &amp;&amp; itemOffId != ''));
+				if (panel.prop('style').display == '' &amp;&amp; itemOnId != '') 
+					selector = base + itemOnId;
+				if (panel.prop('style').display == 'none' &amp;&amp; itemOffId != '') 
+					selector = base + itemOffId;
+	    		console.log('------------------------------\nFocusing ... ' + selector);
+				itemFocus = $(document.getElementById(selector));
+				itemFocus.focus();
+	    	}
+	    </script>
+	</h:head>
+	
+  	<h:body style="text-align:left; margin:0; padding:0;">
+       	<a4j:region id="loadGral">
+       		<a4j:status id="statusMensaje" for="loadGral" onstart="#{rich:component('wait')}.show()" onstop="#{rich:component('wait')}.hide()" />
+	 		<a4j:queue id="quePrincipal" name="miQueue" ignoreDupResponses="true" requestDelay="500" size="1" />
+	 		
+	       	<h:form id="frmPrincipal" ignoreDupResponses="true" style="text-align:center; float:center; width:100%;">
+				<rich:toolbar id="miMenu" binding="#{appMediator.navegador.arbolMenu}" itemSeparator="none" styleClass="div_header" style="z-index:100;">
+					<ui:insert name="menuFrag" />
+				</rich:toolbar>
+				
+	      		<div id="div_footer">
+					<h:graphicImage id="txtFooterImg" value="#{msg['usuario16.img']}" styleClass="div_footer_img" />
+      				<h:outputText id="txtFooterUsuario" value="#{msg['usuario']}: #{loginManager.usuario}" styleClass="div_footer_txt"/>
+      				<h:outputText id="txtFooterResp" value="#{msg['responsabilidad']}: #{loginManager.usuarioResponsabilidad.responsabilidad.responsabilidad}" styleClass="div_footer_txt"/>
+      				<h:outputText id="txtFooterFecha" value="#{msg['fecha']}: #{navegador.fecha}" styleClass="div_footer_txt"/>
+      				<h:outputText id="txtFooterEmpresa" value="#{msg['empresa']}: #{loginManager.usuarioEmpresa.empresa}" title="#{loginManager.usuarioEmpresa.rfc}" styleClass="div_footer_txt" />
+      				
+      				<a4j:commandButton id="cmdCerrarSession" styleClass="div_footer_cerrar_session"
+      					image="#{msg['ruta_img_22']}#{msg['salir.img']}" title="#{msg['cerrarSession']}" 
+      					action="#{navegador.cerrarSession}" />
+      				
+      				<a4j:commandButton id="cmdCambiarResponsabilidad" styleClass="div_footer_cambia_responsabilidad"
+						image="#{msg['ruta_img_22']}#{msg['responsabilidad.img']}" title="#{msg['cambiarResponsabilidad']}" 
+						oncomplete="#{rich:component('pnlSeleccionResponsabilidad')}.show()" 
+						render="pnlSeleccionResponsabilidad" />
+
+					<a4j:commandButton id="cmdCambiarEmpresa" styleClass="div_footer_cambia_responsabilidad" 
+						image="#{msg['empresa22.img']}" title="#{msg['cambiarEmpresa']}" 
+						oncomplete="#{rich:component('pnlSeleccionEmpresa')}.show()" 
+						render="pnlSeleccionEmpresa" />
+      				
+      				<a4j:commandButton id="cmdCambiarModulo" styleClass="div_footer_cambia_responsabilidad"
+						image="#{msg['ruta_img_22']}#{msg['modulo.img']}" title="#{msg['cambiarModulo']}"
+						action="#{navegador.cambiarModulo}" />
+	      		</div>
+	      		
+	      		<div id="divContainer">
+					<ui:insert name="body" />
+		
+					<a4j:log level="ALL" mode="popup" style="margin:0 auto; min-width:800px; max-height:500px;" />
+	      		</div>
+	      		
+	      		<ui:insert name="modals" />
+			</h:form>
+			
+	      	<ui:insert name="external_modals" />
+		 
+			<ui:include src="/layout/modalsGenerales.xhtml" />
+		</a4j:region>
+	</h:body>
+</html>
+ 

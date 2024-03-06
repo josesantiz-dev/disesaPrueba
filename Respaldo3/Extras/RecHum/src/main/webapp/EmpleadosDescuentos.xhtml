@@ -1,0 +1,110 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['modulo']} - #{msg['descuentos']} #{msg['empleados']}"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" image="#{msg['buscar22.img']}" styleClass="Titulo" style="cursor:pointer;"
+				action="#{empdesAction.buscar}" 
+				render="dtResults, pnlMensajes"
+				oncomplete="buscar(#{empdesAction.operacion}, '#{rich:clientId('pnlMensajes')}');">
+				<rich:tooltip id="ttBuscar" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscar" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+		 
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevoSinEmpleado" image="#{msg['nuevo22.img']}" styleClass="Titulo" style="cursor:pointer;"
+				action="#{empdesAction.nuevoSinEmpleado}" 
+				render="pnlEmpleadoDescuento"
+				oncomplete="#{rich:component('pnlEmpleadoDescuento')}.show()">
+				<rich:tooltip id="ttNuevo" showDelay="300" value="#{msg['nuevo.e']}" for="cmdNuevoSinEmpleado" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="rechum.css" />
+		<!--h:outputStylesheet library="css" name="ordenesCompras".css" /-->
+		
+		<h:outputScript library="scripts" name="rechum.js" />
+		<!--h:outputScript library="scripts" name="ordenesCompras.js" /-->
+					
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText value="#{msg['descuentos']} #{msg['empleados']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina" style="margin-top: 20px;">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin: 10px; display:block; width: 720px;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+				<h:selectOneMenu id="cmbTipoBusqueda" value="#{empdesAction.campoBusqueda}" style="width: 216px">
+		            <f:selectItems value="#{empdesAction.tiposBusqueda}" />
+		        </h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText id="txtvalor" maxlength="50" value="#{empdesAction.valorBusqueda}"  style="width: 210px" />
+			</h:panelGrid>
+			
+			<rich:dataTable id="dtResults" cellpadding="0" cellspacing="0" rows="12" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+				var="var" value="#{empdesAction.listEmpleados}" style="margin:0 auto;">
+				<f:facet name="header">
+					<rich:columnGroup> 
+						<rich:column colspan="3" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['empleados']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:80px" styleClass="Titulo" breakRowBefore="true">
+							<h:outputText value="#{msg['id']}" /> 
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['empleado']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 20px;" styleClass="Titulo" colspan="2" />
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align: center; width: 80px;">
+					<h:outputText value="#{var.id}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.nombre}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdVer" image="#{msg['detalles16.img']}" 
+						action="#{empdesAction.ver}" 
+						oncomplete="verEditar(#{empdesAction.operacion}, '#{rich:clientId('pnlEmpleadoDescuentos')}', '#{rich:clientId('pnlMensajes')}');"
+						render="pnlEmpleadoDescuentos,pnlMensajes"
+						limitRender="true">
+						<f:setPropertyActionListener value="#{var}" target="#{empdesAction.pojoEmpleado}" for="cmdVer" />
+						<rich:tooltip showDelay="300" value="#{msg['detalles']}" for="cmdVer" /> 
+					</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller id="dScroll" page="#{empdesAction.numPagina}" for="dtResults" 
+						align="center" maxPages="10" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modal/empleados/descuentos/pnlMensajes.xhtml" />
+		<ui:include src="/modal/empleados/descuentos/pnlEliminar.xhtml" />
+		<ui:include src="/modal/empleados/descuentos/pnlEmpleadoDescuentos.xhtml" />
+		<ui:include src="/modal/empleados/descuentos/pnlEmpleadoDescuento.xhtml" />
+		<ui:include src="/modal/empleados/descuentos/pnlBusquedaEmpleados.xhtml" />
+	</ui:define>
+</ui:composition>

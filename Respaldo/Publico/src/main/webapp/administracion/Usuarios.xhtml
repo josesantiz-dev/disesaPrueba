@@ -1,0 +1,519 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+
+<ui:define name="menuFrag" >	
+
+	<rich:toolBarGroup id="tbgBuscar" location="right">
+		<a4j:commandButton id="cmdBuscar" action="#{UsuarioAction.buscar}" image="#{msg['buscar22.img']}"
+			oncomplete="buscar('#{UsuarioAction.resOperacion}', 'pnlMsgGralUsuario');" reRender="dtUsuarios,pnlMsgGralUsuario"  styleClass="Titulo" style="cursor:pointer;">
+			<rich:toolTip id="ttBuscar"  showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscar"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>
+	
+	<rich:toolBarGroup id="tbgNuevo" location="right">
+		<a4j:commandButton id="cmdNuevo" action="#{UsuarioAction.nuevo}" image="#{msg['nuevo22.img']}"
+			oncomplete="Richfaces.showModalPanel('pnlFormUsuario');" reRender="pnlFormUsuario" styleClass="Titulo" style="cursor:pointer;">
+			<rich:toolTip id="ttNuevo"  showDelay="300" value="#{msg['nuevo.e']}" for="cmdNuevo"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>	
+	
+</ui:define>
+
+<ui:define name="body">
+	<a4j:keepAlive beanName="UsuarioAction" />	
+	<a4j:loadStyle src="resource:///resources/css/adm/adm.css" />
+	<a4j:loadStyle src="resource:///resources/css/adm/admUsuarios.css" />
+	<a4j:loadScript src="resource:///resources/scripts/adm/usuario.js"/> 	
+	
+	<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+		<h:outputText value="#{msg['usuarios']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+	</div>
+	
+	<div class="div_pagina">				
+		        
+		        <h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin-left:10px; margin-bottom:20px; display:block;" >
+	  				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/> 				
+		            <h:selectOneMenu id="cmbTipoBusqueda" value="#{UsuarioAction.campoBusqueda}"  style="width:130px;">			  					
+  							<f:selectItem itemLabel="#{msg['usuario']}" itemValue="usuario"/>
+  							<f:selectItem itemLabel="#{msg['nombre']}" itemValue="nombre"/>	
+				  	</h:selectOneMenu>	
+				  				
+		            <h:outputText value="#{msg['valor']}:" styleClass="Titulo"/>
+					<h:inputText id="txtvalor" maxlength="30" value="#{UsuarioAction.valTipoBusqueda}" size="50"  />
+			  	</h:panelGrid>	
+		 		
+		 		<rich:dataTable id="dtUsuarios" cellpadding="0" cellspacing="0"  rows="20" border="0" var="var" rowClasses="Row1, Row2" styleClass="tabla_pagina"	 value="#{UsuarioAction.listUsuarios}">	           		
+	               <f:facet name="header">
+	                   <rich:columnGroup>
+	                       <rich:column colspan="10" styleClass="Titulo">
+	                           <h:outputText value="#{msg['usuarios']}"/>
+	                       </rich:column>
+	                       <rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['id']}" />
+	                       </rich:column>
+	                       <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['usuario']}" />
+	                       </rich:column>
+	                       <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['nombre']}" />
+	                       </rich:column>
+	                       <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['fechaInicio']}" />
+	                       </rich:column>
+	                       <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['fechaTerminacion']}" />
+	                       </rich:column>
+	                        <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['expirado']}" />
+	                       </rich:column>
+	                       <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['bloqueado']}" />
+	                       </rich:column>
+	                       <rich:column style="text-align:center;" styleClass="Titulo" />	                       
+	                       <rich:column style="text-align:center;" styleClass="Titulo" />
+	                       <rich:column style="text-align:center;" styleClass="Titulo" />	                       
+	                   </rich:columnGroup>
+	               </f:facet>
+	               <rich:column width="50" style="text-align:center;" styleClass="Descripcion">
+	               			<h:outputText value="#{var.id}" />	 
+	               </rich:column>
+	               <rich:column width="100" styleClass="Descripcion">	               		
+	                   		<h:outputText value="#{var.usuario}" />	                   
+	               </rich:column>
+	               <rich:column width="400" styleClass="Descripcion"  style="text-align:left; padding-left: 5px;">
+	                   	<h:outputText value="#{var.nombre}" />
+	               </rich:column>
+	               <rich:column width="60" styleClass="Descripcion"  style="text-align:left; padding-left: 5px;">
+	                   	<h:outputText value="#{var.fechaIni}" >
+	                   		<f:convertDateTime pattern="dd MMM yyyy"/>
+	                   	</h:outputText>
+	               </rich:column>
+	               <rich:column width="60" styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+	                   	<h:outputText value="#{var.fechaTerm}" >
+	                   		<f:convertDateTime pattern="dd MMM yyyy"/>
+	                   	</h:outputText>
+	               </rich:column>	       
+	               <rich:column width="50" style="text-align:center;" styleClass="Descripcion">
+				       <h:selectBooleanCheckbox value="#{var.expirado}" disabled="true"/>
+				   </rich:column>
+				   <rich:column width="50" style="text-align:center;" styleClass="Descripcion">
+				       <h:selectBooleanCheckbox value="#{var.bloqueado}" disabled="true"/>
+				   </rich:column>                   
+	               <rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+	                   <a4j:commandButton id="cmdCambiasPassUsuario" 
+	                   image="#{msg['password16.img']}" 
+	                   		oncomplete="Richfaces.showModalPanel('pnlFormConfirmarPassword');" 
+	                   		reRender="pnlFormConfirmarPassword">
+	                   		<rich:toolTip styleClass="Descripcion" showDelay="300" 
+	                   		value="#{msg['cambiarContrasena']}"
+	                   		 for="cmdCambiasPassUsuario"/>	
+	                   		<f:setPropertyActionListener target="#{UsuarioAction.pojoUsuarioExt}" 
+	                   		value="#{var}" />
+	                   </a4j:commandButton>
+	                   
+	               </rich:column>
+	               <rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+	                   <a4j:commandButton id="cmdEditar" image="#{msg['editar16.img']}"  
+	                   		oncomplete="Richfaces.showModalPanel('pnlFormUsuario');" reRender="pnlFormUsuario">
+	                   		<rich:toolTip styleClass="Descripcion" showDelay="300" value="#{msg['editar.e']}" for="cmdEditar"/>	
+	                   		<f:setPropertyActionListener target="#{UsuarioAction.pojoUsuarioExt}" value="#{var}" />
+	                   </a4j:commandButton>
+	               </rich:column>	               
+	               <rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+	                   <a4j:commandButton id="cmdEliminar" image="#{msg['eliminar16.img']}" 
+	                   		oncomplete="Richfaces.showModalPanel('pnlEliminarUsuario');" reRender="pnlEliminarUsuario">
+	                   		<rich:toolTip styleClass="Descripcion" showDelay="300" value="#{msg['eliminar.e']}" for="cmdEliminar"/>
+	                   		<f:setPropertyActionListener target="#{UsuarioAction.pojoUsuarioExt}" value="#{var}" />
+	                   </a4j:commandButton>
+	               </rich:column>	            
+	               <f:facet name="footer" >
+		               	<rich:datascroller align="center" for="dtUsuarios" maxPages="10" ajaxSingle="true"	page="#{UsuarioAction.numPagina}" id="dScroll" styleClass="Titulo"/>
+	               </f:facet>
+	           </rich:dataTable>
+	</div>	          						 
+</ui:define>
+
+<ui:define name="modals">
+
+ <!-- ####### MODAL NUEVO/EDITAR USUARIO  ######### -->
+	 <rich:modalPanel id="pnlFormUsuario" autosized="true">
+		<f:facet name="header">
+			<h:outputText id="lblTitulo" value="#{msg['usuario']}" styleClass="Titulo" style="margin-left:10px"/>
+		</f:facet>
+		<f:facet name="controls">
+           <h:panelGroup>
+               <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor: pointer;" id="imgCerrarEditarUsuario"/>
+               	<rich:componentControl for="pnlFormUsuario" attachTo="imgCerrarEditarUsuario" operation="hide" event="onclick"/>
+            </h:panelGroup>
+         </f:facet>         
+         <a4j:form id="frmEditarUsuario"> 
+         	 
+         	         
+	    	<!-- INICIA MENU MODAL -->	
+			<div style = "display: block; width:100%; height: 22px;">
+	   				<!-- botones izquierda ARRIBA.........................botones derecha ABAJO -->  
+	   				<a4j:commandButton id="cmdSalvar" 
+	   					action="#{UsuarioAction.guardar}" 
+	   					image="#{msg['salvar22.img']}" 
+	   					style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+	   					oncomplete = "salvarUsuario('#{UsuarioAction.resOperacion}', 'pnlFormUsuario', 'pnlMsgGralUsuario', #{rich:element('msgErrorUsuario')})"
+	   					reRender="dtUsuarios,pnlMsgGralUsuario,msgErrorUsuario, groupGroupAgregarResponsabilidad" >	   					
+	   					<rich:toolTip styleClass="Descripcion" value="#{msg['salvar.e']}" />
+	   				</a4j:commandButton>          				
+			</div>				
+		
+			<!-- FIN MENU MODAL -->	
+									                 
+				<rich:messages id="msgErrorUsuario" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!">
+					<f:facet name="errorMarker">
+	                    <h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;"/>   
+	                </f:facet>
+			   </rich:messages>	
+			
+				<h:panelGroup styleClass="encabezado" rendered="#{UsuarioAction.pojoUsuarioExt.id != null}">
+		        	<h:outputText value="#{UsuarioAction.pojoUsuarioExt.id != null ? UsuarioAction.pojoUsuarioExt.id : ' '} - "/>
+		        	<h:outputText value="#{UsuarioAction.pojoUsuarioExt.nombre}"/>
+	       		</h:panelGroup>
+	       	
+	       		<h:panelGroup styleClass="fondoGeneral">
+				 
+					<h:panelGroup style="float:right; margin-right:30px;">
+						<h:selectBooleanCheckbox id="checkBloqueado"  value="#{UsuarioAction.pojoUsuarioExt.bloqueado}"  />
+						<h:outputLabel for="checkBloqueado" value="#{msg['bloqueado']}" style="vertical-align: middle; cursor:pointer; position:relative; top:-4px;" styleClass="Titulo"/>
+					</h:panelGroup>				
+				
+				
+				 		
+		            <h:panelGrid id="pnlGridFormulario"  width="650" style="margin-left:7px;  margin-bottom: 15px" columns="2" columnClasses="colModalIzq, colModalDer">
+		            	
+		            	<h:outputText value="#{msg['usuario']}:" styleClass="Titulo" style="position:relative; top:8px;"/>
+		           		<h:panelGroup style="position:relative; top:8px;">
+		           			<h:inputText value="#{UsuarioAction.pojoUsuarioExt.usuario}" size="40" maxlength="30"/>	
+						</h:panelGroup> 
+						
+						<h:outputText value="#{msg['nombre']}:" styleClass="Titulo" style="position:relative; top:8px;"/>
+						<h:panelGroup style="position:relative; top:8px;">
+	       					<h:inputText value="#{UsuarioAction.pojoUsuarioExt.nombre}" size="40" maxlength="30"/>	
+			           	</h:panelGroup> 
+			           	
+						<h:outputText value="#{msg['correo']}:" styleClass="Titulo"  style="position:relative; top:8px;"/>
+						
+			           		<h:inputText id="txtCorreo" 
+			           			value="#{UsuarioAction.pojoUsuarioExt.correo}"  style="position:relative; top:8px;"
+			           			maxlength="100" 
+			           			required="#{!empty param[rich:clientId('cmdSalvar')]}" size="85"			           			
+			           			requiredMessage="#{msg['correo']} #{msg['mensaje.error.requerido']}">
+			           			<f:validateLength minimum="1"/>
+			           			<f:validator validatorId="email"/>	
+			           		</h:inputText>		        		
+						
+						<h:outputText value="#{msg['fechaInicio']}:" style="position:relative; top:8px;" styleClass="Titulo"/>
+						<h:panelGroup style="position:relative; top:8px;" >	
+														
+								<rich:calendar id="cmbFecha1"  
+									value="#{UsuarioAction.pojoUsuarioExt.fechaIni}" 
+									inputSize="18" datePattern="dd, MMM yyyy" 
+									zindex="100" showWeekDaysBar="false" 
+						    		showWeeksBar="false" 
+						    		requiredMessage="#{msg['fechaInicio']} #{msg['mensaje.error.requerido']}"
+						    		required="#{!empty param[rich:clientId('cmdSalvar')]}" >
+						    		<f:validateLength minimum="1"/>								    		
+						    	</rich:calendar>								    	
+							
+								<h:panelGroup  style="margin-left:55px;">
+										<h:outputText value="#{msg['fechaTerminacion']}:" styleClass="Titulo" />					           		
+										<rich:calendar id="cmbFecha2"  
+											value="#{UsuarioAction.pojoUsuarioExt.fechaTerm}" 
+											inputSize="18" datePattern="dd, MMM yyyy" 
+											zindex="100" showWeekDaysBar="false" 
+								    		showWeeksBar="false" 
+								    		requiredMessage="#{msg['fechaTerminacion']} #{msg['mensaje.error.requerido']}"
+								    		required="#{!empty param[rich:clientId('cmdSalvar')]}" >								    		
+								    		<f:validateLength minimum="1"/>								    		
+								    	</rich:calendar>								    
+								</h:panelGroup>					
+						</h:panelGroup>		
+		           </h:panelGrid>		
+		           
+		           <h:panelGroup id="groupGroupAgregarResponsabilidad"> 
+		           <h:panelGroup id="groupAgregarResponsabilidad" rendered="#{UsuarioAction.pojoUsuarioExt.id != 0}">
+		                        
+			           <h:panelGrid columns="2" width="100%" style="margin-top:25px; margin-bottom:15px;">	
+		       				<h:outputText value="#{msg['responsabilidades/nivelesAcceso']}" styleClass="Titulo" />
+			       			<rich:separator height="1"  lineType="solid" width="400px" style="vertical-align: middle; float:right; margin-right:5px;" />
+		       		   </h:panelGrid>  		     
+	           		         
+						<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin-left:10px; margin-bottom:20px; display:block;" >
+						   <a4j:commandLink id= "cmdAgregarResponsabilidad" value="#{msg['agregarResponsabilidad']}"  action="#{UsuarioAction.agregarResponsabilidadNivelAcceso}" reRender="pnlFormNivelResponsabilidad" oncomplete="Richfaces.showModalPanel('pnlFormNivelResponsabilidad');" style ="font-weight: bold;"/>		  			                                
+				  		   <a4j:commandButton id="cmdAgregar" image="#{msg['agregar16.img']}"  action="#{UsuarioAction.agregarResponsabilidadNivelAcceso}"
+		                  		  reRender="pnlFormNivelResponsabilidad" oncomplete="Richfaces.showModalPanel('pnlFormNivelResponsabilidad');"
+		                  		style="margin-left:5px; margin-top:5px; vertical-align: middle; cursor: pointer;">
+		                  		<rich:toolTip showDelay="300" styleClass="Descripcion" value="#{msg['agregar.e']}" for="cmdAgregar" />
+			               </a4j:commandButton>
+						</h:panelGrid>
+
+		               <rich:dataTable id="dtNivelResponsabilidades" width="650"  style="margin-bottom:15px; margin-top:15px; margin-left:3px;" 
+		               	cellpadding="0" cellspacing="0"  rows="20" border="0" var="var" rowClasses="Row1, Row2"  value="#{UsuarioAction.listTmpUsuarioResponsabilidad}">	           		
+		               <f:facet name="header">
+		                   <rich:columnGroup>	                                             
+		                        <rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+		                           <h:outputText value="#{msg['responsabilidad']}" />
+		                       </rich:column> 
+		                       <rich:column style="text-align:center;" styleClass="Titulo">
+		                           <h:outputText value="#{msg['fechaInicio']}" />
+		                       </rich:column>
+		                       <rich:column style="text-align:center;" styleClass="Titulo">
+		                           <h:outputText value="#{msg['fechaTerminacion']}" />
+		                       </rich:column>
+		                       <rich:column style="text-align:center;" styleClass="Titulo" />
+		                       <rich:column style="text-align:center;" styleClass="Titulo" />
+		                   </rich:columnGroup>
+		               </f:facet>	             
+		               <rich:column width="200" styleClass="Descripcion">	               		
+		                   		<h:outputText value="#{var.responsabilidad.responsabilidad}" />	                   
+		               </rich:column>
+		                
+		               <rich:column width="100" styleClass="Descripcion"  style="text-align:left; padding-left: 5px;">
+		                   	<h:outputText value="#{var.fechaIni}" >
+		                   		<f:convertDateTime pattern="dd MMM yyyy"/>
+		                   	</h:outputText>
+		               </rich:column>
+		               <rich:column width="100" styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+		                   	<h:outputText value="#{var.fechaTerm}" >
+		                   		<f:convertDateTime pattern="dd MMM yyyy"/>
+		                   	</h:outputText>
+		               </rich:column>	              
+		               <rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+		                   <a4j:commandButton id="cmdEditar" image="#{msg['editar16.img']}"  
+		                   		oncomplete="Richfaces.showModalPanel('pnlFormNivelResponsabilidad');" reRender="pnlFormNivelResponsabilidad">
+		                   		<rich:toolTip styleClass="Descripcion" showDelay="300" value="#{msg['editar.e']}" for="cmdEditar"/>	
+		                   		<f:setPropertyActionListener target="#{UsuarioAction.pojoUsuarioResponsabilidad}" value="#{var}" />
+		                   </a4j:commandButton>
+		               </rich:column>
+		               <rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+		                   <a4j:commandButton id="cmdEliminar" image="#{msg['eliminar16.img']}" 
+		                   		oncomplete="Richfaces.showModalPanel('pnlEliminarNivelResponsabilidad');" reRender="pnlEliminarNivelResponsabilidad">
+		                   		<rich:toolTip styleClass="Descripcion" showDelay="300" value="#{msg['eliminar.e']}" for="cmdEliminar"/>
+		                   		<f:setPropertyActionListener target="#{UsuarioAction.pojoUsuarioResponsabilidad}" value="#{var}" />
+		                   </a4j:commandButton>
+		               </rich:column>
+		               <f:facet name="footer" >
+			               	<rich:datascroller align="center" for="dtNivelResponsabilidades" maxPages="10" ajaxSingle="true"	page="#{UsuarioAction.numPaginaNivelResponsabilidad}" id="dScroll" styleClass="Titulo"/>
+		               </f:facet>
+		               </rich:dataTable>
+	        	</h:panelGroup>
+	        	</h:panelGroup>
+	        </h:panelGroup>
+	               
+		</a4j:form>
+	</rich:modalPanel>
+	
+	
+	<!-- ####### MODAL Cambiar CONTRASEnA  ######### -->
+	 <rich:modalPanel id="pnlFormConfirmarPassword" autosized="true">
+		<f:facet name="header">
+			<h:outputText  value="#{msg['confirmarContrasena']}" styleClass="Titulo" style="margin-left:10px"/>
+		</f:facet>
+		<f:facet name="controls">
+           <h:panelGroup>
+               <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor: pointer;" id="imgCerrarConfirmarPassword">
+               		<rich:componentControl for="pnlFormConfirmarPassword" operation="hide" event="onclick"/>
+               </h:graphicImage>
+            </h:panelGroup>
+         </f:facet>         
+         <a4j:form id="frmConfirmarPassword">
+         	<rich:messages id="msgErrorUsuarioPwd" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!">
+				<f:facet name="errorMarker">
+                    <h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;"/>   
+                </f:facet>
+		   </rich:messages>
+               
+			<h:panelGrid columns="2" style=" display: block; margin-top:20px; margin-bottom:20px;">
+				<h:outputText value="#{msg['contrasena']}:" styleClass="Titulo" />
+           		<h:inputSecret id="txtContrasena"  
+           			value="#{UsuarioAction.contrasena}"			           			
+           			maxlength="32" size="30">
+           			<f:validateLength minimum="1"   />			           		
+           		</h:inputSecret>			   
+				<h:outputText value="#{msg['contrasena']}:" styleClass="Titulo" />
+		  		<h:inputSecret id="txtContrasena2"  
+		  			value="#{UsuarioAction.contrasena2}"			           			
+		  			maxlength="32" size="26">
+		  			<f:validateLength minimum="1" />				           		
+		  		</h:inputSecret>
+	  		</h:panelGrid>
+	  		
+	  		 <h:panelGroup style="margin-left:100px; " >				  			                                
+	  		   <a4j:commandButton id="cmdAceptar" 
+	  		   action="#{UsuarioAction.validarContrasena}"                 		
+                 		style=" cursor: pointer;" 
+                 		oncomplete = "salvar('#{UsuarioAction.resOperacion}','pnlFormConfirmarPassword','pnlMsgGralUsuario', #{rich:element('msgErrorUsuarioPwd')})"
+                 		reRender="pnlMsgGralUsuario" value="#{msg['aceptar']}">                 	
+               </a4j:commandButton>
+             </h:panelGroup>
+  			<a4j:log></a4j:log>
+		</a4j:form>
+	</rich:modalPanel>
+     
+     <!-- -*************  MODAL ELIMINAR USUARIO *****************-->		
+    <rich:modalPanel id="pnlEliminarUsuario" autosized="true">
+	 <f:facet name="header">
+		<h:outputText value="#{msg['atencion']}" styleClass="Titulo"/>
+	 </f:facet>
+	 <f:facet name="controls">
+         <h:panelGroup>
+             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor:pointer;" id="imgCerrarEliminarUsuario"/>
+             	<rich:componentControl for="pnlEliminarUsuario" attachTo="imgCerrarEliminarUsuario" operation="hide" event="onclick"/>
+          </h:panelGroup>
+       </f:facet>
+       <a4j:form id="frmEliminarUsuario">
+       		<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+       			<h:outputText value="#{msg['deseaEliminar']}" style="display:block;"  styleClass="Descripcion"/>
+	       		<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+		       		<a4j:commandButton id="cmdEliminar" action="#{UsuarioAction.eliminar}" value="#{msg['aceptar']}" reRender="dtUsuarios, pnlMsgGralUsuario"
+		       			oncomplete = "eliminar('#{UsuarioAction.resOperacion}', 'pnlEliminarUsuario', 'pnlMsgGralUsuario');"/>
+		       		<a4j:commandButton onclick="#{rich:component('pnlEliminarUsuario')}.hide()" value="#{msg['cancelar']}" style="margin-left:10px;"/>
+	       		</h:panelGroup>
+       		</h:panelGrid>
+       </a4j:form>
+     </rich:modalPanel>	
+					           		
+	<!-- ####### MODAL NUEVO/EDITAR     RESPONSABILIDAD NIVEL DE ACCESO  ######### -->
+	 <rich:modalPanel id="pnlFormNivelResponsabilidad" autosized="true">
+		<f:facet name="header">
+			<h:outputText  value="#{msg['responsabilidad/nivelAcceso']}" styleClass="Titulo" style="margin-left:10px"/>
+		</f:facet>
+		<f:facet name="controls">
+           <h:panelGroup>
+               <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor: pointer;" id="imgCerrarEditarNivelResponsabilidad"/>
+               	<rich:componentControl for="pnlFormNivelResponsabilidad" attachTo="imgCerrarEditarNivelResponsabilidad" operation="hide" event="onclick"/>
+            </h:panelGroup>
+         </f:facet>         
+         <a4j:form id="frmEditarNivelResponsabilidad"> 
+         	 
+         	         
+	    	<!-- INICIA MENU MODAL -->	
+			<div style = "display: block; width:100%; height: 22px;">		   			  
+	   				 
+	   				  				
+	   				<!-- botones izquierda ARRIBA.........................botones derecha ABAJO -->  
+	   				<a4j:commandButton id="cmdSalvarResponsabilidadNivel" 
+	   					action="#{UsuarioAction.guardarResponsabilidadNivel}" 
+	   					image="#{msg['salvar22.img']}" 
+	   					style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 	   					         					
+	   					oncomplete="salvar('#{UsuarioAction.resOperacion}', 'pnlFormNivelResponsabilidad', 'pnlMsgGralUsuario', #{rich:element('msgErrorUsuario3')});"
+	   					reRender="dtNivelResponsabilidades, pnlMsgGralUsuario,msgErrorUsuario3" >	   					
+	   					<rich:toolTip styleClass="Descripcion" value="#{msg['salvar.e']}" />
+	   				</a4j:commandButton>          				
+			</div>				
+		
+			<!-- FIN MENU MODAL -->	
+									                 
+				<rich:messages id="msgErrorUsuario3" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!">
+					<f:facet name="errorMarker">
+	                    <h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;"/>   
+	                </f:facet>
+			   </rich:messages>	
+			
+				<h:panelGroup styleClass="encabezado">
+		        	<h:outputText value="#{UsuarioAction.pojoUsuarioExt.id != null ? UsuarioAction.pojoUsuarioExt.id : ' '} - "/>
+		        	<h:outputText value="#{UsuarioAction.pojoUsuarioExt.nombre}"/>
+	       		</h:panelGroup>
+	       		    <h:panelGrid  width="552" columns="2" columnClasses="colModalIzq, colModalDer">
+		            	
+		          
+						<h:outputText value="#{msg['responsabilidad']}:" styleClass="Titulo" style="position:relative; top:8px;"/>
+		  				<h:selectOneMenu value="#{UsuarioAction.suggResponsabilidad}"  style="width:425px; position:relative; top:8px;">		  				
+		  					<f:selectItems value="#{UsuarioAction.listResponsabilidad}"/>					  					
+		  				</h:selectOneMenu>
+			  						  						
+	  					 						
+		  				
+						<h:outputText value="#{msg['fechaInicio']}:" style="position:relative; top:8px;" styleClass="Titulo"/>
+						<h:panelGroup style="position:relative; top:8px;" >	
+														
+								<rich:calendar id="cmbFechaA"  
+									value="#{UsuarioAction.pojoUsuarioResponsabilidad.fechaIni}" 
+									inputSize="14" datePattern="dd, MMM yyyy" 
+									zindex="100" showWeekDaysBar="false" showWeeksBar="false" 
+						    		requiredMessage="#{msg['fechaInicio']} #{msg['mensaje.error.requerido']}"
+						    		required="#{!empty param[rich:clientId('cmdSalvarResponsabilidadNivel')]}" >
+						    		<f:validateLength minimum="1"/>								    		
+						    	</rich:calendar>								    	
+							
+								<h:panelGroup  style="margin-left:45px;">
+										<h:outputText value="#{msg['fechaTerminacion']}:" styleClass="Titulo" />					           		
+										<rich:calendar id="cmbFechaB"  
+											value="#{UsuarioAction.pojoUsuarioResponsabilidad.fechaTerm}" 
+											inputSize="14" datePattern="dd, MMM yyyy" 
+											zindex="100" showWeekDaysBar="false" 		showWeeksBar="false" 
+								    		requiredMessage="#{msg['fechaTerminacion']} #{msg['mensaje.error.requerido']}"
+								    		required="#{!empty param[rich:clientId('cmdSalvarResponsabilidadNivel')]}" >								    		
+								    		<f:validateLength minimum="1"/>								    		
+								    	</rich:calendar>								    
+								</h:panelGroup>					
+						</h:panelGroup>		
+		           </h:panelGrid>
+	               
+		</a4j:form>
+	</rich:modalPanel>
+	
+	    
+     
+     <!-- -*************  MODAL ELIMINAR USUARIO *****************-->		
+     <!-- -*************  MODAL ELIMINAR RESPONSABILIDAD/NIVEL ACCESO *****************-->		
+    <rich:modalPanel id="pnlEliminarNivelResponsabilidad" autosized="true">
+	 <f:facet name="header">
+		<h:outputText value="#{msg['atencion']}" styleClass="Titulo"/>
+	 </f:facet>
+	 <f:facet name="controls">
+         <h:panelGroup>
+             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor:pointer;" id="imgCerrarEliminarResp"/>
+             	<rich:componentControl for="pnlEliminarNivelResponsabilidad" attachTo="imgCerrarEliminarResp" operation="hide" event="onclick"/>
+          </h:panelGroup>
+       </f:facet>
+       <a4j:form id="frmEliminarResponsabilidadNivel">
+       		<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+       			<h:outputText value="#{msg['deseaEliminar']}" style="display:block;"  styleClass="Descripcion"/>
+	       		<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+		       		<a4j:commandButton id="cmdEliminar" action="#{UsuarioAction.eliminarResponsabilidadNivel}" value="#{msg['aceptar']}" reRender="dtNivelResponsabilidades, pnlMsgGralUsuario"
+		       			oncomplete = "eliminar('#{UsuarioAction.resOperacion}', 'pnlEliminarNivelResponsabilidad', 'pnlMsgGralUsuario');"/>
+		       		<a4j:commandButton onclick="#{rich:component('pnlEliminarNivelResponsabilidad')}.hide()" value="#{msg['cancelar']}" style="margin-left:10px;"/>
+	       		</h:panelGroup>
+       		</h:panelGrid>
+       </a4j:form>
+     </rich:modalPanel>	
+     		
+	
+	<!-- #### MODAL MENSAJES GENERALES #### -->		
+	  <rich:modalPanel id="pnlMsgGralUsuario" autosized="true" width="350">
+		 <f:facet name="header">
+		 	<h:panelGroup>
+				<h:outputText value="#{UsuarioAction.resOperacion == '' ? msg['informacion'] : msg['atencion']}" styleClass="Titulo" />
+			</h:panelGroup>
+		 </f:facet>
+		 <f:facet name="controls">
+	         <h:panelGroup>
+	             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="imgCerrarMsgGralUsuario"/>
+	             	<rich:componentControl for="pnlMsgGralUsuario" attachTo="imgCerrarMsgGralUsuario" operation="hide" event="onclick"/>
+	          </h:panelGroup>
+	       </f:facet>
+	       <a4j:form id="frmGralUsuario" style="text-align:center;" >
+	       		<h:panelGroup style="display:block; width:300px; float:center;">
+		       		<h:outputText value="#{UsuarioAction.resOperacion != '' ? UsuarioAction.resOperacion : msg['mensaje.info.infoReg']}" style="display:block;" styleClass="Descripcion"/>
+	       		</h:panelGroup>
+	       		<a4j:commandButton value="#{msg['aceptar']}" onclick="#{rich:component('pnlMsgGralUsuario')}.hide()" style="margin-top:10px; cursor:pointer;"/>
+	       </a4j:form>
+	   </rich:modalPanel>		 
+	<!--  Fin Panel MsgGenerales-->
+</ui:define>
+	
+</ui:composition>

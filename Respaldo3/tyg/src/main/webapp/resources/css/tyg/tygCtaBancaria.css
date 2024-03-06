@@ -1,0 +1,86 @@
+
+.TipoCambioObs{
+	text-align:left;
+	font-weight: bold;
+	font-size: 12px;
+	color:#C0C0C0;
+}
+.tipoCambioTit{
+	font-weight: bold;
+	font-size: 12px;
+	color:#525252;
+}
+.tipoCambioRow1{
+	background: #FFFFFF;
+}
+.tipoCambioRow2{
+	background: #f1f1f1;
+}
+
+.tipoCambioDesc{
+	font-weight: bold;
+	font-size: 12px;
+	color:#808080;
+}
+
+.colImp1{
+	width: 130px;
+	
+}
+.colImp2{
+	width: 470px;
+}
+.colRep1{
+	width: 60px;
+	
+}
+.colRep2{
+	width: 540px;
+}
+.colParam1{
+	width: 80px;
+	
+}
+.colParam2{
+	width: 520px;
+}
+.colParametro1{
+	width: 100px;
+	
+}
+.colParametro2{
+	width: 500px;
+}
+.ctaBancariaCol1{
+	width: 100px;
+	
+}
+.ctaBancariaCol2{
+	width: 500px;
+}
+
+.colTyg2{
+	font-weight: bold;
+	font-size: 12px;
+	text-align:right;
+	width: 30px;
+}
+.colRef2{
+	width: 150px;
+	
+}
+.colRef1{
+	width: 470px;
+}
+.rowRef{
+	vertical-align:top;		
+}
+.paramColIzq{
+	text-align:right;
+	width: 120px;
+}
+
+.paramColDer{
+	text-align:left;
+	width: 480px;
+}

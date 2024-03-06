@@ -1,0 +1,31 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlMensajes" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msgAction.operacion ? msg['navegacion.label.atencion'] : msg['navegacion.label.informacion']}" styleClass="Descripcion" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.panel.cerrar.img']}" 
+				onclick="#{rich:component('pnlMensajes')}.hide()" />
+		</f:facet>
+
+		<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="5">
+			<h:outputText rendered="#{msgAction.tipoMensaje == -1}" value="#{msgAction.mensaje}" styleClass="Descripcion" />
+			<h:outputText rendered="#{msgAction.tipoMensaje ==  0}" value="#{msg['mensaje.info.infoReg']}" styleClass="Descripcion" />
+			<h:outputText rendered="#{msgAction.tipoMensaje ==  1}" value="#{msg['mensaje.error.inesperado']}" styleClass="Descripcion" />
+			<h:outputText rendered="#{msgAction.tipoMensaje ==  2}" value="#{msg['mensaje.info.busquedaVacia']}" styleClass="Descripcion" />
+			<h:outputText rendered="#{msgAction.tipoMensaje ==  3}" value="#{msg['mensaje.error.requerido']}" styleClass="Descripcion" />
+			
+			<a4j:commandButton value="#{msg['navegacion.label.aceptar']}" 
+				oncomplete="#{rich:component('pnlMensajes')}.hide()" />
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

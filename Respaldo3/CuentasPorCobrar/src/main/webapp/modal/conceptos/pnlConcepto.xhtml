@@ -1,0 +1,147 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlConcepto" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20"
+		header="#{msg['conceptoFacturacion']}">
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlConcepto')}.hide()" />
+		</f:facet>
+		
+		<h:panelGrid id="botonera" columns="2" style="padding:0; width:100%; min-width:800px; min-height:22px; text-align: left;">
+			<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+				<rich:messages id="validadorConceptos" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" /></f:facet>
+				</rich:messages>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdSalvar" style="float:right; margin-left: 5px; vertical-align:top; position:relative;"
+					image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+					action="#{conceptosAction.guardar}"
+					oncomplete="salvar(#{conceptosAction.band}, '#{rich:clientId('pnlConcepto')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorConceptos')});"
+					render="dtResults,txtConceptoClave,validadorConceptos,pnlMensajes" />
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<h:panelGroup style="display:block; margin:10px auto 0; padding:0; text-align:left;">
+			<rich:tabPanel id="tabs" switchType="client" style="margin: 10px auto 0; min-width: 500px;">
+				<rich:tab id="tabDatsosGenerales" header="#{msg['datosGenerales']}">
+			    	<h:panelGroup style="margin:0 auto; width:400px; min-height:228px; height:auto; background-color:none;">
+						<h:panelGrid id="pnlDatos1" columns="2" cellpadding="3" columnClasses="Observacion" style="display: block; position:relative; margin:10px;">						
+							<h:outputText value="*" />
+							<h:outputText value="#{conceptosAction.pojoConcepto.id > 0 ? msg['navegacion.label.noeditar'] : msg['navegacion.label.generaAuto']}" />
+							<h:outputText value="" />
+							<h:outputText value="#{conceptosAction.pojoConcepto.id > 0 ? msg['navegacion.label.vacio'] : msg['navegacion.label.cuandoSalve']}"  />						
+						</h:panelGrid>
+						
+						<h:panelGrid id="pnlDatos2" columns="2" cellpadding="3" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="display:block; position:relative; margin:15px auto;" >					
+							<h:outputText value="#{msg['id']}:" styleClass="Titulo" />					
+							<h:outputText id="txtConceptoClave" styleClass="Titulo" 
+								value="#{conceptosAction.pojoConcepto.id}" />
+							
+							<h:outputText value="#{msg['claveSat']}:" styleClass="Titulo" />
+							<h:selectOneMenu id="cbConceptoClaveSat" style="width:316px"
+								value="#{conceptosAction.claveSat}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['claveSat']} #{msg['mensaje.error.requerido']}">
+					            <f:selectItem itemLabel="#{msg['seleccione']}" />
+					            <f:selectItems value="#{conceptosAction.listClaveSatItems}" />
+					        </h:selectOneMenu>
+							
+							<h:outputText value="#{msg['descripcion']}:" styleClass="Titulo" />
+							<h:inputTextarea id="txtConceptoDescripcion" rows="3" style="resize:none; width:90%;"
+								value="#{conceptosAction.descripcion}" 
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['descripcion']} #{msg['mensaje.error.requerido']}" />
+							
+							<h:outputText value="#{msg['unidadMedida']}:" styleClass="Titulo" />
+							<h:selectOneMenu id="cbUnidadMedida" style="width:316px"
+								value="#{conceptosAction.idUnidadMedida}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['unidadMedida']} #{msg['mensaje.error.requerido']}">
+					            <f:selectItem itemLabel="#{msg['seleccione']}" />
+					            <f:selectItems value="#{conceptosAction.listUnidadesMedidasItems}" />
+					        </h:selectOneMenu>
+						</h:panelGrid>
+					</h:panelGroup>
+				</rich:tab>
+				
+				<rich:tab id="tabImpuestos" header="#{msg['impuestos']}">
+					<a4j:region>
+						<div style="margin:0 auto; width:100%; min-height:	228px; height:auto; background-color: none;">
+							<div style="margin:0 auto; display: block; padding:10px 0; position:relative; width:460px; background-color: none;">
+								<h:panelGrid id="pnlBuscaImpuesto" columns="3" columnClasses="tygCompGtosColIzq, tygCompGtosCol2, tygCompGtosCol2" cellpadding="3" style="margin: 0 auto;">
+									<h:outputText value="#{msg['seleccionar.e']}:" styleClass="Titulo" />
+									
+									<h:selectOneMenu id="cmbImpuestos" style="width:316px"
+										value="#{conceptosAction.idImpuesto}"
+										required="#{!empty param[rich:clientId('cmdAgregar')]}" 
+										requiredMessage="#{msg['impuesto']} #{msg['mensaje.error.requerido']}">
+							            <f:selectItem itemLabel="#{msg['seleccione']}" />
+							            <f:selectItems value="#{conceptosAction.listImpuestosItems}" />
+							        </h:selectOneMenu>
+									
+									<a4j:commandButton id="cmdAgregar" style="cursor: pointer; vertical-align: top;"
+										image="#{msg['agregar16.img']}" title="#{msg['agregar.e']}" 
+										action="#{conceptosAction.agregarImpuesto}" 
+										render="cmbImpuestos,dtImpuestos,pnlBuscaImpuesto" />
+								</h:panelGrid>
+							</div>
+							
+							<rich:dataTable id="dtImpuestos" value="#{conceptosAction.listImpuestosGrid}" var="var" rows="5" 
+								style="margin:0 auto; width:400px; max-width:400px;" cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2">
+								<f:facet name="header">
+									<rich:columnGroup>
+										<rich:column colspan="3" style="text-align:center;" styleClass="tygImpTit">
+											<h:outputText value="#{msg['impuestos']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:90px;" styleClass="tygImpTit" breakRowBefore="true">
+											<h:outputText value="#{msg['id']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:290px;" styleClass="tygImpTit">
+											<h:outputText value="#{msg['descripcion']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:20px;" styleClass="tygImpTit" />
+									</rich:columnGroup>
+								</f:facet>
+							  
+								<rich:column style="text-align:center; width:90px" styleClass="tygImpDesc">
+									<h:outputText value="#{var.idImpuesto.id}" />
+								</rich:column>
+							  
+								<rich:column style="text-align:left; width:290px;" styleClass="tygImpDesc">
+									<h:outputText value="#{var.idImpuesto.descripcion}" />
+								</rich:column>
+				
+								<rich:column style="text-align:center; width:20px">
+									<a4j:commandButton id="cmdEliminarImpuesto" 
+										image="#{msg['eliminar16.img']}" title="#{msg['eliminar']}"
+										oncomplete="#{rich:component('pnlEliminarImpuesto')}.show()" 
+										render="pnlEliminarImpuesto">
+										<f:setPropertyActionListener target="#{conceptosAction.pojoConceptoImpuesto}" value="#{var}" for="cmdEliminarImpuesto" />
+									</a4j:commandButton>
+								</rich:column>
+				
+							   <f:facet name="footer">
+									<rich:dataScroller for="dtImpuestos" page="#{conceptosAction.numPaginaImpuesto}" renderIfSinglePage="false" 
+										align="center" maxPages="5" fastStep="5" ajaxSingle="true" styleClass="tygImpTit"/>
+							   </f:facet>
+						   </rich:dataTable>
+					   </div>
+					</a4j:region>
+				</rich:tab>
+			</rich:tabPanel>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

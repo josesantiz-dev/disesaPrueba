@@ -1,0 +1,91 @@
+.lblBusquedaIzq{
+	text-align: right;
+	width: 80px;
+}
+.lblBusquedaDer{
+	text-align:left;
+	width: 400px;
+}
+.rowgral{
+	vertical-align: top;
+}
+.colModalIzq{
+	text-align: right;	
+}
+.colModalDer{
+	text-align: left;
+	
+}
+.colPnlBusqIzq{
+	text-align: right;	
+}
+.colPnlBusqDer{
+	text-align: left;	
+}
+.colTituloDom{
+	width: 100px;
+	text-align: right;
+}
+.colDato{
+	text-align: left;
+}
+.Etapa1{
+	background-color: #EBE1C5;
+	font-weight: bold;
+	font-size: 12px;
+}
+.Etapa2{
+	background-color: #EBCC6E;
+	font-weight: bold;
+	font-size: 12px;
+}
+.Etapa3{
+	background-color: #ED834E;
+	font-weight: bold;
+	font-size: 12px;
+}
+.Etapa4{
+	background-color: #C4D199;
+	font-weight: bold;
+	font-size: 12px;
+}
+.Etapa5{
+	background-color: #5F7B89;
+	font-weight: bold;
+	font-size: 12px;
+	color:#FFFFFF;
+}
+
+.estatusSeg{
+	float:right; 
+	font-weight: bold;
+	font-size: 10px; 
+	color:#6A6868;
+	margin-right: 5px;
+}
+.fechaSeg{
+	font-weight: bold;
+	font-size: 10px;
+	color:#525252;
+	margin-left:10px; 
+}
+.nombreSeg{
+	font-weight: bold;
+	font-size: 12px;
+	color:#525252;
+	margin-left:5px; 
+}
+
+.tituloSeg{
+	display:block; 
+	text-align:left; 
+	background-color:#FFFFFF; 
+	padding:.2em .2em 0 .2em;
+}
+
+.descripcionSeg{
+	display:block; 
+	text-align:left; 
+	background-color:#f1f1f1; 
+	padding:0 .2em .2em .2em;
+}

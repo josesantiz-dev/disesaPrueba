@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Class-Path: 
+Dependencies: net.izel.framework export, 
+ com.enterprisedt.edtFTPj export,
+ net.giro.comun export,
+ net.giro.logica.compras export,
+ net.giro.logica.gestionproyectos export,
+ net.giro.logica.clientes export

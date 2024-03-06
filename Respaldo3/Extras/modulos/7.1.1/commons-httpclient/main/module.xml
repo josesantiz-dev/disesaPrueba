@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:jboss:module:1.1" name="commons-httpclient">
+  <resources>
+    <resource-root path="commons-httpclient-3.1.jar" />
+  </resources>
+  <dependencies>
+    <module name="commons-codec" export="true" />
+    <module name="org.apache.commons.logging" export="true" />
+  </dependencies>
+</module>

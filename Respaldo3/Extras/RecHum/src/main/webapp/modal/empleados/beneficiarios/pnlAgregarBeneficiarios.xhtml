@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlAgregarBeneficiarios" autosized="true" domElementAttachment="form" header="#{msg['beneficiarios']}">
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlAgregarBeneficiarios')}.hide()" />
+		</f:facet>
+		
+		<div style = "display: block; height: 22px; margin-bottom:10px;">
+			<a4j:commandButton id="cmdGuardarBeneficiario" image="#{msg['salvar22.img']}" style="align:right; position:relative; float:right;"
+				action="#{empleadoAction.guardarBeneficiario}" 
+				oncomplete="validarBeneficiario( #{empleadoAction.band}, '#{empleadoAction.resOperacion}', 
+					'#{rich:clientId('pnlAgregarBeneficiarios')}', '#{rich:clientId('pnlErroresBeneficiario')}' );"
+				render="dtListaBeneficiarios, pnlErroresBeneficiario">
+		   	</a4j:commandButton>				       				
+		</div>
+		
+		<h:panelGroup id="grupoEncabezadoBeneficiario" styleClass="encabezado">
+			<h:panelGrid width="100%">
+				<h:panelGroup>
+					<h:outputText
+						value="#{empleadoAction.pojoEmpleado.persona.id == null ? '' : empleadoAction.pojoEmpleado.persona.nombre }" 
+						style="text-align: center;" />
+				</h:panelGroup>
+			</h:panelGrid>
+		</h:panelGroup>
+		
+		<h:panelGroup id="grupoBeneficiario" style="text-align:left;">
+			<h:panelGrid id="pnlSeleccionarBeneficiario" columns="2" width="400" columnClasses="colTitulo,colDato" >
+				<h:outputText value="#{msg['id']}:" styleClass="Titulo" style="text-align:left;" />
+				<h:outputText id="txtIdBeneficiarioSeleccionado" value="#{empleadoAction.pojoBeneficiario.persona.id}" styleClass="Titulo"  style="text-align:left;"/>
+				
+				<h:outputText value="#{msg['persona']}:" styleClass="Titulo"  style="text-align:left;"/>
+				<a4j:commandLink id="cmdSeleccionarBeneficiario"  style="text-align:left;"
+					onclick="#{rich:component('pnlBusquedaBeneficiarios')}.show();"
+					value="#{empleadoAction.pojoBeneficiario.persona.id == null ? msg['seleccionar'] : empleadoAction.pojoBeneficiario.persona.nombre }"
+					oncomplete="#{rich:component('pnlBusquedaBeneficiarios')}.show();"  
+					rendered="#{true}">
+					<a4j:ajax execute="@form" render="pnlSeleccionarBeneficiario" />
+				</a4j:commandLink>
+				
+				<h:outputText value="#{msg['porcentaje']}:" styleClass="Titulo" style="text-align:left;" />
+				<rich:inputNumberSpinner id="txtBeneficiarioPorcentaje" maxlength="3" maxValue="100" 
+					value="#{empleadoAction.pojoBeneficiario.porcentaje}"
+					onkeydown="return soloNumeros(event, this.value)" />
+				
+				<h:outputText value="#{msg['relacion']}:" style="margin-left: 10px; margin-right: 10px" styleClass="Titulo"/>
+				<h:selectOneMenu id="cboRelacionBeneficiario" value="#{empleadoAction.idRelacionBeneficiario}" style="width:200px;">
+					<f:selectItems value="#{empleadoAction.listaCboRelacionesBeneficiarios}"/>	  					
+				</h:selectOneMenu>
+				
+			</h:panelGrid>
+		</h:panelGroup>
+		
+		
+	
+	</rich:popupPanel>
+</ui:composition>

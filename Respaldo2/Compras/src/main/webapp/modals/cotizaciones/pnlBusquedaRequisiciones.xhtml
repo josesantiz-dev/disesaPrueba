@@ -1,0 +1,98 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlBusquedaRequisiciones" modal="true" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20"
+		onshow="document.getElementById('#{rich:clientId('txtBusquedaRequisicionValor')}').focus();">
+    	<f:facet name="header">
+    		<h:outputText value="#{msg['buscar.e']} #{msg['requisicion']}" styleClass="Titulo"/>
+    	</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlBusquedaRequisiciones')}.hide()" />
+		</f:facet>
+		
+		<rich:hotKey id="richHotKeyReq" enabledInInput="true" preventDefault="true" 
+			selector="#txtBusquedaRequisicionValor" key="return"
+			onkeydown="#{rich:element('frmPrincipal:cmdBuscarRequisiciones')}.click()" />
+		
+		<div style="display:block; min-width:500px; width:100%; height:22px;">
+			<a4j:commandButton id="cmdBuscarRequisiciones" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+				action="#{cotizaAction.buscarRequisiciones}" 
+				oncomplete="buscarRequisiciones(#{cotizaAction.operacion}, '#{rich:clientId('pnlMensajes')}');" 
+				render="dtRequisiciones,pnlMensajes" />
+		</div>
+
+		<div style="margin: 10px auto 0;">
+			<h:panelGrid id="pnlBusquedaRequisicionesPrincipal" columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin-left:10px; margin-bottom:20px; display:block;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+				
+				<h:selectOneMenu value="#{cotizaAction.reqCampoBusqueda}" styleClass="Titulo" style="width: 216px;">
+					<f:selectItems value="#{cotizaAction.reqOpcionesBusqueda}" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText id="txtBusquedaRequisicionValor" maxlength="50" style="width: 210px;"
+					value="#{cotizaAction.reqValorBusqueda}" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtRequisiciones" value="#{cotizaAction.listRequisiciones}" var="var" 
+				cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column styleClass="Titulo" style="text-align:center; padding:4px 2px; width:80px;">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:4px 2px; width:90px;">
+							<h:outputText value="#{msg['fecha']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; min-width:100px;">
+							<h:outputText value="#{msg['comprador']}" />
+						</rich:column>
+
+						<rich:column styleClass="Titulo" style="text-align:center; padding:4px 2px; width:20px;" />
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText value="#{var.fecha}"><f:convertDateTime type="date" pattern="dd/MMM/yyyy"/></h:outputText>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left;">
+					<h:outputText value="#{var.nombreSolicita}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText value="#{msg['estatus.suministrada']}" rendered="#{var.estatus == 3}" />
+					<h:outputText value="#{msg['estatus.cotizada']}" rendered="#{var.estatus == 2}" />
+					<a4j:commandButton id="cmdSeleccionarRequisicion" rendered="#{var.estatus == 0}"
+				   		image="#{msg['agregar16.img']}" title="#{msg['seleccionar']}"
+						action="#{cotizaAction.seleccionarRequisicion}"
+						oncomplete="nuevoFromRequisicion(#{cotizaAction.operacion}, #{cotizaAction.tipoMensaje}, '#{rich:clientId('pnlBusquedaRequisiciones')}', '#{rich:clientId('pnlCotizacion')}', '#{rich:clientId('pnlMensajes')}', '#{rich:clientId('pnlConfirmaSolicitud')}');" 
+						render="pnlCotizacion,pnlMensajes,pnlConfirmaSolicitud"
+						limitRender="true">
+						<f:setPropertyActionListener target="#{cotizaAction.pojoRequisicion}" value="#{var}" />
+				   	</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller page="#{cotizaAction.reqPaginacion}" for="dtRequisiciones" renderIfSinglePage="false"
+						ajaxSingle="true" align="center" maxPages="10" fastStep="10" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

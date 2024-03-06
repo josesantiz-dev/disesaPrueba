@@ -1,0 +1,250 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['obras']} - #{msg['modulo']}" />
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}" 
+				action="#{obrasAction.buscar}" 
+				oncomplete="buscar(#{obrasAction.band},'#{rich:clientId('pnlMensajes')}');"
+				render="dtResults,pnlMensajes" />
+		</rich:toolbarGroup>
+		 
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['nuevo22.img']}" title="#{msg['nuevo.e']}"
+				rendered="#{obrasAction.permisoEscritura}"
+				onclick="#{rich:component('groupTabs')}.switchToItem('@first');"
+				action="#{obrasAction.nuevo}" 
+				oncomplete="#{rich:component('pnlObra')}.show();"
+				render="pnlObra,cmdSalvarDomicilio,pnlDomicilio" />
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="obras.css" />
+		<h:outputScript library="scripts" name="obras.js" />
+		
+		<div class="div_titulo" style="margin: 50px auto 0;">
+			<h:outputText value="#{msg['obras']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina" style="margin: 0 auto;">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin:10px; display:block; width:720px;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo" />
+				<h:selectOneMenu id="cmbTipoBusqueda" style="width:216px"
+					value="#{obrasAction.campoBusqueda}">
+		            <f:selectItems value="#{obrasAction.tiposBusqueda}" />
+		        </h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:panelGroup>
+					<h:inputText id="txtvalor" maxlength="50" style="width:210px" 
+						value="#{obrasAction.valorBusqueda}" />
+					<h:panelGroup style="margin:0 5px;">
+						<h:selectBooleanCheckbox id="txtObrasCanceladas" value="#{obrasAction.incluyeCanceladas}" />
+				        <h:outputLabel for="txtObrasCanceladas" value="Incluir canceladas" styleClass="Titulo" />
+					</h:panelGroup>
+				</h:panelGroup>
+				
+				<h:outputText rendered="#{obrasAction.perfilAdministrativo}" value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+				<h:panelGroup rendered="#{obrasAction.perfilAdministrativo}">
+					<h:selectBooleanCheckbox id="txtObrasAdministrativas" value="#{obrasAction.busquedaAdministrativas}" />
+			        <h:outputLabel for="txtObrasAdministrativas" value="#{msg['obraAdministrativa']}" styleClass="Titulo" />
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<rich:dataTable id="dtResults" value="#{obrasAction.listObrasGrid}" var="var" rows="100" style="margin:0 auto 20px; width:100%;" 
+				cellpadding="0" cellspacing="0" border="0" rowClasses="Row1,Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:70px;">
+							<h:graphicImage style="margin:auto 0; float:right;"
+								value="#{obrasFilter.idOrder eq 'ascending' ? msg['ordenAsc16.img'] : (obrasFilter.idOrder eq 'descending' ? msg['ordenDesc16.img'] : msg['orden16.img'])}" />
+							<a4j:commandLink value="#{msg['id']}" action="#{obrasFilter.sortById}" render="dtResults" styleClass="Titulo" /> 
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+							<h:graphicImage style="margin:auto 0; float:right;"
+								value="#{obrasFilter.nombreOrder eq 'ascending' ? msg['ordenAsc16.img'] : (obrasFilter.nombreOrder eq 'descending' ? msg['ordenDesc16.img'] : msg['orden16.img'])}" />
+							<a4j:commandLink value="#{msg['nombre']}" action="#{obrasFilter.sortByNombre}" render="dtResults" styleClass="Titulo" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+							<h:graphicImage style="margin:auto 0; float:right;"
+								value="#{obrasFilter.clienteOrder eq 'ascending' ? msg['ordenAsc16.img'] : (obrasFilter.clienteOrder eq 'descending' ? msg['ordenDesc16.img'] : msg['orden16.img'])}" />
+							<a4j:commandLink value="#{msg['cliente']}" action="#{obrasFilter.sortByCliente}" render="dtResults" styleClass="Titulo" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:60px;">
+							<h:graphicImage style="margin:auto 0; float:right;"
+								value="#{obrasFilter.monedaOrder eq 'ascending' ? msg['ordenAsc16.img'] : (obrasFilter.monedaOrder eq 'descending' ? msg['ordenDesc16.img'] : msg['orden16.img'])}" />
+							<a4j:commandLink value="#{msg['moneda']}" action="#{obrasFilter.sortByMoneda}" render="dtResults" styleClass="Titulo" />
+						</rich:column> 
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:100px;">
+							<h:outputText value="#{msg['contratado']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:100px;">
+							<h:outputText value="#{msg['deductiva']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:100px;">
+							<h:outputText value="#{msg['anticipo']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:80px;">
+							<h:outputText value="#{msg['tipo']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:80px;">
+							<h:outputText value="#{msg['jerarquia']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:40px;" colspan="2">
+							<h:graphicImage style="cursor:pointer;" 
+								value="#{msg['filter16.img']}" title="Mostrar/Ocultar Filtros">
+		                    	<a4j:ajax event="click" execute="@this" 
+		                    		listener="#{obrasFilter.toggleFilters}" 
+		                    		render="dtResults" limitRender="true"/> 
+		                   	</h:graphicImage>
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;"
+					sortBy="#{var.id}" sortOrder="#{obrasFilter.idOrder}"
+					filterValue="#{obrasFilter.idFilter}" filterExpression="#{fn:containsIgnoreCase(var.id,obrasFilter.idFilter)}">
+					<f:facet name="header">
+						<rich:inplaceInput style="backgroud-color:white; display:block; margin:0 auto; padding:2px 0;" 
+							rendered="#{obrasFilter.filtrosActivos}" saveOnBlur="true"
+							value="#{obrasFilter.idFilter}" defaultLabel="#{msg['filtrar']}">
+                            <a4j:ajax event="change" render="dtResults" execute="@this" />
+                        </rich:inplaceInput>
+					</f:facet>
+					<h:outputText value="#{var.id}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : ''}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left;"
+					sortBy="#{var.nombre}" sortOrder="#{obrasFilter.nombreOrder}"
+					filterValue="#{obrasFilter.nombreFilter}" filterExpression="#{fn:containsIgnoreCase(var.nombre,obrasFilter.nombreFilter)}">
+					<f:facet name="header">
+						<rich:inplaceInput style="backgroud-color:white; display:block; margin:0 auto; padding:2px 0;" 
+							rendered="#{obrasFilter.filtrosActivos}" saveOnBlur="true"
+							value="#{obrasFilter.nombreFilter}" defaultLabel="#{msg['filtrar']}">
+                            <a4j:ajax event="change" render="dtResults" execute="@this" />
+                        </rich:inplaceInput>
+					</f:facet>
+					<h:outputText value="#{var.nombre}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : ''}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left;"
+					sortBy="#{var.nombreCliente}" sortOrder="#{obrasFilter.clienteOrder}"
+					filterValue="#{obrasFilter.clienteFilter}" filterExpression="#{fn:containsIgnoreCase(var.nombreCliente,obrasFilter.clienteFilter)}">
+					<f:facet name="header">
+						<rich:inplaceInput style="backgroud-color:white; display:block; margin:0 auto; padding:2px 0;" 
+							rendered="#{obrasFilter.filtrosActivos}" saveOnBlur="true"
+							value="#{obrasFilter.clienteFilter}" defaultLabel="#{msg['filtrar']}">
+                            <a4j:ajax event="change" render="dtResults" execute="@this" />
+                        </rich:inplaceInput>
+					</f:facet>
+					<h:outputText value="#{var.nombreCliente}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : ''}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;"
+					sortBy="#{var.descripcionMoneda}" sortOrder="#{obrasFilter.monedaOrder}"
+					filterValue="#{obrasFilter.monedaFilter}" filterExpression="#{fn:containsIgnoreCase(var.descripcionMoneda,obrasFilter.monedaFilter)}">
+					<f:facet name="header">
+						<rich:inplaceInput style="backgroud-color:white; display:block; margin:0 auto; padding:2px 0;" 
+							rendered="#{obrasFilter.filtrosActivos}" saveOnBlur="true"
+							value="#{obrasFilter.monedaFilter}" defaultLabel="#{msg['filtrar']}">
+                            <a4j:ajax event="change" render="dtResults" execute="@this" />
+                        </rich:inplaceInput>
+					</f:facet>
+					<h:outputText value="#{var.descripcionMoneda}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : ''}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:right;">
+					<h:outputText value="#{var.montoContratado}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : ''}">
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:right;">
+					<h:outputText value="#{var.montoDeductiva}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : ''}">
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:right;">
+					<h:outputText value="#{var.montoAnticipo}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : ''}">
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText rendered="#{var.tipoObra == 1}" value="#{msg['obrasTipo.obra']}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : ''}" />
+					<h:outputText rendered="#{var.tipoObra == 2}" value="#{msg['obrasTipo.proyecto']}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : ''}" />
+					<h:outputText rendered="#{var.tipoObra == 3}" value="#{msg['obrasTipo.ordenTrabajo']}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : ''}" />
+					<h:outputText rendered="#{var.tipoObra == 4}" value="#{msg['obrasTipo.administrativa']}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : ''}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText rendered="#{var.idObraPrincipal == 0}" value="#{msg['obrasTipo.obra']}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : ''}" />
+					<h:outputText rendered="#{var.idObraPrincipal != 0}" value="#{msg['obrasTipo.subobra']}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : ''}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<a4j:commandButton id="cmdEditar" rendered="#{var.estatus == 0 ? false : true}" 
+						image="#{msg['editar16.img']}" title="#{msg['editar']}"
+						onclick="#{rich:component('groupTabs')}.switchToItem('@first');"
+						action="#{obrasAction.editar}" 
+						oncomplete="#{rich:component('pnlObra')}.show();"
+						render="pnlObra,cmbObraSucursal,pnlDomicilio,groupTabs" limitRender="true">
+						<f:setPropertyActionListener target="#{obrasAction.pojoObraMain}" value="#{var}" for="cmdEditar" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<a4j:commandButton id="cmdEliminar" 
+						rendered="#{var.estatus == 0 ? false : (obrasAction.permisoEscritura)}" 
+						image="#{msg['cancelar16.img']}" title="#{msg['cancelar']}"
+						oncomplete="#{rich:component('pnlEliminar')}.show()" 
+						render="pnlEliminar" limitRender="true">
+						<f:setPropertyActionListener target="#{obrasAction.pojoObraMain}" value="#{var}" for="cmdEliminar" />
+					</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller for="dtResults" page="#{obrasAction.numPagina}" renderIfSinglePage="false" 
+						align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modals/obras/pnlMensajes.xhtml" />
+		<ui:include src="/modals/obras/pnlEliminar.xhtml" />
+		<ui:include src="/modals/obras/pnlObra.xhtml" />
+		<ui:include src="/modals/obras/pnlBusquedaObras.xhtml" />
+		<ui:include src="/modals/obras/pnlBusquedaClientes.xhtml" />
+		<ui:include src="/modals/obras/pnlBusquedaResponsables.xhtml" /> 
+		<ui:include src="/modals/obras/pnlConfirmacionSatic.xhtml" />
+		<ui:include src="/modals/obras/pnlDomicilio.xhtml" /> 
+		<ui:include src="/modals/obras/pnlMunicipios.xhtml" />
+		<ui:include src="/modals/obras/pnlLocalidades.xhtml" /> 
+		<ui:include src="/modals/obras/pnlColonias.xhtml" />
+	</ui:define>
+</ui:composition>

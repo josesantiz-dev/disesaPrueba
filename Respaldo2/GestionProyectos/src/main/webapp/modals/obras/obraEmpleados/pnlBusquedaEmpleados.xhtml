@@ -1,0 +1,92 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlObrasBusquedaEmpleados" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+		<f:facet name="header">
+			<h:outputText value="#{msg['buscar.e']} #{msg['empleado']}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlObrasBusquedaEmpleados')}.hide()" />
+		</f:facet>
+
+		<div style="display: block; min-width:500px; height: 22px;">
+			<a4j:commandButton id="cmdBuscarEmpleados" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+				action="#{empObraAction.buscarEmpleados}"
+				oncomplete="buscarEmpleados(#{empObraAction.operacion}, '#{rich:clientId('pnlMensajes')}');" 
+				render="dtEmpleados,pnlMensajes"
+				limitRender="true" />
+		</div>
+
+		<div style="margin: 10px auto 0;">
+			<h:panelGrid id="pnlBusquedaEmpleados" columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin-left:10px; margin-bottom:20px; display:block;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+				<h:selectOneMenu value="#{empObraAction.busquedaEmpleadosCampo}" styleClass="Titulo" style="width:216px;">
+					<f:selectItems value="#{empObraAction.busquedaEmpleadosOpciones}" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText id="txtValorBusquedaEmpleados" value="#{empObraAction.busquedaEmpleadosValor}" maxlength="50" style="width:210px;" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtEmpleados" value="#{empObraAction.listEmpleados}" var="var" style="width:100%;"
+				cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="width:100px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="width:100px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['clave']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+
+						<rich:column style="width: 30px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['seleccionar']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="width:100px; text-align:center;">
+					<h:outputText value="#{var.id}" />
+				</rich:column> 
+				
+				<rich:column styleClass="Descripcion" style="width:100px; text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.clave}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.nombre}" />
+				</rich:column>
+				
+				<rich:column style="width: 30px; text-align:center;" styleClass="Descripcion">
+				   <a4j:commandButton id="cmdAgregarEmpleado" 
+				   		image="#{msg['agregar16.img']}" title="#{msg['agregar.e']}"
+						action="#{empObraAction.seleccionarEmpleado}" 
+						oncomplete="seleccionarEmpleado(#{empObraAction.operacion}, '#{rich:clientId('pnlObrasBusquedaEmpleados')}', '#{rich:clientId('pnlMensajes')}')"
+						render="dtObraEmpleados,pnlMensajes"
+						limitRender="true">
+						<f:setPropertyActionListener target="#{empObraAction.pojoEmpleado}" value="#{var}" for="cmdAgregarEmpleado" />
+				   </a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller id="dScrollEmpleados" align="center" for="dtEmpleados" maxPages="10"
+						ajaxSingle="true" page="#{empObraAction.busquedaEmpleadosPagina}" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

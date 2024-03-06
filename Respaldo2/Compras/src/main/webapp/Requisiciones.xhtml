@@ -1,0 +1,193 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['requisiciones']} - #{msg['modulo']}"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+				action="#{reqAction.buscar}"
+				oncomplete="buscar(#{reqAction.operacion},'#{rich:clientId('pnlMensajes')}');" 
+				render="dtMainRequisiciones,pnlMensajes" limitRender="true" />
+		</rich:toolbarGroup>
+		 
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['nuevo22.img']}" title="#{msg['nuevo.e']}"
+				action="#{reqAction.nuevo}" 
+				oncomplete="nuevoConfirmaOrigen(#{reqAction.operacion}, #{reqAction.perfilEgresos},'#{rich:clientId('pnlConfirmaOrigen')}','#{rich:clientId('pnlRequisicion')}','#{rich:clientId('pnlMensajes')}');"
+				render="pnlConfirmaOrigen,pnlRequisicion,pnlMensajes" limitRender="true" />
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="compras.css" />
+		<h:outputScript library="scripts" name="compras.js" />
+		<h:outputScript library="scripts" name="requisiciones.js" />
+			
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 10px;">
+			<h:outputText value="#{msg['requisiciones']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina" style="margin:0 auto;">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq" style="text-align:left; margin:10px 5px 5px; display:block; width: 720px;">
+				<h:outputText value="#{msg['busqueda']}:" styleClass="Titulo" />
+				<h:panelGroup id="panelValorBusqueda">
+					<h:inputText id="txtvalor" maxlength="50" style="width:210px; margin:auto 5px auto 0;" 
+						rendered="#{reqAction.campoBusqueda ne 'fecha'}"
+						value="#{reqAction.valorBusqueda}" />
+						
+					<rich:calendar id="txtFechaBusqueda" enableManualInput="true" datePattern="dd/MMM/yyyy" style="width: 90px;"
+						rendered="#{reqAction.campoBusqueda eq 'fecha'}"
+						value="#{reqAction.fechaBusqueda}" />
+					
+					<a4j:commandButton id="cmdBusquedaAvanzada" 
+						image="#{msg['toggle.img']}" title="#{msg['busqueda']} #{msg['avanzada']}"
+						onclick="toggleAvanzado(this.id, 'gBusquedaAvanzada', 'cmbTipoBusqueda', 'txtvalor');" />
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<h:panelGroup id="gBusquedaAvanzada" style="width:100%; margin:5px auto 0; padding:0; display:none;">
+				<h:panelGrid columns="2" columnClasses="colPnlBusqIzq" style="text-align:left; margin:0; display:block; width:720px;">
+					<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo" />
+					<h:selectOneMenu id="cmbTipoBusqueda" style="width:216px;"
+						value="#{reqAction.campoBusqueda}">
+						<f:selectItems value="#{reqAction.tiposBusqueda}" />
+			            <a4j:ajax event="change" render="panelValorBusqueda" />
+					</h:selectOneMenu>
+				</h:panelGrid>
+			</h:panelGroup>
+			
+			<rich:dataTable id="dtMainRequisiciones" value="#{reqAction.listRequisiciones}" var="var" rows="100"  
+				cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" style="margin:0 auto 20px;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:80px;">
+							<h:outputText value="#{msg['id']}" /> 
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:80px;">
+							<h:outputText value="#{msg['fecha']}" /> 
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+							<h:outputText value="#{msg['obra']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+							<h:outputText value="#{msg['comprador']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+							<h:outputText value="#{msg['solicita']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:120px;">
+							<h:outputText value="#{msg['tipo']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:120px;">
+							<h:outputText value="#{msg['estatus']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:60px;" colspan="3" />
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column styleClass="#{(var.estatus == 1 ? 'itemCancelado' : (var.estatus == 2 ? 'itemUsado' : 'Descripcion'))}" style="text-align:center;">
+					<h:outputText value="#{var.id}" style="font-weight:bold;" />
+				</rich:column>
+
+				<rich:column styleClass="#{(var.estatus == 1 ? 'itemCancelado' : (var.estatus == 2 ? 'itemUsado' : 'Descripcion'))}" style="text-align:center;">
+					<h:outputText value="#{var.fecha}"><f:convertDateTime type="date" pattern="dd/MMM/yyyy"/></h:outputText>
+				</rich:column>
+				
+				<rich:column styleClass="#{(var.estatus == 1 ? 'itemCancelado' : (var.estatus == 2 ? 'itemUsado' : 'Descripcion'))}" style="text-align:left;">
+					<h:outputText value="#{var.idObra}" style="font-weight:bold; margin:0 5px 0 0;" />
+					<h:outputText value="#{var.nombreObra}" />
+				</rich:column>
+				
+				<rich:column styleClass="#{(var.estatus == 1 ? 'itemCancelado' : (var.estatus == 2 ? 'itemUsado' : 'Descripcion'))}" style="text-align:left;">
+					<h:outputText value="#{var.nombreSolicita}" />
+				</rich:column>
+				
+				<rich:column styleClass="#{(var.estatus == 1 ? 'itemCancelado' : (var.estatus == 2 ? 'itemUsado' : 'Descripcion'))}" style="text-align:left;">
+					<h:outputText value="#{var.nombrePropietario}" />
+				</rich:column>
+				
+				<rich:column styleClass="#{(var.estatus == 1 ? 'itemCancelado' : (var.estatus == 2 ? 'itemUsado' : 'Descripcion'))}" style="text-align:center;">
+					<h:outputText rendered="#{var.tipo le 1}" value="#{msg['maestro.inventariosAlt']}" />
+					<h:outputText rendered="#{var.tipo eq 2}" value="#{msg['maestro.administrativoAlt']}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText rendered="#{var.estatus eq 0}" styleClass="Descripcion" value="#{var.cerrada eq 1 ? msg['estatus.cerrada'] : msg['estatus.activa']}" />
+					<h:outputText rendered="#{var.estatus eq 1}" styleClass="itemCancelado" value="#{msg['estatus.cancelada']}" />
+					<h:outputText rendered="#{var.estatus eq 2}" styleClass="itemUsado" value="#{msg['estatus.suministrada']}" />
+					
+					<!--h:outputText rendered="#{var.estatus eq 0}" value="#{var.cerrada eq 1 ? msg['estatus.cerrada'] : msg['estatus.activa']}" />
+					<h:outputText rendered="#{var.estatus eq 1}" value="#{msg['estatus.cancelada']}" />
+					<h:outputText rendered="#{var.estatus eq 2}" value="#{msg['estatus.suministrada']}" /-->
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+					<a4j:commandButton id="cmdReporte" rendered="#{var.estatus ne 1}"
+						image="#{msg['imprimir16.img']}" title="#{msg['imprimir.e']}"
+						onclick="#{rich:element('cmdReporte')}.disabled = true;"
+						action="#{reqAction.reporte}" 
+						oncomplete="#{rich:element('cmdReporte')}.disabled = false; reporte(#{reqAction.operacion}, '#{rich:clientId('pnlMensajes')}');"
+						render="pnlMensajes" limitRender="true">
+						<f:setPropertyActionListener value="#{var.id}" target="#{reqAction.idRequisicion}" for="cmdReporte" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+					<a4j:commandButton id="cmdEditar" 
+						image="#{msg['editar16.img']}" title="#{msg['editar']}"
+						onclick="#{rich:element('cmdEditar')}.disabled = true;"
+						action="#{reqAction.editar}" 
+						oncomplete="#{rich:element('cmdEditar')}.disabled = false; verEditar(#{reqAction.operacion}, '#{rich:clientId('pnlRequisicion')}', '#{rich:clientId('pnlMensajes')}');"
+						render="tabsRequisicion,pnlRequisicion,pnlMensajes" limitRender="true">
+						<f:setPropertyActionListener value="#{var.id}" target="#{reqAction.idRequisicion}" for="cmdEditar" />
+					</a4j:commandButton> 
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+					<a4j:commandButton id="cmdEliminar" rendered="#{var.estatus eq 0}"
+						image="#{msg['cancelar16.img']}" title="#{msg['eliminar']}"
+						onclick="#{rich:element('cmdEliminar')}.disabled = true;"
+						oncomplete="#{rich:element('cmdEliminar')}.disabled = false; #{rich:component('pnlCancelar')}.show();" 
+						render="pnlCancelar" limitRender="true">
+						<f:setPropertyActionListener value="#{var.id}" target="#{reqAction.idRequisicion}" for="cmdEliminar" />
+					</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller for="dtMainRequisiciones" page="#{reqAction.numPagina}" renderIfSinglePage="false" 
+						align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modals/requisicion/pnlMensajes.xhtml" />
+		<ui:include src="/modals/requisicion/pnlCancelar.xhtml" />
+		<ui:include src="/modals/requisicion/pnlConfirmaOrigen.xhtml" />
+		<ui:include src="/modals/requisicion/pnlRequisicion.xhtml" />
+		<ui:include src="/modals/requisicion/pnlBusquedaObras.xhtml" /> 
+		<ui:include src="/modals/requisicion/pnlBusquedaProductos.xhtml" /> 
+		<ui:include src="/modals/requisicion/pnlEliminarDetalle.xhtml" />
+		<ui:include src="/modals/requisicion/pnlProducto.xhtml" />
+		<ui:include src="/modals/requisicion/pnlConfirmaCerrar.xhtml" />
+	</ui:define>
+</ui:composition>

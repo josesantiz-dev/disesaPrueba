@@ -1,0 +1,125 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+
+    <ui:define name="title">
+		<h:outputText value="#{msg['areas']}"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+				action="#{areaAction.buscar}" 
+				oncomplete="buscar('#{areaAction.resOperacion}','#{rich:clientId('pnlMensajes')}');"
+				render="dtAreas,pnlMensajes" />
+		</rich:toolbarGroup>
+		
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['nuevo22.img']}" title="#{msg['nuevo.e']}"
+				action="#{areaAction.nuevo}" 
+				oncomplete="#{rich:component('pnlArea')}.show()"
+				render="pnlArea" />
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="acc.css" />
+		<h:outputStylesheet library="css" name="cuentasporcobrar.css" />
+		<h:outputScript library="scripts" name="rechum.js" />
+		<h:outputScript library="scripts/areas" name="areas.js" />
+		
+		<div class="div_titulo" style="margin:50px auto 30px;">
+			<h:outputText value="#{msg['areas']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina" style="text-align: left; margin:0 auto; padding:0 5px;">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="display:block; width:100%; text-align: left;">
+				<h:outputText value="#{msg['busqueda']}:" styleClass="Titulo" />
+				<h:inputText id="txtvalor" maxlength="50" style="width:210px" 
+					value="#{areaAction.valorBusqueda}" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtAreas" value="#{areaAction.listaAreasGrid}" var="var" rows="100" styleClass="tabla_pagina" 
+				cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" style="margin:10px auto 20px; width: 100%;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="text-align:center; width:90px;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['descripcion']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; min-width:120px;" styleClass="Titulo">
+							<h:outputText value="#{msg['responsable']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:80px;" styleClass="Titulo">
+							<h:outputText value="#{msg['estatus']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo" colspan="2">
+							<h:outputText value="" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align: center; width:90px;">
+					<h:outputText value="#{var.id}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding:5px;">
+					<h:outputText value="#{var.descripcion}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding:5px; min-width:120px; max-width:300px;">
+					<h:outputText value="#{var.responsable.persona.nombre}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding:5px; width:80px;">
+					<h:outputText value="#{var.estatus == 0 ? 'Activo' : 'Cancelado'}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEditar" 
+						image="#{msg['editar16.img']}" title="#{msg['editar']}"
+						rendered="#{var.estatus == 0}"
+						action="#{areaAction.editar}" 
+						oncomplete="verEditar(#{areaAction.band}, '#{rich:clientId('pnlArea')}', '#{rich:clientId('pnlMensajes')}')"
+						render="pnlMensajes,pnlArea,cbResponsables">
+						<f:setPropertyActionListener target="#{areaAction.pojoArea}" value="#{var}" for="cmdEditar" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEliminar" 
+						image="#{msg['eliminar16.img']}" title="#{msg['eliminar']}"
+						rendered="#{var.estatus == 0}"
+						oncomplete="#{rich:component('pnlEliminar')}.show()" 
+						render="pnlEliminar">
+						<f:setPropertyActionListener target="#{areaAction.pojoArea}" value="#{var}" for="cmdEliminar" />
+					</a4j:commandButton>
+				</rich:column>
+ 				
+				<f:facet name="footer">
+					<rich:dataScroller id="dScroll" page="#{areaAction.numPagina}" for="dtAreas" 
+						align="center" maxPages="10" fastStep="10" renderIfSinglePage="false" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modal/areas/pnlMensajes.xhtml" />
+		<ui:include src="/modal/areas/pnlEliminar.xhtml" />
+		<ui:include src="/modal/areas/pnlArea.xhtml" />
+	</ui:define>
+</ui:composition>

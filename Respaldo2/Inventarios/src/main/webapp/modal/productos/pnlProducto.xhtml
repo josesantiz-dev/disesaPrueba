@@ -1,0 +1,280 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:t="http://myfaces.apache.org/tomahawk">
+    
+    <rich:popupPanel id="pnlProducto" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+		<f:facet name="header">
+			<h:outputText styleClass="Titulo" style="margin-left:10px" 
+				value="#{productoAction.tituloProducto == '' ? msg['nuevo'] : msg['editar']} #{msg['producto']} #{productoAction.tituloProducto}" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlProducto')}.hide()" />
+		</f:facet>
+		
+		<!-- BOTONERA -->
+		<h:panelGrid columns="2" columnClasses="encabezadoColLeft, encabezadoColRight" style="width:100%; min-height:22px; margin-bottom: 1em;">
+			<h:panelGroup id="grupoBotonesIzquierdos">
+				<rich:messages id="validadorProducto" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+				</rich:messages>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoBotonesDerechos">
+				<h:panelGrid columns="2" style="float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton id="cmdSalvar" style="vertical-align: right; position:relative;" 
+							image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+							onclick="#{rich:element('cmdSalvar')}.disabled = true;" 
+							action="#{productoAction.guardar}" 
+							oncomplete="validaGuardarProducto(#{productoAction.operacionCompleta}, '#{rich:clientId('pnlProducto')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorProducto')}); #{rich:element('cmdSalvar')}.disabled = false;"
+							render="pnlMensajes,dtProductos,validadorProducto,dtProdsCaducos"
+							limitRender="true" />
+					</h:panelGroup>
+					
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:status>
+							<f:facet name="start">
+								<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;"/>
+							</f:facet>
+							
+							<f:facet name="stop">
+								<h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: middle; position:relative;"/>
+							</f:facet>
+						</a4j:status>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<h:panelGroup id="grupoEncProducto" styleClass="encabezado">
+			<h:panelGrid width="100%">
+				<h:panelGroup>
+					<h:outputText style="text-align:center;" styleClass="Titulo"
+						value="#{productoAction.encabezadoProducto}" />
+				</h:panelGroup>
+			</h:panelGrid>
+		</h:panelGroup>
+		
+		<h:panelGroup id="grupoDatos">
+			<fieldset style="margin-top:10px; margin-bottom:10px">
+				<legend><h:outputLabel value="#{msg['producto']}" styleClass="Titulo" /></legend>
+				
+				<h:panelGroup id="pnlProductoDatos">
+					<h:panelGrid style="text-align:left; min-with:700px; width:100%;" columns="6" columnClasses="colTitulo,colDato,colTitulo,colDato,colTitulo,colDato">
+						<h:outputLabel value="#{msg['clave']}:" styleClass="Titulo" />
+						<h:panelGroup>
+							<h:inputText id="txtCodeProducto" maxlength="50" style="width:150px;" 
+								readonly="#{! productoAction.permiteCodificacionManual}"
+								value="#{productoAction.pojoProducto.clave}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['clave']} #{msg['mensaje.error.requerido']}" />
+						
+							<h:selectBooleanCheckbox id="ckMantenerCodigo" 
+								rendered="#{productoAction.editandoCaduco == false}"
+				 				title="Mantener Codigo Actual"
+				 				value="#{productoAction.mantenerCodigo}">
+				 				<a4j:ajax event="change" listener="#{productoAction.conservaCodigo}" />
+							</h:selectBooleanCheckbox>
+						</h:panelGroup>
+				 				
+						<h:outputText styleClass="Titulo" value="#{msg['navegacion.label.vacio']}" />
+						<h:outputText styleClass="Titulo" value="#{productoAction.pojoProducto.oculto == 1 ? msg['productos.oculto'] : msg['navegacion.label.vacio']}" />
+						
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						<h:panelGroup>
+				 			<h:selectBooleanCheckbox id="txtProductoCaduco" 
+				 				rendered="#{productoAction.editandoCaduco == false}"
+				 				value="#{productoAction.productoCaduco}">
+				 				<a4j:ajax event="change" 
+									listener="#{productoAction.generaCodigoCaduco}"
+									render="txtCodeProducto,cbCodeEspecialidades,cbCodeFamilias,cbCodeSubfamilias" 
+									limitRender="true" />
+				 			</h:selectBooleanCheckbox>
+				 			<h:outputLabel id="lblProductoCaduco"
+								value="#{msg['productos.caduco']}" for="txtProductoCaduco" />
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['productos.tipoInsumo']}:" styleClass="Titulo"
+							rendered="#{productoAction.requiereTipoInsumo}" />
+						<h:selectOneMenu id="cbTipoInsumo" style="width:150px;"
+							rendered="#{productoAction.requiereTipoInsumo}"
+							value="#{productoAction.pojoProducto.tipoInsumo}" 
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['productos.tipoInsumo']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+							<f:selectItems value="#{productoAction.listTiposInsumos}" />
+							<a4j:ajax event="change" 
+								render="txtCodeProducto" 
+								limitRender="true" />
+						</h:selectOneMenu>
+						
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"
+							rendered="#{productoAction.requiereTipoInsumo}"/>
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"
+							rendered="#{productoAction.requiereTipoInsumo}"/>
+						
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"
+							rendered="#{productoAction.requiereTipoInsumo}"/>
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"
+							rendered="#{productoAction.requiereTipoInsumo}"/>
+			 			
+						<h:outputLabel value="#{msg['productos.especialidad']}:" styleClass="Titulo" />
+						<h:selectOneMenu id="cbCodeEspecialidades" style="width:150px;"
+							value="#{productoAction.idCodeEspecialidad}"
+							disabled="#{productoAction.productoCaduco}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" itemValue="-1" />
+							<f:selectItems value="#{productoAction.listaCodeEspecialidadesItems}" />
+							<a4j:ajax event="change" 
+								listener="#{productoAction.initGeneradorListas}"
+								complete="generadorDeCodigo(#{productoAction.operacionCompleta}, '#{rich:clientId('pnlMensajes')}');"
+								render="txtCodeProducto,cbCodeFamilias,cbCodeSubfamilias,pnlMensajes" 
+								limitRender="true" />
+						</h:selectOneMenu>
+						
+						<h:outputLabel value="#{msg['productos.familia']}:" styleClass="Titulo" />
+						<h:selectOneMenu id="cbCodeFamilias" style="width:150px;"
+							value="#{productoAction.idCodeFamilia}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['productos.familia']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+							<f:selectItems value="#{productoAction.listaCodeFamiliasItems}" />								
+							<a4j:ajax event="change" 
+								listener="#{productoAction.initGeneradorListas}"
+								complete="generadorDeCodigo(#{productoAction.operacionCompleta}, '#{rich:clientId('pnlMensajes')}');"
+								render="cbCodeSubfamilias,txtCodeProducto,pnlMensajes" 
+								limitRender="true" />
+						</h:selectOneMenu>
+						
+						<h:outputLabel value="#{msg['productos.subfamilia']}:" styleClass="Titulo"
+							rendered="#{productoAction.requiereSubfamilia}" />
+						<h:selectOneMenu id="cbCodeSubfamilias" style="width:150px;"
+							value="#{productoAction.idCodeSubfamilia}"
+							disabled="#{productoAction.productoCaduco}"
+							rendered="#{productoAction.requiereSubfamilia}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" itemValue="-1" />
+							<f:selectItems value="#{productoAction.listaCodeSubfamiliasItems}" />							
+							<a4j:ajax event="change" 
+								listener="#{productoAction.generaCodigoProducto}"
+								oncomplete="generadorDeCodigo(#{productoAction.operacionCompleta}, '#{rich:clientId('pnlMensajes')}');"
+								render="txtCodeProducto,pnlMensajes" 
+								limitRender="true" />
+						</h:selectOneMenu>
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" rendered="#{! productoAction.requiereSubfamilia}"/>
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" rendered="#{! productoAction.requiereSubfamilia}"/>
+					</h:panelGrid>
+					
+					<h:panelGrid style="text-align:left; min-with:700px; width:100%;" columns="2" columnClasses="colTitulo,colDato">
+						<h:outputLabel value="#{msg['descripcion']}:" styleClass="Titulo" />
+						<h:inputText maxlength="2048" style="width:700px;" 
+							value="#{productoAction.pojoProducto.descripcion}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['descripcion']} #{msg['mensaje.error.requerido']}" />
+					</h:panelGrid>
+					
+					<h:panelGrid style="text-align:left; min-with:700px; width:100%;" columns="6" columnClasses="colTitulo,colDato,colTitulo,colDato,colTitulo,colDato">
+						<h:outputText value="#{msg['productos.unidadMedida']}:" styleClass="Titulo" />
+						<h:selectOneMenu style="width:150px;"
+							value="#{productoAction.idUnidadMedida}" 
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['productos.unidadMedida']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+							<f:selectItems value="#{productoAction.listaCboUnidadesMedida}" />				
+						</h:selectOneMenu>
+						
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"/>
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"/>
+						
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"/>
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"/>
+						
+						<h:outputLabel value="#{msg['moneda']}:" styleClass="Titulo" />
+						<h:selectOneMenu style="width:150px;"
+							value="#{productoAction.idMoneda}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['moneda']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+							<f:selectItems value="#{productoAction.listMonedasItems}" />
+							<f:ajax event="change" execute="@this"
+								listener="#{productoAction.asignaTipoCambio}"
+								limitRender="true" />
+						</h:selectOneMenu>
+						
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"/>
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"/>
+						
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"/>
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"/>
+							
+						<h:outputLabel value="#{msg['productos.precioCompra']}:" styleClass="Titulo" />
+						<h:inputText id="txtPrecioCompra" maxlength="50" style="width:150px;" size="50"
+							onkeypress="return (soloDecimal(event.which)); " 
+							value="#{productoAction.pojoProducto.precioCompra}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['productos.precioCompra']} #{msg['mensaje.error.requerido']}">
+							<f:convertNumber pattern="###,###,##0.00" />
+							<f:ajax event="keyup"
+								render="txtPrecioVenta txtPrecioUnitario"
+								limitRender="true" />
+						</h:inputText>
+						
+						<!-- Precio Venta = Precio de Compra * 1.7 -->
+						<h:outputLabel value="#{msg['productos.precioVenta']}:" styleClass="Titulo" />
+						<h:inputText id="txtPrecioVenta" maxlength="50" style="width:150px;" size="50" 
+							onkeypress="return (soloDecimal(event.which));"
+						 	value="#{productoAction.precioVenta}"
+						 	title="#{msg['productos.precioCompra']} + 70%"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['productos.precioVenta']} #{msg['mensaje.error.requerido']}">
+							<f:convertNumber pattern="###,###,##0.00" />
+						</h:inputText>
+						
+						<!-- Precio Unitario = Precio de Compra * 1.1 -->
+						<h:outputLabel value="#{msg['productos.precioUnitario']}:" styleClass="Titulo" />
+						<h:inputText id="txtPrecioUnitario" maxlength="50" style="width:150px;" size="50"
+							onkeypress="return (soloDecimal(event.which));" 
+						 	value="#{productoAction.precioUnitario}"
+						 	title="#{msg['productos.precioCompra']} + 10%"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['productos.precioUnitario']} #{msg['mensaje.error.requerido']}">
+							<f:convertNumber pattern="###,###,##0.00" />
+						</h:inputText>
+						
+						<h:outputLabel value="#{msg['productos.existencia']}:" styleClass="Titulo" />
+						<h:inputText maxlength="50" style="width:150px;" size="50" 
+							onkeypress="return (soloDecimal(event.which));"
+						  	value="#{productoAction.pojoProducto.existencia}" />
+						
+						<h:outputLabel value="#{msg['minimo']}:" styleClass="Titulo" />
+						<h:inputText maxlength="50" style="width:150px;" 
+							onkeypress="return (soloDecimal(event.which));"
+							value="#{productoAction.pojoProducto.minimo}" size="50" />
+						
+						<h:outputLabel value="#{msg['maximo']}:" styleClass="Titulo" />
+						<h:inputText maxlength="50" style="width:150px;" 
+							onkeypress="return (soloDecimal(event.which));" 
+							value="#{productoAction.pojoProducto.maximo}" size="50" />
+						
+						<h:outputText value="#{msg['productos.permiteExcedente']}:" styleClass="Titulo"/>
+			 			<h:selectBooleanCheckbox value="#{productoAction.permiteExcedente}" />
+			 			
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"/>
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"/>
+						
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"/>
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"/>
+					</h:panelGrid>
+				</h:panelGroup>
+			</fieldset>
+		</h:panelGroup>
+		
+		<a4j:log popup="false" level="ALL" mode="inline" rendered="false" style="margin:5px auto; max-width:800px;" />
+	</rich:popupPanel>
+</ui:composition>

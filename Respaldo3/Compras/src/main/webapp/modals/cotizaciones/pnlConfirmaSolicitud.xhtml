@@ -1,0 +1,34 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlConfirmaSolicitud" modal="true" autosized="true"
+		onshow="document.getElementById('#{rich:clientId('pnlConfirmaSolicitudNo')}').focus();">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}"  styleClass="Titulo" />
+		</f:facet>
+
+		<a4j:region>
+			<h:panelGroup style="text-align:center; margin:0 auto; min-width:300px;">
+				<h:outputText value="#{msg['materialCubiertoEnSBO']}" styleClass="Descripcion" style="display:block;" />
+				<h:outputText value="#{msg['confirmarSBO']}" styleClass="Descripcion" style="display:block;" />
+			
+				<h:panelGrid columns="2" style="text-align:center; margin:10px auto 0; width:200px;" cellspacing="5" cellpadding="0">
+					<a4j:commandButton id="pnlConfirmaSolicitudSi" style="margin:0 auto; min-width:100px;"
+						value="#{msg['si']}" onclick="#{rich:component('pnlConfirmaSolicitud')}.hide()"
+						action="#{cotizaAction.lanzarSBO}" 
+						oncomplete="lanzarSolicitud(#{cotizaAction.operacion}, '#{rich:clientId('pnlCotizacion')}', '#{rich:clientId('pnlMensajes')}')" 
+						render="pnlMensajes"
+						limitRender="true" />
+					
+					<a4j:commandButton id="pnlConfirmaSolicitudNo" style="margin:0 auto; min-width:100px;"
+						value="#{msg['no']}" onclick="#{rich:component('pnlConfirmaSolicitud')}.hide()" />
+				</h:panelGrid>
+			</h:panelGroup>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

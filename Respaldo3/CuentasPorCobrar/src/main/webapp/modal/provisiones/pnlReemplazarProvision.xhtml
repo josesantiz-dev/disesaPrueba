@@ -1,0 +1,39 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlReemplazarProvision" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['atencion']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlReemplazarProvision')}.hide()" />
+		</f:facet>
+		
+		<h:panelGroup style="display:block; min-width:300px; text-align:center;">
+			<h:outputText value="#{msg['facturaProvisionadaMontoDistinto']}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['facturaProvisionadaMontoDistintoContinuar']}" styleClass="Descripcion" />
+			
+			<h:panelGrid columns="2" width="100%" style="margin:10px auto 0; text-align:center;">
+				<a4j:commandButton style="margin:0 auto; cursor:pointer; width:100px;"
+					value="#{msg['aceptar']}" 
+					onclick="#{rich:component('pnlReemplazarProvision')}.hide()"
+					action="#{provAction.reemplazarProvision}"
+					oncomplete="eliminarDetalle(#{provAction.operacion}, '#{rich:clientId('pnlMensajes')}')"
+					render="dtDetalles, pnlMensajes"
+					limitRender="true" />
+					
+				<a4j:commandButton style="margin:0 auto; cursor:pointer; width:100px;"
+					value="#{msg['cancelar']}"
+					onclick="#{rich:component('pnlReemplazarProvision')}.hide()" />
+			</h:panelGrid>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

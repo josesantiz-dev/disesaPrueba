@@ -1,0 +1,29 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlEliminarTransaccionConcepto" autosized="true" domElementAttachment="form"
+		header="#{msg['navegacion.label.atencion']}"
+		onshow="document.getElementById('#{rich:clientId('pnlEliminarTransaccionConceptoNo')}').focus();">
+		
+		<h:panelGroup style="display:block; width:auto; text-align:center;">
+			<h:outputText value="#{msg['confirmacionEliminar']}" style="display:block;" styleClass="Descripcion" />
+			
+			<h:panelGrid columns="2" style="margin:10px auto 0; width:200px;" cellpadding="0" cellspacing="0">
+				<a4j:commandButton id="pnlEliminarTransaccionConceptoSi" style="margin:0 auto; width:100px;"
+					value="#{msg['aceptar']}" 
+					action="#{transAction.borrarTransaccionConcepto}" 
+					oncomplete="eliminar(#{transAction.operacion}, '#{rich:clientId('pnlEliminarTransaccionConcepto')}', '#{rich:clientId('pnlMensajes')}')"
+					render="dtTransaccionConceptos" />
+					
+				<a4j:commandButton id="pnlEliminarTransaccionConceptoNo" style="margin:0 auto; width:90px;"
+					value="#{msg['cancelar.e']}" 
+					onclick="#{rich:component('pnlEliminarTransaccionConcepto')}.hide()" />
+			</h:panelGrid>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

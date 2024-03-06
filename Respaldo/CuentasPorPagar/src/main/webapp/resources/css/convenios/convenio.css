@@ -1,0 +1,32 @@
+.lblBusquedaIzq{
+	text-align: right;
+	width: 80px;
+}
+.lblBusquedaDer{
+	text-align:left;
+	width: 400px;
+}
+.rowgral{
+	vertical-align: top;
+}
+.colModalIzq{
+	text-align: right;	
+	width: 110px;
+}
+.colModalDer{
+	text-align: left;
+	
+}
+.colPnlBusqIzq{
+	text-align: right;	
+}
+.colPnlBusqDer{
+	text-align: left;	
+}
+.colTituloDom{
+	width: 100px;
+	text-align: right;
+}
+.colDato{
+	text-align: left;
+}

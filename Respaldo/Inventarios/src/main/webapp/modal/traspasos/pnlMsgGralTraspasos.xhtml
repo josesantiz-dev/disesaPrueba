@@ -1,0 +1,40 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlMsgGralTraspasos" autosized="true">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText
+					value="#{traspasosAction.operacionCompleta == true ? msg['informacion'] : msg['atencion']}"
+					styleClass="Titulo" />
+			</h:panelGroup>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}"
+				style="cursor:pointer;"
+				onclick="#{rich:component('pnlMsgGralTraspasos')}.hide()" />
+		</f:facet>
+		
+		<h:panelGrid id="grupoResOperacion" columns="1" width="200" style="text-align:center;" cellspacing="10">
+			<!--h:outputText
+				value="#{traspasosAction.operacionCompleta != true ? traspasosAction.resOperacion : msg['mensaje.info.infoReg']}"
+				style="display:block;" styleClass="Descripcion" /-->
+				
+			<h:outputText value="#{traspasosAction.mensaje}"  styleClass="Descripcion" rendered="#{traspasosAction.tipoMensaje == -1}" />
+			<h:outputText value="#{msg['mensaje.info.infoReg']}"  styleClass="Descripcion" rendered="#{traspasosAction.tipoMensaje == 0}" />
+			<h:outputText value="#{msg['mensaje.error.inesperado']}"  styleClass="Descripcion" rendered="#{traspasosAction.tipoMensaje == 1}" />
+			<h:outputText value="#{msg['mensaje.info.busquedaVacia']}"  styleClass="Descripcion" rendered="#{traspasosAction.tipoMensaje == 2}" />
+			<h:outputText value="#{msg['mensaje.error.requerido']}"  styleClass="Descripcion" rendered="#{traspasosAction.tipoMensaje == 3}" />
+		
+			<a4j:commandButton value="#{msg['aceptar']}"
+				onclick="#{rich:component('pnlMsgGralTraspasos')}.hide()"
+				style="margin-top:10px; cursor:pointer;" />	
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

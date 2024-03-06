@@ -1,0 +1,22 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../template/template-menus.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<ui:define name="content">
+		<ui:repeat var="rol" value="#{sesionProc.lstRoles}">
+           <a4j:commandLink id="lnkMenu" action="#{sesionProc.seleccionarRol}" oncomplete="window.location = 'principal.faces'" styleClass="item-modulo">
+           		<f:setPropertyActionListener target="#{sesionProc.rolSeleccionado}" value="#{rol}"/>
+           		<h:graphicImage library="#{msgProc['comun.ruta._72']}" name="#{rol.imagen}"/>
+           		<h:outputLabel for="lnkMenu" value="#{rol.nombre}" styleClass="letra-titulo-header ele-block ele-hand" style="margin-top:10px"/>
+           </a4j:commandLink>
+        </ui:repeat>
+	</ui:define>
+
+</ui:composition>

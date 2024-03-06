@@ -1,0 +1,113 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlContratos" autosized="true" domElementAttachment="form" header="#{msg['e.contratos']}" top="20">
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlContratos')}.hide()" />
+		</f:facet>
+		
+		<a4j:region id="regContratos">
+			<div style="display: block; height: 22px; margin-bottom:10px;">
+				<a4j:commandButton id="cmdNuevoContrato" style="align:right; position:relative; float:right;" 
+					image="#{msg['nuevo22.img']}" 
+					action="#{empleadoAction.nuevoContrato}" 
+					oncomplete="nuevoContrato(#{empleadoAction.band}, '#{rich:clientId('pnlNuevoEditarContrato')}', '#{rich:clientId('pnlMsgGralEmpleado')}')"
+					render="grupoEncabezadoContrato, grupoDatosContrato, pnlDatosContrato, pnlNuevoEditarContrato, pnlMsgGralEmpleado" 
+					limitRender="true">
+					<rich:tooltip showDelay="300" value="#{msg['agregar.e']}" for="cmdNuevoContrato" />
+			   	</a4j:commandButton>		
+			</div>
+			
+			<h:panelGroup id="grupoEncListaContrato" styleClass="encabezado">
+				<h:panelGrid width="100%">
+					<h:panelGroup>
+						<h:outputText style="text-align: center;" 
+							value="#{empleadoAction.pojoEmpleado.id==null ? '' : empleadoAction.pojoEmpleado.nombre }" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+				
+			<h:panelGroup style="text-align:left;">
+				<rich:dataTable id="dtListaContratos" value="#{empleadoAction.listaContratosGrid}" var="var" 
+					cellpadding="0" cellspacing="0" rows="20" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column style="text-align:center; width:90px; font-weight: bold;">
+								<h:outputText value="#{msg['id']}" />
+							</rich:column>
+
+							<rich:column style="text-align:center; width:100px;">
+								<h:outputText value="#{msg['fechaInicio']}" />
+							</rich:column>
+
+							<rich:column style="text-align:center;">
+								<h:outputText value="#{msg['e.centroTrabajo']}" />
+							</rich:column>
+
+							<rich:column style="text-align:center; width:100px;">
+								<h:outputText value="#{msg['e.sueldo']}" />
+							</rich:column>
+
+							<rich:column colspan="2" style="text-align:center; width:40px;" />
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemCancelado'}" style="text-align:center;">
+						<h:outputText value="#{var.id}" />
+					</rich:column>
+					
+					<rich:column styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemCancelado'}" style="text-align:center;">
+						<h:outputText value="#{var.fechaInicio}">
+							<f:convertDateTime type="date" pattern="dd MMM yyyy"/>
+						</h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemCancelado'}" style="text-align:left;">
+						<h:outputText value="#{var.centroTrabajo}" />
+					</rich:column>
+					
+					<rich:column styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemCancelado'}" style="text-align:right;">
+						<h:outputText value="#{var.sueldo}">
+							<f:convertNumber pattern="###,###,##0.00" />
+						</h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+						<a4j:commandButton id="cmdEditarContrato" 
+							image="#{msg['estudios22.img']}"
+							rendered="#{var.estatus == 0}"
+							action="#{empleadoAction.editarContrato}"
+							oncomplete="editarContrato(#{empleadoAction.band},'#{rich:clientId('pnlNuevoEditarContrato')}','#{rich:clientId('pnlMsgGralEmpleado')}');" 
+							render="pnlNuevoEditarContrato,pnlMsgGralContrato">
+							<f:setPropertyActionListener target="#{empleadoAction.pojoContrato}" value="#{var}" />
+							<rich:tooltip showDelay="300" value="#{msg['visualizar']}" for="cmdEditarContrato" />
+						</a4j:commandButton>
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+						<a4j:commandButton id="cmdEliminarContrato" 
+							image="#{msg['eliminar22.img']}" 
+							rendered="#{var.estatus == 0}"
+							oncomplete="#{rich:component('pnlEliminarContrato')}.show();"
+							render="pnlEliminarContrato">
+							<f:setPropertyActionListener target="#{empleadoAction.pojoContratoBorrar}" value="#{var}" />
+							<rich:tooltip showDelay="300" value="#{msg['eliminar']}" for="cmdEliminarContrato" />
+						</a4j:commandButton>
+					</rich:column>
+					
+					<f:facet name="footer">
+						<rich:dataScroller id="dScrollContrato" align="center" for="dtListaContratos" maxPages="10"
+							ajaxSingle="true" page="#{empleadoAction.contratosPaginacion}" styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</h:panelGroup>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

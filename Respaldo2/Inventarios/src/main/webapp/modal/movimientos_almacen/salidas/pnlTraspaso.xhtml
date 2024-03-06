@@ -1,0 +1,156 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlTraspaso" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+		<f:facet name="header">
+			<h:outputText value="#{salidasAlmacenAction.traspaso}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlTraspaso')}.hide()" />
+		</f:facet>
+		
+		<h:panelGrid id="botoneraTraspaso" columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+			<h:panelGroup id="grupoBotonesIzquierdosTraspaso" style="width:100%; vertical-align:middle; position:relative;">
+				<h:selectOneRadio id="rbTipoTraspasos" style="min-width: 100px; margin:5px auto 5px 0;" 
+					disabled="#{!salidasAlmacenAction.puedeEditar}"
+					value="#{salidasAlmacenAction.tipoTraspaso}">
+					<f:selectItems value="#{salidasAlmacenAction.listTiposTraspasos}" />
+				</h:selectOneRadio>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoBotonesDerechosTraspaso" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdImprimirTraspaso" style="float:right; margin-left: 5px; vertical-align:top; position:relative;"
+					image="#{msg['imprimir22.img']}" title="#{msg['imprimir.e']}"
+					onclick="#{rich:element('cmdImprimirTraspaso')}.disabled = true;" 
+					action="#{salidasAlmacenAction.reporte}" 
+					oncomplete="#{rich:element('cmdImprimirTraspaso')}.disabled = false; reporte(#{salidasAlmacenAction.band}, '#{rich:clientId('pnlMsgGralSalida')}')"
+					render="pnlMsgGralSalida"
+					limitRender="true" />
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<h:panelGroup id="grupoDatosTraspaso">
+			<fieldset style="margin:10px auto 0;">
+				<legend><h:outputLabel value="#{msg['datosGenerales']}" styleClass="Titulo" /></legend>
+				
+				<h:panelGrid id="gDatosGralesTraspaso" columns="4" columnClasses="colTitulo,colDato,colTitulo,colDato" style="width:100%; text-align:left;">
+					<h:outputText value="#{msg['fecha']}:" styleClass="Titulo" />
+		            <rich:calendar enableManualInput="false" datePattern="dd-MMM-yyyy" 
+		            	disabled="#{!salidasAlmacenAction.puedeEditar}"
+		            	value="#{salidasAlmacenAction.fecha}" />
+		            
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+		            
+		            <h:outputText value="#{msg['almacenOrigen']}:" styleClass="Titulo"/>
+					<h:selectOneMenu id="cboTraspasoAlmacenOrigen" style="width:316px;" 
+						disabled="#{!salidasAlmacenAction.puedeEditar}"
+						value="#{salidasAlmacenAction.idAlmacenSalida}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{salidasAlmacenAction.listaCboAlmacenSalida}" />
+					</h:selectOneMenu> 
+					
+		            <h:outputText value="#{msg['entrega']}:" styleClass="Titulo" />
+					<h:selectOneMenu id="cbTraspasoEmpleadosEntrega" style="width:316px;" 
+						disabled="#{!salidasAlmacenAction.puedeEditar}"
+						value="#{salidasAlmacenAction.idEmpleadoEntrega}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{salidasAlmacenAction.listaCboEmpleadoEntrega}" />
+					</h:selectOneMenu>
+					
+		            <h:outputText value="#{msg['almacenDestino']}:" styleClass="Titulo"/>
+					<h:selectOneMenu id="cbTraspasoAlmacenDestino" style="width:316px;" 
+						disabled="#{!salidasAlmacenAction.puedeEditar}"
+						value="#{salidasAlmacenAction.idAlmacenDestino}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{salidasAlmacenAction.listaCboAlmacenDestino}" /> 
+					</h:selectOneMenu>
+					
+		            <h:outputText value="#{msg['recibe']}:" styleClass="Titulo" />
+					<h:selectOneMenu id="cbTraspasoEmpleadosRecibe" style="width:316px;" 
+						disabled="#{!salidasAlmacenAction.puedeEditar}"
+						value="#{salidasAlmacenAction.idEmpleadoRecibe}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{salidasAlmacenAction.listaCboEmpleadoRecibe}" /> 
+					</h:selectOneMenu>
+				</h:panelGrid>
+			</fieldset>
+		</h:panelGroup>
+		
+		<h:panelGroup id="grupoDetallesTraspaso">
+			<fieldset style="margin:10px auto 0;">
+				<legend><h:outputLabel value="#{msg['productos']}" styleClass="Titulo" /></legend>
+					
+				<rich:dataTable id="dtTraspasoDetalles" value="#{salidasAlmacenAction.listaTraspasoDetalleGrid}" var="var" iterationStatusVar="it"
+					cellpadding="0" cellspacing="0" rows="12"  border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" style="margin:10px auto 0; width: 100%;">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column style="text-align:center; width:70px;" styleClass="Titulo">
+								<h:outputText value="#{msg['id']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:70px;" styleClass="Titulo">
+								<h:outputText value="#{msg['clave']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; min-width:200px;" styleClass="Titulo">
+								<h:outputText value="#{msg['descripcion']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:60px;" styleClass="Titulo">
+								<h:outputText value="#{msg['productos.um']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:60px;" styleClass="Titulo">
+								<h:outputText value="#{msg['existencia']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:60px;" styleClass="Titulo">
+								<h:outputText value="#{msg['cantidad']}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+	
+					<rich:column style="text-align:center; width:70px;">
+						<h:outputText value="#{var.idProducto.id}"/>
+					</rich:column>
+	
+					<rich:column style="text-align:center; width:70px;">
+						<h:outputText value="#{var.idProducto.clave}"/>
+					</rich:column>
+					
+					<rich:column style="text-align:left; padding:5px; min-width:200px;">
+						<h:outputText value="#{var.idProducto.descripcion}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; padding:5px; width:60px;">
+						<h:outputText value="#{var.idProducto.unidadMedida.valor}"/>
+					</rich:column>
+					
+					<rich:column style="text-align:right; padding:5px; width:60px;">
+						<h:outputText value="#{var.idProducto.existencia}" /> 
+					</rich:column>
+					
+					<rich:column style="text-align:center; width:60px;">
+						<h:outputText value="#{var.cantidad}" />
+					</rich:column>
+					
+					<f:facet name="footer">
+						<rich:dataScroller id="dScrollTraspasoDetalles" for="dtTraspasoDetalles" page="#{salidasAlmacenAction.pagDetalles}" 
+							align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</fieldset>
+		</h:panelGroup>
+		
+		<a4j:log rendered="false" />
+	</rich:popupPanel>
+</ui:composition>

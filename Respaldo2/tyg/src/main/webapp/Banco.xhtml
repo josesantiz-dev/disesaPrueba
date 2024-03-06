@@ -1,0 +1,272 @@
+<!DOCTYPE composition PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<ui:composition  
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:rich="http://richfaces.org/rich" 
+	xmlns:s="http://jboss.com/products/seam/taglib" 
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['bancos']}"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolBarGroup location="right">
+			<a4j:commandButton id="cmdBuscar" style="cursor:pointer;" styleClass="Titulo"
+				image="#{msgTyg['navegacion.boton.buscar.img']}"
+				action="#{bancoAction.buscar}" 
+				oncomplete="checaResultado(#{rich:element('txtResultadoBanco')}, '', 'pnlMsgBanco', 'buscar', #{rich:element('msgErroresBancos')}); #{rich:element('cmdBuscar')}.disabled = false;" 
+				reRender="dtResults, txtResultadoBanco, pnlMsgBanco">
+				<rich:toolTip id="ttBuscar" showDelay="300" styleClass="Descripcion" value="#{msgTyg['navegacion.boton.buscar.e']}"/>
+			</a4j:commandButton>
+		</rich:toolBarGroup>
+		
+		<rich:toolBarGroup location="right">
+			<a4j:commandButton id="cmdNuevo" style="cursor:pointer;" styleClass="Titulo"
+				image="#{msgTyg['navegacion.boton.nuevo.img']}"
+				action="#{bancoAction.nuevo}"  
+				oncomplete="checaResultado(#{rich:element('txtResultadoBanco')}, 'pnlNuevoEditar', 'pnlMsgBanco', 'nuevo', #{rich:element('msgErroresBancos')}); #{rich:element('cmdNuevo')}.disabled = false;" 
+				reRender="pnlNuevoEditar, txtResultadoBanco" >
+				<rich:toolTip id="ttNuevo" showDelay="300" styleClass="Descripcion" value="#{msgTyg['navegacion.boton.buscar.e']}"/>
+			</a4j:commandButton>
+		</rich:toolBarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<a4j:loadStyle src="resource:///resources/css/tyg/tyg.css"/>
+		<a4j:loadStyle src="resource:///resources/css/tyg/tygImpuestos.css"/>
+		<a4j:loadScript src="resource:///resources/scripts/tyg/bancos.js"/>
+		
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText style="font-weight: bold; font-size: 28px; color:#525252;" value="#{msg['bancos']}"/>
+		</div>
+		
+		<div class="div_pagina">
+			<h:inputHidden id="txtResultadoBanco" value="#{bancoAction.resOperacion}"/>
+			<!-- Pantalla Principal  -->
+			<div style="min-width: 700px; margin: 0 auto; text-align: center;">
+				<h:panelGrid id="panel_busqueda" columns="2" 
+					style="margin:10px auto; text-align: left; display:block;z-index:-1;" width="700">
+					<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.tipoBusqueda']}:" />
+					<rich:comboBox id="cmbTipoBusqueda" enableManualInput="false" 
+						listStyle="text-align:left;z-index:-1;" 
+						suggestionValues="#{bancoAction.tipoBusqueda}" 
+						value="#{bancoAction.valTipoBusqueda}" />
+					
+					<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.valor']}:" />
+					<h:inputText id="txtvalor" maxlength="15" value="#{bancoAction.campoBusqueda}" />
+				</h:panelGrid>
+			</div>
+			
+			<rich:dataTable id="dtResults" border="0" cellpadding="0" cellspacing="0" rowClasses="Row1, Row2" rows="20" 
+				value="#{bancoAction.listBancos}" var="bancos" 
+				style="min-width: 700px; margin: 0 auto;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column colspan="6" styleClass="Titulo">
+							<h:outputText value="#{msgTyg['navegacion.label.bancos']}"/>
+						</rich:column>
+						
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo" width="100">
+							<h:outputText value="#{msgTyg['navegacion.label.clave']}"/>
+						</rich:column>
+						
+						<rich:column style="text-align:center; margin-left:10px;" styleClass="Titulo">
+							<h:outputText value="#{msgTyg['navegacion.label.nombreCorto']}"/>
+						</rich:column>
+						
+						<rich:column style="text-align:center; margin-left:10px;" styleClass="Titulo">
+							<h:outputText value="#{msgTyg['navegacion.label.nombreLargo']}"/>
+						</rich:column>
+						
+						<rich:column colspan="2" style="text-align:center; margin-left:10px;" styleClass="tygImpTit">
+							<h:outputText value=""/>
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="100">
+					<h:outputText id="txtClave" value="#{bancos.id}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:left;" styleClass="Descripcion">
+					<h:outputText id="txtNomCorto" value="#{bancos.nombreCorto}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:left;" styleClass="Descripcion">
+					<h:outputText id="txtNomLargo" value="#{bancos.nombreLargo}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center; font-weight: bold; font-size:12px;" styleClass="Descripcion" width="20">
+					<a4j:commandButton action="#{bancoAction.editar}" image="#{msgTyg['navegacion.boton.editar.img']}" oncomplete="Richfaces.showModalPanel('pnlNuevoEditar')" reRender="pnlNuevoEditar">
+						<f:setPropertyActionListener target="#{bancoAction.pojoBanco}" value="#{bancos}"/>
+						<rich:toolTip value="#{msgTyg['navegacion.label.editar']}"/>
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; font-weight: bold; font-size:12px;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msgTyg['navegacion.boton.eliminar.img']}" oncomplete="Richfaces.showModalPanel('pnlEliminar')" reRender="txtResultadoBanco">
+						<f:setPropertyActionListener target="#{bancoAction.pojoBanco}" value="#{bancos}"/>
+						<rich:toolTip value="#{msgTyg['navegacion.label.eliminar']}"/>
+					</a4j:commandButton>
+				</rich:column>
+				
+				<f:facet name="footer">
+					<rich:datascroller id="dScroll" ajaxSingle="true" align="center" 
+						for="dtResults" maxPages="10" 
+						page="#{bancoAction.numPagina}" styleClass="tygImpTit"/>
+				</f:facet>
+			</rich:dataTable>
+		</div>
+		<!-- Fin Pantalla Principal  -->
+	</ui:define>
+	
+	<ui:define name="modals">
+		<!--  Pantalla Nuevo o Editar  -->
+		<rich:modalPanel autosized="true" id="pnlNuevoEditar">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText style="margin-left:10px" styleClass="Titulo" value="#{ bancoAction.pojoBanco.id != 0 ? bancoAction.pojoBanco.nombreCorto : msgTyg['navegacion.label.nuevoReg']}"/>
+				</h:panelGroup>
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage id="btnCerrarNuevoMon" style="cursor:pointer;" value="#{msgTyg['navegacion.gral.cerrar.img']}"/>
+					<rich:componentControl attachTo="btnCerrarNuevoMon" event="onclick" for="pnlNuevoEditar" operation="hide"/>
+				</h:panelGroup>
+			</f:facet>
+			
+			<a4j:form id="frmNuevoEditarGasto">
+				<a4j:region id="loadNuevoEditar">
+					<div style="display: block; width: 550px height: 22px;">
+						<h:panelGrid columns="2" style="float:right; margin-right:5px;">
+							<h:panelGroup style="vertical-align: middle; position:relative; ">
+								<a4j:commandButton action="#{bancoAction.guardar}" id="cmdSalvar" image="#{msgTyg['navegacion.boton.salvar.img']}" onclick="#{rich:element('cmdSalvar')}.disabled = true;" oncomplete="checaResultado(#{rich:element('txtResultadoBanco')}, 'pnlNuevoEditar', 'pnlMsgBanco', 'salvar', #{rich:element('msgErroresBancos')}); #{rich:element('cmdSalvar')}.disabled = false;" reRender="miMenu,dtResults, pnlDatos2, txtResultadoBanco, pnlMsgBanco" style="vertical-align: middle; position:relative;"/>
+								<h:outputLabel for="cmdSalvar" style="cursor:pointer;" styleClass="Titulo" value="#{msgTyg['navegacion.boton.salvar.e']}"/>
+							</h:panelGroup>
+							<h:panelGroup style="vertical-align: middle; position:relative;">
+								<a4j:status for="loadNuevoEditar">
+									<f:facet name="start">
+										<h:graphicImage style="vertical-align: middle; position:relative;" value="#{msgTyg['navegacion.loading.loading16']}"/>
+									</f:facet>
+									<f:facet name="stop">
+										<h:graphicImage style="vertical-align: middle; position:relative;" value="#{msgTyg['navegacion.loading.loading_stop16']}"/>
+									</f:facet>
+								</a4j:status>
+							</h:panelGroup>
+						</h:panelGrid>
+					</div>
+					
+					<h:panelGrid cellpadding="3" columnClasses="Observacion" columns="2" id="pnlDatos1" style="display: block; width: 400px; position:relative; margin-right:25px;">
+						<h:outputText value="*"/>
+						<h:outputText value="#{ bancoAction.pojoBanco.id != 0 ? msgTyg['navegacion.label.noeditar'] : msgTyg['navegacion.label.generaAuto']}"/>
+						
+						<h:outputText value=""/>
+						<h:outputText value="#{ bancoAction.pojoBanco.id != 0 ? msgTyg['navega.label.vacio'] : msgTyg['navega.label.cuandoSalve']}"/>
+					</h:panelGrid>
+					
+					<h:panelGrid cellpadding="3" columns="2" id="pnlDatos2" style="display: block; width: 700px; position:relative; margin-top:15px; margin-left:10px;">
+						<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.clave']}:"/>
+						<h:outputText id="txtClave" styleClass="Titulo" value="#{bancoAction.pojoBanco.id}"/>
+						
+						<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.nombreCorto']}:"/>
+						<h:panelGroup>
+							<h:inputText id="txtNomCorto" maxlength="30" required="#{!empty param[rich:clientId('cmdSalvar')]}" size="40" value="#{bancoAction.pojoBanco.nombreCorto}">
+								<f:validateLength minimum="1"/>
+							</h:inputText>
+							<rich:message for="txtNomCorto" showDetail="false" showSummary="false" style="color:red">
+								<f:facet name="errorMarker">
+									<h:panelGroup>
+										<h:graphicImage value="#{msgTyg['mensajes.cancelar16.img']}"/>
+										<h:outputLabel styleClass="Err" value="#{msgTyg['mensajes.error.requerido']}"/>
+									</h:panelGroup>
+								</f:facet>
+							</rich:message>
+						</h:panelGroup>
+						
+						<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.nombreLargo']}:"/>
+						<h:panelGroup>
+							<h:inputText id="txtnomLargo" maxlength="150" required="#{!empty param[rich:clientId('cmdSalvar')]}" size="40" value="#{bancoAction.pojoBanco.nombreLargo}">
+								<f:validateLength minimum="1"/>
+							</h:inputText>
+							<rich:message for="txtnomLargo" showDetail="false" showSummary="false" style="color:red">
+								<f:facet name="errorMarker">
+									<h:panelGroup>
+										<h:graphicImage value="#{msgTyg['mensajes.cancelar16.img']}"/>
+										<h:outputLabel styleClass="Err" value="#{msgTyg['mensajes.error.reqSoloNum']}"/>
+									</h:panelGroup>
+								</f:facet>
+							</rich:message>
+						</h:panelGroup>
+					</h:panelGrid>
+					
+					<!-- utilizo esta lista de mensajes de errores para conocer si debo seguir en el proceso en js -->
+					<rich:messages id="msgErroresBancos" showDetail="false" showSummary="false"/>
+				</a4j:region>
+			</a4j:form>
+		</rich:modalPanel>
+		<!-- Fin Pantalla Nuevo o Editar  -->
+		
+		<!-- Panel Eliminar -->
+		<rich:modalPanel autosized="true" id="pnlEliminar">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.atencion']}"/>
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage id="imgCerrarEliminar" style="cursor:pointer;" value="#{msgTyg['navegacion.panel.cerrar.img']}"/>
+					<rich:componentControl attachTo="imgCerrarEliminar" event="onclick" for="pnlEliminar" operation="hide"/>
+				</h:panelGroup>
+			</f:facet>
+			
+			<a4j:form id="frmEliminar">
+				<a4j:region id="loadEliminar">
+					<h:panelGrid cellspacing="10" columns="1" style="text-align:center;" width="200">
+						<h:outputText style="display:block;" styleClass="Descripcion" value="#{msgTyg['navegacion.label.deseaEliminar']}"/>
+						<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+							<a4j:commandButton action="#{bancoAction.eliminar()}" id="cmdEliminar" onclick="#{rich:element('cmdEliminar')}.disabled = true;" oncomplete="checaResultado(#{rich:element('txtResultadoBanco')}, 'pnlEliminar', 'pnlMsgBanco', 'eliminar', #{rich:element('msgErroresBancos')}); #{rich:element('cmdEliminar')}.disabled = false;" reRender="dtResults, txtResultadoBanco, pnlMsgBanco" value="#{msgTyg['navegacion.label.aceptar']}"/>
+							<a4j:commandButton onclick="#{rich:component('pnlEliminar')}.hide()" style="margin-left:10px;" value="#{msgTyg['navegacion.label.cancelar']}"/>
+						</h:panelGroup>
+						<a4j:status for="loadEliminar">
+							<f:facet name="start">
+								<h:graphicImage value="#{msgTyg['navegacion.loading.loading16']}"/>
+							</f:facet>
+						</a4j:status>
+					</h:panelGrid>
+				</a4j:region>
+			</a4j:form>
+		</rich:modalPanel>
+		<!--  Fin Panel Eliminar-->
+		
+		<!-- #### Panel MsgLayout #### -->
+		<rich:modalPanel autosized="true" id="pnlMsgBanco" width="350">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText rendered="#{bancoAction.resOperacion != ''}" styleClass="Err" value="#{msgTyg['navegacion.label.atencion']}"/>
+					<h:outputText rendered="#{bancoAction.resOperacion == ''}" styleClass="Titulo" value="#{msgTyg['navegacion.label.informacion']}"/>
+				</h:panelGroup>
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage id="imgCerrarMsgBanc" styleClass="cursor:pointer;" value="#{msg['navegacion.panel.cerrar.img']}"/>
+					<rich:componentControl attachTo="imgCerrarMsgBanc" event="onclick" for="pnlMsgBanco" operation="hide"/>
+				</h:panelGroup>
+			</f:facet>
+			
+			<a4j:form id="frmMsgAsig" style="text-align:center;">
+				<h:panelGroup style="display:block; width:300px; float:center;">
+					<h:outputText rendered="#{bancoAction.resOperacion == ''}" style="display:block;" styleClass="Descripcion" value="#{msgTyg['mensaje.info.infoReg']}"/>
+					<h:outputText rendered="#{bancoAction.resOperacion != ''}" style="display:block;" styleClass="Descripcion" value="#{bancoAction.resOperacion}"/>
+				</h:panelGroup>
+				<a4j:commandButton onclick="#{rich:component('pnlMsgBanco')}.hide()" style="margin-top:10px; cursor:pointer;" value="#{msgTyg['navegacion.label.aceptar']}"/>
+			</a4j:form>
+		</rich:modalPanel>
+		<!--  Fin Panel Msg-->
+	</ui:define>
+</ui:composition>

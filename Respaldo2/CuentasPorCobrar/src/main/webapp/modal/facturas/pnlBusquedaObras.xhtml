@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlBusquedaObras" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+		<f:facet name="header">
+			<h:outputText value="#{msg['busqueda.busquedaObras']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;"
+				value="#{msg['navegacion.gral.cerrar.img']}"
+				onclick="#{rich:component('pnlBusquedaObras')}.hide()" />
+		</f:facet>
+		
+		<div style="display:block; width:100%; min-height:22px;">
+			<a4j:commandButton id="cmdBuscarProyectos" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"  
+				image="#{msg['buscar22.img']}" 
+				action="#{facturaAction.buscarObras}" 
+				oncomplete="buscar3(#{facturaAction.band}, '#{rich:clientId('pnlMensajes')}');" 
+				render="dtProyectos,pnlMensajes"
+				limitRender="true">
+				<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarProyectos"/>
+			</a4j:commandButton>
+		</div>
+
+		<div style="display:block; width:100%;">
+			<h:panelGrid id="pnlBusquedaProyectosFiltros" columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin:10px auto 0; display:block;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo" />
+				<h:selectOneMenu value="#{facturaAction.campoBusquedaProyecto}" styleClass="Titulo" style="width: 216px;">
+					<f:selectItems value="#{facturaAction.opcionesBusquedaProyecto}" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText maxlength="50" style="width: 210px;"
+					value="#{facturaAction.valorBusquedaProyecto}" />
+				
+				<h:outputText value="#{msg['administrativa']}:" styleClass="Titulo" rendered="#{facturaAction.esAdministrativo}" />
+				<h:selectBooleanCheckbox value="#{facturaAction.buscarAdministrativo}" rendered="#{facturaAction.esAdministrativo}" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtProyectos" value="#{facturaAction.listaObras}" var="var" 
+				cellpadding="0" cellspacing="0" rows="5" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="text-align:center; width:90px;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:300px;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:200px;" styleClass="Titulo">
+							<h:outputText value="#{msg['cliente']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:200px;" styleClass="Titulo">
+							<h:outputText value="#{msg['contrato']}" />
+						</rich:column>
+
+						<rich:column style="text-align:center; width: 30px;" styleClass="Titulo">
+							<h:outputText value="#{msg['seleccionar']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; padding:5px; width:90px;">
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding:5px; width:300px;">
+					<h:outputText value="#{var.nombre}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding:5px; width:200px;">
+					<h:outputText value="#{var.nombreCliente}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding:5px; width:200px;">
+					<h:outputText value="#{var.nombreContrato}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:30px;">
+				   <a4j:commandButton id="cmdAgregar" image="#{msg['agregar16.img']}" 
+						onclick="#{rich:component('pnlBusquedaObras')}.hide()" 
+						action="#{facturaAction.seleccionarObra}" 
+						render="pnlFacturaPoryectoDatos, txtCliente, txtClienteDireccion, cbMoneda"
+						limitRender="true">
+						<rich:tooltip showDelay="300" value="#{msg['agregar.e']}" for="cmdAgregar" />	
+						<f:setPropertyActionListener target="#{facturaAction.pojoObra}" value="#{var}" />
+				   </a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer"> 
+					<rich:dataScroller id="dScrollProyectos" for="dtProyectos" page="#{facturaAction.numPaginaProyectos}"
+						maxPages="10" ajaxSingle="true" align="center" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

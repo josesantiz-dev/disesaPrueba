@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="net.giro.co.beans.Correlativo" table="bbb4420d88" >
+		<composite-id name="id" class ="net.giro.co.beans.CorrelativoId" unsaved-value="none">
+			<key-property name="codigoEmpresa" type="long" column="c_codemp"/>
+			<key-property name="nombreTabla" type="string" column="c_nomtab"/>
+		</composite-id>
+		<property name="cbEmpresa" column="c_codemp" insert="false" update="false"/>
+		<property name="descriTabla" column="c_destab"/>
+		<property name="fechaInsercion" column="a_fecins"/>
+		<property name="fechaModificacion" column="a_fecmod"/>
+		<property name="ipInsercion" column="a_ipeins"/>
+		<property name="ipModificacion" column="a_ipemod"/>
+		<property name="numeroCorrelativo" column="n_numcor"/>
+		<property name="terminalInsercion" column="a_terins"/>
+		<property name="terminalModificacion" column="a_termod"/>
+		<property name="usuarioInsercion" column="a_usuins"/>
+		<property name="usuarioModificacion" column="a_usumod"/>
+	</class>
+	
+	<class name="net.giro.bancos.beans.Banco" table="a257a96c5a" >
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="banco" column="af"/>
+	</class>
+	
+	<class name="net.giro.bancos.beans.CuentaBancaria" table="a95f1327c6" >
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="numeroDeCuenta" column="af"/>
+		<property name="clave" column="ag"/>
+		<many-to-one name="institucionBancaria" column="ah"  class="net.giro.bancos.beans.InstitucionBancaria" fetch="join" insert="true" update="true" />
+		<many-to-one name="sucursalBancaria" column="ai"  class="net.giro.bancos.beans.SucursalBancaria" fetch="join" insert="true" update="true" />
+		<property name="funcionario" column="aj"/>
+		<property name="puestoFuncionario" column="ak"/>
+		<property name="saldo" column="al"/>
+		<property name="saldoMinimo" column="am"/>
+		<property name="empresa" column="an"/>
+		<property name="logo" column="ao"/>
+		<property name="validaSaldo" column="ap"/>
+		<property name="validaReferencia" column="aq"/>
+		<property name="reporteCheques" column="ar"/>
+		<property name="funcionGeneraDv" column="au"/>
+	</class>
+
+	<class name="net.giro.bancos.beans.FormaDePago" table="a9532964a0" >
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="formaDePago" column="af"/>
+		<property name="aplicaAutomaticamente" column="ag"/>
+		<property name="ahorro" column="ah"/>
+	</class>
+	
+	<class name="net.giro.bancos.beans.InstitucionBancaria" table="ca62de9bf2" >
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="nombreCorto" column="af"/>
+		<property name="nombreLargo" column="ag"/>
+	</class>
+	
+	<class name="net.giro.bancos.beans.SucursalBancaria" table="a6d4ebfe92" >
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="nombre" column="af"/>
+		<property name="domicilio" column="ag"/>
+		<property name="estado" column="ah"/>
+		<many-to-one name="institucionBancaria" column="ai"  class="net.giro.bancos.beans.InstitucionBancaria" fetch="join" insert="true" update="true" />
+	</class>
+	
+	<class name="net.giro.bancos.beans.Tasas" table="f134392853" >
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="descripcion" column="af"/>
+	</class>
+	
+	<class name="net.giro.bancos.beans.TiposTasas" table="ea047eb7cc" >
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="clave" column="af"/>
+		<property name="valorTasa" column="ag"/>
+		<many-to-one name="tasas" column="ah"  class="net.giro.bancos.beans.Tasas" fetch="join" insert="true" update="true" />
+	</class>
+	
+	<class name="net.giro.bancos.beans.ValoresTasas" table="e436f99d92" >
+		<id name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="anio" column="af"/>
+		<property name="enero" column="ag"/>
+		<property name="febrero" column="ah"/>
+		<property name="marzo" column="ai"/>
+		<property name="abril" column="aj"/>
+		<property name="mayo" column="ak"/>
+		<property name="junio" column="al"/>
+		<property name="julio" column="am"/>
+		<property name="agosto" column="an"/>
+		<property name="septiembre" column="ao"/>
+		<property name="octubre" column="ap"/>
+		<property name="noviembre" column="aq"/>
+		<property name="diciembre" column="ar"/>
+		<many-to-one name="tasas" column="au"  class="net.giro.bancos.beans.Tasas" fetch="join" insert="true" update="true" />
+	</class>
+</hibernate-mapping>

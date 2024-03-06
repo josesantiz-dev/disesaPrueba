@@ -1,0 +1,188 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlProvision" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+		<f:facet name="header">				
+			<h:outputText styleClass="Titulo" value="#{msg['provisiones']}" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;"
+				value="#{msg['navegacion.gral.cerrar.img']}"
+				onclick="#{rich:component('pnlProvision')}.hide()" />
+		</f:facet>
+		
+		<a4j:region id="regFactura">
+			<h:panelGroup style="display:block; min-height: 22px; margin-bottom:10px; width:100%;">
+				<h:panelGrid columns="2" style="width:100%; text-align:left">
+					<rich:messages id="msgErrorProvision" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+						<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" /></f:facet>
+					</rich:messages>
+					
+					<h:panelGroup id="panelBotoneraDerecha" style="vertical-align:middle; position:relative;">
+						<a4j:commandButton id="cmdSalvar" style="float:right; margin:auto 5px; vertical-align:right; position:relative;"
+							image="#{msg['salvar22.img']}"
+							action="#{provAction.guardar}"
+							oncomplete="guardar(#{provAction.operacion}, '#{rich:clientId('pnlProvision')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrorProvision')})" 
+							render="msgErrorProvision,pnlMensajes"
+							limitRender="true">
+							<rich:tooltip showDelay="300" value="#{msg['salvar.e']}" for="cmdSalvar" />
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+			
+			<fieldset style="margin-top: 10px; margin-bottom: 10px">
+				<legend><h:outputText value="#{msg['agregar.e']} #{msg['factura']}" styleClass="Titulo" /></legend>
+				
+				<h:panelGrid columns="3" columnClasses="colTitulo,colDato,colTitulo">
+					<h:outputText value="#{msg['factura']}:" styleClass="Titulo" />
+					<h:panelGroup id ="pnlFacturaDatos">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtFactura" value="#{provAction.facturaDescripcion}" styleClass="Titulo" />
+							<h:panelGroup>
+								<a4j:commandLink id="cmdFacturaBusqueda" 
+								 	value="#{provAction.facturaDescripcion == '' ? msg['seleccionar'] : msg['cambiar'] }"
+								 	action="#{provAction.nuevaBusquedaFacturas}" 
+									oncomplete="#{rich:component('pnlBusquedaFacturas')}.show()" 
+									render="pnlBusquedaFacturas"
+									limitRender="true" />
+
+								<h:inputText id="txtFacturaHidden" style="text-align:left; display:none;"
+									value="#{provAction.facturaDescripcion}"
+									required="#{!empty param[rich:clientId('cmdAgregar')]}"
+									requiredMessage="#{msg['factura']} #{msg['mensaje.error.requerido']}" />
+							</h:panelGroup> 
+						</h:panelGrid>
+					</h:panelGroup>
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+					
+					<h:outputText value="#{msg['monto']}:" styleClass="Titulo" />
+					<rich:inputNumberSpinner id="txtMontoProvision" styleClass="Titulo" style="width:140px; text-align:right" 
+						value="#{provAction.montoProvision}"
+						maxValue="#{provAction.montoMaximoProvision}"
+						minValue="0" cicled="false"
+						required="#{!empty param[rich:clientId('cmdAgregar')]}"
+						requiredMessage="#{msg['monto']} #{msg['mensaje.error.requerido']}" > 
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</rich:inputNumberSpinner>
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+					
+					<h:outputText value="#{msg['observaciones']}:" styleClass="Titulo" />
+					<h:inputTextarea id="txtObservaciones" style="width:100%; resize:none;" rows="2"
+						value="#{provAction.observaciones}" />
+					<h:panelGroup>
+						<a4j:commandButton id="cmdAgregar" style="cursor:pointer; float:right;" 
+							image="#{msg['agregar16.img']}" 
+							action="#{provAction.agregar}"
+							oncomplete="agregar(#{provAction.operacion}, '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrorProvision')})"
+							render="msgErrorProvision pnlMensajes dtDetalles pnlFacturaDatos"
+							limitRender="true">
+							<rich:tooltip showDelay="300"><h:outputText value="#{msg['agregar.e']}" styleClass="Descripcion"/></rich:tooltip>	
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</fieldset>
+			
+			<fieldset style="margin-top: 10px; margin-bottom: 10px">
+				<legend><h:outputText value="#{msg['facturas']}" styleClass="Titulo" /></legend>
+				
+				<rich:dataTable id="dtDetalles" var="var" value="#{provAction.listProvisiones}" cellpadding="0" cellspacing="0"
+					rows="8" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"> 
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column colspan="6" style="text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['facturas']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:100px;" styleClass="Titulo" breakRowBefore="true">
+								<h:outputText value="#{msg['id']}" />
+							</rich:column> 
+							
+							<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+								<h:outputText value="#{msg['folio']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['cliente']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+								<h:outputText value="#{msg['total']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+								<h:outputText value="#{msg['provision']}" />
+							</rich:column>
+	
+							<rich:column style="text-align:center; width:20px;" styleClass="Titulo" />
+						</rich:columnGroup>
+					</f:facet>
+	
+					<rich:column styleClass="Descripcion" style="text-align:center; padding:5px; width:100px;">
+						<h:outputText value="#{var.idFactura.id}" />
+					</rich:column>
+	
+					<rich:column styleClass="Descripcion" style="text-align:center; padding:5px; width:100px;">
+						<h:outputText value="#{var.idFactura.folioFactura}" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:left; padding:5px; min-width:150px;">
+						<h:outputText value="#{var.idFactura.cliente}" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:right; padding:5px; min-width:90px;">
+						<h:outputText value="#{var.idFactura.total}"><f:convertNumber pattern="###,###,##0.00" /></h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:right; padding:5px; min-width:90px;">
+						<h:outputText value="#{var.monto}"><f:convertNumber pattern="###,###,##0.00" /></h:outputText>
+					</rich:column>
+					
+					<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+						<a4j:commandButton id="cmdEliminar" 
+							image="#{msg['eliminar16.img']}"
+							oncomplete="#{rich:component('pnlEliminarDetalle')}.show()"
+							render="pnlEliminarDetalle"
+							limitRender="true">
+							<rich:tooltip showDelay="300" value="#{msg['eliminar']}" for="cmdEliminar" />
+							<f:setPropertyActionListener target="#{provAction.pojoProvision}" value="#{var}" />
+						</a4j:commandButton>
+					</rich:column>
+	
+					<f:facet name="footer">
+						<rich:columnGroup>
+							<rich:column colspan="3" style="text-align:right;" styleClass="Titulo">
+								<h:outputText value="#{msg['totales']}:" />
+							</rich:column>
+							
+							<rich:column style="text-align:right; width:90px" styleClass="Titulo">
+								<h:outputText value="#{provAction.totalFactura}">
+									<f:convertNumber pattern="###,###,##0.00" />
+								</h:outputText> 
+							</rich:column>
+							
+							<rich:column style="text-align:right; width:90px" styleClass="Titulo">
+								<h:outputText value="#{provAction.totalProvision}">
+									<f:convertNumber pattern="###,###,##0.00" />
+								</h:outputText> 
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="Titulo" />
+							
+							<rich:column breakRowBefore="true" colspan="6" style="text-align:center;">
+								<rich:dataScroller for="dtDetalles" page="#{provAction.paginacionDetalle}"
+									maxPages="10" align="center" ajaxSingle="true" styleClass="Titulo" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+				</rich:dataTable>
+			</fieldset>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

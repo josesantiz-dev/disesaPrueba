@@ -1,0 +1,32 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlDatosExcel" autosized="true" >
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.informacion']}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlDatosExcel')}.hide()"/>
+		</f:facet>
+
+		<fieldset style="margin-top:10px;">
+			<legend><h:outputText value="#{msg['datos']} #{msg['factura']}"/></legend>
+		</fieldset>
+		
+		<fieldset style="margin-top:10px;">
+			<legend><h:outputText value="#{msg['verificacion']} #{msg['factura']}"/></legend>
+		</fieldset>
+		
+		<a4j:commandButton style="float:right; margin-right: 5px;"
+			image="#{msg['aplicar22.img']}" title="#{msg['continuar']}"
+			action="#{insumosAction.guardar}"
+			oncomplete="analizarFile(#{insumosAction.band}, '#{rich:clientId('pnlDatosExcel')}', '#{rich:clientId('pnlInsumos')}', '#{rich:clientId('pnlMensajes')}')"
+			render="pnlEditarDocumentosContrato,pnlMsgGralContratos" />
+	</rich:popupPanel>
+</ui:composition>

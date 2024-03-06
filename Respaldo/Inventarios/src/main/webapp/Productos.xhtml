@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['productos']}"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['buscar22.img']}"  
+				action="#{productoAction.buscar}"
+				oncomplete="buscar('#{productoAction.resOperacion}','#{rich:clientId('pnlMensajes')}');" 
+				render="dtProductos,pnlMensajes"
+				limitRender="true">
+				<rich:tooltip for="cmdBuscar" showDelay="300" 
+					value="#{msg['buscar.e']}" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+		
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['nuevo22.img']}"
+				action="#{productoAction.nuevo}" 
+				oncomplete="nuevo(#{productoAction.operacionCompleta}, #{productoAction.perfilEgresosOperacion}, '#{rich:clientId('pnlOrigenProducto')}', '#{rich:clientId('pnlProducto')}', '#{rich:clientId('pnlMensajes')}');"
+				render="pnlOrigenProducto,pnlProducto,pnlMensajes,grupoEncProducto"
+				limitRender="true">
+				<rich:tooltip for="cmdNuevo" showDelay="300" value="#{msg['nuevo.e']}" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+		
+		<rich:toolbarGroup id="tbgCargarMaestro" location="right">
+			<a4j:commandButton id="cmdLoadMaestro" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['subirDocumento22.img']}" 
+				action="#{productoAction.nuevaCarga}" 
+				oncomplete="#{rich:component('pnlUploadExcel')}.show()"
+				render="pnlUploadExcel">
+				<rich:tooltip for="cmdLoadMaestro" showDelay="300" 
+					value="#{msg['cargarArchivoMaestro']}" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+		
+		<rich:toolbarGroup id="tbgExportarMaestro" location="right">
+			<a4j:commandButton id="cmdExportarMaestro" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['bajarDocumento22.img']}" 
+				action="#{productoAction.nuevoExportar}" 
+				oncomplete="#{rich:component('pnlExportarMaestro')}.show()"
+				render="pnlExportarMaestro"
+				limitRender="true">
+				<rich:tooltip for="cmdExportarMaestro" showDelay="300" 
+					value="#{msg['exportarArchivoMaestro']}" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+		
+		<rich:toolbarGroup id="tbgCaducos" location="right" rendered="#{productoAction.perfilCodificador}">
+			<a4j:commandButton id="cmdBuscarCaducos" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['consultarMovimiento22.img']}"
+				action="#{productoAction.productosCaducos}"
+				oncomplete="#{rich:component('pnlProductosCaducos')}.show()"
+				render="pnlProductosCaducos"
+				limitRender="true">
+				<rich:tooltip for="cmdBuscarCaducos" showDelay="300" 
+					value="#{msg['buscarProductosCaducos']}" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css/acc" name="acc.css" />
+		<h:outputStylesheet library="css/acc" name="cuentasporcobrar.css" />
+		<h:outputScript library="scripts/productos" name="productos.js" />
+			
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 10px;">
+			<h:outputText value="#{msg['productos']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+	
+		<div class="div_pagina" style=" text-align: left; margin:5px auto;">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+				<h:selectOneMenu id="cmbTipoBusquedaProducto" style="width: 216px;"
+					value="#{productoAction.campoBusquedaProducto}">
+					<f:selectItems value="#{productoAction.listaCampoBusquedaProductos}" />
+				</h:selectOneMenu>
+	        
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText id="txtValorBusquedaPersonas" maxlength="50" style="width: 210px;" 
+					value="#{productoAction.valorBusquedaProducto}" />
+					
+				<h:outputText value="#{msg['administrativa']}:" styleClass="Titulo" rendered="#{productoAction.perfilEgresosOperacion}" />
+				<h:selectBooleanCheckbox rendered="#{productoAction.perfilEgresosOperacion}" 
+					value="#{productoAction.buscarEnAdministrativo}" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtProductos" cellpadding="0" cellspacing="0" rows="100"  
+				border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" style="margin:10px auto 20px; width: 100%;"
+				var="var" value="#{productoAction.listaProductosGrid}">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column colspan="9" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['productos']}" />
+						</rich:column>
+						
+						<rich:column breakRowBefore="true" style="text-align:center; width:90px; max-width:100px;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:90px; max-width:100px;" styleClass="Titulo">
+							<h:outputText value="#{msg['productos.codigo']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['productos.descripcion']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:90px; max-width:100px;" styleClass="Titulo">
+							<h:outputText value="#{msg['productos.um']}" title="#{msg['productos.unidadMedida']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:90px; max-width:100px;" styleClass="Titulo">
+							<h:outputText value="#{msg['productos.familia']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:90px; max-width:120px;" styleClass="Titulo">
+							<h:outputText value="#{msg['productos.precioCompra']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;width: 60px;" styleClass="Titulo">
+							<h:outputText value="#{msg['productos.moneda']}" />
+						</rich:column>
+						
+						<rich:column colspan="2" style="text-align:center; width:40px;" styleClass="Titulo">
+							<h:outputText value="" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align:center; width:90px; max-width:100px;">
+					<h:outputText value="#{var.id}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+
+				<rich:column style="text-align:center; width:90px; max-width:100px;">
+					<h:outputText value="#{var.clave}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left:5px; ">
+					<h:outputText value="#{var.descripcion}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:90px; max-width:120px;">
+					<h:outputText value="#{var.descUnidadMedida}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; width:90px; max-width:150px;">
+					<h:outputText value="#{var.descFamilia}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+						
+				<rich:column style="text-align:right; width:90px; max-width:120px;" styleClass="Titulo">
+					<h:outputText value="#{var.precioCompra}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}">
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:60px;">
+					<h:outputText value="#{var.descMonedaAbreviatura}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEditar" image="#{msg['editar16.img']}" 
+						rendered="#{var.estatus == 0}"
+						action="#{productoAction.editar}" 
+						oncomplete="#{rich:component('pnlProducto')}.show()"
+						render="pnlProducto">
+						<f:setPropertyActionListener target="#{productoAction.pojoProducto}" value="#{var}" />
+						<rich:tooltip showDelay="300" value="#{msg['editar']}" for="cmdEditar" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEliminar" image="#{msg['eliminar16.img']}" 
+						rendered="#{var.estatus == 0}"
+						oncomplete="#{rich:component('pnlEliminar')}.show()"
+						render="pnlEliminar">
+						<f:setPropertyActionListener target="#{productoAction.pojoProductoEliminar}" value="#{var}" />
+						<rich:tooltip showDelay="300" value="#{msg['cancelar']}" for="cmdEliminar" />
+					</a4j:commandButton>
+				</rich:column>
+ 				
+				<f:facet name="footer">
+					<rich:dataScroller align="center" for="dtProductos" maxPages="10" ajaxSingle="true" 
+						page="#{productoAction.numPagina}" id="dScroll" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+		
+		<a4j:log rendered="false" popup="false" level="ALL" mode="inline" style="margin:5px auto; max-width:800px;" />
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modal/productos/pnlMensajes.xhtml" />
+		<ui:include src="/modal/productos/pnlEliminar.xhtml" />
+		<ui:include src="/modal/productos/pnlOrigenProducto.xhtml" />
+		<ui:include src="/modal/productos/pnlUploadExcel.xhtml" /> 
+		<ui:include src="/modal/productos/pnlProducto.xhtml" /> 
+		<ui:include src="/modal/productos/pnlProductosCaducos.xhtml" /> 
+		<ui:include src="/modal/productos/pnlExportarMaestro.xhtml" /> 
+	</ui:define>
+</ui:composition>

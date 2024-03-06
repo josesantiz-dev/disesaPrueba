@@ -1,0 +1,28 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlMensajes" autosized="true" domElementAttachment="form"
+		onshow="document.getElementById('#{rich:clientId('pnlMensajesOk')}').focus();"
+		header="#{msg['navegacion.label.atencion']}">
+
+		<h:panelGrid columns="1" style="text-align:center; min-width:300px; max-width:500px;" cellspacing="0" cellpadding="0">
+			<h:outputText styleClass="Descripcion" rendered="#{insumosAction.tipoMensaje == -1}" value="#{insumosAction.mensaje}" escape="#{insumosAction.escapeForInputMesssage}" />
+			<h:outputText styleClass="Descripcion" rendered="#{insumosAction.tipoMensaje ==  0}" value="#{msg['mensaje.info.infoReg']}" />       			
+			<h:outputText styleClass="Descripcion" rendered="#{insumosAction.tipoMensaje ==  1}" value="#{msg['mensaje.error.inesperado']}" />
+			<h:outputText styleClass="Descripcion" rendered="#{insumosAction.tipoMensaje ==  2}" value="#{msg['mensaje.info.busquedaVacia']}" />
+			<h:outputText styleClass="Descripcion" rendered="#{insumosAction.tipoMensaje ==  3}" value="#{msg['mensaje.error.requerido']}" />
+			<h:outputText styleClass="Descripcion" rendered="#{insumosAction.tipoMensaje ==  4}" value="#{msg['maestroNoActualizado']}" />
+			<h:outputText styleClass="Descripcion" rendered="#{insumosAction.tipoMensaje ==  5}" value="#{msg['existenInsumosObra']}" />
+			
+			<a4j:commandButton id="pnlMensajesOk" style="margin:10px auto 0; width:100px;"
+				value="#{msg['navegacion.label.aceptar']}" 
+				onclick="#{rich:component('pnlMensajes')}.hide()"
+				render="miUploadExcel" execute="@none" />
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

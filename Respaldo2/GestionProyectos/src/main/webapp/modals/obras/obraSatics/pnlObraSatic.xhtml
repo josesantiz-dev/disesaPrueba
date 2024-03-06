@@ -1,0 +1,142 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlObraSatic" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+    	<f:facet name="header">
+			<h:outputText value="#{msg['obra']} #{msg['satic']}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlObraSatic')}.hide()" />
+		</f:facet>
+		
+		<a4j:region>
+			<div style="display:block; min-width:500px; min-height: 22px; overflow: auto; text-align: left;">
+				<h:panelGroup>
+					<a4j:commandButton id="cmdUploadObraSatic" style="margin-left:5px; vertical-align: middle; cursor: pointer;" 
+						rendered="#{saticsAction.permitirUploadSatic}" 
+						image="#{msg['subirDocumento22.img']}" title="#{msg['cargar']} #{msg['documento']}"
+						action="#{saticsAction.nuevoUploadFile}" 
+						oncomplete="#{rich:component('pnlUploadFile')}.show()"
+						render="pnlUploadFile, labelFileName" /> 
+					
+					<a4j:commandButton id="cmdDownloadObraSatic" style="margin-left:10px; vertical-align: middle; cursor: pointer;"  
+						rendered="#{saticsAction.pojoSatics.pdfCargado == 1}" 
+						image="#{msg['detalles16.img']}" title="#{msg['descargar']} #{msg['documento']}"
+						action="#{saticsAction.archivoSatics}" 
+						oncomplete="archivoSatic(#{saticsAction.operacion}, '#{msg['urlapp']}', '#{rich:clientId('pnlMensajes')}');" /> 
+					
+					<h:outputText id="labelFileName" 
+						style="margin-left:5px; vertical-align: middle; cursor: default;" 
+						value="#{saticsAction.pojoSatics.pdfCargado == 0 ? '' : saticsAction.pojoSatics.id}#{saticsAction.pojoSatics.pdfCargado == 0 ? '' : '.pdf'}" />
+				</h:panelGroup>
+				
+				<a4j:commandButton id="cmdGuardarObraSatic" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+					image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"  
+					action="#{saticsAction.guardar}" 
+					oncomplete="salvar(#{saticsAction.operacion}, '#{rich:clientId('pnlObraSatic')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrorObrasSatics')});"
+					render="pnlMensajes, msgErrorObrasSatics, dtObraSatics"
+					execute="@region" />
+			</div>
+			
+			<rich:messages id="msgErrorObrasSatics"  showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+				<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+			</rich:messages>
+	
+			<div style="margin: 10px auto 0;">
+				<h:panelGroup styleClass="encabezado" style="min-height: 1em;">
+					<h:outputText value="#{saticsAction.pojoObra.id != null ? saticsAction.pojoObra.id : '0'} "/>
+					<h:outputText value="#{saticsAction.pojoObra.nombre}" />
+				</h:panelGroup>
+	
+				<h:panelGrid columns="4" columnClasses="colTitulo, colDato, colTitulo, colDato">
+					<h:outputText value="#{msg['satic']}:" styleClass="Titulo" /> 
+					<h:selectOneMenu id="cmbSatic" style="width: 216px"
+						value="#{saticsAction.saticsId}" 
+						required="#{!empty param[rich:clientId('cmdGuardarObraSatic')]}" 
+						requiredMessage="#{msg['satic']} #{msg['mensaje.error.requerido']}">
+			            <f:selectItem itemLabel="#{msg['seleccione']}" />
+			            <f:selectItems value="#{saticsAction.listSaticsItems}" />
+			        </h:selectOneMenu>
+							
+					<h:outputText value="#{msg['importe']}:" styleClass="Titulo" />
+					<h:inputText id="txtObraSaticImporte" style="text-align:right; width: 210px" maxlength="13"
+						value="#{saticsAction.pojoSatics.importe}" 
+						required="#{!empty param[rich:clientId('cmdGuardarObraSatic')]}" 
+						requiredMessage="#{msg['importe']} #{msg['mensaje.error.requerido']}"
+						onkeypress="return soloDecimales(event, this.value, 10, 2);">
+						<f:convertNumber pattern="###,###,##0.00" />
+					</h:inputText>
+							
+					<h:outputText value="#{msg['numero']}:" styleClass="Titulo" />
+					<h:inputText id="txtObraSaticNumero" style="text-align:left; width: 210px"
+						value="#{saticsAction.pojoSatics.numero}"
+						required="#{!empty param[rich:clientId('cmdGuardarObraSatic')]}" 
+						requiredMessage="#{msg['numero']} #{msg['mensaje.error.requerido']}" />
+						
+					<h:outputText value="#{msg['adendum']}:" styleClass="Titulo" />
+					<h:selectBooleanCheckbox id="cmbObraSaticsTipo"
+						value="#{saticsAction.obraSaticsTipo}"> 
+						<a4j:ajax event="change" render="cmbSaticAdendum" />
+					</h:selectBooleanCheckbox>
+							
+					<h:outputLabel value="#{msg['fecha']}:" styleClass="Titulo" />
+					<rich:calendar id="txtObraSaticsFecha" enableManualInput="false"
+						style="width: 210px" datePattern="dd/MMM/yyyy"
+						value="#{saticsAction.pojoSatics.fecha}"
+						required="#{!empty param[rich:clientId('cmdGuardarObraSatic')]}" 
+						requiredMessage="#{msg['fecha']} #{msg['mensaje.error.requerido']}" />
+		
+					<h:outputText value="#{msg['satic']} #{msg['adendum']}:" styleClass="Titulo" />
+					<h:selectOneMenu id="cmbSaticAdendum" style="width: 216px" 
+						value="#{saticsAction.saticsAdendumId}"
+						required="#{saticsAction.obraSaticsTipo ? !empty param[rich:clientId('cmdGuardarObraSatic')] : false}" 
+						requiredMessage="#{msg['satic']} #{msg['adendum']} #{msg['mensaje.error.requerido']}">
+			            <f:selectItem itemLabel="#{msg['seleccione']}" />
+			            <f:selectItems value="#{saticsAction.listSaticsItems}" />
+			        </h:selectOneMenu>
+							
+					<h:outputLabel value="#{msg['fechaFinalizacion']}:" styleClass="Titulo" /> 
+					<rich:calendar id="txtObraSaticsFechaFinalizacion" enableManualInput="false"
+						style="width: 210px" datePattern="dd/MMM/yyyy"
+						value="#{saticsAction.pojoSatics.fechaFinalizacion}" />
+			        
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+		
+					<h:outputText value="#{msg['contrato']}:" styleClass="Titulo" />
+					<h:selectOneMenu id="cmbSaticContrato" style="width: 216px" 
+						value="#{saticsAction.pojoSatics.idContratoObra}"
+						required="#{!empty param[rich:clientId('cmdGuardarObraSatic')]}" 
+						requiredMessage="#{msg['contrato']} #{msg['mensaje.error.requerido']}">
+			            <f:selectItem itemLabel="#{msg['ninguno']}" itemValue="0" />
+			            <f:selectItems value="#{saticsAction.listObraContratosItems}" /> 
+			        </h:selectOneMenu>
+			        
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+				</h:panelGrid>
+			   
+				<h:panelGrid columns="2" columnClasses="colTitulo, colDato" style="text-align:left; width: 100%;">
+					<h:outputText value="#{msg['observaciones']}:" styleClass="Titulo" />
+					<h:inputTextarea id="txtObraSaticsObservaciones" 
+						value="#{saticsAction.pojoSatics.observaciones}" 
+						style="width: 96%; resize: none;" rows="3" />
+				</h:panelGrid>
+			
+				<!--h:panelGrid id="grupoObraSaticsObservaciones" columns="1" style="text-align:left; width: 100%; padding-right: 10px">
+					<h:outputText value="#{msg['observaciones']}" styleClass="Titulo" />
+					<h:inputTextarea id="txtObraSaticsObservaciones" value="#{saticsAction.pojoSatics.observaciones}" 
+						style="width: 100%; height : 60px; resize: none;" />
+				</h:panelGrid-->
+			</div>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

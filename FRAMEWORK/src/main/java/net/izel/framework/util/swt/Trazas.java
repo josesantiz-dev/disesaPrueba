@@ -1,0 +1,306 @@
+package net.izel.framework.util.swt;
+
+import java.util.HashMap;
+
+public class Trazas 
+{
+	/** CONTIENE LOS IDENTIFICADORES DE LAS TRAZAS DEL TELLER  */
+	public static final int LOGIN = 100001;
+	public static final int INICIO_DIA = 100002;
+	public static final int CIERRE_DIA = 100003;
+	public static final int SALDO_DIA = 100004;
+	public static final int AUTORIZACION = 100005;
+	public static final int CAMBIO_NIP = 100010;
+	public static final int AUTORIZAR_OPERACION_EXTORNO = 100011;
+	public static final int AUTORIZAR_TRANSACCION = 100012;
+	public static final int EXTORNO = 100999;
+
+	// CONSULTAS
+	public static final int BUSCAR_CUENTA_ID = 100010;
+	public static final int BUSCAR_PRESTAMO_ID = 100013;
+	public static final int BUSCAR_FOLIO_CARTA = 100014;
+	public static final int BUSCAR_CUENTAS_PRESTAMO = 100015;	
+	public static final int BUSCAR_CUENTAS_AFILIADAS = 100016;	
+	public static final int BUSCAR_SOLICITUD_DINERO = 100017;
+	public static final int BUSCAR_DENOMINACIONES_DINERO= 100018; 
+	public static final int BUSCAR_PERSONA_IDENTIFICACION= 100019;
+	public static final int BUSCAR_PERSONA= 100020;
+	public static final int BUSCAR_MEDIOS_PAGO= 100021;
+	public static final int BUSCAR_GIRO = 100022;
+
+	public static final int CONSULTA_SALDO = 102003;
+	public static final int CONSULTA_MOVIMIENTOS_CTA = 102004;	
+	public static final int CONSULTA_DEUDA_PENDIENTE = 102005;
+
+	//  CONCEPTOS VALOR Y GRUPO VALOR
+	public static final int CONSULTA_CONCEPTO_VALOR = 	103000;
+	public static final int CONSULTA_PUVALOR = 103001;
+	public static final int CONSULTA_PUVALOR_ESTATUS = 103002;
+	public static final int CONSULTA_OPERACION_TELLER_GRUPO = 103003;
+	public static final int CONSULTA_DIARIO_ELECTRONICO = 103010;
+	public static final int CONSULTA_RESUMEN_ELECTRONICO = 103011;
+	public static final int CONSULTA_DOCUMENTOS_BANCARIOS = 103012;
+	public static final int CONSULTA_GIROS_POR_PERSONA = 103013;
+	public static final int CONSULTA_MEDIOSPAGO_TRANSACCION = 103014;
+
+	//  TRANSACCIONES
+	public static final int TRANS_DEPOSITO_CUENTA= 104000;
+	public static final int TRANS_RETIRO_CUENTA = 140001;
+	public static final int TRANS_CUENTAS_MISMO_BANCO = 140002;
+	public static final int TRANS_PAGO_PRESTAMO = 140003;
+	public static final int TRANS_OPERACION_CARTA_INSTRUCTIVA = 140004;
+	public static final int TRANS_PAGO_GIROS = 140005;
+	public static final int TRANS_INTERBANCARIA= 140006;
+	public static final int TRANS_OPERACION_X_APLICAR= 140007;
+	public static final int TRANS_INGRESOS_VARIOS= 140009;
+	public static final int TRANS_EGRESOS_VARIOS= 140010;
+	public static final int TRANS_COBRO_DOCUMENTOS_BANCARIOS= 140011;
+	public static final int TRANS_COMPRA_MONEDA_EXTRANJERA= 140012;
+	public static final int TRANS_VENTA_MONEDA_EXTRANJERA= 140013;
+	public static final int TRANS_EMISION_DOCTOS_BANCARIOS= 140014;
+	public static final int TRANS_EMISION_GIROS= 140015;
+	public static final int TRANS_ENVIO_DINERO_BANCO= 140016;
+	public static final int TRANS_ENVIO_DINERO_BOVEDA= 140017;
+	public static final int TRANS_ENVIO_DINERO_CAJERO= 140018;
+	public static final int TRANS_SOLICITUD_DINERO_CAJERO= 140019;
+	public static final int TRANS_SOLICITUD_DINERO_BOVEDA= 140020;
+	public static final int TRANS_FALTANTE_CAJERO= 140021;
+	public static final int TRANS_SOBRANTE_CAJERO= 140022;
+	public static final int TRANS_NOTA_ABONOS = 140023;
+	public static final int TRANS_NOTA_CARGOS = 140024;
+	public static final int TRANS_DINERO_PRESUMIBLE_FALSO = 140025;
+	public static final int TRANS_DOTACION_BOVEDA = 140026;
+
+	// ----------------------------------------------------------------------------------------------------
+	//  EXTORNOS
+	// ----------------------------------------------------------------------------------------------------
+	public static final int EXT_ENVIO_DINERO_BOVEDA= 910001;
+	public static final int EXT_ENVIO_DINERO_BANCOS= 910002;
+	public static final int EXT_SOLICITUD_DINERO_CAJERO= 910003;
+	public static final int EXT_ENVIO_DINERO_CAJERO= 910004;
+	public static final int EXT_EMISION_DOCUMENTOS_BANCARIOS= 910005;
+	public static final int EXT_COBRO_DOCUMENTOS_BANCARIOS= 910006;
+	public static final int EXT_COMPRA_MONEDA= 910007;
+	public static final int EXT_VENTA_MONEDA= 910008;
+	public static final int EXT_EMISION_GIROS= 910009;
+	public static final int EXT_PAGO_GIROS= 910010;
+	public static final int EXT_OPERACION_CARTA_INSTRUCTIVA_RECAUDOS= 910011;
+	public static final int EXT_INGRESO_VARIOS= 910012;
+	public static final int EXT_EGRESO_VARIOS= 910013;
+	public static final int EXT_DINERO_PRESUMIBLEMENTE_FALSO= 910014;
+	public static final int EXT_SOBRANTE_CAJA= 910015;
+	public static final int EXT_FALTANTE_CAJA= 910016;
+	public static final int EXT_DOCUMENTOS_BANCARIOS_RECIBIDOS= 910017;
+	public static final int EXT_SOLICITUD_DINERO_BOVEDA= 910018;
+
+
+	/** Constructors */
+	public Trazas() 
+	{		
+	}
+
+
+	public static HashMap<Integer, String> descTraza = new HashMap<Integer, String>();
+
+	static {
+		descTraza.put(LOGIN, "PETICION LOGIN");
+		descTraza.put(INICIO_DIA, "INICIO_DIA");
+		descTraza.put(CIERRE_DIA, "CIERRE_DIA");	
+		descTraza.put(AUTORIZAR_OPERACION_EXTORNO, "AUTORIZACION OPERACION DE EXTORNO");
+		descTraza.put(AUTORIZAR_TRANSACCION, "AUTORIZACION TRANSACCION");		
+		descTraza.put(EXTORNO, "OPERACION DE ANULACION DE TRANSACCION");
+
+		descTraza.put(BUSCAR_CUENTA_ID, "BUSQUEDA CUENTA POR ID");		
+		descTraza.put(BUSCAR_PRESTAMO_ID, "BUSQUEDA PRESTAMO POR ID");
+		descTraza.put(BUSCAR_FOLIO_CARTA, "BUSQUEDA FOLIO DE CARTA INSTRUCTIVA");		
+		descTraza.put(BUSCAR_CUENTAS_PRESTAMO, "BUSQUEDA DE CUENTAS PRESTAMO");
+		descTraza.put(BUSCAR_GIRO, "BUSQUEDA DE GIROS");
+		descTraza.put(BUSCAR_CUENTAS_AFILIADAS, "BUSQUEDA DE CUENTAS AFILIADAS");	
+		descTraza.put(BUSCAR_SOLICITUD_DINERO, "BUSCAR SOLICITUDES DE DINERO");
+		descTraza.put(BUSCAR_DENOMINACIONES_DINERO, "BUSQUEDA DE DENOMINACIONES DE DINERO");
+		descTraza.put(BUSCAR_PERSONA_IDENTIFICACION, "BUSCAR PERSONA POR DOCUMENTO IDENTIFICACION");
+		descTraza.put(BUSCAR_PERSONA, "BUSCAR PERSONA POR IDENTIFICACION");
+		descTraza.put(BUSCAR_MEDIOS_PAGO, "BUSCAR MEDIO DE PAGO TELLER");
+
+		descTraza.put(CONSULTA_SALDO, "CONSULTA EL SALDO DE UNA CUENTA");
+		descTraza.put(CONSULTA_MOVIMIENTOS_CTA, "CONSULTA DE MOVIMIENTOS DE UNA CUENTA");
+		descTraza.put(CONSULTA_DEUDA_PENDIENTE, "CONSULTA DE DEUDA PENDIENTE");
+		descTraza.put(CONSULTA_CONCEPTO_VALOR, "CONSULTA CONCEPTO VALOR");		
+		descTraza.put(CONSULTA_PUVALOR, "CONSULTA GRUPO VALOR");
+		descTraza.put(CONSULTA_PUVALOR_ESTATUS, "CONSULTA GRUPO VALOR POR ESTATUS");		
+		descTraza.put(CONSULTA_DIARIO_ELECTRONICO, "CONSULTA DE DIARIO ELECTRONICO");
+		descTraza.put(CONSULTA_RESUMEN_ELECTRONICO, "CONSULTA RESUMEN ELECTRONICO");
+		descTraza.put(CONSULTA_DOCUMENTOS_BANCARIOS, "CONSULTA DE DOCUMENTOS BANCARIOS RECIBIDOS");
+
+		descTraza.put(TRANS_DEPOSITO_CUENTA, "TRANSACCION DEPOSITO A CUENTA");
+		descTraza.put(TRANS_RETIRO_CUENTA, "TRANSACCION RETIRO DE CUENTA");
+		descTraza.put(TRANS_CUENTAS_MISMO_BANCO, "TRANSFERENCIAS ENTRE CUENTAS MISMO BANCO");
+		descTraza.put(TRANS_PAGO_PRESTAMO, "PAGO DE PRESTAMOS");				
+		descTraza.put(TRANS_OPERACION_CARTA_INSTRUCTIVA, "OPERACION CARTA INSTRUCTIVA");		
+		descTraza.put(TRANS_PAGO_GIROS, "PAGO DE GIROS");
+		descTraza.put(TRANS_INTERBANCARIA, "TRANSFERENCIAS INTERBANCARIAS");
+		descTraza.put(TRANS_OPERACION_X_APLICAR, "OPERACION POR APLICAR");
+		descTraza.put(TRANS_INGRESOS_VARIOS, "INGRESOS VARIOS");
+		descTraza.put(TRANS_EGRESOS_VARIOS, "EGRESOS VARIOS");
+		descTraza.put(TRANS_COBRO_DOCUMENTOS_BANCARIOS, "COBRO DOCUMENTOS BANCARIOS");
+		descTraza.put(TRANS_COMPRA_MONEDA_EXTRANJERA, "COMPRA DE MONEDA EXTRANJERA");
+		descTraza.put(TRANS_VENTA_MONEDA_EXTRANJERA, "VENTA DE MONEDA EXTRANJERA");
+		descTraza.put(TRANS_EMISION_DOCTOS_BANCARIOS, "EMISION DOCUMENTOS BANCARIOS");
+		descTraza.put(TRANS_ENVIO_DINERO_BANCO, "ENVIO DE DINERO A BANCO");
+		descTraza.put(TRANS_ENVIO_DINERO_BOVEDA, "ENVIO DE DINERO A BOVEDA");
+		descTraza.put(TRANS_ENVIO_DINERO_CAJERO, "ENVIO DE DINERO A CAJERO");
+		descTraza.put(TRANS_SOLICITUD_DINERO_CAJERO, "SOLICITUD DINERO A CAJERO");
+		descTraza.put(TRANS_SOLICITUD_DINERO_BOVEDA, "SOLICITUD DINERO A BOVEDA");		
+		descTraza.put(TRANS_FALTANTE_CAJERO, "FALTANTE DE CAJERO");
+		descTraza.put(TRANS_SOBRANTE_CAJERO, "SOBRANTE DE CAJERO");
+		descTraza.put(TRANS_NOTA_ABONOS, "TRANSACCION NOTA DE ABONO A CUENTA");
+		descTraza.put(TRANS_NOTA_CARGOS, "TRANSACCION NOTA DE CARGO A CUENTA");
+		descTraza.put(TRANS_DINERO_PRESUMIBLE_FALSO, "TRANSACCION DINERO PRESUMIBLEMENTE FALSO");
+		descTraza.put(TRANS_DOTACION_BOVEDA, "TRANSACCION DOTACION A BOVEDA");
+		
+
+		// ----------------------------------------------------------------------------------------------------
+		//  EXTORNOS
+		// ----------------------------------------------------------------------------------------------------
+		descTraza.put(EXT_ENVIO_DINERO_BOVEDA, "EXTORNO ENVIO DINERO A BOVEDA");
+		descTraza.put(EXT_ENVIO_DINERO_BANCOS, "EXTORNO ENVIO DINERO A BANCO");
+		descTraza.put(EXT_SOLICITUD_DINERO_CAJERO, "EXTORNO SOLICITUD DINERO A CAJERO");
+		descTraza.put(EXT_ENVIO_DINERO_CAJERO, "EXTORNO ENVIO DINERO A CAJERO");
+		descTraza.put(EXT_EMISION_DOCUMENTOS_BANCARIOS, "EXTORNO EMISION DE DOCUMENTOS BANCARIOS");
+		descTraza.put(EXT_COBRO_DOCUMENTOS_BANCARIOS, "EXTORNO COBRO DE DOCUMENTOS BANCARIOS");
+		descTraza.put(EXT_COMPRA_MONEDA, "EXTORNO COMPRA DE MONEDA EXTRANJERA");
+		descTraza.put(EXT_VENTA_MONEDA, "EXTORNO VENTA DE MONEDA EXTRANJERA");
+		descTraza.put(EXT_EMISION_GIROS, "EXTORNO EMISION DE GIROS");
+		descTraza.put(EXT_PAGO_GIROS, "EXTORNO PAGO DE GIROS");
+		descTraza.put(EXT_OPERACION_CARTA_INSTRUCTIVA_RECAUDOS, "EXTORNO OPERACION CARTA INSTRUCTIVA");
+		descTraza.put(EXT_INGRESO_VARIOS, "EXTORNO INGRESOS VARIOS");
+		descTraza.put(EXT_EGRESO_VARIOS, "EXTORNO EGRESOS VARIOS");
+		descTraza.put(EXT_DINERO_PRESUMIBLEMENTE_FALSO, "EXTORNO DINERO PRESUMIBLEMENTE FALSO");
+		descTraza.put(EXT_SOBRANTE_CAJA, "EXTORNO SOBRANTE CAJA");
+		descTraza.put(EXT_FALTANTE_CAJA, "EXTORNO FALTANTE CAJA");
+		descTraza.put(EXT_DOCUMENTOS_BANCARIOS_RECIBIDOS, "EXTORNO DOCUMENTOS BANCARIOS RECIBIDOS");
+		descTraza.put(EXT_SOLICITUD_DINERO_BOVEDA, "EXTORNO SOLICITUD DINERO A BOVEDA");		
+
+	}
+
+	public static HashMap<Integer, String> txnDescr = new HashMap<Integer, String>();
+
+	static {
+		txnDescr.put(INICIO_DIA, "INICIO_DIA");
+		txnDescr.put(CIERRE_DIA, "CIERRE_DIA");	
+		txnDescr.put(AUTORIZAR_OPERACION_EXTORNO, "AUTORIZACION TRANSACCION");
+		txnDescr.put(EXTORNO, "ANULACION TRANSACCION");
+
+		txnDescr.put(TRANS_DEPOSITO_CUENTA, "DEPOSITO A CUENTA");
+		txnDescr.put(TRANS_RETIRO_CUENTA, "RETIRO DE CUENTA");
+		txnDescr.put(TRANS_CUENTAS_MISMO_BANCO, "TRANSF CUENTAS MISMO BANCO");
+		txnDescr.put(TRANS_PAGO_PRESTAMO, "PAGO PRESTAMO");				
+		txnDescr.put(TRANS_OPERACION_CARTA_INSTRUCTIVA, "OPER. CARTA INSTRUCTIVA");		
+		txnDescr.put(TRANS_PAGO_GIROS, "PAGO DE GIROS");
+		txnDescr.put(TRANS_INTERBANCARIA, "TRANSF INTERBANCARIAS");
+		txnDescr.put(TRANS_OPERACION_X_APLICAR, "OPERACION POR APLICAR");
+		txnDescr.put(TRANS_INGRESOS_VARIOS, "INGRESOS VARIOS");
+		txnDescr.put(TRANS_EGRESOS_VARIOS, "EGRESOS VARIOS");
+		txnDescr.put(TRANS_COBRO_DOCUMENTOS_BANCARIOS, "COBRO DOC.  BANCARIOS");
+		txnDescr.put(TRANS_COMPRA_MONEDA_EXTRANJERA, "COMPRA MONEDA EXTR");
+		txnDescr.put(TRANS_VENTA_MONEDA_EXTRANJERA, "VENTA MONEDA EXTR");
+		txnDescr.put(TRANS_EMISION_DOCTOS_BANCARIOS, "EMISION DOC BANCARIOS");
+		txnDescr.put(TRANS_ENVIO_DINERO_BANCO, "ENVIO DIN. BANCO");
+		txnDescr.put(TRANS_ENVIO_DINERO_BOVEDA, "ENVIO DIN. BOVEDA");
+		txnDescr.put(TRANS_ENVIO_DINERO_CAJERO, "ENVIO DIN. CAJERO");
+		txnDescr.put(TRANS_SOLICITUD_DINERO_CAJERO, "SOL. DINERO CAJERO");
+		txnDescr.put(TRANS_SOLICITUD_DINERO_BOVEDA, "SOL. DINERO BOVEDA");		
+		txnDescr.put(TRANS_FALTANTE_CAJERO, "FALTANTE CAJERO");
+		txnDescr.put(TRANS_SOBRANTE_CAJERO, "SOBRANTE CAJERO");
+		txnDescr.put(TRANS_NOTA_ABONOS, "NOTA ABONO CUENTA");
+		txnDescr.put(TRANS_NOTA_CARGOS, "NOTA CARGO CUENTA");
+		txnDescr.put(TRANS_DINERO_PRESUMIBLE_FALSO, "TDINERO PRESUMIBLEMENTE FALSO");	
+		txnDescr.put(TRANS_DOTACION_BOVEDA, "TRANSACCION DOTACION A BOVEDA");
+
+		// ----------------------------------------------------------------------------------------------------
+		//  EXTORNOS
+		// ----------------------------------------------------------------------------------------------------
+		txnDescr.put(EXT_ENVIO_DINERO_BOVEDA, "EXT. ENVIO DINERO BOVEDA");
+		txnDescr.put(EXT_ENVIO_DINERO_BANCOS, "EXT. ENVIO DINERO BANCO");
+		txnDescr.put(EXT_SOLICITUD_DINERO_CAJERO, "EXT. SOLICITUD DINERO CAJERO");
+		txnDescr.put(EXT_ENVIO_DINERO_CAJERO, "EXT. ENVIO DINERO  CAJERO");
+		txnDescr.put(EXT_EMISION_DOCUMENTOS_BANCARIOS, "EXT. EMISION DOC. BANCARIOS");
+		txnDescr.put(EXT_COBRO_DOCUMENTOS_BANCARIOS, "EXT. COBRO DOC BANCARIOS");
+		txnDescr.put(EXT_COMPRA_MONEDA, "EXT. COMPRA MONEDA");
+		txnDescr.put(EXT_VENTA_MONEDA, "EXT. VENTA MONEDA");
+		txnDescr.put(EXT_EMISION_GIROS, "EXT. EMISION GIROS");
+		txnDescr.put(EXT_PAGO_GIROS, "EXT. PAGO GIROS");
+		txnDescr.put(EXT_OPERACION_CARTA_INSTRUCTIVA_RECAUDOS, "EXT. OPER CARTA INSTRUCTIVA");
+		txnDescr.put(EXT_INGRESO_VARIOS, "EXT. INGRESOS VARIOS");
+		txnDescr.put(EXT_EGRESO_VARIOS, "EXT. EGRESOS VARIOS");
+		txnDescr.put(EXT_DINERO_PRESUMIBLEMENTE_FALSO, "EXT. DINERO PRESUMIBLEMENTE FALSO");
+		txnDescr.put(EXT_SOBRANTE_CAJA, "EXT. SOBRANTE CAJA");
+		txnDescr.put(EXT_FALTANTE_CAJA, "EXT. FALTANTE CAJA");
+		txnDescr.put(EXT_DOCUMENTOS_BANCARIOS_RECIBIDOS, "EXT. DOC BANCARIOS RECIBIDOS");
+		txnDescr.put(EXT_SOLICITUD_DINERO_BOVEDA, "EXT. SOLICITUD DINERO BOVEDA");		
+	}
+
+
+
+	public static HashMap<Integer, String> claveOperacion = new HashMap<Integer, String>();
+
+	static {
+		claveOperacion.put(LOGIN, "");
+		claveOperacion.put(INICIO_DIA, "TEINIDIA");
+		claveOperacion.put(CIERRE_DIA, "TECIEDIA");	
+		claveOperacion.put(AUTORIZAR_OPERACION_EXTORNO, "");		
+		claveOperacion.put(AUTORIZAR_TRANSACCION, "");
+		claveOperacion.put(EXTORNO, "");
+		claveOperacion.put(BUSCAR_CUENTA_ID, "TECONCTAAH");		
+		claveOperacion.put(BUSCAR_PRESTAMO_ID, "TECONPRESCR");
+		claveOperacion.put(BUSCAR_FOLIO_CARTA, "TECONCARINT");		
+		claveOperacion.put(BUSCAR_CUENTAS_PRESTAMO, "");
+		claveOperacion.put(BUSCAR_GIRO, "TECONGIRO");
+		claveOperacion.put(BUSCAR_CUENTAS_AFILIADAS, "");	
+		claveOperacion.put(BUSCAR_SOLICITUD_DINERO, "TECONSOLDIN");
+		claveOperacion.put(BUSCAR_DENOMINACIONES_DINERO, "");
+		claveOperacion.put(BUSCAR_PERSONA_IDENTIFICACION, "TECONPERIDE");
+		claveOperacion.put(BUSCAR_PERSONA, "TECONPERIDE");
+		claveOperacion.put(BUSCAR_MEDIOS_PAGO, "TEBUSMEDPAG");
+
+		claveOperacion.put(CONSULTA_SALDO, "TECONSAL");
+		claveOperacion.put(CONSULTA_MOVIMIENTOS_CTA, "TECONMOV");
+		claveOperacion.put(CONSULTA_DEUDA_PENDIENTE, "");
+		claveOperacion.put(CONSULTA_CONCEPTO_VALOR, "");		
+		claveOperacion.put(CONSULTA_PUVALOR, "");
+		claveOperacion.put(CONSULTA_PUVALOR_ESTATUS, "");		
+		claveOperacion.put(CONSULTA_DIARIO_ELECTRONICO, "TERESELE");
+		claveOperacion.put(CONSULTA_RESUMEN_ELECTRONICO, "TERRESELE");
+		claveOperacion.put(CONSULTA_DOCUMENTOS_BANCARIOS, "TECONDBAN");
+
+		claveOperacion.put(TRANS_DEPOSITO_CUENTA, "AHDEPO");
+		claveOperacion.put(TRANS_RETIRO_CUENTA, "AHRETI");
+		claveOperacion.put(TRANS_CUENTAS_MISMO_BANCO, "AHTRFP");
+		claveOperacion.put(TRANS_PAGO_PRESTAMO, "CRPAGPRE");				
+		claveOperacion.put(TRANS_OPERACION_CARTA_INSTRUCTIVA, "TEOPECARINS");		
+		claveOperacion.put(TRANS_PAGO_GIROS, "TEPAGGIR");
+		claveOperacion.put(TRANS_INTERBANCARIA, "");
+		claveOperacion.put(TRANS_OPERACION_X_APLICAR, "");
+		claveOperacion.put(TRANS_INGRESOS_VARIOS, "");
+		claveOperacion.put(TRANS_EGRESOS_VARIOS, "");
+		claveOperacion.put(TRANS_COBRO_DOCUMENTOS_BANCARIOS, "");
+		claveOperacion.put(TRANS_COMPRA_MONEDA_EXTRANJERA, "TECOMMON");
+		claveOperacion.put(TRANS_VENTA_MONEDA_EXTRANJERA, "TEVENMON");
+		claveOperacion.put(TRANS_EMISION_DOCTOS_BANCARIOS, "");
+		claveOperacion.put(TRANS_ENVIO_DINERO_BANCO, "");
+		claveOperacion.put(TRANS_ENVIO_DINERO_BOVEDA, "EXTEENVDINBOV");
+		claveOperacion.put(TRANS_ENVIO_DINERO_CAJERO, "TEENDINCAJ");
+		claveOperacion.put(TRANS_SOLICITUD_DINERO_CAJERO, "TESOLDINCAJ");
+		claveOperacion.put(TRANS_SOLICITUD_DINERO_BOVEDA, "TESOLDINBOV");		
+		claveOperacion.put(TRANS_FALTANTE_CAJERO, "TEFALCAJ");
+		claveOperacion.put(TRANS_SOBRANTE_CAJERO, "TESOBCAJ");
+		claveOperacion.put(TRANS_NOTA_ABONOS, "");
+		claveOperacion.put(TRANS_NOTA_CARGOS, "");
+		claveOperacion.put(TRANS_DINERO_PRESUMIBLE_FALSO, "TEDINPREFAL");
+		claveOperacion.put(TRANS_DOTACION_BOVEDA, "TRANSACCION DOTACION A BOVEDA");
+	}
+
+
+}
+
+/** !Trazas.java */

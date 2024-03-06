@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Class-Path: 
+Dependencies: net.giro.comun,  
+ net.giro.logica.clientes export,
+ net.giro.logica.inventarios export,
+ net.giro.logica.publico export,
+ net.giro.logica.rechum export,
+ net.giro.model.clientes export,
+ net.giro.model.cuentasporcobrar export, 
+ net.giro.model.gestionproyectos export, 
+ net.giro.model.publico export, 
+ net.giro.model.tyg export, 
+ org.beanshell.bsh export, 
+ org.apache.commons.httpclient export,
+ org.apache.log4j export, 
+ org.hibernate export, 
+ org.hibernate.validator export, 
+ org.apache.commons.beanutils export, 
+ com.enterprisedt.edtFTPj export, 
+ com.google.code.gson export,
+ javax.api export,
+ org.apache.poi export

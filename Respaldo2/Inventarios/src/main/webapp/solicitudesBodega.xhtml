@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['solicitudBodega']}" />
+	</ui:define>
+	
+	<ui:define name="menuFrag" />
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css/acc" name="acc.css" />
+		<h:outputScript library="scripts" name="inventarios.js" />
+		
+		<div class="div_titulo" style="margin:50px auto 10px; padding:0;">
+			<h:outputText value="#{msg['solicitudBodega']}" style="font-weight:bold; font-size:28px; color:#525252;" />
+		</div>
+		
+		<rich:hotKey id="richHotKeyRSB" enabledInInput="true" preventDefault="true" 
+			selector="#cmdBuscar" key="return" 
+			onkeydown="#{rich:element('frmPrincipal:cmdBuscar')}.click()" />
+	
+		<div class="div_pagina" style="margin:5px auto 0; padding:0; text-align:left;">
+			<h:panelGrid id="gBusqueda" columns="2" columnClasses="colLayoutMiddle,colLayoutBottom" cellpadding="0" cellspacing="2" style="width:100%;">
+				<h:panelGroup style="width:100%; text-align:left;">
+					<h:panelGrid columns="3" columnClasses="colTitulo,colDato,colDato" cellpadding="0" cellspacing="2">
+						<h:outputText value="#{msg['busqueda']}:" styleClass="Titulo"/>
+						<h:inputText id="txtValorObra" maxlength="50" style="width:210px; margin:0 5px;"
+							value="#{solbodegaAction.resultsBusquedaValor}" />
+						<h:panelGroup>
+							<a4j:commandButton id="cmdBuscar" style="margin:0 3px; vertical-align: middle; cursor: pointer;"
+								image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+								onclick="#{rich:element('cmdBuscar')}.disabled = true;" 
+								action="#{solbodegaAction.buscar}" 
+								oncomplete="#{rich:element('cmdBuscar')}.disabled = false; busqueda(#{solbodegaAction.operacionCancelada}, '#{rich:clientId('pnlMensajes')}')"
+								render="dtResults,scrollResultsTop,pnlMensajes" />
+								
+							<a4j:commandButton id="cmdBusquedaAvanzada" 
+								image="#{msg['toggle.img']}" title="#{msg['busqueda']} #{msg['avanzada']}"
+								action="#{solbodegaAction.toggleResultsBusquedaAvanzada}"
+								render="gBusquedaAvanzada"
+								limitRender="true" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+				
+				<h:panelGroup style="width:100%; text-align:right;">
+					<h:panelGroup style="width:100%; text-align:left;">
+						<rich:dataScroller id="scrollResultsTop" page="#{solbodegaAction.resultsPaginas}" for="dtResults" renderIfSinglePage="false"
+							align="center" maxPages="5" fastStep="5" ajaxSingle="true" styleClass="Titulo" style="float:right; clear:both; margin:0;" />
+					</h:panelGroup>
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<h:panelGroup id="gBusquedaAvanzada" style="width:100%; margin:0 auto; padding:0; display:#{solbodegaAction.resultsBusquedaAvanzada ? 'block' : 'none'};">
+				<h:panelGrid columns="2" columnClasses="colTitulo,colDato" style="margin:0; padding:0;" cellpadding="0" cellspacing="2">
+					<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo" />
+					<h:selectOneMenu id="cmbTipoBusquedaProducto" style="width:216px;"
+						value="#{solbodegaAction.resultsBusquedaCampo}">
+						<f:selectItems value="#{solbodegaAction.resultsBusquedaTipos}" />
+					</h:selectOneMenu>
+					
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" rendered="#{solbodegaAction.esAdministrativo}" />
+					<h:panelGroup rendered="#{solbodegaAction.esAdministrativo}">
+						<h:selectBooleanCheckbox id="txtBuscarAdmivo" value="#{solbodegaAction.buscarAdministrativos}" />
+						<h:outputLabel value="#{msg['incluir']} #{msg['administrativa']}" for="txtBuscarAdmivo" styleClass="Titulo" />
+					</h:panelGroup>
+					
+					<!--h:outputText value="#{msg['almacen']}:" styleClass="Titulo" />
+					<h:selectOneMenu id="cbAlmacenes" style="width:216px;"
+						value="#{solbodegaAction.idAlmacen}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{solbodegaAction.listAlmacenesItems}" />
+					</h:selectOneMenu-->
+				</h:panelGrid>
+			</h:panelGroup>
+
+			<rich:dataTable id="dtResults" value="#{solbodegaAction.listResults}" var="var" iterationStatusVar="it"
+				cellpadding="0" cellspacing="0" rows="100" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" 
+				style="margin:10px auto 30px; width:100%;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="text-align:center; width:auto; padding:5px;" styleClass="Titulo" colspan="5">
+							<h:outputText value="#{msg['obras']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:auto; max-width:100px; padding:5px;" styleClass="Titulo" breakRowBefore="true">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:auto; padding:5px;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:auto; max-width:250px; padding:5px;" styleClass="Titulo">
+							<h:outputText value="#{msg['cliente']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:auto; max-width:250px; padding:5px;" styleClass="Titulo">
+							<h:outputText value="#{msg['contrato']}" title="#{msg['productos.unidadMedida']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:20px; padding:5px;" styleClass="Titulo" />
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column style="text-align:center; width:auto; max-width:100px; padding:5px;">
+					<h:outputText value="#{var.id}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; width:auto; padding:5px;">
+					<h:outputText value="#{var.nombre}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; width:auto; max-width:150px; padding:5px;">
+					<h:outputText value="#{var.nombreCliente}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:left; width:auto; max-width:150px; padding:5px;">
+					<h:outputText value="#{var.nombreContrato}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:20px;">
+					<a4j:commandButton id="cmdImprimir"
+						image="#{msg['imprimir16.img']}" title="#{msg['imprimir.e']}"
+						onclick="#{rich:element('cmdImprimir')}.disabled = true;" 
+						action="#{solbodegaAction.ejecutarReporte}" 
+						oncomplete="#{rich:element('cmdImprimir')}.disabled = false; reporte(#{solbodegaAction.operacionCancelada}, '#{rich:clientId('pnlMensajes')}')"
+						render="pnlMensajes"
+						limitRender="true">
+						<f:setPropertyActionListener value="#{var}" target="#{ordenAction.pojoObra}" for="cmdImprimir" />
+					</a4j:commandButton>
+				</rich:column>
+ 				
+				<f:facet name="footer">
+					<rich:dataScroller id="scrollResultsBottom" page="#{solbodegaAction.resultsPaginas}" for="dtResults" renderIfSinglePage="false"
+						align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+		
+		<a4j:log rendered="false" popup="false" level="ALL" mode="inline" style="margin:5px auto; max-width:800px;" />
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modal/solicitudesBodega/pnlMensajes.xhtml" />
+	</ui:define>	
+</ui:composition>    

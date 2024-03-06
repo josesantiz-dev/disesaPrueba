@@ -1,0 +1,239 @@
+<!DOCTYPE composition>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:rich="http://richfaces.org/rich" 
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	template="/layout/template.xhtml">
+	
+	<ui:define name="menuFrag">
+		<rich:toolBarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" styleClass="Titulo"
+				image="#{msg['buscar22.img']}" 
+				action="#{valoresxGrupoAction.buscar}" 
+				oncomplete="buscar('#{valoresxGrupoAction.resOperacion}', 'pnlMsgValor');" 
+				reRender="pnlMsgValor, dtResultValores">
+				<rich:toolTip for="cmdBuscar" id="ttBuscar" showDelay="300" value="#{msg['buscar.e']}"/>
+			</a4j:commandButton>
+		</rich:toolBarGroup>
+		
+		<rich:toolBarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" style="cursor: pointer;" styleClass="Titulo"
+				image="#{msg['nuevo22.img']}" 
+				action="#{valoresxGrupoAction.nuevo}" 
+				oncomplete="#{rich:element('cmdNuevo')}.disabled = false; Richfaces.showModalPanel('pnlNuevoEditarValor');" 
+				reRender="pnlNuevoEditarValor, pnlDatos">
+				<rich:toolTip for="cmdNuevo" id="ttNuevo" showDelay="300" value="#{msg['nuevo.e']}"/>
+			</a4j:commandButton>
+		</rich:toolBarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<a4j:loadStyle src="resource:///resources/css/adm/adm.css"/>
+		<a4j:loadStyle src="resource:///resources/css/adm/admConValores.css"/>
+		<a4j:loadScript src="resource:///resources/scripts/adm/conValores.js"/>
+		
+		<div class="div_pagina">
+			<h:outputText style="margin-left:15px;" styleClass="Titulo" value="#{msg['valor']}:"/>
+			<h:inputText maxlength="30" style="margin-left:5px;" value="#{valoresxGrupoAction.valor}"/>
+			
+			<rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtResultValores" rowClasses="Row1, Row2" rows="20" styleClass="tabla_pagina" value="#{valoresxGrupoAction.listValores}" var="valor">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column colspan="5" styleClass="Titulo">
+							<h:outputText value="#{valoresxGrupoAction.pojoGpoVal.descripcion}"/>
+						</rich:column>
+						
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['clave']}"/>
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['valor']}"/>
+						</rich:column>
+						
+						<rich:column colspan="3" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['descripcion']}"/>
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="50">
+					<h:outputText value="#{valor.id}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left:5px;" styleClass="Descripcion" width="200">
+					<h:outputText value="#{valor.valor}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left:10px;" styleClass="Descripcion">
+					<h:outputText value="#{valor.descripcion}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msg['editar22.img']}" 
+						action="#{valoresxGrupoAction.cargaAtributos}" 
+						oncomplete="Richfaces.showModalPanel('pnlNuevoEditarValor')" 
+						reRender="pnlNuevoEditarValor">
+						<f:setPropertyActionListener target="#{valoresxGrupoAction.pojoConValores}" value="#{valor}"/>
+						<rich:toolTip value="#{msg['editar.e']}"/>
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msg['eliminar22.img']}" 
+						oncomplete="Richfaces.showModalPanel('pnlEliminarVal')" 
+						reRender="pnlEliminarVal">
+						<f:setPropertyActionListener target="#{valoresxGrupoAction.pojoConValores}" value="#{valor}"/>
+						<rich:toolTip value="#{msg['eliminar.e']}"/>
+					</a4j:commandButton>
+				</rich:column>
+				
+				<f:facet name="footer">
+					<rich:datascroller ajaxSingle="true" align="center" for="dtResultValores" id="dScroll" maxPages="10" page="#{valoresxGrupoAction.numPagina}"/>
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<!-- ####### MODAL NUEVO ######### -->
+		<rich:modalPanel autosized="true" id="pnlNuevoEditarValor">
+			<f:facet name="header">
+				<h:outputText id="lblTituloValor" style="margin-left:10px" styleClass="Titulo" value="#{valoresxGrupoAction.nuevoReg}"/>
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage id="imgCerrarVal" style="cursor: pointer;" value="#{msg['navegacion.panel.cerrar.img']}"/>
+					<rich:componentControl attachTo="imgCerrarVal" event="onclick" for="pnlNuevoEditarValor" operation="hide"/>
+				</h:panelGroup>
+			</f:facet>
+			
+			<a4j:form id="frmEditarVal">
+				<div style="display: block; width: 450px; height: 22px;">
+					<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+						<h:panelGroup style="vertical-align: middle; position:relative;">
+							<a4j:commandButton id="cmdSalvar" style="vertical-align: middle; margin-right:5px; cursor: pointer;"
+								image="#{msg['salvar22.img']}" 
+								action="#{valoresxGrupoAction.guardar}" 
+								oncomplete="guardar('#{valoresxGrupoAction.resOperacion}', 'pnlNuevoEditarValor', 'pnlMsgValor', #{rich:element('msgErrorConValores')});" 
+								reRender="dtResultValores, pnlMsgValor" />
+							<h:outputLabel for="cmdSalvar" style="vertical-align: middle; cursor:pointer; margin-right:5px;" styleClass="Titulo" value="#{msg['salvar.e']}"/>
+						</h:panelGroup>
+					</h:panelGrid>
+				</div>
+				
+				<h:panelGrid columns="1" id="pnlDatos">
+					<h:panelGrid columnClasses="colIZqConVal, colDerConVal" columns="2" width="450">
+						<h:outputText styleClass="Titulo" value="#{msg['clave']}:" />
+						<h:outputText styleClass="Titulo" value="#{valoresxGrupoAction.clave}" />
+						
+						<h:outputText styleClass="Titulo" value="#{msg['valor']}:" />
+						<h:panelGroup>
+							<h:inputText id="txtValor" maxlength="150" required="true" size="55" 
+								value="#{valoresxGrupoAction.pojoConValores.valor}" />
+							<rich:message for="txtValor" showDetail="false" showSummary="false" style="color:red">
+								<f:facet name="errorMarker">
+									<h:panelGroup>
+										<h:graphicImage value="#{msg['cancelar16.img']}" />
+										<h:outputLabel id="msgErrTxtValor" styleClass="Err" value="#{msg['requerido']}" />
+									</h:panelGroup>
+								</f:facet>
+							</rich:message>
+						</h:panelGroup>
+						
+						<h:outputText styleClass="Titulo" value="#{msg['descripcion']}:" />
+						<h:panelGroup>
+							<h:inputText id="txtDescripcion" maxlength="150" required="true" size="55" 
+								value="#{valoresxGrupoAction.pojoConValores.descripcion}" />
+							<rich:message for="txtDescripcion" showDetail="false" showSummary="false" style="color:red">
+								<f:facet name="errorMarker">
+									<h:panelGroup>
+										<h:graphicImage value="#{msg['cancelar16.img']}" />
+										<h:outputLabel id="msgErrTxtDescripcion" styleClass="Err" value="#{msg['requerido']}" />
+									</h:panelGroup>
+								</f:facet>
+							</rich:message>
+						</h:panelGroup>
+					</h:panelGrid>
+					
+					<h:panelGrid binding="#{valoresxGrupoAction.pnlComponentes}" id="pnlDinamico" />
+				</h:panelGrid>
+				
+				<rich:messages id="msgErrorConValores" showDetail="false" showSummary="false"/>
+			</a4j:form>
+		</rich:modalPanel>
+		
+		<!-- Panel Eliminar -->
+		<rich:modalPanel autosized="true" id="pnlEliminarVal">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['atencion']}"/>
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage id="imgCerrarEval" style="cursor:pointer;" value="#{msg['navegacion.panel.cerrar.img']}"/>
+					<rich:componentControl attachTo="imgCerrarEval" event="onclick" for="pnlEliminarVal" operation="hide"/>
+				</h:panelGroup>
+			</f:facet>
+			
+			<a4j:form id="frmEval">
+				<h:panelGrid cellspacing="10" columns="1" style="text-align:center;" width="200">
+					<h:outputText style="display:block;" styleClass="Descripcion" value="#{msg['deseaEliminar']}"/>
+					<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+						<a4j:commandButton id="cmdEliminar" 
+							value="#{msg['aceptar']}"
+							onclick="#{rich:element('cmdEliminar')}.disabled = true;" 
+							action="#{valoresxGrupoAction.eliminar}" 
+							oncomplete="eliminar('#{valoresxGrupoAction.resOperacion}', 'pnlEliminarVal', 'pnlMsgValor');" 
+							reRender="dtResultValores, pnlMsgValor" />
+							
+						<a4j:commandButton style="margin-left:10px;" 
+							value="#{msg['cancelar']}"
+							onclick="#{rich:component('pnlEliminarVal')}.hide()" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</a4j:form>
+		</rich:modalPanel>
+		<!--  Fin Panel Eliminar-->
+		
+		<!-- #### Panel MsgProgRec #### -->
+		<rich:modalPanel autosized="true" id="pnlMsgValor">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText styleClass="#{valoresxGrupoAction.resOperacion == '' ? 'Titulo' : 'Err'}" 
+						value="#{valoresxGrupoAction.resOperacion == '' ? msg['informacion'] : msg['atencion']}"/>
+				</h:panelGroup>
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage id="imgCerrarMsgVal" styleClass="cursor:pointer;" 
+						value="#{msg['navegacion.panel.cerrar.img']}"/>
+					<rich:componentControl attachTo="imgCerrarMsgVal" event="onclick" for="pnlMsgValor" operation="hide"/>
+				</h:panelGroup>
+			</f:facet>
+			
+			<a4j:form id="frmMsgRelCheques">
+				<h:panelGroup rendered="#{valoresxGrupoAction.resOperacion != 'formato'}" style="display:block; width:350px; float:center; text-align:center;">
+					<h:outputText style="display:block;" styleClass="Descripcion" 
+						value="#{valoresxGrupoAction.resOperacion != '' ? valoresxGrupoAction.resOperacion : msg['mensaje.info.infoReg']}" />
+					<a4j:commandButton style="margin-top:10px; cursor:pointer;" 
+						value="#{msg['aceptar']}"
+						onclick="#{rich:component('pnlMsgValor')}.hide()" />
+				</h:panelGroup>
+				
+				<rich:dataList rendered="#{valoresxGrupoAction.resOperacion == 'formato'}" style="width:350px;" value="#{valoresxGrupoAction.listErrores}" var="err">
+					<h:outputText styleClass="Titulo" value="#{atributo1}"/>
+					<br/>
+					<h:outputText styleClass="Titulo" value="Error: "/>
+					<h:outputText styleClass="Descripcion" value="#{atributo2}"/>
+					<h:outputText style="margin-left:10px;" styleClass="Titulo" value="Ejemplo: "/>
+					<h:outputText styleClass="Descripcion" value="#{atributo3}"/>
+				</rich:dataList>
+			</a4j:form>
+		</rich:modalPanel>
+	</ui:define>
+</ui:composition>

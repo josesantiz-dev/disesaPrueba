@@ -1,0 +1,272 @@
+<!DOCTYPE composition>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:rich="http://richfaces.org/rich" 
+	xmlns:s="http://jboss.com/products/seam/taglib" 
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	template="/layout/template.xhtml">
+
+	<ui:define name="title">
+		<h:outputText value="Colonias" />
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolBarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" style="cursor:pointer;" styleClass="Titulo"
+				image="#{msg['buscar22.img']}" title="#{msg['boton.buscar.e']}"
+				action="#{coloniasAction.buscar}" 
+				oncomplete="buscar('#{coloniasAction.resOperacion}','pnlMsgGralColonias');" 
+				reRender="dtColonias, pnlMsgGralColonias" />
+		</rich:toolBarGroup>
+
+		<rich:toolBarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" style="cursor:pointer;" styleClass="Titulo"
+				image="#{msg['nuevo22.img']}" title="#{msg['boton.nuevo.e']}"
+				action="#{coloniasAction.nuevo}" 
+				oncomplete="Richfaces.showModalPanel('pnlEditarColonia');" 
+				reRender="pnlEditarColonia" />
+		</rich:toolBarGroup>
+	</ui:define>
+
+	<ui:define name="body">
+		<a4j:keepAlive beanName="coloniasAction" />
+		<a4j:loadStyle src="resource:///resources/css/adm/adm.css" />
+		<a4j:loadStyle src="resource:///resources/css/ubicacion/colonias.css" />
+		<a4j:loadScript src="resource:///resources/scripts/ubicacion/colonias.js" />
+	
+		<div class="div_titulo" style="margin:50px auto 0;">
+			<h:outputText value="#{msg['colonias']}" style="font-weight:bold; font-size:28px; color:#525252;" />
+		</div>
+
+		<div class="div_pagina" style="margin:10px auto 0;">
+			<h:panelGrid columnClasses="colLabel, colDato" columns="2" width="100%">
+				<h:outputText styleClass="Titulo" value="#{msg['buscarPor']}:" />
+				<h:selectOneMenu style="margin-left:5px;" styleClass="Titulo" value="#{coloniasAction.tipoBusqueda}">
+					<f:selectItem itemLabel="#{msg['nombre']}" itemValue="nombre" />
+					<f:selectItem itemLabel="#{msg['localidad']}" itemValue="localidad.nombre" />
+					<f:selectItem itemLabel="#{msg['municipio']}" itemValue="localidad.municipio.nombre" />
+					<f:selectItem itemLabel="#{msg['estado']}" itemValue="localidad.municipio.estado.nombre" />
+				</h:selectOneMenu>
+
+				<h:outputText styleClass="Titulo" value="#{msg['valor']}:" />
+				<h:inputText size="36" style="margin-left:5px;" 
+					value="#{coloniasAction.valorBusqueda}" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtColonias" value="#{coloniasAction.listColonias}" var="colonia"
+				border="0" cellpadding="0" cellspacing="0" rowClasses="Row1, Row2" rows="20" styleClass="tabla_pagina" >
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:70px;">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:60px;">
+							<h:outputText value="#{msg['cp']}" />
+						</rich:column>
+
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:120px;">
+							<h:outputText value="#{msg['estado']}" />
+						</rich:column>
+
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:120px;">
+							<h:outputText value="#{msg['municipio']}" />
+						</rich:column>
+
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:120px;">
+							<h:outputText value="#{msg['localidad']}" />
+						</rich:column>
+
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:40px;" colspan="2" />
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText value="#{colonia.id}" />
+				</rich:column>
+
+				<rich:column styleClass="Descripcion" style="text-align:left;">
+					<h:outputText value="#{colonia.nombre}" />
+				</rich:column>
+
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText value="#{colonia.cp}" />
+				</rich:column>
+
+				<rich:column styleClass="Descripcion" style="text-align:left;">
+					<h:outputText value="#{colonia.localidad.municipio.estado.nombre}" />
+				</rich:column>
+
+				<rich:column styleClass="Descripcion" style="text-align:left;">
+					<h:outputText value="#{colonia.localidad.municipio.nombre}" />
+				</rich:column>
+
+				<rich:column styleClass="Descripcion" style="text-align:left;">
+					<h:outputText value="#{colonia.localidad.nombre}" />
+				</rich:column>
+
+				<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+					<a4j:commandButton id="cmdEditarColonia" 
+						image="#{msg['editar16.img']}" title="#{msg['boton.editar.e']}"
+						action="#{coloniasAction.editar}" 
+						oncomplete="Richfaces.showModalPanel('pnlEditarColonia')" 
+						reRender="pnlEditarColonia">
+						<f:setPropertyActionListener target="#{coloniasAction.pojoColonia}" value="#{colonia}" />
+					</a4j:commandButton>
+				</rich:column>
+
+				<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+					<a4j:commandButton id="cmdEliminarColonia" 
+						image="#{msg['eliminar16.img']}" title="#{msg['boton.eliminar.e']}"
+						oncomplete="Richfaces.showModalPanel('pnlEliminarColonia')" 
+						reRender="pnlEliminarColonia,dtColonias">
+						<f:setPropertyActionListener target="#{coloniasAction.pojoColonia}" value="#{colonia}" />
+					</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:datascroller for="dtColonias" page="#{coloniasAction.numPagina}" renderIfSinglePage="false"
+						ajaxSingle="true" align="center" maxPages="10" fastStep="10" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+
+	<ui:define name="modals">
+		<!-- ####### MODAL NUEVO/EDITAR COLONIA  ######### -->
+		<rich:modalPanel autosized="true" id="pnlEditarColonia" top="10">
+			<f:facet name="header">
+				<h:outputText id="lblTitulo" style="margin-left:10px" styleClass="Titulo" value="#{msg['colonia']}" />
+			</f:facet>
+
+			<f:facet name="controls">
+				<h:graphicImage style="cursor:pointer;" 
+					value="#{msg['navegacion.gral.cerrar.img']}" 
+					onclick="#{rich:component('pnlEditarColonia')}.hide()" />
+			</f:facet>
+
+			<a4j:form id="frmEditarColonia" style="width:400px;">
+				<!-- INICIA MENU MODAL -->
+				<div style="display: block; width: 100%; height: 22px; margin-bottom:1em;">
+					<a4j:commandButton id="cmdSalvar" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+						image="#{msg['salvar22.img']}" title="#{msg['boton.salvar.e']}"
+						action="#{coloniasAction.guardar}" 
+						disabled="#{!coloniasAction.puedeEditar}" 
+						oncomplete="guardar('#{coloniasAction.resOperacion}', 'pnlEditarColonia', 'pnlMsgGralColonias',#{rich:element('msgErrorColonias')});" 
+						reRender="dtColonias, pnlMsgGralColonias, msgErrorColonias" />
+				</div>
+
+				<!-- FIN MENU MODAL -->
+				<rich:messages ajaxRendered="false" globalOnly="false" id="msgErrorColonias" showDetail="false" showSummary="true">
+					<f:facet name="errorMarker">
+						<h:graphicImage style="margin-right:1em;" value="#{msg['alert16.img']}" />
+					</f:facet>
+				</rich:messages>
+
+				<h:panelGroup styleClass="encabezado">
+					<h:outputText value="#{coloniasAction.pojoColonia.id != null ? coloniasAction.pojoColonia.id : ' '} " />
+					<h:outputText value="#{coloniasAction.pojoColonia.nombre}" />
+				</h:panelGroup>
+
+				<h:panelGrid id="panelUbicacion" columnClasses="colTituloDom, colDato" columns="2" width="100%">
+					<h:outputText styleClass="Titulo" value="#{msg['estado']}:" />
+					<h:selectOneMenu style="margin-left:5px;" styleClass="Titulo" 
+						value="#{coloniasAction.idEstado}">
+						<f:selectItems value="#{coloniasAction.listTmpEstados}" />
+						<a4j:support event="onchange" 
+							action="#{coloniasAction.limpiaEstados}" 
+							reRender="groupMunicipio,groupLocalidad" />
+					</h:selectOneMenu>
+
+					<h:outputText styleClass="Titulo" value="#{msg['municipio']}:" />
+					<h:panelGroup id="groupMunicipio">
+						<h:outputText id="lblNombreMunicipio" value="#{coloniasAction.municipio}" />
+						<a4j:commandLink id="cmdBuscarMunicipios" style="font-weight:bold; font-size:12px; margin:auto 2px;" 
+							value="#{coloniasAction.municipio eq '' ? msg['seleccionar'] : msg['cambiar']}"
+							action="#{coloniasAction.limpiaMunicipios}" 
+							oncomplete="#{rich:component('pnlBuscarMunicipios')}.show()" 
+							reRender="pnlBuscarMunicipios"  />
+					</h:panelGroup>
+
+					<h:outputText styleClass="Titulo" value="#{msg['localidad']}:" />
+					<h:panelGroup id="groupLocalidad">
+						<h:outputText id="lblNombreLocalidad" value="#{coloniasAction.localidad}" />
+						<a4j:commandLink id="cmdBuscarLocalidades" style="font-weight:bold; font-size:12px; margin:auto 2px;" 
+							value="#{coloniasAction.localidad eq '' ? msg['seleccionar'] : msg['cambiar']}"
+							oncomplete="#{rich:component('pnlBuscarLocalidades')}.show()" 
+							reRender="pnlBuscarLocalidades"  />
+					</h:panelGroup>
+
+					<h:outputText styleClass="Titulo" value="#{msg['nombre']}:" />
+					<h:inputText style="margin-left:5px;"
+						value="#{coloniasAction.pojoColonia.nombre}"
+						required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+						requiredMessage="#{msg['nombre']} #{msg['mensaje.error.requerido']}" />
+					
+					<h:outputText styleClass="Titulo" value="#{msg['cp']}:" />
+					<h:inputText style="margin-left:5px;" 
+						value="#{coloniasAction.pojoColonia.cp}"
+						required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+						requiredMessage="#{msg['cp']} #{msg['mensaje.error.requerido']}" />
+				</h:panelGrid>
+			</a4j:form>
+		</rich:modalPanel>
+
+		<!-- Panel Eliminar COLONIA-->
+		<rich:modalPanel autosized="true" id="pnlEliminarColonia" width="350"
+			onshow="document.getElementById('#{rich:clientId('cmdEliminarNo')}').focus();">
+			
+			<f:facet name="header">
+				<h:outputText value="#{msg['atencion']}" styleClass="Titulo" />
+			</f:facet>
+			
+			<a4j:form id="frmEliminarPer">
+				<h:panelGrid columns="1" cellspacing="0" style="text-align:center;" width="200">
+					<h:outputText style="display:block;" styleClass="Descripcion" value="#{msg['deseaEliminar']}" />
+					
+					<h:panelGroup style="margin:10px auto 0; text-align:center; display:block;">
+						<a4j:commandButton id="cmdEliminarSi" style="margin:0 auto; width:100px;"
+							value="#{msg['aceptar']}"
+							action="#{coloniasAction.eliminar}" 
+							oncomplete="eliminar('#{accPersonasAction.resOperacion}', 'pnlEliminarColonia', 'pnlMsgGralColonias');" 
+							reRender="dtColonias,pnlMsgGralColonias" />
+
+						<a4j:commandButton id="cmdEliminarNo" style="margin:0 auto; width:90px;" 
+							value="#{msg['cancelar']}"
+							onclick="#{rich:component('pnlEliminarColonia')}.hide()" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</a4j:form>
+		</rich:modalPanel>
+
+		<!-- #### MODAL MENSAJES GENERALES #### -->
+		<rich:modalPanel autosized="true" id="pnlMsgGralColonias" width="350"
+			onshow="document.getElementById('#{rich:clientId('btnMensajesAceptar')}').focus();">
+
+			<f:facet name="header">
+				<h:outputText value="#{msg['atencion']}" styleClass="Titulo" />
+			</f:facet>
+			
+			<a4j:form id="frmGralColonias" style="text-align:center;">
+				<h:panelGroup style="display:block; width:300px; float:center;">
+					<h:outputText styleClass="Descripcion" escape="false" 
+						value="#{coloniasAction.resOperacion ne '' ? coloniasAction.resOperacion : msg['mensaje.info.infoReg']}" />
+				</h:panelGroup>
+
+				<a4j:commandButton id="btnMensajesAceptar" style="margin:10px auto 0; width:100px;;" 
+					value="#{msg['aceptar']}" 
+					onclick="#{rich:component('pnlMsgGralColonias')}.hide()" />
+			</a4j:form>
+		</rich:modalPanel>
+		<!--  Fin Panel MsgGenerales-->
+		
+		<ui:include src="/ubicacion/colonias/pnlBuscarMunicipios.xhtml" />
+		<ui:include src="/ubicacion/colonias/pnlBuscarLocalidades.xhtml" />
+	</ui:define>
+</ui:composition>

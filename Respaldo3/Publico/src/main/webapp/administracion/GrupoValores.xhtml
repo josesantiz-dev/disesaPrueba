@@ -1,0 +1,608 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+
+
+<ui:define name="menuFrag" >
+			
+	<rich:toolBarGroup id="tbgBuscar" location="right">
+		<a4j:commandButton id="cmdBuscar" action="#{conGrupoValoresAction.buscar}" image="#{msg['buscar22.img']}"
+			oncomplete="buscar('#{conGrupoValoresAction.resOperacion}', 'pnlMsgGralesConGrupoValores')" reRender="pnlMsgGralesConGrupoValores,dtResults" styleClass="Titulo">
+			<rich:toolTip id="ttBuscar" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscar"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>
+
+	<rich:toolBarGroup id="tbgNuevo" location="right">
+		<a4j:commandButton id="cmdNuevo" action="#{conGrupoValoresAction.nuevo}" image="#{msg['nuevo22.img']}" value="#{msg['nuevo.e']}"
+			oncomplete="Richfaces.showModalPanel('pnlNuevoEditarConGrupoValores');" reRender="pnlNuevoEditarConGrupoValores" styleClass="Titulo">
+			<rich:toolTip id="ttNuevo" showDelay="300" value="#{msg['nuevo.e']}" for="cmdNuevo"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>
+
+</ui:define>
+
+<ui:define name="body">
+		<a4j:queue id="suggQConGrupoValores" name="suggQConGrupoValores" sizeExceededBehavior="fireNew" ignoreDupResponses="true" size="1"/>
+		<a4j:keepAlive beanName="conGrupoValoresAction" />		
+		<a4j:loadStyle src="resource:///resources/css/adm/adm.css" />
+		<a4j:loadStyle src="resource:///resources/css/adm/admConGrupoValores.css" />
+		<a4j:loadScript src="resource:///resources/scripts/adm/conGpoValores.js"/>
+		
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText value="#{msg['gruposValores']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+			
+			<div class="div_pagina">
+				<!-- Pantalla Principal  Busqueda-->
+				<h:panelGrid id="pnlResponsabil" columns="2" style="margin-bottom:10px; margin-top:10px; display:block;" width="740">
+	        <h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+	        <h:selectOneMenu value="#{conGrupoValoresAction.campoBusqueda}" styleClass="Titulo" style="margin-left:5px;">
+				<f:selectItem itemLabel="#{msg['nombre']}" itemValue="nombre"/>
+				<f:selectItem itemLabel="#{msg['descripcion']}" itemValue="descripcion"/>
+			</h:selectOneMenu>
+	        <h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+			<h:inputText id="txtvalor" value="#{conGrupoValoresAction.valTipoBusqueda}" maxlength="45" size="45"/>
+	  	</h:panelGrid>
+				<rich:dataTable id="dtResults" rows="20" cellpadding="0" cellspacing="0" border="0" var="gpo" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+				value="#{conGrupoValoresAction.listConGpoVal}" >
+	               <f:facet name="header">
+	                   <rich:columnGroup>
+	                       <rich:column colspan="5" styleClass="Titulo">
+	                           <h:outputText value="#{msg['catalogos']}"/>
+	                       </rich:column>
+	                       <rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['clave']}" />
+	                       </rich:column>
+	                       <rich:column  style="text-align:center; margin-left:10px;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['nombre']}" />
+	                       </rich:column>	      
+	                       <rich:column  style="text-align:center; margin-left:10px;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['descripcion']}" />
+	                       </rich:column>	                    
+	                        <rich:column colspan="2"/>	
+	                   </rich:columnGroup>
+	               </f:facet>
+	               <rich:column width="100" style="text-align:center;">
+	               	  <h:outputText value="#{gpo.id}" styleClass="Descripcion"/>              	 
+	               </rich:column>
+	               <rich:column style="text-align:left; padding-left:10px;" >
+	                  <h:outputText  value="#{gpo.nombre}" styleClass="Descripcion"/>	                   
+	               </rich:column>	                
+	                <rich:column style="text-align:left; padding-left:10px;" >
+	                  <h:outputText  value="#{gpo.descripcion}" styleClass="Descripcion"/>	                   
+	               </rich:column>                   
+	                 <rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;" styleClass="tygMovDesc">
+	                   <a4j:commandButton image="#{msg['editar16.img']}" oncomplete="Richfaces.showModalPanel('pnlNuevoEditarConGrupoValores');"  style="cursor: pointer;" reRender="pnlNuevoEditarConGrupoValores">
+	                   	<f:setPropertyActionListener target="#{conGrupoValoresAction.pojoConGpoVal}" value="#{gpo}" />
+	                   		<rich:toolTip showDelay="300" value="#{msg['editar.e']}" styleClass="Descripcion"/>
+	                   </a4j:commandButton>	                    	               		
+	               </rich:column>
+	                <rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;">
+                     <a4j:commandButton image="#{msg['eliminar16.img']}" style="cursor: pointer;" oncomplete="Richfaces.showModalPanel('pnlEliminarConGpoVal');">
+                   		<f:setPropertyActionListener target="#{conGrupoValoresAction.pojoConGpoVal}" value="#{gpo}" />
+                      	<rich:toolTip showDelay="300" value="#{msg['eliminar.e']}" styleClass="Descripcion"/>
+                      </a4j:commandButton>
+                   </rich:column>
+	               <f:facet name="footer" >
+		               	<rich:datascroller align="center" for="dtResults" maxPages="10" ajaxSingle="true"
+		            		page="#{conGrupoValoresAction.numPagina}" id="dScroll" styleClass="Descripcion"/>
+	               </f:facet>
+	           </rich:dataTable>
+	    </div>
+		<!-- Fin Pantalla Principal Busqueda  -->
+</ui:define>		
+
+<ui:define name="modals">
+		<!-- #### Pantalla Nuevo o Editar Programacion de Pagos #### -->	
+		<rich:modalPanel id="pnlNuevoEditarConGrupoValores" autosized="true" >
+		   <f:facet name="header">
+	           <h:panelGroup>
+	               <h:outputText style="margin-left:10px" value="#{ conGrupoValoresAction.pojoConGpoVal.id != null ? conGrupoValoresAction.pojoConGpoVal.nombre : msg['registroNuevo']}" styleClass="Titulo"/>
+	           </h:panelGroup>
+	        </f:facet>
+		    <f:facet name="controls">
+		       <h:panelGroup>
+		       	  <h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" id="btnCerrarNuevoEditarConGrupoValores"/>
+		          <rich:componentControl for="pnlNuevoEditarConGrupoValores" attachTo="btnCerrarNuevoEditarConGrupoValores" operation="hide" event="onclick"/>
+		       </h:panelGroup>
+		    </f:facet>
+			
+		   <a4j:form id="frmNuevoEditarConGrupoValores">
+				   	<div style = "display: block; width: 480px; height: 22px;">
+						<h:panelGrid columns="2" style="float:right; margin-right:5px;" >
+							<h:panelGroup style="vertical-align: middle; position:relative;" >
+								<a4j:commandButton id="cmdSalvar" action="#{conGrupoValoresAction.guardar}" 
+									oncomplete="checaResultado('#{ConValoresAction.resOperacion}', 'pnlNuevoEditarConGrupoValores', 'pnlMsgGralesConGrupoValores', 'guardar', #{rich:element('msgErrorConGrupoValores')});"
+									 image="#{msg['salvar22.img']}" style="cursor: pointer; vertical-align:middle;" reRender="pnlDatos2,dtResults,pnlMsgGralesConGrupoValores,LabelClave"/>
+				 				<h:outputLabel for="cmdSalvar" value="#{msg['salvar.e']}" style="cursor:pointer; vertical-align:middle;"  styleClass="Titulo"/>
+			 				</h:panelGroup>
+						</h:panelGrid>
+					</div>
+						
+					<h:panelGrid id="pnlDatos2" columns="2" cellpadding="3" columnClasses="conGpoValColIzq,conGpoValColDer" style = "display:block; position:relative; margin-top:18px; margin-left:10px;">					
+						<!--<h:outputText value="#{msg['clave']}:" styleClass="Titulo"/>-->					
+						<h:panelGroup id="LabelClave" styleClass="encabezado">
+				        	<h:outputText value="#{conGrupoValoresAction.pojoConGpoVal.id != null ? conGrupoValoresAction.pojoConGpoVal.id : ' '} "/>
+				        	<h:outputText value="#{conGrupoValoresAction.pojoConGpoVal.nombre}"/>
+			       		</h:panelGroup>	
+													
+						<h:outputText value="#{msg['nombre']}:" styleClass="Titulo" />
+						<h:panelGroup>
+						
+							<h:inputText id="txtNombre" maxlength="60" value="#{conGrupoValoresAction.pojoConGpoVal.nombre}" size="40" required="#{!empty param[rich:clientId('cmdSalvar')]}" >
+								<f:validateLength minimum="1"/>
+							</h:inputText>
+							<rich:message for="txtNombre" showSummary="false" showDetail="false"  style="color:red">
+						      <f:facet name="errorMarker">
+					      		<h:panelGroup>
+							        <h:graphicImage  value="#{msg['cancelar16.img']}"/>
+							        <h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+				        		</h:panelGroup>
+						      </f:facet>
+							</rich:message>
+					
+	       		
+						</h:panelGroup>
+						<h:outputText value="#{msg['descripcion']}:" styleClass="Titulo" />
+						<h:panelGroup >
+							<h:inputText id="txtDescripcion" maxlength="240" value="#{conGrupoValoresAction.pojoConGpoVal.descripcion}" size="60" required="#{!empty param[rich:clientId('cmdSalvar')]}" >
+								<f:validateLength minimum="1"/>
+							</h:inputText>
+							<rich:message for="txtDescripcion" showSummary="false" showDetail="false"  style="color:red">
+						      <f:facet name="errorMarker">
+					      		<h:panelGroup>
+							        <h:graphicImage  value="#{msg['cancelar16.img']}"/>
+							        <h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+				        		</h:panelGroup>
+						      </f:facet>
+							</rich:message>
+						</h:panelGroup>
+					</h:panelGrid>
+					
+					<h:panelGroup style="width: 500px; height: 450px; display: block; overflow: auto; text-align:left; margin-top:15px;  
+						border-left-width:1px; 
+						border-left-color: #C6DEFF;
+						border-left-style:solid; 
+						border-top-width:1px; 
+						border-top-color: #C6DEFF;
+						border-top-style:solid; 
+						border-bottom-width:1px; 
+						border-bottom-color: #C6DEFF;
+						border-bottom-style:solid;">
+						<h:outputText value="#{msg['atributo']}1" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="4" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo1Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo1SrcDato}"  size="45" maxlength="100"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo1Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo1FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo1Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo1Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}2" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo2Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo2SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo2Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo2FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo2Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo2Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo3Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo3SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo3Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo3FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo3Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo3Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}4" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo4Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo4SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo4Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo4FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo4Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo4Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}5" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo5Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo5SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo5Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo5FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo5Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo5Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}6" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo6Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo6SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo6Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo6FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo6Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo6Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}7" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo7Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo7SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo7Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo7FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo7Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo7Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}8" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo8Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo8SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo8Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo8FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo8Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo8Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}9" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo9Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo9SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo9Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo9FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo9Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo9Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}10" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo10Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo10SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo10Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo10FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo10Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo10Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}11" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo11Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo11SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo11Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo11FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo11Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo11Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}12" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo12Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo12SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo12Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo12FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo12Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo12Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}13" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo13Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo13SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo13Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo13FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo13Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo13Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}14" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo14Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo14SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo14Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo14FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo14Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo14Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}15" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo15Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo15SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo15Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo15FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo15Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo15Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}16" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo16Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo16SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo16Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo16FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo16Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo16Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}17" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo17Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo17SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo17Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo17FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo17Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo17Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}18" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo18Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo18SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo18Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo18FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo18Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo18Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}19" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo19Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo19SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo19Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo19FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo19Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo19Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+						
+						<h:outputText value="#{msg['atributo']}20" styleClass="Titulo" style="margin-left:35px; margin-top:15px;"/>
+						<rich:separator width="400" height="1px" style="margin-bottom:10px; margin-left:25px;"/>
+						<h:panelGrid columns="2" cellpadding="3" columnClasses="attIzq, attDer" style="margin-left:10px;">
+							<h:outputText value="#{msg['etiqueta']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo20Etiqueta}" size="45"/>
+							<h:outputText value="#{msg['origenDatos']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo20SrcDato}"  size="45"/>
+							<h:outputText value="#{msg['formato']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo20Formato}"  size="45"/>
+							<h:outputText value="#{msg['ejemplo']}:" styleClass="Titulo" />
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo20FormatoEjemplo}"  size="45"/>
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{conGrupoValoresAction.pojoConGpoVal.atributo20Tipo}" styleClass="Titulo" style="width:270px;">
+								<f:selectItems value="#{conGrupoValoresAction.listTipoEtiqueta}"/>
+							</h:selectOneMenu>
+							<h:outputText value="#{msg['tamano']}:" styleClass="Titulo"/>
+							<h:inputText value="#{conGrupoValoresAction.pojoConGpoVal.atributo20Tamano}"  size="15" maxlength="5"/>
+						</h:panelGrid>
+					</h:panelGroup>
+			 <rich:messages id="msgErrorConGrupoValores" showDetail="false" showSummary="false"/>									
+		    </a4j:form>
+		</rich:modalPanel>	
+		<!-- Fin Pantalla Nuevo o Editar  ConGrupoValores-->
+		
+		<!-- Panel MsgGralesRegistroConGrupoValoress -->		
+	    <rich:modalPanel id="pnlMsgGralesConGrupoValores" autosized="true" >
+		 <f:facet name="header">
+			<h:outputText value="#{conGrupoValoresAction.resOperacion != '' ? msg['atencion'] : msg['informacion']}" styleClass="Titulo" />
+		 </f:facet>
+		 <f:facet name="controls">
+	         <h:panelGroup>
+	             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor:pointer;" id="imgCerrarMsgConGpoVals"/>
+	             	<rich:componentControl for="pnlMsgGralesConGrupoValores" attachTo="imgCerrarMsgConGpoVals" operation="hide" event="onclick"/>
+	          </h:panelGroup>
+	       </f:facet>
+	       <a4j:form id="frmMsgGralesConGrupoValores">
+	       		<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+		       			<h:outputText value="#{conGrupoValoresAction.resOperacion != '' ? conGrupoValoresAction.resOperacion : msg['mensaje.info.infoReg']}" style="display:block;" styleClass="Descripcion"/>
+		       			<a4j:commandButton value="#{msg['aceptar']}" onclick="#{rich:component('pnlMsgGralesConGrupoValores')}.hide()" style="margin-top:10px; cursor:pointer;"/>
+	       		</h:panelGrid>
+	       </a4j:form>
+	     </rich:modalPanel>		 
+		<!--  Fin Panel MsgGralesRegistroConGrupoValoress -->
+		
+		<!-- Panel Eliminar -->		
+	    <rich:modalPanel id="pnlEliminarConGpoVal" autosized="true">
+		 <f:facet name="header">
+			<h:outputText value="#{msg['atencion']}" styleClass="Titulo"/>
+		 </f:facet>
+		 <f:facet name="controls">
+	         <h:panelGroup>
+	             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="imgCerrarEliminar"/>
+	             	<rich:componentControl for="pnlEliminarConGpoVal" attachTo="imgCerrarEliminar" operation="hide" event="onclick"/>
+	          </h:panelGroup>
+	       </f:facet>
+	       <a4j:form id="frmEliminarConGpoVal">
+	       		<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+	       			<h:outputText value="#{msg['deseaEliminar']}" style="display:block;"  styleClass="Descripcion"/>
+		       		<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+			       		<a4j:commandButton action="#{conGrupoValoresAction.eliminar}" value="#{msg['aceptar']}" 
+			       		oncomplete = "eliminar('#{conGrupoValoresAction.resOperacion}', 'pnlEliminarConGpoVal', 'pnlMsgGralesConGrupoValores');" reRender="pnlMsgGralesConGrupoValores, dtResults"/>
+			       		<a4j:commandButton onclick="#{rich:component('pnlEliminarConGpoVal')}.hide()" value="#{msg['cancelar']}" style="margin-left:10px;"/>
+		       		</h:panelGroup>
+	       		</h:panelGrid>
+	       </a4j:form>
+	     </rich:modalPanel>		 
+		<!--  Fin Panel Eliminar-->
+</ui:define>
+</ui:composition>

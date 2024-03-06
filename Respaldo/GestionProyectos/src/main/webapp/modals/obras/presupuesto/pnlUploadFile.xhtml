@@ -1,0 +1,85 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlUploadFile" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputLabel style="cursor:pointer;" styleClass="Titulo" 
+				value="#{msg['seleccionar']} #{msg['archivoPPT']}" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage id="imgCerrarUploadFile" style="cursor:pointer;" 
+				onclick="#{rich:component('pnlUploadFile')}.hide()"
+				value="#{msg['navegacion.panel.cerrar.img']}" />
+		</f:facet>
+		
+		<a4j:jsFunction id="jsFunProcesamiento" 
+			name="procesamientoPPT" 
+			data="#{pptoAction.procesando}"
+			oncomplete="reporta(event.data);"
+			render="txtBitacora,pnlMensajes,pgFaltantes" 
+			limitRender="true" />
+		
+		<div style="display: block; padding:0; min-width: 400px; min-height: 22px; text-align: left; background-color: none;">
+			<rich:fileUpload id="miUploadFile" listWidth="100%" listHeight="120"
+				acceptedTypes=".xls, .xlsx"
+				addControlLabel="#{msg['navegacion.label.anadirArchivo']}" 
+				addLabel="#{msg['agregar.e']}"
+				cancelEntryControlLabel="#{msg['navegacion.boton.eliminar.e']}" 
+				cleanButtonClass="Titulo"
+				clearAllControlLabel="#{msg['navegacion.label.eliminarTodo']}"
+				clearAllLabel="#{msg['borrarTodo']}"
+				clearLabel="#{msg['borrar']}"
+				doneLabel="#{msg['navegacion.label.archivoEnviado']}" 
+				fileEntryControlClass="Descripcion"
+				fileUploadListener="#{pptoAction.carga}" 
+				immediateUpload="true"
+				maxFilesQuantity="#{pptoAction.maxCargas}"
+				ontyperejected="alert('#{msg['soloExcel']}');"
+				progressLabel="#{msg['navegacion.label.enviando']}"
+				stopButtonClass="Titulo"
+				stopControlLabel="#{msg['navegacion.label.detener']}"
+				style="text-align: left;"
+				uploadButtonClass="Titulo"
+				uploadButtonClassDisabled="true" 
+				uploadControlLabel="#{msg['navegacion.label.enviarArchivo']}">
+				<a4j:ajax event="uploadcomplete" 
+					execute="@none" 
+					render="txtBitacora,pgFaltantes"
+					limitRender="true" />
+	   		</rich:fileUpload>
+
+			<a4j:region id="loadUploadFileProcesando">
+				<a4j:status for="loadUploadFileProcesando">
+					<h:panelGrid columns="2" style="width: 100%">
+						<h:outputLabel id="txtBitacora" styleClass="Titulo" 
+							style="cursor:pointer; display:#{pptoAction.procesando ? 'block' : 'none'};" 
+							value="#{pptoAction.bitacora}" />
+						
+						<h:panelGroup>
+					   		<a4j:commandButton id="cmdUploadFile" image="#{msg['aplicar22.img']}" style="float: right; margin: 5px;"
+							   	onclick="#{rich:element('cmdUploadFile')}.disabled = true;"
+								action="#{pptoAction.procesar}" 
+					   			oncomplete="cargar(#{pptoAction.operacion}, '#{rich:clientId('pnlMensajes')}'); #{rich:element('cmdUploadFile')}.disabled = false;"
+								render="pnlMensajes,txtBitacora,pgFaltantes"
+								limitRender="true">
+								<rich:tooltip showDelay="300" value="#{msg['cargar']}" styleClass="Descripcion" />
+							</a4j:commandButton>
+						</h:panelGroup>
+					</h:panelGrid>
+				</a4j:status>
+			</a4j:region>
+			
+			<h:panelGrid id="pgFaltantes" columns="1" style="width:100%; display:#{pptoAction.infoFaltante == '' ? 'none' : 'block'};">
+				<h:inputTextarea id="txtFaltantes" readonly="true" 
+					style="margin:0 auto; font-size:0.9em; min-width:400px; width:100%; min-height:120px; max-height:300px; height:100%; resize:none;"
+					value="#{pptoAction.infoFaltante}" />
+			</h:panelGrid>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

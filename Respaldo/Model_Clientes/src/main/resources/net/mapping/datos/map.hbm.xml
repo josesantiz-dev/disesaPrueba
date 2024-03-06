@@ -1,0 +1,336 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                                   "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    
+    <class name="net.giro.clientes.beans.CanalesNegocio" table="f30f147763">
+		<id  name="id" column="aa"/>
+		<property name="fechaCreacion" column="ab"/>
+		<property name="creadoPor" column="ac"/>
+		<property name="fechaModificacion" column="ad"/>
+		<property name="modificadoPor" column="ae"/>
+		<many-to-one class="net.giro.clientes.beans.Negocio" column="af" lazy="false" fetch="join" name="idNegocio" not-found="ignore"/>
+		<property name="idCanal" column="ag"/>
+	</class>
+	
+    <class name="net.giro.clientes.beans.ContactoNegocio" table="dec382ce68">
+		<id  name="id" column="aa"/>
+		<property name="estatusId" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="creadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="modificadoPor" column="af"/>
+		<many-to-one class="net.giro.clientes.beans.Negocio" column="ag" lazy="false" fetch="join" name="idNegocio" not-found="ignore"/>
+		<many-to-one class="net.giro.clientes.beans.Persona" column="ah" lazy="false" fetch="join" name="idPersonaContacto" not-found="ignore"/>
+	  	<property name="puesto" column="ai"/>
+	</class>
+
+	<class name="net.giro.co.beans.Correlativo" table="bbb4420d88" >
+		<composite-id name="id" class ="net.giro.co.beans.CorrelativoId" unsaved-value="none">
+			<key-property name="codigoEmpresa" type="long" column="c_codemp"/>
+			<key-property name="nombreTabla" type="string" column="c_nomtab"/>
+		</composite-id>
+		<property name="cbEmpresa" column="c_codemp" insert="false" update="false"/>
+		<property name="descriTabla" column="c_destab"/>
+		<property name="fechaInsercion" column="a_fecins"/>
+		<property name="fechaModificacion" column="a_fecmod"/>
+		<property name="ipInsercion" column="a_ipeins"/>
+		<property name="ipModificacion" column="a_ipemod"/>
+		<property name="numeroCorrelativo" column="n_numcor"/>
+		<property name="terminalInsercion" column="a_terins"/>
+		<property name="terminalModificacion" column="a_termod"/>
+		<property name="usuarioInsercion" column="a_usuins"/>
+		<property name="usuarioModificacion" column="a_usumod"/>
+	</class>
+
+	<class name="net.giro.clientes.beans.DirectorioTelefonico" table="a3b8003537">
+	  <id column="aa" name="id"/>
+	  <property column="ab" name="creadoPor"/>
+	  <property column="ac" name="fechaCreacion"/>
+	  <property column="ad" name="modificadoPor"/>
+	  <property column="ae" name="fechaModificacion"/>
+	  <many-to-one class="net.giro.clientes.beans.Persona" column="af" lazy="false" fetch="join" name="persona" not-found="ignore"/>
+	  <many-to-one class="net.giro.clientes.beans.Negocio" column="an" lazy="false" fetch="join" name="negocio" not-found="ignore"/>
+	  <property column="aj" name="tipoTelefono"/>
+	  <property column="ak" name="companiaTelefonica"/>
+	  <property column="ag" name="lada"/>
+	  <property column="ah" name="numeroTelefono"/>
+	  <property column="ai" name="extension"/>
+	  <property column="al" name="observaciones"/>
+	  <property column="am" name="principal"/>
+	</class>
+ 
+	 <class name="net.giro.clientes.beans.Domicilio" table="dbac7ec9df">
+	  <id column="aa" name="id"/>
+	  <property column="ab" name="creadoPor"/>
+	  <property column="ac" name="fechaCreacion"/>
+	  <property column="ad" name="modificadoPor"/>
+	  <property column="ae" name="fechaModificacion"/>
+	  <many-to-one class="net.giro.clientes.beans.Persona" column="af" lazy="false" name="persona" not-found="ignore"/>
+	  <property column="ag" name="colonia"/>
+	  <property column="ah" name="catDomicilio1"/>
+	  <property column="ai" name="catDomicilio2"/>
+	  <property column="aj" name="catDomicilio3"/>
+	  <property column="ak" name="catDomicilio4"/>
+	  <property column="al" name="catDomicilio5"/>
+	  <property column="am" name="descripcionDomicilio1"/>
+	  <property column="an" name="descripcionDomicilio2"/>
+	  <property column="ao" name="descripcionDomicilio3"/>
+	  <property column="ap" name="descripcionDomicilio4"/>
+	  <property column="aq" name="descripcionDomicilio5"/>
+	  <property column="ar" name="observaciones"/>
+	  <property column="at" name="estatus"/>
+	  <property column="au" name="principal"/>
+	  <many-to-one class="net.giro.clientes.beans.Negocio" column="av" lazy="false" fetch="join" name="negocio" not-found="ignore"/>
+	 </class>
+	 
+	 <class name="net.giro.clientes.beans.EstadosNegocio" table="dcdd35096a">
+		<id  name="id" column="aa"/>
+		<property name="fechaCreacion" column="ab"/>
+		<property name="creadoPor" column="ac"/>
+		<property name="fechaModificacion" column="ad"/>
+		<property name="modificadoPor" column="ae"/>
+	  	<many-to-one class="net.giro.clientes.beans.Negocio" column="af" lazy="false" fetch="join" name="idNegocio" not-found="ignore"/>
+		<property name="idEstado" column="ag"/>
+	</class>
+	
+	 <class name="net.giro.clientes.beans.EstructuraImportacionCuenta" table="a4f45868e6">
+		<id  name="id" column="aa"/>
+		<property name="idCuenta" column="ab"/>
+		<property name="valorIdentificador" column="ac"/>
+		<property name="posicionIdentificador" column="ad"/>
+		<property name="longitudIdentificador" column="ae"/>
+		<property name="posicionReferencia" column="af"/>
+		<property name="longitudReferencia" column="ag"/>
+		<property name="posicionMonto" column="ah"/>
+		<property name="longitudMonto" column="ai"/>
+		<property name="formatoFecha" column="aj"/>
+		<property name="posicionFecha" column="ak"/>
+		<property name="longitudFecha" column="al"/>
+		<property name="separador" column="am"/>
+		<property name="creadoPor" column="an"/>
+		<property name="fechaCreacion" column="ao"/>
+		<property name="modificadoPor" column="ap"/>
+		<property name="fechaModificacion" column="aq"/>
+		<property name="posicionCabecera" column="ar"/>
+		<property name="posicionResumen" column="au"/>
+	</class>
+	 
+	 <class name="net.giro.clientes.beans.Grupo" table="bd52fa2163">
+	  <id column="aa" name="id"/>
+	  <property column="ab" name="creadoPor"/>
+	  <property column="ac" name="fechaCreacion"/>
+	  <property column="ad" name="modificadoPor"/>
+	  <property column="ae" name="fechaModificacion"/>
+	  <property column="af" name="nombre"/>
+	  <many-to-one class="net.giro.clientes.beans.Persona" column="ag"
+	   lazy="false" name="representante" not-found="ignore"/>
+	  <property column="ah" name="domicilio"/>
+	  <property column="ai" name="colonia"/>
+	  <many-to-one class="net.giro.clientes.beans.Persona" column="aj" lazy="false" fetch="join" name="secretario" not-found="ignore"/>
+	  <many-to-one class="net.giro.clientes.beans.Persona" column="ak" lazy="false" fetch="join" name="tesorero" not-found="ignore"/>
+	 </class>
+	 
+	 <class name="net.giro.clientes.beans.Identificacion" table="dd8d843bdb">
+	  <id column="aa" name="id"/>
+	  <property column="ab" name="creadoPor"/>
+	  <property column="ac" name="fechaCreacion"/>
+	  <property column="ad" name="modificadoPor"/>
+	  <property column="ae" name="fechaModificacion"/>
+	  <many-to-one class="net.giro.clientes.beans.Persona" column="af" lazy="false" fetch="join" name="persona" not-found="ignore"/>
+	  <property column="ag" name="identificacion"/>
+	  <property column="ah" name="numeroIdentificacion"/>
+	 </class>
+	 
+	 <class name="net.giro.clientes.beans.Negocio" table="e769c352b7">
+	  <id column="aa" name="id"/>
+	  <property column="ab" name="creadoPor"/>
+	  <property column="ac" name="fechaCreacion"/>
+	  <property column="ad" name="modificadoPor"/>
+	  <property column="ae" name="fechaModificacion"/>
+	  <property column="af" name="nombre"/>
+	  <property column="ag" name="domicilio"/>
+	  <property column="ah" name="telefono"/>
+	  <property column="ai" name="giro"/>
+	  <property column="aj" name="inicioOperaciones"/>
+	  <property column="ak" name="formaOperacion"/>
+	  <property column="al" name="sector"/>
+	  <property column="am" name="referencia"/>
+	  <property column="an" name="nombreContacto"/>
+	  <property column="ao" name="correoContacto"/>
+	  <property column="ap" name="bloqueado"/>
+	  <property column="aq" name="tipoPersonalidad"/>
+	  <property column="ar" name="rfc"/>
+	  <property column="at" name="colonia"/>
+	  <property column="au" name="estatus"/>
+	  <property column="av" name="paginaWeb"/>
+	  <property column="aw" name="numeroEmpleados"/>
+	  <property column="ax" name="clabeInterbancaria"/>
+	  <property column="ay" name="banco"/>
+	  <property column="az" name="numeroCuenta"/>
+	 </class>
+	 
+	 <class name="net.giro.clientes.beans.Persona" table="c81498d458">
+	  <id column="aa" name="id"/>
+	  <property column="ab" name="creadoPor"/>
+	  <property column="ac" name="fechaCreacion"/>
+	  <property column="ad" name="modificadoPor"/>
+	  <property column="ae" name="fechaModificacion"/>
+	  <property column="af" name="homonimo"/>
+	  <property column="ag" name="nombre"/>
+	  <property column="ah" name="primerNombre"/>
+	  <property column="ai" name="segundoNombre"/>
+	  <property column="aj" name="nombresPropios"/>
+	  <property column="ak" name="primerApellido"/>
+	  <property column="al" name="segundoApellido"/>
+	  <property column="am" name="rfc"/>
+	  <property column="an" name="sexo"/>
+	  <property column="ao" name="fechaNacimiento"/>
+	  <property column="ap" name="estadoCivil"/>
+	  <property  column="aq" name="localidad"/>
+	  <property column="ar" name="nacionalidad"/>
+	  <many-to-one class="net.giro.clientes.beans.Persona" column="at" lazy="false" fetch="join" name="conyuge" not-found="ignore"/>
+	  <property column="au" name="numeroHijos"/>
+	  <property column="av" name="domicilio"/>
+	  <property column="aw" name="telefono"/>
+	  <property column="ax" name="correo"/>
+	  <property column="ay" name="finado"/>
+	  <property column="az" name="tipoSangre"/>
+	  <property column="ba" name="colonia"/>
+	  <property column="bb" name="tipoPersona"/>
+	  <property column="bc" name="numeroCuenta"/>
+	  <property column="bd" name="clabeInterbancaria"/>
+	  <property column="be" name="banco"/>
+	 </class>
+	 
+	 <class name="net.giro.clientes.beans.PersonaDocumento" table="d1f8448222">
+	  <id column="aa" name="id"/>
+	  <property column="ab" name="creadoPor"/>
+	  <property column="ac" name="fechaCreacion"/>
+	  <property column="ad" name="modificadoPor"/>
+	  <property column="ae" name="fechaModificacion"/>
+	  <property column="ag" name="documentoDigitalizado"/>
+	  <many-to-one class="net.giro.clientes.beans.Persona" column="ah" lazy="false" fetch="join" name="persona" not-found="ignore"/>
+	  <property column="aj" name="observacion"/>
+	 </class>
+	 
+	 <class name="net.giro.clientes.beans.PersonaEstudio" table="bd206ef8c0">
+	  <id column="aa" name="id"/>
+	  <property column="ab" name="creadoPor"/>
+	  <property column="ac" name="fechaCreacion"/>
+	  <property column="ad" name="modificadoPor"/>
+	  <property column="ae" name="fechaModificacion"/>
+	  <many-to-one class="net.giro.clientes.beans.Persona" column="af"
+	   lazy="false" name="persona" not-found="ignore"/>
+	  <property column="ag" name="estudio"/>
+	  <property column="ah" name="aniosEstudio"/>
+	  <property column="ai" name="terminoEstudio"/>
+	  <property column="aj" name="carrera"/>
+	  <property column="ak" name="escuela"/>
+	  <property column="al" name="fechaIngreso"/>
+	  <property column="am" name="fechaEgreso"/>
+	 </class>
+	 
+	 <class name="net.giro.clientes.beans.PersonaNegocio" table="d9d1aa0337">
+	  <id column="aa" name="id"/>
+	  <property column="ab" name="creadoPor"/>
+	  <property column="ac" name="fechaCreacion"/>
+	  <property column="ad" name="modificadoPor"/>
+	  <property column="ae" name="fechaModificacion"/>
+	  <many-to-one class="net.giro.clientes.beans.Persona" column="af" lazy="false" fetch="join" name="persona" not-found="ignore"/>
+	  <many-to-one class="net.giro.clientes.beans.Negocio" column="ag" lazy="false" fetch="join" name="negocio" not-found="ignore"/>
+	  <property column="ah" name="personalidadJuridica"/>
+	  <property column="ai" name="participacion"/>
+	  <property column="aj" name="puesto"/>
+	  <property column="ak" name="firmaDocumento"/>
+	  <many-to-one class="net.giro.clientes.beans.Persona" column="al" lazy="false" fetch="join" name="apoderadoId" not-found="ignore"/>
+	  <property column="am" name="representante"/>
+	 </class>
+	 
+	 <class name="net.giro.clientes.beans.PersonaNombresAlterno" table="e93f697d8e">
+	  <id column="aa" name="id"/>
+	  <property column="ab" name="creadoPor"/>
+	  <property column="ac" name="fechaCreacion"/>
+	  <property column="ad" name="modificadoPor"/>
+	  <property column="ae" name="fechaModificacion"/>
+	  <many-to-one class="net.giro.clientes.beans.Persona" column="af" lazy="false" fetch="join" name="persona" not-found="ignore"/>
+	  <property column="ag" name="nombre"/>
+	  <property column="ah" name="primerApellido"/>
+	  <property column="ai" name="segundoApellido"/>
+	 </class>
+ 
+	 <class name="net.giro.clientes.beans.Prospecto" table="b7513d2261" >
+		<id column="aa" name="id"/>
+		<property column="ab" name="creadoPor" />
+		<property column="ac" name="fechaCreacion"/>
+		<property column="ad" name="modificadoPor"/>
+		<property column="ae" name="fechaModificacion"/>
+		<many-to-one class="net.giro.clientes.beans.Persona" column="af" lazy="false" fetch="join" name="persona" not-found="ignore"/>
+		<many-to-one class="net.giro.clientes.beans.Negocio" column="ag" lazy="false" fetch="join" name="negocio" not-found="ignore"/>
+		<property column="ah" name="oficial"/>
+		<property column="ai" name="sucursal"/>
+		<property column="aj" name="establecimiento"/>
+		<property column="ak" name="modoContacto"/>
+		<property column="al" name="comoEntero"/>
+		<property column="am" name="rangoFacturacion"/>
+		<property column="an" name="fechaContacto"/>
+		<property column="ao" name="estatus"/>
+		<property column="ap" name="razonRechazo"/>
+		<property column="aq" name="calificacion"/>
+	</class>
+ 
+ 	<class name="net.giro.clientes.beans.Seguimiento" table="da991b03c1">
+	  <id column="aa" name="id"/>
+	  <property column="ab" name="estatusId"/>
+	  <many-to-one class="net.giro.clientes.beans.Prospecto" column="ac" lazy="false" fetch="join" name="prospectoId" not-found="ignore"/>
+	  <property column="ad" name="fechaContacto"/>
+	  <property column="ae" name="modoContactoId"/> 
+	  <property column="af" name="especialistaId"/>
+	  <property column="ag" name="observaciones"/>
+	  <property column="ah" name="razonRechazoId"/>
+	  <property column="ai" name="creadoPor"/>
+	  <property column="aj" name="fechaCreacion"/>
+	  <property column="ak" name="modificadoPor"/>
+	  <property column="al" name="fechaModificacion"/>
+	
+	</class>
+	
+	<class name="net.giro.clientes.beans.ContactoPersona" table="ff7041bfd7">
+		<id  column="aa" name="id" />
+		<property column="ab" name="estatusId"/>
+		<property column="ac" name="fechaCreacion"/>
+		<property name="creadoPor" column="ad"/>
+		<property column="ae" name="fechaModificacion"/>
+		<property column="af" name="modificadoPor"/>
+		<many-to-one class="net.giro.clientes.beans.Persona" column="ag" lazy="false" fetch="join" name="idPersona" not-found="ignore"/>
+		<many-to-one class="net.giro.clientes.beans.Persona" column="ah" lazy="false" fetch="join" name="idPersonaContacto" not-found="ignore"/>
+		<property column="ai" name="puesto"/>
+	</class>
+	
+	<class name="net.giro.clientes.beans.PersonaNegocioVista" table="v_persona_negocio">
+	    <id name="id" column="id_cliente" />
+	    <property name="tipo" column="tipo" />
+	    <property name="nombre" column="nombre" />
+	    <property name="rfc" column="rfc" />
+	    <property name="telefono" column="telefono" />
+	    <property name="idDomicilio" column="domicilio_id" />
+	    <property name="direccion" column="direccion" />
+	    <property name="idColonia" column="colonia_id" />
+	    <property name="domicilio" column="domicilio" />
+	    <property name="noExterno" column="no_externo" />
+	    <property name="noInterno" column="no_interno" />
+	    <property name="colonia" column="colonia" />
+	    <property name="localidad" column="localidad" />
+	    <property name="municipio" column="municipio" />
+	    <property name="estado" column="estado" />
+	    <property name="pais" column="pais" />
+	    <property name="cp" column="cp" />
+	    <property name="tieneDomicilio" column="tiene_domicilio" />
+	    <property name="principal" column="principal" />
+	    <property name="estatus" column="estatus" />
+	    <property name="creadoPor" column="creado_por" />
+	    <property name="fechaCreacion" column="fecha_creacion" />
+	    <property name="modificadoPor" column="modificado_por" />
+	    <property name="fechaModificacion" column="fecha_modificacion" />
+	</class>
+</hibernate-mapping>

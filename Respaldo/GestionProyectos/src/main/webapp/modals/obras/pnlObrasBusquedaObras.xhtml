@@ -1,0 +1,101 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlObrasBusquedaObras" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+		<f:facet name="header">
+			<h:outputText id="lblTituloBusquedaObras" value="#{msg['buscar.e']} #{msg['obra']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" onclick="#{rich:component('pnlObrasBusquedaObras')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+		
+		<div style = "display: block; min-width:500px; height: 22px;">
+			<a4j:commandButton id="cmdBuscarObras" image="#{msg['buscar22.img']}"
+				action="#{obrasAction.buscarObras}" 
+				style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+				oncomplete="buscarObras(#{obrasAction.band}, '#{rich:clientId('pnlObrasBusquedaObras')}');" 
+				render="dtObras">
+				<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarProyectos"/>
+			</a4j:commandButton>
+		</div>
+
+		<div style="margin: 10px auto 0;">
+			<h:panelGrid id="pnlBusquedaObrasPrincipal" columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin-left:10px; margin-bottom:20px; display:block;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+				
+				<h:selectOneMenu styleClass="Titulo" style="width: 216px;"
+					value="#{obrasAction.campoBusquedaObras}">
+					<f:selectItems value="#{obrasAction.tiposBusquedaObras}" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText id="txtValorBusquedaObras" maxlength="50" style="width: 210px;"
+					value="#{obrasAction.valorBusquedaObras}" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtObras" value="#{obrasAction.listObrasPrincipales}" var="var" cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="width: 90px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['cliente']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['contrato']}" />
+						</rich:column>
+
+						<rich:column style="width: 30px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['seleccionar']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="width: 60px; text-align:center;">
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.nombre}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.nombreCliente}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.nombreContrato}" />
+				</rich:column>
+				
+				<rich:column style="width: 30px; text-align:center;" styleClass="Descripcion">
+				   <a4j:commandButton id="cmdAgregarObra" image="#{msg['agregar16.img']}" 
+						action="#{obrasAction.seleccionarObra}" 
+						onclick="#{rich:component('pnlObrasBusquedaObras')}.hide()" 
+						render="cmdAgregarObra, pnlObraPrincipalDatos, pnlObrasBusquedaObras">
+						<rich:tooltip showDelay="300" value="#{msg['agregar.e']}" for="cmdAgregarObra" />	
+						<f:setPropertyActionListener target="#{obrasAction.pojoObra.idObraPrincipal}" value="#{var}" />
+				   </a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller id="dScrollObras" align="center" for="dtObras" maxPages="10"
+						ajaxSingle="true" page="#{obrasAction.numPaginaObras}"
+						styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

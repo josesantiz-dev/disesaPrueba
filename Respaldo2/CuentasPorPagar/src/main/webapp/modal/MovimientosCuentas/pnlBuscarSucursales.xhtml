@@ -1,0 +1,103 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:modalPanel id="pnlBuscarSucursales" autosized="true"
+		domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['sucursales']}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}"
+				style="cursor:pointer;"
+				onclick="#{rich:component('pnlBuscarSucursales')}.hide()" />
+		</f:facet>
+
+		<!-- INICIA MENU MODAL -->
+		<div style="display: block; width: 900px; height: 22px;">
+			<a4j:commandButton id="cmdBuscarSucursales"
+				action="#{cajaChicaMovimientosAction.buscarSucursales}"
+				image="#{msg['buscar22.img']}"
+				style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+				oncomplete="buscar('#{cajaChicaMovimientosAction.resOperacion}', '#{rich:clientId('pnlMsgGralCajaChica')}');"
+				render="dtBusquedaSucursales,pnlMsgGralCajaChica" reRender="dtBusquedaSucursales">
+				<rich:toolTip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarSucursales" />
+			</a4j:commandButton>
+		</div>
+		<!-- FIN MENU MODAL -->
+
+		<h:panelGrid width="100%" columns="2"
+			columnClasses="valorBusqueda1, alignLeft">
+			<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+			<h:inputText id="txtValorBusquedaSucursales" maxlength="50"
+				value="#{cajaChicaMovimientosAction.valorBusquedaSucursales}"
+				size="50" />
+		</h:panelGrid>
+
+		<rich:dataTable id="dtBusquedaSucursales" cellpadding="0" cellspacing="0"
+			rows="5" border="0" var="var" rowClasses="Row1, Row2" styleClass="tabla_pagina" value="#{cajaChicaMovimientosAction.listBusquedaSucursales}">
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['id']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['sucursal']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['estado']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['domicilio']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['empresa']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['seleccionar']}" />
+					</rich:column>
+				</rich:columnGroup>
+			</f:facet>
+
+			<rich:column width="50" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+				<h:outputText value="#{var.id}" />
+			</rich:column>
+			<rich:column width="300" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+				<h:outputText value="#{var.sucursal}" />
+			</rich:column>
+			<rich:column width="300" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+				<h:outputText value="#{var.colonia.localidad.municipio.estado.nombre}" />
+			</rich:column>
+			<rich:column width="100" styleClass="Descripcion" style="text-align:center padding-left: 5px;">
+				<h:outputText value="#{var.domicilio}"/>
+			</rich:column>
+			<rich:column width="100" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+				<h:outputText value="#{var.empresa.empresa}" />
+			</rich:column>
+			<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+				<a4j:commandButton id="cmdSeleccionarSucursal" image="#{msg['agregar16.img']}"
+					action="#{cajaChicaMovimientosAction.seleccionarSucursal}"
+					onclick="#{rich:component('pnlBuscarSucursales')}.hide();"
+					render="groupBusquedaSucursal" reRender="groupBusquedaSucursal">
+					<rich:toolTip showDelay="300" value="#{msg['agregar.e']}" for="cmdSeleccionarSucursal" />
+					<f:setPropertyActionListener target="#{cajaChicaMovimientosAction.pojoMovimientosCuentas.idSucursal}" value="#{var}" />
+				</a4j:commandButton>
+			</rich:column>
+			<h:panelGroup>
+				<rich:datascroller 
+					align="center" 
+					for="dtBusquedaSucursales" 
+					maxPages="10"
+					ajaxSingle="true" 
+					page="#{cajaChicaMovimientosAction.numPaginaBusquedaSucursales}" 
+					id="dScroll"
+					styleClass="Titulo" />
+			</h:panelGroup>
+		</rich:dataTable>
+	</rich:modalPanel>
+</ui:composition>

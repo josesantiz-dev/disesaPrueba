@@ -1,0 +1,72 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlUploadFile" autosized="true" domElementAttachment="form" top="20">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Descripcion" />
+		</f:facet>
+		
+		<div style="display: block; padding:0; min-width: 400px; min-height: 22px; text-align: left; background-color: none;">
+			<rich:fileUpload id="miUploadFile" listWidth="100%" listHeight="120"
+				acceptedTypes=".pdf"
+				addControlLabel="#{msg['navegacion.label.anadirArchivo']}" 
+				addLabel="#{msg['agregar.e']}"
+				cancelEntryControlLabel="#{msg['navegacion.boton.eliminar.e']}" 
+				cleanButtonClass="Titulo"
+				clearAllControlLabel="#{msg['navegacion.label.eliminarTodo']}"
+				clearAllLabel="#{msg['borrarTodo']}"
+				clearLabel="#{msg['borrar']}"
+				doneLabel="#{msg['navegacion.label.archivoEnviado']}" 
+				fileEntryControlClass="Descripcion"
+				fileUploadListener="#{saticsAction.uploadListener}" 
+				immediateUpload="true"
+				maxFilesQuantity="1" 
+				ontyperejected="alert('#{msg['soloPDF']}');"
+				progressLabel="#{msg['navegacion.label.enviando']}"
+				stopButtonClass="Titulo"
+				stopControlLabel="#{msg['navegacion.label.detener']}"
+				style="text-align: left;"
+				uploadButtonClass="Titulo"
+				uploadButtonClassDisabled="true" 
+				uploadControlLabel="#{msg['navegacion.label.enviarArchivo']}">
+				<f:facet name="label"><h:outputText value="{_KB}KB de {KB}KB enviado - {mm}:{ss}" styleClass="Descripcion" /></f:facet>
+	   		</rich:fileUpload>
+
+			<h:panelGrid columns="2" style="width: 100%">
+				<a4j:region id="loadUploadFileProcesando">
+					<h:panelGroup>
+						<a4j:status for="loadUploadFileProcesando" >
+							<f:facet name="start">
+								<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;" />
+								<h:outputLabel value="#{msg['procesando']}" style="cursor:pointer;"  styleClass="Titulo" />
+							</f:facet> 
+							
+							<f:facet name="stop">
+								<h:outputLabel value="#{msg['navegacion.label.vacio']}" style="cursor:pointer;"  styleClass="Titulo" />
+							</f:facet>
+							
+							<f:facet name="success">
+								<h:graphicImage value="#{msg['aplicar22.img']}" style="vertical-align: middle; position:relative;" />
+								<h:outputLabel value="Proceso terminado" style="cursor:pointer;"  styleClass="Titulo" />
+							</f:facet>
+						</a4j:status>
+					</h:panelGroup>
+					
+					<h:panelGroup>
+				   		<a4j:commandButton id="cmdUploadFile" style="float: right; margin: 5px;"
+				   			image="#{msg['aplicar22.img']}" title="#{msg['cargar']}"
+							action="#{saticsAction.analizarArchivo}" 
+						   	onclick="#{rich:element('cmdUploadFile')}.disabled = true;"
+							oncomplete="analizarArchivo(#{saticsAction.operacion}, '#{rich:clientId('pnlUploadFile')}', '#{rich:clientId('pnlMensajes')}'); #{rich:element('cmdUploadFile')}.disabled = false"
+							render="pnlMensajes, labelFileName" />
+					</h:panelGroup>
+				</a4j:region>
+			</h:panelGrid>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

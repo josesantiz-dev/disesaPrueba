@@ -1,0 +1,110 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+	
+	<rich:popupPanel id="pnlDesgloseImpuestos" autosized="true" domElementAttachment="form" style="min-width:500px; max-width:800px;" top="20">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText value="#{msg['desglose']} #{msg['impuestos']}" />
+				<h:graphicImage value="#{msg['refrescar16.img']}" title="#{msg['refrescar']}" style="float:left; cursor:pointer; margin:auto 0;">
+					<a4j:ajax event="click" oncomplete="console.log('refresh');" render="loadDesgloceImpuestos" limitRender="true" />
+				</h:graphicImage>
+			</h:panelGroup>
+		</f:facet>
+		
+	    <f:facet name="controls">
+       		<h:graphicImage style="cursor:pointer;"
+       	  		value="#{msg['navegacion.gral.cerrar.img']}"
+       	  		onclick="#{rich:component('pnlDesgloseImpuestos')}.hide()" />
+	    </f:facet>
+		
+		<a4j:region id="loadDesgloceImpuestos">
+		<h:panelGroup style="text-align:center; margin:0 auto; padding:0; min-width:300px; max-width:800px; width:auto;">
+			<rich:dataTable id="dtDesgloseImpuestos" value="#{subcontratistaAction.listImpuestos}" var="imp" iterationStatusVar="it" rows="10"
+				style="margin:0 auto; min-width:400px; width:100%;" cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2">
+	        	<f:facet name="header">
+	                <rich:columnGroup> 
+	                    <rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:150px;">
+	                        <h:outputText value="#{msg['impuesto']}"/>
+	                    </rich:column>
+	                    
+	                    <rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:70px;">
+	                        <h:outputText value="#{msg['porcentaje']}"/>
+	                    </rich:column>
+	                    
+	                    <rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:100px;">
+	                        <h:outputText value="#{msg['base']}"/>
+	                    </rich:column>
+	                    
+	                    <rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:100px;">
+	                        <h:outputText value="#{msg['importe']}"/>
+	                    </rich:column>
+	                    
+						<rich:column styleClass="Titulo" style="text-align:center; padding:2px; width:20px;" />
+	                </rich:columnGroup>
+	            </f:facet>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left;">
+					<h:outputText value="#{imp.nombreImpuesto}" title="#{msg['impuesto']}: #{imp.idImpuesto}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:inputText value="#{imp.tasaImpuesto}" style="text-align:right; width:60px;">
+						<f:convertNumber pattern="#0.0000" />
+						<a4j:ajax event="blur" execute="@region"
+							listener="#{subcontratistaAction.recalcularMontos}" 
+							render="dtDesgloseImpuestos,dtSubcontratistas" limitRender="true" />
+					</h:inputText>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:inputText value="#{imp.baseImpuesto}" style="text-align:right; width:100px;">
+						<f:convertNumber pattern="#0.0000" />
+						<a4j:ajax event="blur" execute="@region"
+							listener="#{subcontratistaAction.recalcularMontos}" 
+							render="dtDesgloseImpuestos,dtSubcontratistas" limitRender="true" />
+					</h:inputText>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:right;">
+					<h:outputText value="#{imp.importe}"><f:convertNumber pattern="#0.0000" /></h:outputText>
+				</rich:column>
+			
+				<rich:column style="text-align:center;">
+					<a4j:commandButton id="cmdEliminarImpuesto" 
+						image="#{msg['eliminar16.img']}" title="#{msg['eliminar']} #{msg['impuesto']}"
+						oncomplete="#{rich:component('pnlEliminarImpuesto')}.show()" 
+						render="pnlEliminarImpuesto" limitRender="true">
+						<f:setPropertyActionListener for="cmdEliminarImpuesto" value="#{it.index}" target="#{subcontratistaAction.indexImpuesto}" />
+					</a4j:commandButton>
+				</rich:column> 
+				
+				<f:facet name="footer">
+	            	<rich:columnGroup>
+	            		<rich:column style="text-align:left;" colspan="2">
+							<rich:dataScroller for="dtDesgloseImpuestos" page="#{subcontratistaAction.paginacionImpuestos}" renderIfSinglePage="false"
+								ajaxSingle="true" maxPages="5" fastStep="5" align="center" styleClass="Titulo" />
+	            		</rich:column>
+						
+	            		<rich:column style="text-align:center;">
+	                    	<a4j:commandLink value="#{msg['navegacion.label.agregarImpuesto']}" 
+								action="#{subcontratistaAction.nuevaBusquedaImpuestos}" 
+								oncomplete="#{rich:component('pnlBusquedaImpuestos')}.show()"
+	                    		render="pnlBusquedaImpuestos,dtSubcontratistas" limitRender="true" />
+	                    </rich:column>
+				
+						<rich:column style="text-align:right;" styleClass="Titulo">
+							<h:outputText value="#{subcontratistaAction.totalImpuestos}"><f:convertNumber pattern="#0.0000" /></h:outputText>
+						</rich:column>
+						
+						<rich:column style="text-align:center;" />
+	            	</rich:columnGroup>
+				</f:facet>
+	        </rich:dataTable>
+		</h:panelGroup>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

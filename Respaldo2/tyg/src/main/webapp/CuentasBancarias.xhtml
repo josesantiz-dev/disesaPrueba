@@ -1,0 +1,405 @@
+<!DOCTYPE composition PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:rich="http://richfaces.org/rich" 
+	xmlns:s="http://jboss.com/products/seam/taglib" 
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['cuentasBancarias']}" />
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolBarGroup location="right">
+			<a4j:commandButton action="#{cuentasBancariasAction.buscar}" id="cmdBuscaCta" image="#{msgTyg['navegacion.boton.buscar.img']}" onclick="#{rich:element('cmdBuscaCta')}.disabled = true;" oncomplete="checaResultado(#{rich:element('txtResultCtaBanc')}, '', 'pnlMsgCtaBanc', 'buscar', #{rich:element('msgErroresCtaBanc')}); #{rich:element('cmdBuscaCta')}.disabled = false;" reRender="dtCuentaBancaria, txtResultCtaBanc, pnlMsgCtaBanc" style="cursor:pointer;" styleClass="Titulo">
+				<rich:toolTip id="ttBuscar" showDelay="300" styleClass="Descripcion" value="#{msgTyg['navegacion.boton.buscar.e']}"/>
+			</a4j:commandButton>
+		</rich:toolBarGroup>
+
+		<rich:toolBarGroup location="right">
+			<a4j:commandButton action="#{cuentasBancariasAction.nuevo}" id="cmdNuevo" image="#{msgTyg['navegacion.boton.nuevo.img']}" onclick="#{rich:element('cmdNuevo')}.disabled = true;" oncomplete="checaResultado(#{rich:element('txtResultCtaBanc')}, 'pnlNuevoEditarCtaBanc', 'pnlMsgCtaBanc', 'nuevo', #{rich:element('msgErroresCtaBanc')}); #{rich:element('cmdNuevo')}.disabled = false;" reRender="tabDatos,miMenu,txtResultCtaBanc,pnlNuevoEditarCtaBanc" style="cursor:pointer;" styleClass="Titulo">
+				<rich:toolTip id="ttNuevo" showDelay="300" styleClass="Descripcion" value="#{msgTyg['navegacion.boton.nuevo.e']}"/>
+			</a4j:commandButton>
+		</rich:toolBarGroup>
+	</ui:define>
+
+	<ui:define name="body">
+		<a4j:loadStyle src="resource:///resources/css/tyg/tygCtaBancaria.css"/>
+		<a4j:loadStyle src="resource:///resources/css/tyg/tyg.css"/>
+		<a4j:loadScript src="resource:///resources/scripts/tyg/cuentaBancaria.js"/>
+
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText style="font-weight: bold; font-size: 28px; color:#525252;" value="#{msg['cuentasBancarias']}"/>
+		</div>
+
+		<div class="div_pagina">
+			<a4j:region id="loadBuscar">
+				<h:inputHidden id="txtResultCtaBanc" value="#{cuentasBancariasAction.resOperacion}"/>
+				<!-- esta es la parte donde se realiza la busqueda especifica ya sea por ejemplo nombre clave etc -->
+				
+				<div style="min-width: 700px; margin: 0 auto; text-align: center;">
+					<h:panelGrid columns="2" id="panelBusqueda" style="margin:10px auto; text-align: left; display:block;" width="700">
+						<h:outputText styleClass="Titulo" value="#{msg['tipo']}:"/>
+						<h:selectOneMenu style="margin-left:5px;" styleClass="Titulo" value="#{cuentasBancariasAction.campoBusqueda}">
+							<f:selectItem itemLabel="#{msgTyg['numcuenta']}" itemValue="numeroDeCuenta"/>
+							<f:selectItem itemLabel="#{msgTyg['clave']}" itemValue="clave"/>
+						</h:selectOneMenu>
+	
+						<h:outputText styleClass="Titulo" value="#{msg['nombre']}:"/>
+						<h:inputText id="txtvalor" maxlength="45" size="45" value="#{cuentasBancariasAction.valTipoBusqueda}"/>
+					</h:panelGrid>
+				</div>
+				
+				<!-- esta parte pintara en pantalla todo lo que provenga de el pojo siempre y cuando se instacien cada uno de los datos que  contiene el pojo 
+  					que se le este indicando en este caso es ctasBancos -->
+				<rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtCuentaBancaria" rows="15" 
+					value="#{cuentasBancariasAction.listCuentasBancarias}" var="ctaBancaria"
+					style="min-width: 700px; margin: 0 auto;">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<!-- aqui solo iran las etiquetas de lo que se desplegara -->
+							<rich:column colspan="6" styleClass="Titulo">
+								<h:outputText value="#{msgTyg['navegacion.label.cuenta']}"/>
+							</rich:column>
+
+							<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msgTyg['navegacion.label.id']}"/>
+							</rich:column>
+
+							<rich:column style="text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msgTyg['navegacion.label.numCuenta']}"/>
+							</rich:column>
+
+							<rich:column style="text-align:center; margin-left:10px;" styleClass="Titulo">
+								<h:outputText value="#{msgTyg['navegacion.label.clabe']}"/>
+							</rich:column>
+
+							<rich:column style="text-align:center; margin-left:10px;" styleClass="Titulo">
+								<h:outputText value="#{msgTyg['navegacion.label.institucion']}"/>
+							</rich:column>
+
+							<rich:column colspan="3" style="text-align:center; margin-left:10px;" styleClass="Titulo"/>
+						</rich:columnGroup>
+					</f:facet>
+
+					<!-- Aqui se instancian los elementos que se despklegaran en la pantalla que vienen de la lista listValores -->
+					<rich:column style="text-align:center;" styleClass="Descripcion" width="40">
+						<h:outputText value="#{ctaBancaria.id}"/>
+					</rich:column>
+					
+					<rich:column style="text-align:center;" styleClass="Descripcion" width="40">
+						<h:outputText value="#{ctaBancaria.numeroDeCuenta}"/>
+					</rich:column>
+
+					<rich:column style="text-align:left; margin-left:10px;" styleClass="Descripcion" width="130">
+						<h:outputText value="#{ctaBancaria.clave}"/>
+					</rich:column>
+
+					<rich:column style="text-align:left; margin-left:10px;" styleClass="Descripcion" width="180">
+						<h:outputText value="#{ctaBancaria.institucionBancaria.nombreLargo}"/>
+					</rich:column>
+
+					<rich:column style="text-align:center; font-weight: bold; font-size:12px;" styleClass="Descripcion" width="20">
+						<a4j:commandButton action="#{cuentasBancariasAction.editar}" image="#{msgTyg['navegacion.boton.editar.img']}" oncomplete="Richfaces.showModalPanel('pnlNuevoEditarCtaBanc')" reRender="pnlNuevoEditarCtaBanc">
+							<f:setPropertyActionListener target="#{cuentasBancariasAction.pojoCuentasBancarias}" value="#{ctaBancaria}"/>
+							<rich:toolTip value="#{msgTyg['navegacion.label.editar']}"/>
+						</a4j:commandButton>
+					</rich:column>
+
+					<rich:column style="text-align:center; font-weight: bold; font-size:12px;" styleClass="Descripcion" width="20">
+						<a4j:commandButton image="#{msgTyg['navegacion.boton.eliminar.img']}" oncomplete="Richfaces.showModalPanel('pnlEliminarCuentasBancarias')" reRender="txtResultCtaBanc">
+							<f:setPropertyActionListener target="#{cuentasBancariasAction.pojoCuentasBancarias}" value="#{ctaBancaria}"/>
+							<rich:toolTip value="#{msgTyg['navegacion.label.eliminar']}"/>
+						</a4j:commandButton>
+					</rich:column>
+
+					<f:facet name="footer">
+						<rich:datascroller ajaxSingle="true" align="center" for="dtCuentaBancaria" id="dScroll" maxPages="10" page="#{cuentasBancariasAction.numPagina}" styleClass="Titulo"/>
+					</f:facet>
+				</rich:dataTable>
+			</a4j:region>
+		</div>
+	</ui:define>
+
+	<ui:define name="modals">
+		<!-- MODAL DE LA FECHA PARA EL REPORTE -->
+		<rich:modalPanel autosized="true" id="pnlFechaRep">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.fechaInicial']}"/>
+				</h:panelGroup>
+			</f:facet>
+
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage id="btnCerrarFechaCta" styleClass="cursor:pointer;" value="#{msgTyg['navegacion.gral.cerrar.img']}"/>
+					<rich:componentControl attachTo="btnCerrarFechaCta" event="onclick" for="pnlFechaRep" operation="hide"/>
+				</h:panelGroup>
+			</f:facet>
+		</rich:modalPanel>
+
+		<!-- #### Panel MsgLayout #### -->
+		<rich:modalPanel autosized="true" id="pnlMsgCtaBanc" width="350">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText rendered="#{cuentasBancariasAction.resOperacion != ''}" styleClass="Err" value="#{msgTyg['navegacion.label.atencion']}"/>
+					<h:outputText rendered="#{cuentasBancariasAction.resOperacion == ''}" styleClass="Titulo" value="#{msgTyg['navegacion.label.informacion']}"/>
+				</h:panelGroup>
+			</f:facet>
+
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage id="imgCtaBanc" styleClass="cursor:pointer;" value="#{msg['navegacion.panel.cerrar.img']}"/>
+					<rich:componentControl attachTo="imgCtaBanc" event="onclick" for="pnlMsgCtaBanc" operation="hide"/>
+				</h:panelGroup>
+			</f:facet>
+
+			<a4j:form id="frmMsgCtaBanc" style="text-align:center;">
+				<h:panelGroup style="display:block; width:300px; float:center;">
+					<h:outputText rendered="#{cuentasBancariasAction.resOperacion == ''}" style="display:block;" styleClass="Descripcion" value="#{msgTyg['mensaje.info.infoReg']}"/>
+					<h:outputText rendered="#{cuentasBancariasAction.resOperacion != ''}" style="display:block;" styleClass="Descripcion" value="#{cuentasBancariasAction.resOperacion}"/>
+				</h:panelGroup>
+				<a4j:commandButton onclick="#{rich:component('pnlMsgCtaBanc')}.hide()" style="margin-top:10px; cursor:pointer;" value="#{msgTyg['navegacion.label.aceptar']}"/>
+			</a4j:form>
+		</rich:modalPanel>
+		<!--  Fin Panel Msg-->
+
+		<!-- ####### MODAL EDITAR O NUEVO REGISTRO ####### -->
+		<rich:modalPanel autosized="true" id="pnlNuevoEditarCtaBanc">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText id="lblTitulo" styleClass="Titulo" value="#{cuentasBancariasAction.pojoCuentasBancarias.id == '0' ? msgTyg['navegacion.label.nuevoReg'] : cuentasBancariasAction.pojoCuentasBancarias.numeroDeCuenta}"/>
+				</h:panelGroup>
+			</f:facet>
+
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage id="btnCerrarNuevoCta" styleClass="cursor:pointer;" value="#{msgTyg['navegacion.gral.cerrar.img']}"/>
+					<rich:componentControl attachTo="btnCerrarNuevoCta" event="onclick" for="pnlNuevoEditarCtaBanc" operation="hide"/>
+				</h:panelGroup>
+			</f:facet>
+
+			<a4j:form id="frmNuevoCta">
+				<a4j:region id="loadNuevoCta">
+					<div style="display: block; height: 22px;margin-bottom:10px;">
+						<h:panelGrid columns="2" style="float:right; margin-right:5px;">
+							<h:panelGroup style="vertical-align: middle; position:relative; ">
+								<a4j:commandButton action="#{cuentasBancariasAction.guardar}" id="cmdSalvar" image="#{msgTyg['navegacion.boton.salvar.img']}" onclick="#{rich:element('cmdSalvar')}.disabled = true;" oncomplete="checaResultado(#{rich:element('txtResultCtaBanc')}, 'pnlNuevoEditarCtaBanc', 'pnlMsgCtaBanc', 'salvar', #{rich:element('msgErroresCtaBanc')}); #{rich:element('cmdSalvar')}.disabled = false;" reRender="pnlGridFuentes1, miMenu, txtResultCtaBanc, pnlMsgCtaBanc, lblTitulo, dtCuentaBancaria" style="vertical-align: middle; position:relative; cursor:pointer;"/>
+								<h:outputLabel for="cmdSalvar" style="cursor:pointer; " styleClass="Titulo" value="#{msgTyg['navegacion.boton.salvar.e']}"/>
+							</h:panelGroup>
+
+							<h:panelGroup style="vertical-align: middle; position:relative;">
+								<a4j:status for="loadNuevoCta">
+									<f:facet name="start">
+										<h:graphicImage value="#{msgTyg['navegacion.loading.loading16']}"/>
+									</f:facet>
+									<f:facet name="stop">
+										<h:graphicImage value="#{msgTyg['navegacion.loading.loading_stop16']}"/>
+									</f:facet>
+								</a4j:status>
+							</h:panelGroup>
+						</h:panelGrid>
+					</div>
+
+					<rich:tabPanel id="tabDatos" switchType="client" width="700">
+						<rich:tab focus="txtClave" label="#{msgTyg['navegacion.label.datos']}" styleClass="Titulo">
+							<h:panelGrid cellpadding="3" columnClasses="Observacion" columns="2" id="pnlGridFuentes1" style="display: block; width: 400px; position:relative;margin-left:10px;">
+								<h:outputText value="*"/>
+								<h:outputText value="#{ cuentasBancariasAction.pojoCuentasBancarias.id == '0' ? msgAcc['navegacion.clave.capturaClave'] : msgAcc['navegacion.label.noeditar']}"/>
+							</h:panelGrid>
+
+							<h:panelGrid cellpadding="3" columnClasses="ctaBancariaCol1,ctaBancariaCol2" columns="2" id="pnlDatos" style="margin-left:15px; margin-bottom:10px; display:block;" width="600">
+								<h:outputText style="float:right" styleClass="Titulo" value="#{msgTyg['navegacion.label.saldoMin']}:"/>
+								<h:panelGroup>
+									<h:inputText id="txtSaldoMin" maxlength="12" required="#{!empty param[rich:clientId('cmdSalvar')]}" style="text-align:right;" value="#{cuentasBancariasAction.pojoCuentasBancarias.saldoMinimo}">
+										<f:converter converterId="javax.faces.Double"/>
+									</h:inputText>
+
+									<rich:message for="txtSaldoMin" showDetail="false" showSummary="false" styleClass="Err">
+										<f:facet name="errorMarker">
+											<h:panelGroup>
+												<h:graphicImage value="#{msgTyg['mensajes.cancelar16.img']}"/>
+												<h:outputLabel styleClass="Err" value="#{msgTyg['mensajes.error.requeridoDouble']}"/>
+											</h:panelGroup>
+										</f:facet>
+									</rich:message>
+								</h:panelGroup>
+
+								<h:outputText style="float:right" styleClass="Titulo" value="#{msgTyg['navegacion.label.saldo']}:"/>
+								<h:panelGroup>
+									<h:inputText id="txtSaldo" maxlength="12" style="text-align:right;" value="#{cuentasBancariasAction.pojoCuentasBancarias.saldo}">
+										<f:converter converterId="javax.faces.Double"/>
+									</h:inputText>
+
+									<rich:message for="txtSaldo" showDetail="false" showSummary="false" styleClass="Err">
+										<f:facet name="errorMarker">
+											<h:panelGroup>
+												<h:graphicImage value="#{msgTyg['mensajes.cancelar16.img']}"/>
+												<h:outputLabel styleClass="Err" value="#{msgTyg['mensajes.error.requeridoDouble']}"/>
+											</h:panelGroup>
+										</f:facet>
+									</rich:message>
+								</h:panelGroup>
+
+								<h:outputText style="float:right" styleClass="Titulo" value="#{msgTyg['navegacion.label.moneda']}:"/>
+								<h:panelGroup>
+									<h:selectOneMenu style="width:130px;" styleClass="Titulo" value="#{cuentasBancariasAction.suggMoneda}">
+										<f:selectItems value="#{cuentasBancariasAction.listTmpMonedas}"/>
+									</h:selectOneMenu>
+
+									<rich:message for="cmbMoneda" showDetail="false" showSummary="false" styleClass="Err">
+										<f:facet name="errorMarker">
+											<h:panelGroup>
+												<h:graphicImage value="#{msgTyg['mensajes.cancelar16.img']}"/>
+												<h:outputLabel styleClass="Err" value="#{msgTyg['mensajes.error.selectItem']}"/>
+											</h:panelGroup>
+										</f:facet>
+									</rich:message>
+								</h:panelGroup>
+
+								<h:outputText style="float:right" styleClass="Titulo" value="#{msgTyg['navegacion.label.empresa']}:"/>
+								<h:panelGroup id="grpEmpresa">
+									<h:selectOneMenu style="width:130px;" styleClass="Titulo" value="#{cuentasBancariasAction.suggEmpresa}">
+										<f:selectItems value="#{cuentasBancariasAction.listTmpEmpresas}"/>
+									</h:selectOneMenu>
+
+									<rich:message for="cmbEmpresa" showDetail="false" showSummary="false" styleClass="Err">
+										<f:facet name="errorMarker">
+											<h:panelGroup>
+												<h:graphicImage value="#{msgTyg['mensajes.cancelar16.img']}"/>
+												<h:outputLabel styleClass="Err" value="#{msgTyg['mensajes.error.selectItem']}"/>
+											</h:panelGroup>
+										</f:facet>
+									</rich:message>
+								</h:panelGroup>
+
+								<h:outputText style="float:right" styleClass="Titulo" value="#{msgTyg['navegacion.label.banco']}:"/>
+								<h:panelGroup>
+									<h:selectOneMenu style="width:130px;" styleClass="Titulo" value="#{cuentasBancariasAction.suggBanco}">
+										<a4j:support action="#{cuentasBancariasAction.filtrarSucursales()}" event="onchange" reRender="selectSucursales"/>
+										<f:selectItems value="#{cuentasBancariasAction.listInstitucionesBancarias}"/>
+									</h:selectOneMenu>
+
+									<rich:message for="cmbBanco" showDetail="false" showSummary="false" styleClass="Err">
+										<f:facet name="errorMarker">
+											<h:panelGroup>
+												<h:graphicImage value="#{msgTyg['mensajes.cancelar16.img']}"/>
+												<h:outputLabel styleClass="Err" value="#{msgTyg['mensajes.error.selectItem']}"/>
+											</h:panelGroup>
+										</f:facet>
+									</rich:message>
+								</h:panelGroup>
+							</h:panelGrid>
+						</rich:tab>
+
+						<rich:tab label="#{msgTyg['navegacion.label.parametros']}" styleClass="Titulo">
+							<h:panelGrid cellpadding="3" columnClasses="paramColIzq,paramColDer" columns="2" id="pnlParam1" style="margin-left:15px; margin-bottom:10px; display:block;">
+								<h:outputText style="float:right" styleClass="Titulo" value="#{msgTyg['navegacion.label.numCuenta']}:"/>
+								<h:panelGroup>
+									<h:inputText id="txtNumCta" maxlength="20" required="#{!empty param[rich:clientId('cmdSalvar')]}" size="30" value="#{cuentasBancariasAction.pojoCuentasBancarias.numeroDeCuenta}">
+										<f:validator validatorId="SoloNum"/>
+									</h:inputText>
+
+									<rich:message for="txtNumCta" showDetail="false" showSummary="false" styleClass="Err">
+										<f:facet name="errorMarker">
+											<h:panelGroup>
+												<h:graphicImage value="#{msgTyg['mensajes.cancelar16.img']}"/>
+												<h:outputLabel styleClass="Err" value="#{msgTyg['mensajes.error.requerido']}"/>
+											</h:panelGroup>
+										</f:facet>
+									</rich:message>
+								</h:panelGroup>
+
+								<h:outputText style="float:right" styleClass="Titulo" value="#{msgTyg['navegacion.label.clabe']}:"/>
+								<h:panelGroup>
+									<h:inputText id="txtClabe" maxlength="100" required="#{!empty param[rich:clientId('cmdSalvar')]}" size="30" value="#{cuentasBancariasAction.pojoCuentasBancarias.clave}">
+										<f:validator validatorId="SoloNum"/>
+									</h:inputText>
+
+									<rich:message for="txtClabe" showDetail="false" showSummary="false" styleClass="Err">
+										<f:facet name="errorMarker">
+											<h:panelGroup>
+												<h:graphicImage value="#{msgTyg['mensajes.cancelar16.img']}"/>
+												<h:outputLabel styleClass="Err" value="#{msgTyg['mensajes.error.requerido']}"/>
+											</h:panelGroup>
+										</f:facet>
+									</rich:message>
+								</h:panelGroup>
+							</h:panelGrid>
+
+							<h:panelGrid columnClasses="colImp1,colImp2" columns="2" style="margin-left:15px; margin-bottom:10px; display:block;vertical-align: middle">
+								<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.importacion']}"/>
+								<rich:separator height="1" lineType="solid" style="vertical-align: middle; cursor:pointer; margin-right:5px;"/>
+							</h:panelGrid>
+
+							<h:panelGrid cellpadding="3" columnClasses="paramColIzq,paramColDer" columns="2" style="margin-left:15px; margin-bottom:10px; display:block;">
+								<h:outputText style="float:right" styleClass="Titulo" value="#{msgTyg['navegacion.label.validar']}:"/>
+								<h:panelGroup style="width:">
+									<h:selectBooleanCheckbox value="#{cuentasBancariasAction.pojoCuentasBancarias.transientsValidaReferencia}"/>
+									<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.xRef']}"/>
+									<h:selectBooleanCheckbox value="#{cuentasBancariasAction.pojoCuentasBancarias.transientsValidaSaldo}"/>
+									<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.xSaldo']}"/>
+								</h:panelGroup>
+							</h:panelGrid>
+
+							<h:panelGrid columnClasses="colRep1,colRep2" columns="2" style="margin-left:15px; margin-bottom:10px; display:block;vertical-align: middle">
+								<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.parametros']}"/>
+								<rich:separator height="1" lineType="solid" style="vertical-align: middle; cursor:pointer; margin-right:5px;"/>
+							</h:panelGrid>
+
+							<h:panelGrid cellpadding="3" columns="2" style="margin-left:15px; margin-bottom:5px; display:block;">
+								<h:outputText style="float:right" styleClass="Titulo" value="#{msgTyg['navegacion.label.sucursal']}:"/>
+								<h:panelGroup>
+									<h:selectOneMenu id="selectSucursales" style="width:130px;" styleClass="Titulo" value="#{cuentasBancariasAction.suggSucBancaria}">
+										<f:selectItems value="#{cuentasBancariasAction.listTmpSucursalesBancarias}"/>
+									</h:selectOneMenu>
+
+									<rich:message for="cmbSucursalBancaria" showDetail="false" showSummary="false" styleClass="Err">
+										<f:facet name="errorMarker">
+											<h:panelGroup>
+												<h:graphicImage value="#{msgTyg['mensajes.cancelar16.img']}"/>
+												<h:outputLabel styleClass="Err" value="#{msgTyg['mensajes.error.selectItem']}"/>
+											</h:panelGroup>
+										</f:facet>
+									</rich:message>
+								</h:panelGroup>
+							</h:panelGrid>
+						</rich:tab>
+					</rich:tabPanel>
+					<!-- utilizo esta lista de mensajes de errores para conocer si debo seguir en el proceso en js -->
+					<rich:messages id="msgErroresCtaBanc" showDetail="false" showSummary="false"/>
+				</a4j:region>
+			</a4j:form>
+		</rich:modalPanel>
+
+		<!-- Panel Eliminar -->
+		<rich:modalPanel autosized="true" id="pnlEliminarCuentasBancarias">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.atencion']}"/>
+			</f:facet>
+
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage id="imgCerrarDelCuentasBancarias" style="cursor:pointer;" value="#{msg['navegacion.panel.cerrar.img']}"/>
+					<rich:componentControl attachTo="imgCerrarDelCuentasBancarias" event="onclick" for="pnlEliminarCuentasBancarias" operation="hide"/>
+				</h:panelGroup>
+			</f:facet>
+
+			<a4j:form id="frmEliminarCuentasBancarias">
+				<h:panelGrid cellspacing="10" columns="1" style="text-align:center;" width="200">
+					<h:outputText style="display:block;" styleClass="Descripcion" value="#{msgTyg['navegacion.label.deseaEliminar']}"/>
+					<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+						<a4j:commandButton action="#{cuentasBancariasAction.eliminar}" id="cmdEliminar" oncomplete="checaResultado(#{rich:element('txtResultCtaBanc')}, 'pnlEliminarCuentasBancarias', 'pnlMsgCtaBanc', 'eliminar', #{rich:element('msgErroresCtaBanc')});" reRender="dtCuentaBancaria, pnlMsgCtaBanc" value="#{msgTyg['navegacion.label.aceptar']}"/>
+
+						<a4j:commandButton onclick="#{rich:component('pnlEliminarCuentasBancarias')}.hide()" style="margin-left:10px;" value="#{msgTyg['navegacion.label.cancelar']}"/>
+					</h:panelGroup>
+				</h:panelGrid>
+			</a4j:form>
+		</rich:modalPanel>
+		<!--  Fin Panel Eliminar-->
+	</ui:define>
+</ui:composition>

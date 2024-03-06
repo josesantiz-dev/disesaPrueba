@@ -1,0 +1,140 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['modulo']} - #{msg['empleados']} #{msg['infonavit']}"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" image="#{msg['buscar22.img']}" styleClass="Titulo" style="cursor:pointer;"
+				action="#{empInfoAction.buscar}" 
+				render="dtResults,pnlMensajes"
+				oncomplete="buscar(#{empInfoAction.operacion}, '#{rich:clientId('pnlMensajes')}');">
+				<rich:tooltip id="ttBuscar" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscar" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+		 
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" image="#{msg['nuevo22.img']}" styleClass="Titulo" style="cursor:pointer;"
+				action="#{empInfoAction.nuevo}" 
+				render="pnlEmpleadoInfonavit"
+				oncomplete="#{rich:component('pnlEmpleadoInfonavit')}.show()">
+				<rich:tooltip id="ttNuevo" showDelay="300" value="#{msg['nuevo.e']}" for="cmdNuevo" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="rechum.css" />
+		<!--h:outputStylesheet library="css" name="ordenesCompras".css" /-->
+		
+		<h:outputScript library="scripts" name="rechum.js" />
+		<!--h:outputScript library="scripts" name="ordenesCompras.js" /-->
+					
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText value="#{msg['empleados']} #{msg['infonavit']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina" style="margin-top: 20px;">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin: 10px; display:block; width: 720px;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+				<h:selectOneMenu id="cmbTipoBusqueda" value="#{empInfoAction.campoBusqueda}" style="width: 216px">
+		            <f:selectItems value="#{empInfoAction.tiposBusqueda}" />
+		        </h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText id="txtvalor" maxlength="50" value="#{empInfoAction.valorBusqueda}"  style="width: 210px" />
+			</h:panelGrid>
+			
+			<rich:dataTable id="dtResults" cellpadding="0" cellspacing="0" rows="12" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+				var="var" value="#{empInfoAction.listEmpleadoInfonavit}" style="margin:0 auto;">
+				<f:facet name="header"> 
+					<rich:columnGroup> 
+						<rich:column colspan="7" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['empleados']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:80px" styleClass="Titulo" breakRowBefore="true">
+							<h:outputText value="#{msg['id']}" /> 
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['empleado']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:90px;" styleClass="Titulo">
+							<h:outputText value="#{msg['fecha']} #{msg['desde']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 90px;" styleClass="Titulo">
+							<h:outputText value="#{msg['fecha']} #{msg['hasta']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+							<h:outputText value="#{msg['monto']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['observaciones']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 20px;" styleClass="Titulo" />
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align: center; width: 80px;">
+					<h:outputText value="#{var.id}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.idEmpleado.nombre}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:90px;">
+					<h:outputText value="#{var.fechaDesde}" styleClass="Descripcion"><f:convertDateTime type="date" pattern="dd MMM yyyy"/></h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align: center; width: 90px;">
+					<h:outputText value="#{var.fechaHasta}" styleClass="Descripcion"><f:convertDateTime type="date" pattern="dd MMM yyyy"/></h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:right; padding-left: 5px; width:100px;">
+					<h:outputText value="#{var.monto}" styleClass="Descripcion"><f:convertNumber pattern="###,###,##0.00" /></h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.observaciones}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdBorrar" 
+						image="#{msg['eliminar16.img']}"
+						oncomplete="#{rich:component('pnlEliminar')}.show()"
+						render="pnlEliminar">
+						<f:setPropertyActionListener value="#{var}" target="#{empInfoAction.pojoEmpleadoInfonavitBorrar}" for="cmdBorrar" />
+						<rich:tooltip showDelay="300" value="#{msg['eliminar']}" for="cmdBorrar" /> 
+					</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller id="dScroll" page="#{empInfoAction.numPagina}" for="dtResults" 
+						align="center" maxPages="10" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modal/empleados/infonavit/pnlMensajes.xhtml" />
+		<ui:include src="/modal/empleados/infonavit/pnlEliminar.xhtml" />
+		<ui:include src="/modal/empleados/infonavit/pnlEmpleadoInfonavit.xhtml" />
+		<ui:include src="/modal/empleados/infonavit/pnlBusquedaEmpleados.xhtml" /> 
+	</ui:define>
+</ui:composition>

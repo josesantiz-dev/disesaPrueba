@@ -1,0 +1,29 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlMensajes" autosized="true">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo" />
+		</f:facet>
+
+		<a4j:form id="frmMensajes">
+			<h:panelGrid columns="1" style="text-align:center; min-width:300px; width:auto; max-width:500px;" cellspacing="0" cellpadding="0">
+				<h:outputText value="#{msg['mensaje.info.infoReg']}" 				styleClass="Descripcion" rendered="#{movCuentasAction.tipoMensaje == 0}" />
+				<h:outputText value="#{movCuentasAction.mensaje}"   				styleClass="Descripcion" rendered="#{movCuentasAction.tipoMensaje == 1}" />
+				<h:outputText value="#{msg['mensaje.info.noCancelar']}" 			styleClass="Descripcion" rendered="#{movCuentasAction.tipoMensaje == 2}" />
+				<h:outputText value="#{msg['mensaje.error.inesperado']}" 			styleClass="Descripcion" rendered="#{movCuentasAction.tipoMensaje == 3}" />
+				<h:outputText value="#{msg['mensaje.info.busquedaVacia']}" 			styleClass="Descripcion" rendered="#{movCuentasAction.tipoMensaje == 4}" />
+				<h:outputText value="#{msg['navegacion.label.saldoInsuficiente']}" 	styleClass="Descripcion" rendered="#{movCuentasAction.tipoMensaje == 5}" />
+				
+				<a4j:commandButton style="margin:10px auto 0; width:100px;"
+					value="#{msg['navegacion.label.aceptar']}"
+					oncomplete="#{rich:component('pnlMensajes')}.hide()" />
+			</h:panelGrid>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

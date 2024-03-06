@@ -1,0 +1,96 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlColonias"  autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+		<f:facet name="header">
+			<h:outputText value="#{msg['seleccionarColonia']}" styleClass="Titulo"/>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlColonias')}.hide()"/>
+		</f:facet>
+
+		<rich:hotKey id="richHotKeyBusquedaColonia" enabledInInput="true" preventDefault="true" 
+			selector="#txtValorBusquedaColonia" key="return"
+			onkeydown="#{rich:element('frmPrincipal:cmdBuscarColonias')}.click()" />
+		
+		<h:panelGroup styleClass="encabezado">
+			<h:outputText value="#{obrasAction.pojoLocalidad != null ? obrasAction.pojoLocalidad.nombre : ' '}" />
+		</h:panelGroup>
+		
+		<h:panelGrid columns="2" columnClasses="colLayoutTop,colLayoutBottom" style="width:100%; margin:0 auto; padding:0; min-height:22px; text-align:left;">
+			<h:panelGroup style="width:100%; text-align:left;">
+				<h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+					<h:inputText id="txtValorBusquedaColonia" maxlength="50" style="width:210px;"
+						value="#{obrasAction.busquedaColonia}" title="#{msg['busqueda']}">
+						<rich:placeholder value="#{msg['busqueda']}" />
+					</h:inputText>
+						
+					<a4j:commandButton id="cmdBuscarColonias" style="margin:auto 5px; vertical-align:middle; cursor:pointer;" 
+						image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+						action="#{obrasAction.buscarColonias}" 
+						oncomplete="buscarObras(#{obrasAction.band}, '#{rich:clientId('pnlMensajes')}');" 
+						render="dtColonias, dtColoniasScroll, pnlMensajes" />
+				</h:panelGrid>
+			</h:panelGroup>
+			
+			<h:panelGroup style="width:100%; text-align:right;">
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<div style="width:100%; margin:5px auto 0; padding:0; height:auto; max-height:500px; overflow-y:auto;">
+			<rich:dataTable id="dtColonias" value="#{obrasAction.listColonias}" var="col" rows="50" style="margin:0 auto;" 
+				cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:80px;">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+		
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:50px;">
+							<h:outputText value="#{msg['codigoPost']}" />
+						</rich:column>
+		
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:20px;" />
+					</rich:columnGroup>
+				</f:facet>
+	
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText value="#{col.id}" />
+				</rich:column>
+	
+				<rich:column styleClass="Descripcion" style="text-align:left;">
+					<h:outputText value="#{col.nombre}" />
+				</rich:column>
+	
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText value="#{col.cp}" />
+				</rich:column>
+	
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<a4j:commandButton image="#{msg['drag16.img']}" 
+						oncomplete="#{rich:component('pnlColonias')}.hide()" 
+						render="cmdLnkColonia" ajaxSingle="true">
+						<f:setPropertyActionListener target="#{obrasAction.pojoColonia}" value="#{col}" />
+					</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller for="dtColonias" page="#{obrasAction.numPaginaColonia}" renderIfSinglePage="false" 
+					align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" style="float:right;" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

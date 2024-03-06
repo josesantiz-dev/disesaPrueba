@@ -1,0 +1,400 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlFactura" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+		<f:facet name="header">
+			<h:outputText id="lblTitulo" value="#{facturaAction.tituloFactura}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}"
+				onclick="#{rich:component('pnlFactura')}.hide()" />
+		</f:facet>
+		
+		<a4j:region id="regFactura">
+			<div style="display: block; height: 22px; margin-bottom:10px; min-width: 500px;">
+				<h:panelGrid columns="2" style="width:100%;" >
+					<h:panelGroup id="panelBotoneraIzquierda" style="vertical-align:middle; position:relative;">
+						<a4j:commandButton id="btnTimbrar" execute="@region"
+							style="float:left; margin: 0 5px; vertical-align: right; position:relative; display:#{facturaAction.puedeTimbrar ? 'block' : 'none'}"
+							image="#{msg['documentos22.img']}" title="#{msg['timbrar']}"
+							action="#{facturaAction.validarTimbrar}"
+							oncomplete="validarTimbrar(#{facturaAction.band},'#{rich:clientId('pnlTimbre')}','#{rich:clientId('pnlMensajes')}')"
+							render="pnlTimbre,pnlMensajes"
+							limitRender="true" />
+						
+						<a4j:commandButton id="btnImprimir" execute="@region"
+							style="float:left; margin: 0 5px; vertical-align: middle; position:relative; display:#{facturaAction.puedeTimbrar || facturaAction.facturaTimbrada ? 'block' : 'none'}" 
+							image="#{msg['pdf22.img']}" title="#{msg['imprimir']}"
+							onclick="#{rich:element('btnImprimir')}.disabled = true;"
+							action="#{facturaAction.imprimir}" 
+							oncomplete="#{rich:element('btnImprimir')}.disabled = false; reporte(#{facturaAction.band},'#{rich:clientId('pnlMensajes')}')" 
+							render="pnlMensajes"
+							limitRender="true" />
+						
+						<a4j:commandButton id="btnXML" execute="@region"
+							style="float:left; margin: 0 5px; vertical-align: middle; position:relative; display:#{facturaAction.facturaTimbrada ? 'block' : 'none'}" 
+							image="#{msg['xml22.img']}" title="#{msg['descargarXML']}"
+							onclick="#{rich:element('btnXML')}.disabled = true;"
+							action="#{facturaAction.recuperarXML}" 
+							oncomplete="#{rich:element('btnXML')}.disabled = false; reporte(#{facturaAction.band},'#{rich:clientId('pnlMensajes')}')" 
+							render="pnlMensajes"
+							limitRender="true" />
+						
+						<a4j:commandButton id="btnCorreo" execute="@region"
+							style="float:left; margin: 0 5px; vertical-align: middle; position:relative; display:#{facturaAction.facturaTimbrada ? 'block' : 'none'}" 
+							image="#{msg['mail22.img']}" title="#{msg['enviar']} #{msg['correo']}"
+							action="#{facturaAction.nuevoEnvio}" 
+							oncomplete="#{rich:component('pnlCorreo')}.show();" 
+							render="pnlCorreo"
+							limitRender="true" />
+						
+						<!--a4j:commandButton id="btnAcuseCancelacion" execute="@region"
+							style="float:left; margin: 0 5px; vertical-align: middle; position:relative; display:#{facturaAction.puedeTimbrar || facturaAction.facturaTimbrada ? 'block' : 'none'}" 
+							image="#{msg['cancelar22.img']}" title="#{msg['cancelar']}"
+							onclick="#{rich:element('btnAcuseCancelacion')}.disabled = true;"
+							action="#{facturaAction.recuperarAcuse}" 
+							oncomplete="#{rich:element('btnAcuseCancelacion')}.disabled = false; reporte(#{facturaAction.band},'#{rich:clientId('pnlMensajes')}')" 
+							render="pnlMensajes"
+							limitRender="true" /-->
+						
+						<a4j:commandButton id="btnCancelar" execute="@region"
+							style="float:left; margin: 0 5px; vertical-align: middle; position:relative; display:#{facturaAction.puedeTimbrar || facturaAction.facturaTimbrada ? 'block' : 'none'}" 
+							image="#{msg['cancelar22.img']}" title="#{msg['cancelar']}"
+							action="#{facturaAction.evaluaCancelar}" 
+							oncomplete="evaluaCancelar(#{facturaAction.band}, '#{rich:clientId('pnlEliminar')}', '#{rich:clientId('pnlMensajes')}')"
+							render="pnlEliminar pnlMensajes"
+							limitRender="true" />
+						
+						<a4j:commandButton id="btnProvisionar" execute="@region"
+							style="float:left; margin: 0 5px 0 15px; vertical-align: middle; position:relative; display:#{facturaAction.puedeTimbrar || facturaAction.facturaTimbrada ? (facturaAction.perfilProvisiones ? 'block' : 'none') : 'none'}"
+							image="#{msg['detalles22.img']}" title="#{msg['provisionar']}"
+							action="#{facturaAction.evaluaProvision}" 
+							oncomplete="evaluaProvision(#{facturaAction.band}, '#{rich:clientId('pnlProvision')}', '#{rich:clientId('pnlMensajes')}')" 
+							render="pnlProvision pnlMensajes"
+							limitRender="true" />
+						
+						<a4j:commandButton id="btnFacturaPagos" execute="@region"
+							style="float:left; margin: 0 5px 0 15px; vertical-align: middle; position:relative; display:#{facturaAction.puedeTimbrar || facturaAction.facturaTimbrada ? 'block' : 'none'}" 
+							image="#{msg['pagos22.img']}" title="#{msg['pagos']}"
+							action="#{facturaAction.obtenerPagos}" 
+							oncomplete="#{rich:component('pnlFacturaPagos')}.show();" 
+							render="pnlFacturaPagos"
+							limitRender="true" />
+					</h:panelGroup>
+					
+					<h:panelGroup id="panelBotoneraDerecha" style="vertical-align:middle; position:relative;">
+						<a4j:commandButton id="cmdSalvar" style="float:right; margin: 0 5px; vertical-align: right; position:relative;"
+							image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+							rendered="#{facturaAction.puedeTimbrar || facturaAction.factura.id == null || facturaAction.factura.id == 0}" 
+							action="#{facturaAction.guardar}"
+							onclick="#{rich:element('cmdSalvar')}.disabled = true;"
+							oncomplete="#{rich:element('cmdSalvar')}.disabled = false; salvarSinCerrar('#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrorFact')})" 
+							render="msgErrorFact,pnlMensajes,dtFacturas,lblTitulo,panelBotoneraIzquierda,txtFolio"
+							limitRender="true" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			
+			<rich:messages id="msgErrorFact" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+				<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" /></f:facet>
+			</rich:messages>
+			
+			<!-- DATOS GENERALES -->
+			<h:panelGroup id="grupoDatosGenerales">
+				<fieldset style="margin-top: 10px; margin-bottom: 10px">
+					<legend><h:outputText value="#{msg['cliente']}" styleClass="Titulo" /></legend>
+					
+					<h:panelGrid columns="2" columnClasses="colTitulo,colDato">
+						<h:outputText value="#{msg['obra']}:" styleClass="Titulo" />
+						<h:panelGroup id ="pnlFacturaPoryectoDatos">
+							<h:panelGrid columns="2">
+								<h:outputText id="txtProyecto" value="#{facturaAction.nombreObra}" styleClass="Titulo" style="text-align:left; display:block;" />
+								<h:panelGroup>
+									<a4j:commandLink id="cmdSeleccionarProyecto" style="font-weight: bold;" 
+										rendered="#{facturaAction.puedeTimbrar || facturaAction.factura.id == null || facturaAction.factura.id == 0}" 
+									 	value="#{facturaAction.factura == null || facturaAction.factura.idObra == null || facturaAction.factura.idObra.id == null ? msg['seleccionar'] : msg['cambiar'] }"
+									 	action="#{facturaAction.nuevaBusquedaObras}" 
+										oncomplete="#{rich:component('pnlBusquedaObras')}.show()" 
+										render="pnlBusquedaObras"
+										limitRender="true" />
+									
+									<!-- Este input es solo con propósito de que se permita hacer validator al proyecto -->
+									<h:inputText id="txtProyecto2" style="text-align:left; display:none;"
+										value="#{facturaAction.nombreObra}"
+										required="#{!empty param[rich:clientId('cmdSalvar')]}"
+										requiredMessage="#{msg['mensage.error.factura.obra']} #{msg['mensaje.error.requerido']}" />
+								</h:panelGroup> 
+							</h:panelGrid>
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['cliente']}:" styleClass="Titulo" />
+						<h:outputText id="txtCliente" styleClass="Titulo" style="text-align:left; display:block;" 
+							value="#{facturaAction.nombreCliente}" />
+						
+						<h:outputText value="#{msg['direccion']}:" styleClass="Titulo" />
+						<h:outputText id="txtClienteDireccion" styleClass="Titulo" style="text-align:left; display:block;" 
+							value="#{facturaAction.direccionCliente}" />
+					</h:panelGrid>
+				</fieldset>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoFactura">
+				<fieldset style="margin-top: 10px; margin-bottom: 10px">
+					<legend><h:outputText value="#{msg['datosGenerales']}" styleClass="Titulo" /></legend>
+					
+					<h:panelGrid id="pnlDatosDetalleFactura" columns="4" width="100%" columnClasses="colTitulo,colDato,colTitulo,colDato">
+						<h:outputText value="#{msg['credito']}:" styleClass="Titulo" />
+						<h:panelGroup>
+							<h:panelGrid columns="2">
+								<h:selectBooleanCheckbox value="#{facturaAction.tipoFactura}" 
+			            			disabled="#{facturaAction.facturaTimbrada}">
+									<a4j:ajax event="change"
+										listener="#{facturaAction.validarCondicionesPago}"
+										render="txtCondicionesPagoPanel,txtCondicionesPago,cbFormaDePago,cbMetodoDePago"
+										limitRender="true" />
+								</h:selectBooleanCheckbox>
+								<h:panelGrid id="txtCondicionesPagoPanel" columns="2" style="display:#{facturaAction.tipoFactura ? 'block' : 'none'}">
+									<rich:inputNumberSpinner id="txtCondicionesPago" 
+										disabled="#{facturaAction.facturaTimbrada}"
+										value="#{facturaAction.condicionesPago}"
+										required="#{facturaAction.tipoFactura ? !empty param[rich:clientId('cmdSalvar')] : false}" 
+										requiredMessage="#{msg['folio']} #{msg['mensaje.error.requerido']}" />
+									<h:outputText value="#{msg['dias']}" styleClass="Titulo" />
+								</h:panelGrid>
+							</h:panelGrid>
+						</h:panelGroup>
+						<h:outputText value="#{msg['uuid']}:" styleClass="Titulo" />
+						<h:outputText id="txtUuid" styleClass="Titulo" 
+							value="#{facturaAction.uuid}" />
+						
+						<h:outputText value="#{msg['folio']}:" styleClass="Titulo"/>
+						<h:panelGroup>
+							<h:inputText id="txtFolio" style="width:138px;" readonly="true"
+								value="#{facturaAction.factura.folioFactura}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['folio']} #{msg['mensaje.error.requerido']}" />
+								
+							<a4j:commandButton id="btnFacturaFolio" style="vertical-align:middle; cursor:pointer; margin:0 5px;" 
+								image="#{msg['agregar16.img']}" title="#{msg['factura']} #{msg['folio']}"
+								rendered="#{facturaAction.facturaTimbrada ? false : facturaAction.userAdmin}"
+								action="#{facturaAction.evaluaFacturaFolio}"
+								oncomplete="evaluaMensaje(#{facturaAction.band}, '#{rich:clientId('pnlFacturaFolio')}', '#{rich:clientId('pnlMensajes')}')"
+								render="pnlFacturaFolio,pnlMensajes"
+								limitRender="true" />
+						</h:panelGroup>
+						
+			            <h:outputText value="#{msg['subtotal']}:" styleClass="Titulo"/>
+						<h:inputText id="txtSubtotal" styleClass="Titulo" style="width: 140px; text-align: right" 
+							disabled="true"
+							value="#{facturaAction.subtotal}">
+							<f:convertNumber pattern="###,###,##0.00"/>
+						</h:inputText>
+	
+						<h:outputLabel value="#{msg['fecha']}:" styleClass="Titulo"/>
+			            <rich:calendar id="dtFecha" enableManualInput="false" timeZone="#{facturaAction.timeZone}"
+			            	disabled="#{facturaAction.facturaTimbrada}"
+			            	value="#{facturaAction.fechaEmision}" 
+			            	datePattern="dd/MMM/yyyy"
+			            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+			            	requiredMessage="#{msg['fecha']} #{msg['mensaje.error.requerido']}" />
+			            
+						<h:outputText value="#{msg['impuestos']}:" styleClass="Titulo" />
+						<h:inputText id="txtImpuestos" styleClass="Titulo" style="width: 141px; text-align: right" 
+							disabled="true"
+							value="#{facturaAction.impuestos}">
+							<f:convertNumber pattern="###,###,##0.00" />
+						</h:inputText>
+			            
+						<h:outputText value="#{msg['sucursal']}:" styleClass="Titulo" />
+						<h:selectOneMenu id="cbSucursales" style="width: 162px;"
+							disabled="#{facturaAction.facturaTimbrada}"
+							value="#{facturaAction.sucursalId}"
+			            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+			            	requiredMessage="#{msg['sucursal']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+							<f:selectItems value="#{facturaAction.listBusquedaSucursalItems}" />
+							<a4j:ajax event="change" 
+								listener="#{facturaAction.evaluaFacturaFolio}" 
+								render="txtFolio" 
+								limitRender="true" />
+						</h:selectOneMenu>
+						
+						<h:outputText value="#{msg['retenciones']}:" styleClass="Titulo" />
+						<h:inputText id="txtRetenciones" styleClass="Titulo" style="width: 140px; text-align: right" 
+							disabled="true"
+							value="#{facturaAction.retenciones}">
+							<f:convertNumber pattern="###,###,##0.00" />
+						</h:inputText>
+	
+						<h:outputText value="#{msg['moneda']}:" styleClass="Titulo"/>
+						<h:selectOneMenu id="cbMoneda" style="width: 162px;"
+							disabled="#{facturaAction.facturaTimbrada}"
+							value="#{facturaAction.factura.idMoneda}" >
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+							<f:selectItems value="#{facturaAction.listMonedasItems}" />
+						</h:selectOneMenu>
+						
+						<h:outputText value="#{msg['total']}:" styleClass="Titulo" />
+						<h:inputText id="txtTotal" styleClass="Titulo" style="width: 140px; text-align: right"  
+							disabled="true"
+							value="#{facturaAction.total}">
+							<f:convertNumber pattern="###,###,##0.00"/>
+						</h:inputText>
+			            
+						<h:outputText value="#{msg['formaPago']}:" styleClass="Titulo"/>
+						<h:selectOneMenu id="cbFormaDePago" style="width: 262px;"
+							disabled="#{facturaAction.facturaTimbrada}"
+							value="#{facturaAction.factura.idFormaPago}" 
+			            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+			            	requiredMessage="#{msg['formaPago']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+							<f:selectItems value="#{facturaAction.listFormasPagoItems}" /> 
+							<a4j:ajax event="change"
+								listener="#{facturaAction.autoAsignaMetodoPago}"
+								render="pnlDatosDetalleFactura,cbMetodoDePago"
+								limitRender="true" />
+						</h:selectOneMenu>
+			            
+						<h:outputText value="#{msg['metodoDePago']}:" styleClass="Titulo"/>
+						<h:selectOneMenu id="cbMetodoDePago" style="width: 262px;"
+							disabled="#{facturaAction.facturaTimbrada}"
+							value="#{facturaAction.idMetodoPago}" 
+			            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+			            	requiredMessage="#{msg['metodoDePago']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+							<f:selectItems value="#{facturaAction.listMetodosPagoItems}" /> 
+							<a4j:ajax event="change"
+								listener="#{facturaAction.autoAsignaFormaPago}" 
+								render="pnlDatosDetalleFactura,cbFormaDePago"
+								limitRender="true" />
+						</h:selectOneMenu>
+					</h:panelGrid>
+					
+					<h:panelGrid columns="2" columnClasses="colTitulo,colDato" style="width: 100%; padding-right: 10px">
+						<h:outputText value="#{msg['observaciones']}:" styleClass="Titulo" />
+						<h:inputTextarea id="txtObservaciones" style="width: 100%; resize: none;" rows="2"
+							disabled="#{facturaAction.facturaTimbrada}"
+							value="#{facturaAction.factura.observaciones}" />
+					</h:panelGrid>
+					
+					<hr/>
+					
+					<!-- El control que manda llamar a conceptos de facturacion -->
+					<a4j:commandButton id="cmdAgregarConceptos" style="float:right; vertical-align: middle; cursor: pointer; margin: 0 5px 10px 0;" 
+						image="#{msg['agregar_azul16.img']}" title="#{msg['agregar.e']}"
+						rendered="#{facturaAction.puedeTimbrar || facturaAction.factura.id == null || facturaAction.factura.id == 0}"
+						action="#{facturaAction.nuevoConceptoFacturacion}" 
+						oncomplete="#{rich:component('pnlConcepto')}.show();"
+						render="pnlConcepto"
+						limitRender="true" />
+	
+					<rich:dataTable id="dtDetalles" var="var" value="#{facturaAction.listFacturaDetalles}" cellpadding="0" cellspacing="0"
+						rows="8" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"> 
+						<f:facet name="header">
+							<rich:columnGroup>
+								<rich:column colspan="8" style="text-align:center;" styleClass="Titulo">
+									<h:outputText value="#{msg['conceptoFacturacion']}" />
+								</rich:column>
+								
+								<rich:column breakRowBefore="true" style="text-align:center; width:60px;" styleClass="Titulo">
+									<h:outputText value="#{msg['id']}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center;" styleClass="Titulo">
+									<h:outputText value="#{msg['concepto']}" />
+								</rich:column> 
+								
+								<rich:column style="text-align:center; width:60px;" styleClass="Titulo">
+									<h:outputText value="#{msg['cantidad']}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:90px;" styleClass="Titulo">
+									<h:outputText value="#{msg['costo']}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:90px;" styleClass="Titulo">
+									<h:outputText value="#{msg['importe']}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:90px;" styleClass="Titulo">
+									<h:outputText value="#{msg['total']}" />
+								</rich:column>
+		
+								<rich:column colspan="2" style="text-align:center; width: 40px;" styleClass="Titulo" />
+							</rich:columnGroup>
+						</f:facet>
+		
+						<rich:column styleClass="Descripcion" style="text-align:center; padding:5px; min-width:60px;">
+							<h:outputText value="#{var.idConcepto.id}" />
+						</rich:column>
+		
+						<rich:column styleClass="Descripcion" style="text-align:left; padding:5px;">
+							<h:outputText value="#{var.idConcepto.descripcion}" />
+						</rich:column>
+						
+						<rich:column styleClass="Descripcion" style="text-align:center; padding:5px; min-width:60px;">
+							<h:outputText value="#{var.cantidad}">
+								<f:convertNumber pattern="0.00" />
+							</h:outputText>
+						</rich:column>
+						
+						<rich:column styleClass="Descripcion" style="text-align:right; padding:5px; min-width:90px;">
+							<h:outputText value="#{var.costo}">
+								<f:convertNumber pattern="###,###,##0.00" />
+							</h:outputText>
+						</rich:column>
+						
+						<rich:column styleClass="Descripcion" style="text-align:right; padding:5px; min-width:90px;">
+							<h:outputText value="#{var.importe}">
+								<f:convertNumber pattern="###,###,##0.00" />
+							</h:outputText>
+						</rich:column>
+						
+						<rich:column styleClass="Descripcion" style="text-align:right; padding:5px; min-width:90px;">
+							<h:outputText value="#{var.total}">
+								<f:convertNumber pattern="###,###,##0.00" />
+							</h:outputText>
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+							<a4j:commandButton id="cmdEditar" 
+								image="#{msg['editar16.img']}" title="#{msg['editar']}"
+								rendered="#{facturaAction.puedeTimbrar || facturaAction.factura.id == null || facturaAction.factura.id == 0}"
+								action="#{facturaAction.editarFacturaDetalleConcepto}"
+								oncomplete="#{rich:component('pnlConcepto')}.show()"
+								render="pnlConcepto, txtValorCantidad, txtValorCosto, dtImpuestos"
+								limitRender="true">
+								<f:setPropertyActionListener target="#{facturaAction.facturaDetalle}" value="#{var}" />
+							</a4j:commandButton>
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+							<a4j:commandButton id="cmdEliminar" 
+								image="#{msg['eliminar16.img']}" title="#{msg['eliminar']}"
+								rendered="#{facturaAction.puedeTimbrar || facturaAction.factura.id == null || facturaAction.factura.id == 0}"
+								oncomplete="#{rich:component('pnlEliminarDetalle')}.show()"
+								render="pnlEliminarDetalle"
+								limitRender="true">
+								<f:setPropertyActionListener target="#{facturaAction.facturaDetalle}" value="#{var}" />
+							</a4j:commandButton>
+						</rich:column>
+		
+						<f:facet name="footer">
+							<rich:dataScroller id="dScrollDetalles" align="center" for="dtDetalles" maxPages="10"
+								ajaxSingle="true" page="#{facturaAction.numPaginaDetalles}" styleClass="Titulo" />
+						</f:facet>
+					</rich:dataTable>
+				</fieldset>
+			</h:panelGroup>
+			
+			<a4j:log rendered="#{facturaAction.debugging}" style="max-width: 500px; margin: 0 auto; max-height: 200px;" />
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

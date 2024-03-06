@@ -1,0 +1,92 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlBusquedaSucursales" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['buscar']} #{msg['sucursal']}" styleClass="Titulo" style="margin-left:10px" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}"
+				style="cursor:pointer;"
+				onclick="#{rich:component('pnlBusquedaSucursales')}.hide()" />
+		</f:facet>
+		
+		<div style="display: block; min-width:500px; height: 22px;">
+			<!--a4j:commandButton id="cmdBuscarSucursales" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+				image="#{msg['buscar22.img']}" 
+				action="#{facturaAction.buscarSucursales}" 
+				oncomplete="buscar(#{facturaAction.band}, '#{rich:clientId('pnlMensajes')}')" 
+				render="dtBusquedaSucursales, pnlMensajes">
+				<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarSucursales"/>
+			</a4j:commandButton-->
+		</div>
+
+		<div style="display: block; margin-bottom:10px;">
+			<h:panelGrid id="pnlBloqueBusquedaSucursales" columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin-left:10px; margin-bottom:20px; display:block;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+				
+				<h:selectOneMenu styleClass="Titulo" style="width: 216px;"
+					value="#{facturaAction.campoBusquedaSucursal}">
+					<f:selectItems value="#{facturaAction.tipoBusquedaSucursal}" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText maxlength="50" style="width: 210px;"
+					value="#{facturaAction.valorBusquedaSucursal}" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtBusquedaSucursales" cellpadding="0" cellspacing="0" rows="20" border="0" var="var" rowClasses="Row1, Row2" styleClass="tabla_pagina" value="#{facturaAction.listaObras}">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column colspan="3" style="text-align:center; font-weight: bold;">
+							<h:outputText value="#{msg['sucursales']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 100px;">
+							<h:outputText value="#{msg['clave']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;">
+							<h:outputText value="#{msg['descripcion']}" />
+						</rich:column>
+
+						<rich:column style="text-align:center; width: 30px;" styleClass="Titulo">
+							<h:outputText value="#{msg['seleccionar']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width: 100px;">
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.nombre}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 30px;" styleClass="Descripcion">
+				   <!--a4j:commandButton id="cmdSeleccionarSucursal" 
+				   		image="#{msg['agregar16.img']}" 
+						action="#{facturaAction.seleccionarSucursal}"  
+						oncomplete="seleccionar(#{facturaAction.band}, '#{rich:clientId('pnlBusquedaSucursales')}', '#{rich:clientId('pnlMensajes')}');" 
+						render="grupoDatosSucursal, pnlMensajes"
+						limitRender="true">
+						<rich:tooltip showDelay="300" value="#{msg['agregar.e']}" for="cmdSeleccionarSucursal" />	
+						<f:setPropertyActionListener target="#{facturaAction.factura.idSucursal}" value="#{var}" />
+				   </a4j:commandButton-->
+				</rich:column>
+
+				<f:facet name="footer"> 
+					<rich:dataScroller id="dScrollBusquedaSucursales" page="#{facturaAction.paginaSucursales}" for="dtBusquedaSucursales" maxPages="10" ajaxSingle="true" align="center" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+    
+</ui:composition>

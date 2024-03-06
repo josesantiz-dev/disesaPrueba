@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="org.richfaces" slot="3.3.0" xmlns="urn:jboss:module:1.1">
+	<resources>
+		<resource-root path="richfaces-api-3.3.0.GA.jar"/>
+		<resource-root path="richfaces-impl-3.3.0.GA.jar"/>
+		<resource-root path="richfaces-ui-3.3.0.GA.jar"/>
+		
+	</resources>
+	<dependencies>
+
+		<module export="true" name="javaee.api" />
+		<module export="true" name="javax.api" />
+		<module export="true" name="javax.annotation.api"  />
+		<module export="true" name="javax.annotation.jsr250-api" optional="true" />
+		<module export="true" name="javax.annotation.jsr305-api" />
+		<module export="true" name="javax.el.api" />
+		<module export="true" name="javax.faces.api" slot="1.2" />
+		<module export="true" name="javax.jms.api" />
+		<module export="true" name="javax.servlet.api" />
+		<module export="true" name="javax.servlet.jsp.api" />
+		<module export="true" name="javax.servlet.jstl.api" />
+		<module export="true" name="org.apache.commons.beanutils" />
+		<module export="true" name="org.apache.commons.collections" />
+		<module export="true" name="org.apache.commons.digester" />
+		<module export="true" name="org.apache.commons.logging" />
+		<module export="true" name="com.sun.facelets.jsf-facelets" />
+		<module export="true" name="com.sun.jsf-impl" slot="1.2" />
+	</dependencies>
+</module>

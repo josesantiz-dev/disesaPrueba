@@ -1,0 +1,117 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlProvision" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20"
+		header="#{msg['provisiones']}">
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;"
+				value="#{msg['navegacion.gral.cerrar.img']}"
+				onclick="#{rich:component('pnlProvision')}.hide()" />
+		</f:facet>
+		
+		<a4j:region id="regFactura">
+			<h:panelGroup style="display:block; min-height: 22px; margin:5px auto; width:100%;">
+				<h:panelGrid columns="2" style="width:100%; text-align:left">
+					<rich:messages id="validadorProvision" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+						<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" /></f:facet>
+					</rich:messages>
+					
+					<h:panelGroup id="panelBotoneraDerecha" style="vertical-align:middle; position:relative;">
+						<a4j:commandButton id="cmdSalvar" style="float:right; margin:auto 5px; vertical-align:right; position:relative;"
+							image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+							action="#{provAction.guardar}"
+							oncomplete="salvar(#{provAction.operacion}, '#{rich:clientId('pnlProvision')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorProvision')})" 
+							render="validadorProvision,pnlMensajes" limitRender="true"/>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+			
+			<fieldset style="margin:5px auto;">
+				<legend><h:outputText value="#{msg['factura']}" styleClass="Titulo" /></legend>
+				<h:panelGrid id="grupoFactura" columns="4" columnClasses="colTitulo,colDato,colTitulo,colDato">
+					<h:outputText value="#{msg['factura']}:" styleClass="Descripcion" />
+					<h:panelGroup id ="pnlFacturaDatos">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtFactura" value="#{provAction.facturaDescripcion}" styleClass="Titulo" />
+							<h:panelGroup>
+								<a4j:commandLink id="cmdFacturaBusqueda" 
+								    rendered="#{provAction.provisionId == 0}" 
+								 	value="#{provAction.facturaDescripcion == '' ? msg['seleccionar'] : msg['cambiar'] } "
+								 	action="#{provAction.nuevaBusquedaFacturas}" 
+									oncomplete="#{rich:component('pnlBusquedaFacturas')}.show()" 
+									render="pnlBusquedaFacturas" limitRender="true" />
+									
+								<h:inputText id="txtFacturaHidden" style="text-align:left; display:none;"
+									value="#{provAction.facturaDescripcion}"
+									required="#{!empty param[rich:clientId('cmdAgregar')]}"
+									requiredMessage="#{msg['factura']} #{msg['mensaje.error.requerido']}" />
+							</h:panelGroup> 
+						</h:panelGrid>
+					</h:panelGroup>
+					<h:outputText value="#{msg['fecha']}:" styleClass="Descripcion"/>
+					<h:outputText id="txtFecha" styleClass="Titulo" style="text-align:left; display:block;" 
+						value="#{provAction.fechaCreacion}">
+						<f:convertDateTime type="date" pattern="dd-MMM-yyyy"/>
+					</h:outputText>
+								  
+					<h:outputText value="#{msg['cliente']}:" styleClass="Descripcion" />
+					<h:outputText id="txtCliente" styleClass="Titulo" style="text-align:left; display:block;" 
+						value="#{provAction.cliente}" />
+					<h:outputText value="#{msg['uuid']}:" styleClass="Descripcion" />
+					<h:outputText id="txtId" styleClass="Titulo" style="text-align:left; display:block;" 
+						value="#{provAction.facturaId}" />
+								  
+					<h:outputText value="#{msg['nombreObra']}:" styleClass="Descripcion" />
+					<h:outputText id="txtObra" styleClass="Titulo" style="text-align:left; display:block;" 
+						value="#{provAction.nombreObra}" />
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+									
+					<h:outputText value="#{msg['total']}:" styleClass="Descripcion" />
+					<h:outputText id="txtTotalFac" styleClass="Titulo" style="text-align:left; display:block;" 
+	        	  		value="#{provAction.totalFactura}" pattern="#0.00">
+	        	  		<f:convertNumber pattern="###,###,##0.00"/>
+					</h:outputText>
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Descripcion" />
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+				</h:panelGrid>
+			</fieldset>
+			
+			<fieldset style="margin:5px auto 0;">
+				<legend><h:outputText value="#{msg['provision']}" styleClass="Titulo" /></legend>
+				<h:panelGrid id="grupoProvisiones" columns="4" columnClasses="colTitulo,colDato,colTitulo,colDato">
+				 
+					<h:outputText value="#{msg['provisionado']}:" styleClass="Titulo" />
+					<h:inputText id="txtTotalProv" styleClass="Titulo" style="width: 140px; text-align: right"  
+						disabled="#{provAction.provisionId == 0 ? false : true}"
+			        	value="#{provAction.totalProvision}"  pattern="#0.00">
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:inputText>
+							 					
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />	
+						
+					<h:outputText value="#{msg['fecha']}:" styleClass="Titulo"/>
+					<h:outputText id="txtFechaMod" styleClass="Titulo" style="text-align:left; display:block;" 
+						value="#{provAction.fechaModificacion}">
+					    <f:convertDateTime type="date" pattern="dd-MMM-yyyy"/>
+					</h:outputText>
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+															
+					<h:outputText value="#{msg['observaciones']}:" styleClass="Titulo" />
+					<h:inputTextarea id="txtObservaciones" style="width:100%; resize:none;" rows="2"
+						value="#{provAction.observaciones}" />
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+				</h:panelGrid>
+			</fieldset>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

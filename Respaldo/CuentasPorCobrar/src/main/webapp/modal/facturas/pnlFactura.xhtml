@@ -1,0 +1,299 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlFactura" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+		<f:facet name="header">
+			<h:outputText value="#{facturaAction.tituloFactura}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}"
+				onclick="#{rich:component('pnlFactura')}.hide()" />
+		</f:facet>
+		
+		<a4j:region id="regFactura">
+		<div style="display: block; height: 22px; margin-bottom:10px; min-width: 500px;">
+			<h:panelGrid columns="2" style="width:100%;" >
+				<h:panelGroup id="panelBotoneraIzquierda" style="vertical-align:middle; position:relative; ">
+					<a4j:commandButton id="cmdTimbrar" 
+						style="float: left; margin-left: 5px; vertical-align: right; position:relative; display:#{facturaAction.puedeTimbrar ? 'block' : 'none'}"
+						image="#{msg['documentos22.img']}"
+						onclick="#{rich:element('cmdTimbrar')}.disabled = true;"
+						action="#{facturaAction.timbrar}"
+						oncomplete="timbrar('#{rich:clientId('pnlMensajes')}'); #{rich:element('cmdTimbrar')}.disabled = false;"
+						render="pnlMensajes,cmdCorreo"
+						limitRender="true">
+						<rich:tooltip showDelay="300" value="#{msg['timbrar']}" for="cmdTimbrar" />
+					</a4j:commandButton>
+					
+					<a4j:commandButton id="cmdCorreo" 
+						style="float:left; margin-left: 5px; vertical-align: middle; position:relative; display:#{facturaAction.facturaTimbrada ? 'block' : 'none'}" 
+						image="#{msg['mail22.img']}" 
+						onclick="#{rich:element('cmdCorreo')}.disabled = true;"
+						action="#{facturaAction.nuevoEnvio}" 
+						oncomplete="#{rich:component('pnlCorreo')}.show(); #{rich:element('cmdCorreo')}.disabled = true;" 
+						render="pnlCorreo"
+						limitRender="true">
+						<rich:tooltip showDelay="300" value="#{msg['correo']}" for="cmdCorreo" />
+					</a4j:commandButton>
+				</h:panelGroup>
+				
+				<h:panelGroup id="panelBotoneraDerecha" style="vertical-align:middle; position:relative;">
+					<a4j:commandButton id="cmdSalvar" style="float:right; margin:0 5px 0 2px; vertical-align: right; position:relative;"
+						image="#{msg['salvar22.img']}"
+						rendered="#{facturaAction.puedeTimbrar || facturaAction.factura.id == null || facturaAction.factura.id == 0}" 
+						action="#{facturaAction.guardar}"
+						oncomplete="salvarSinCerrar('#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrorFact')})" 
+						render="msgErrorFact,pnlMensajes,panelBotoneraIzquierda,txtFolio,dtFacturas"
+						limitRender="true">
+						<rich:tooltip showDelay="300" value="#{msg['salvar.e']}" for="cmdSalvar" />
+					</a4j:commandButton>
+				</h:panelGroup>
+			</h:panelGrid>
+		</div>
+		
+		<rich:messages id="msgErrorFact" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+			<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" /></f:facet>
+		</rich:messages>
+		
+		<a4j:log rendered="false" style="max-width: 500px; margin: 0 auto; max-height: 200px;" />
+		
+		<!-- DATOS GENERALES -->
+		<h:panelGroup id="grupoDatosGenerales">
+			<fieldset style="margin-top: 10px; margin-bottom: 10px">
+				<legend><h:outputText value="#{msg['datosGenerales']}" styleClass="Titulo" /></legend>
+				
+				<h:panelGrid columns="2" columnClasses="colTitulo,colDato">
+					<h:outputText value="#{msg['obra']}:" styleClass="Titulo" />
+					<h:panelGroup id ="pnlFacturaPoryectoDatos">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtProyecto" value="#{facturaAction.nombreObra}" styleClass="Titulo" style="text-align:left; display:block;" />
+							<h:panelGroup>
+								<a4j:commandLink id="cmdSeleccionarProyecto"  style="font-weight: bold;" 
+									rendered="#{facturaAction.puedeTimbrar || facturaAction.factura.id == null || facturaAction.factura.id == 0}" 
+								 	value="#{facturaAction.factura == null || facturaAction.factura.idObra == null || facturaAction.factura.idObra.id == null ? msg['seleccionar'] : msg['cambiar'] }"
+								 	action="#{facturaAction.nuevaBusquedaObras}" 
+									oncomplete="#{rich:component('pnlBusquedaObras')}.show()" 
+									render="pnlBusquedaObras"
+									limitRender="true" />
+								
+								<!-- Este input es solo con propósito de que se permita hacer validator al proyecto -->
+								<h:inputText id="txtProyecto2" style="text-align:left; display:none;"
+									value="#{facturaAction.nombreObra}"
+									required="#{!empty param[rich:clientId('cmdSalvar')]}"
+									requiredMessage="#{msg['mensage.error.factura.obra']} #{msg['mensaje.error.requerido']}" />
+							</h:panelGroup> 
+						</h:panelGrid>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['cliente']}:" styleClass="Titulo" />
+					<h:outputText id="txtCliente" value="#{facturaAction.nombreCliente}" styleClass="Titulo" style="text-align:left; display:block;" />
+				</h:panelGrid>
+			</fieldset>
+		</h:panelGroup>
+		
+		<h:panelGroup id="grupoFactura">
+			<fieldset style="margin-top: 10px; margin-bottom: 10px">
+				<legend><h:outputText value="#{msg['factura']}" styleClass="Titulo" /></legend>
+				
+				<h:panelGrid id="pnlDatosDetalleFactura" columns="4" width="100%" columnClasses="colTitulo,colDato,colTitulo,colDato">
+					<h:outputText value="#{msg['credito']}:" styleClass="Titulo" />
+					<h:selectBooleanCheckbox value="#{facturaAction.tipoFactura}" />
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+					
+					<h:outputText value="#{msg['folio']}:" styleClass="Titulo"/>
+					<h:panelGroup>
+						<h:inputText id="txtFolio" style="width:138px;"
+							disabled="true"
+							value="#{facturaAction.factura.folioFactura}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['folio']} #{msg['mensaje.error.requerido']}" />
+							
+						<a4j:commandButton id="btnFacturaFolio" style="vertical-align:middle; cursor:pointer; margin:0 5px;" 
+							image="#{msg['agregar16.img']}" 
+							rendered="#{facturaAction.userAdmin}"
+							action="#{facturaAction.evaluaFacturaFolio}"
+							oncomplete="evaluaMensaje(#{facturaAction.band}, '#{rich:clientId('pnlFacturaFolio')}', '#{rich:clientId('pnlMensajes')}')"
+							render="pnlFacturaFolio,pnlMensajes"
+							limitRender="true">
+							<rich:tooltip for="btnFacturaFolio" value="#{msg['factura']} #{msg['folio']}" styleClass="Descripcion" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+		            <h:outputText value="#{msg['subtotal']}:" styleClass="Titulo"/>
+					<h:inputText id="txtSubtotal" styleClass="Titulo" style="width: 140px; text-align: right" 
+						disabled="true"
+						value="#{facturaAction.subtotal}">
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:inputText>
+
+					<h:outputLabel value="#{msg['fecha']}:" styleClass="Titulo"/>
+		            <rich:calendar id="dtFecha" enableManualInput="false"
+		            	disabled="#{facturaAction.facturaTimbrada}"
+		            	value="#{facturaAction.factura.fechaEmision}" 
+		            	datePattern="dd/MMM/yyyy"
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+		            	requiredMessage="#{msg['fecha']} #{msg['mensaje.error.requerido']}">
+		                <rich:placeholder value="dd/MMM/yyyy" />
+		            </rich:calendar>
+		            
+					<h:outputText value="#{msg['impuestos']}:" styleClass="Titulo" />
+					<h:inputText id="txtImpuestos" styleClass="Titulo" style="width: 141px; text-align: right" 
+						disabled="true"
+						value="#{facturaAction.impuestos}">
+						<f:convertNumber pattern="###,###,##0.00" />
+					</h:inputText>
+		            
+					<h:outputText value="#{msg['sucursal']}:" styleClass="Titulo" />
+					<h:selectOneMenu id="cbSucursales" style="width: 162px;"
+						disabled="#{facturaAction.facturaTimbrada}"
+						value="#{facturaAction.sucursalId}"
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+		            	requiredMessage="#{msg['sucursal']} #{msg['mensaje.error.requerido']}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{facturaAction.listBusquedaSucursalItems}" />
+					</h:selectOneMenu>
+					
+					<h:outputText value="#{msg['retenciones']}:" styleClass="Titulo" />
+					<h:inputText id="txtRetenciones" styleClass="Titulo" style="width: 140px; text-align: right" 
+						disabled="true"
+						value="#{facturaAction.retenciones}">
+						<f:convertNumber pattern="###,###,##0.00" />
+					</h:inputText>
+		            
+					<h:outputText value="#{msg['metodoDePago']}:" styleClass="Titulo"/>
+					<h:selectOneMenu id="cbMetodoDePago" style="width: 162px;"
+						disabled="#{facturaAction.facturaTimbrada}"
+						value="#{facturaAction.factura.idMetodoPago}" 
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+		            	requiredMessage="#{msg['metodoDePago']} #{msg['mensaje.error.requerido']}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{facturaAction.listFormasPagoItems}" /> 
+					</h:selectOneMenu>
+					
+					<h:outputText value="#{msg['total']}:" styleClass="Titulo" />
+					<h:inputText id="txtTotal" styleClass="Titulo" style="width: 140px; text-align: right"  
+						disabled="true"
+						value="#{facturaAction.total}">
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:inputText>
+				</h:panelGrid>
+				
+				<h:panelGrid columns="2" columnClasses="colTitulo,colDato" style="width: 100%; padding-right: 10px">
+					<h:outputText value="#{msg['observaciones']}:" styleClass="Titulo" />
+					<h:inputTextarea id="txtObservaciones" style="width: 100%; resize: none;" rows="2"
+						disabled="#{facturaAction.facturaTimbrada}"
+						value="#{facturaAction.factura.observaciones}" />
+				</h:panelGrid>
+				
+				<hr/>
+				
+				<!-- El control que manda llamar a conceptos de facturacion -->
+				<a4j:commandButton id="cmdAgregarConceptos" style="float:right; vertical-align: middle; cursor: pointer; margin: 0 5px 10px 0;" 
+					image="#{msg['agregar_azul16.img']}" 
+					rendered="#{facturaAction.puedeTimbrar || facturaAction.factura.id == null || facturaAction.factura.id == 0}"
+					action="#{facturaAction.nuevoConceptoFacturacion}" 
+					oncomplete="#{rich:component('pnlConcepto')}.show();"
+					render="pnlConcepto"
+					limitRender="true">
+					<rich:tooltip for="cmdAgregarConceptos" value="#{msg['agregar.e']}" styleClass="Descripcion" />
+				</a4j:commandButton>
+
+				<rich:dataTable id="dtDetalles" var="var" value="#{facturaAction.listFacturaDetalles}" cellpadding="0" cellspacing="0"
+					rows="8" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"> 
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column colspan="7" style="text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['conceptoFacturacion']}" />
+							</rich:column>
+							
+							<rich:column breakRowBefore="true" style="text-align:center; width:60px;" styleClass="Titulo">
+								<h:outputText value="#{msg['id']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['concepto']}" />
+							</rich:column> 
+							
+							<rich:column style="text-align:center; width:60px;" styleClass="Titulo">
+								<h:outputText value="#{msg['cantidad']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:90px;" styleClass="Titulo">
+								<h:outputText value="#{msg['costo']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:90px;" styleClass="Titulo">
+								<h:outputText value="#{msg['total']}" />
+							</rich:column>
+	
+							<rich:column colspan="2" style="text-align:center; width: 40px;" styleClass="Titulo" />
+						</rich:columnGroup>
+					</f:facet>
+	
+					<rich:column styleClass="Descripcion" style="text-align:center; padding-left: 5px; min-width:60px;">
+						<h:outputText value="#{var.idConcepto.id}" />
+					</rich:column>
+	
+					<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+						<h:outputText value="#{var.idConcepto.descripcion}" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:center; padding-left: 5px; min-width:60px;">
+						<h:outputText value="#{var.cantidad}">
+							<f:convertNumber pattern="0.00" />
+						</h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:right; padding-left: 5px; min-width:90px;">
+						<h:outputText value="#{var.costo}">
+							<f:convertNumber pattern="###,###,##0.00" />
+						</h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:right; padding-left: 5px; min-width:90px;">
+						<h:outputText value="#{var.total}">
+							<f:convertNumber pattern="###,###,##0.00" />
+						</h:outputText>
+					</rich:column>
+					
+					<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+						<a4j:commandButton id="cmdEditar" image="#{msg['editar16.img']}"
+							rendered="#{facturaAction.puedeTimbrar || facturaAction.factura.id == null || facturaAction.factura.id == 0}"
+							action="#{facturaAction.editarFacturaDetalleConcepto}"
+							oncomplete="#{rich:component('pnlConcepto')}.show()"
+							render="pnlConcepto, txtValorCantidad, txtValorCosto, dtImpuestos"
+							limitRender="true"> 
+							<rich:tooltip showDelay="300" value="#{msg['editar']}" for="cmdEditar" />
+							<f:setPropertyActionListener target="#{facturaAction.facturaDetalle}" value="#{var}" />
+						</a4j:commandButton>
+					</rich:column>
+					
+					<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+						<a4j:commandButton id="cmdEliminar" image="#{msg['eliminar16.img']}"
+							rendered="#{facturaAction.puedeTimbrar || facturaAction.factura.id == null || facturaAction.factura.id == 0}"
+							oncomplete="#{rich:component('pnlEliminarDetalle')}.show()"
+							render="pnlEliminarDetalle"
+							limitRender="true">
+							<rich:tooltip showDelay="300" value="#{msg['eliminar']}" for="cmdEliminar" />
+							<f:setPropertyActionListener target="#{facturaAction.facturaDetalle}" value="#{var}" />
+						</a4j:commandButton>
+					</rich:column>
+	
+					<f:facet name="footer">
+						<rich:dataScroller id="dScrollDetalles" align="center" for="dtDetalles" maxPages="10"
+							ajaxSingle="true" page="#{facturaAction.numPaginaDetalles}" styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</fieldset>
+		</h:panelGroup>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

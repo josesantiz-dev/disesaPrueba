@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="com.sun.facelets.jsf-facelets" xmlns="urn:jboss:module:1.1">
+	<resources>
+		<resource-root path="jsf-facelets-1.1.14.jar"/>
+	</resources>
+	<dependencies>
+		<module export="true" name="javax.faces.api" slot="1.2"/>
+		<module export="true" name="javax.el.api" />
+		<module export="true" name="javax.api"/>
+	</dependencies>
+</module>

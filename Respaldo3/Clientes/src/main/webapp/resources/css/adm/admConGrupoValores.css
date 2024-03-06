@@ -1,0 +1,67 @@
+.conGpoValCol{
+	width:180px;
+	text-align:left;
+	font-weight:bold;
+	font-size:12px;
+	color:#6A6868;
+}
+.conGpoValCol1{
+	width:50px;
+	text-align:right;
+	font-weight:bold;
+	font-size:12px;
+	color:#6A6868;
+}
+.conGpoValCol2{
+	width:100px;
+	text-align:left;
+}
+.conGpoValColIzq{
+	width:80px;
+	text-align:right;
+	font-weight:bold;
+	font-size:12px;
+	color:#6A6868;
+}
+.conGpoValColDer{
+	width:300px;
+	text-align:left;
+}
+.conGpoValMsgErr{
+	text-align:right;
+	font-size:12px;
+}
+.conGpoValObservacion{
+	text-align:left;
+	font-weight:bold;
+	font-size:12px;
+	color:#C0C0C0;
+}	
+.conGpoValTit{
+	font-weight:bold;
+	font-size:12px;
+	color:#525252;
+}
+.conGpoValRow1{
+	background:#FFFFFF;
+}
+.conGpoValRow2{
+	background:#f1f1f1;
+}
+.conGpoValDesc{
+	font-weight:bold;
+	font-size:12px;
+	color:#808080;
+}
+.conGpoValDescripcion{
+	text-align:left;
+	font-weight:bold;	
+	font-size:12px;
+	color:#808080;
+}
+.conGpoValComprobados{	
+	color:green;
+}
+.conGpoValCancelado{	
+	color:red;
+}

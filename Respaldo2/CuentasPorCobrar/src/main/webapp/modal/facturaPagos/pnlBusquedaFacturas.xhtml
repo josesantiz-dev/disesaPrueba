@@ -1,0 +1,129 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlBusquedaFacturas" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+		<f:facet name="header">
+			<h:outputText value="#{msg['busqueda.buscarFacturas']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;"
+				value="#{msg['navegacion.gral.cerrar.img']}"  
+				onclick="#{rich:component('pnlBusquedaFacturas')}.hide()" />
+		</f:facet>
+		
+		<a4j:region>
+			<h:panelGroup style="display:block; min-width:800px; min-height:22px;">
+				<a4j:commandButton id="cmdBuscarFacturas" style="float:right; margin-right:5px; vertical-align: middle; cursor:pointer;"
+					image="#{msg['buscar22.img']}"  title="#{msg['buscar.e']}"
+					action="#{facPagosAction.buscarFacturas}"
+					oncomplete="buscarFacturas(#{facPagosAction.band}, '#{rich:clientId('pnlMensajes')}')" 
+					render="dtFacturas,pnlMensajes"
+					limitRender="true" />
+			</h:panelGroup>
+			
+			<a4j:log rendered="false" popup="false" level="ALL" mode="inline" 
+				style="min-height:100px; max-width:800px; margin:0 auto;" />
+	
+			<h:panelGroup class="div_pagina" style="margin:10px auto 0; padding:0;" >
+				<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin:0 auto; display:block;">
+					<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo" />
+					<h:selectOneMenu style="width:216px"
+						value="#{facPagosAction.campoBusquedaFacturas}" >
+						<f:selectItems value="#{facPagosAction.tipoBusquedaFacturas}" />
+					</h:selectOneMenu>
+		        
+					<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+					<h:inputText maxlength="50" style="width:210px" 
+						value="#{facPagosAction.valBusquedaFacturas}" />
+				</h:panelGrid>
+	
+				<rich:dataTable id="dtFacturas" value="#{facPagosAction.listaFacturas}" var="var" rows="8" style="margin:10px auto 0;"
+					cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" >
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column colspan="7" style="text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['facturas']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:90px;" styleClass="Titulo" breakRowBefore="true">
+								<h:outputText value="#{msg['id']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:90px;" styleClass="Titulo">
+								<h:outputText value="#{msg['folioFactura']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['obra']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['cliente']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+								<h:outputText value="#{msg['fecha']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+								<h:outputText value="#{msg['total']}" />
+							</rich:column>
+	
+							<rich:column style="text-align:center; width:30px;" styleClass="Titulo" />
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column styleClass="Descripcion" style="width:90px; text-align:center; padding:5px;">
+						<h:outputText value="#{var.id}" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="width:90px; text-align:center; padding:5px;">
+						<h:outputText value="#{var.folioFactura}" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:left; padding:5px;">
+						<h:outputText value="#{var.nombreObra}" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:left; padding:5px;">
+						<h:outputText value="#{var.cliente}" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="width:90px; text-align:center; padding:5px;">
+						<h:outputText value="#{var.fechaEmision}">
+							<f:convertDateTime type="date" pattern="dd MMM yyyy"/>
+						</h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="width:120px; text-align:right; padding:5px;">
+						<h:outputText value="#{var.subtotal + var.impuestos}">
+							<f:convertNumber pattern="###,###,##0.00" />
+						</h:outputText>
+					</rich:column>
+					
+					<rich:column style="width:30px; text-align:center;" styleClass="Descripcion">
+					   <a4j:commandButton id="cmdAgregar" 
+					   		image="#{msg['agregar16.img']}" title="#{msg['agregar.e']}"
+							action="#{facPagosAction.seleccionarFactura}"
+							oncomplete="seleccionar(#{facPagosAction.band}, '#{rich:clientId('pnlBusquedaFacturas')}', '#{rich:clientId('pnlMensajes')}', #{facPagosAction.multiPago})"
+							render="groupFactura,groupFacturas,pnlFacturaDatos,txtFacturaObra,txtFacturaCliente,txtFacturaTotal,txtFacturaSaldo,pnlMensajes,groupPago,groupCuenta"
+							limitRender="true" execute="@region">
+							<f:setPropertyActionListener target="#{facPagosAction.pojoFacturaSeleccionada}" value="#{var}" />
+					   </a4j:commandButton>
+					</rich:column>
+	
+					<f:facet name="footer">
+						<rich:dataScroller id="scrollFacturas" page="#{facPagosAction.numPaginaFacturas}" for="dtFacturas" 
+							align="center" maxPages="10" fastStep="10" ajaxSingle="true" renderIfSinglePage="false" styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</h:panelGroup>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

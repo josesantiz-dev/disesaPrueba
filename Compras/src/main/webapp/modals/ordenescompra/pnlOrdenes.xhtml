@@ -1,0 +1,138 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    
+    <rich:popupPanel id="pnlOrdenes" autosized="true" domElementAttachment="form" style="min-width:1024px; max-width:1044px;" top="5"
+		onshow="document.getElementById('#{rich:clientId('cmdNuevaOrden')}').focus();">
+    	<f:facet name="header">
+			<h:outputText value="#{msg['ordenesCompras']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlOrdenes')}.hide()" />
+		</f:facet>
+		
+		<h:panelGrid id="botoneraOrdenes" columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+			<h:panelGroup id="grupoOrdenesBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdActualizaOrdenes" styleClass="Titulo" style="margin:0 10px; vertical-align: middle; position:relative; cursor:pointer;"
+					image="#{msg['actualizar22.img']}" title="#{msg['actualizar']} #{msg['lista']}"
+					action="#{ordenAction.ver}"
+					render="regListOrdenes"
+					limitRender="true" />
+				
+				<h:selectOneMenu style="width:216px" title="#{msg['actualizar']} #{msg['cotizaciones']}" 
+					value="#{ordenAction.estatusOrdenCompra}">
+					<f:selectItems value="#{ordenAction.listEstatusOrdenCompraItems}" />
+		            <a4j:ajax event="change" 
+			            listener="#{ordenAction.ver}" 
+			            render="regListOrdenes, pnlMensajes" 
+						limitRender="true"/>
+		        </h:selectOneMenu>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoOrdenesBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdNuevaOrden" styleClass="Titulo" style="float:right; margin-left: 5px; vertical-align: middle; position:relative; cursor:pointer;"
+					rendered="#{ordenAction.permiteModificar}" 
+					image="#{msg['nuevo22.img']}" title="#{msg['nuevo.e']}"
+					action="#{ordenAction.nuevo}"
+					onclick="#{rich:element('cmdNuevaOrden')}.disabled = true; #{rich:component('tabOrdenCompra')}.switchToItem('@first');"
+					oncomplete="evaluaNuevo(#{ordenAction.operacion}, #{ordenAction.maestroAdministrativo},'#{rich:clientId('pnlConfirmaOrigen')}','#{rich:clientId('pnlOrden')}','#{rich:clientId('pnlMensajes')}'); #{rich:element('cmdNuevaOrden')}.disabled = false;"
+					render="pnlOrden,pnlMensajes,fsDatosComplementarios"
+					limitRender="true" />
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<h:panelGroup styleClass="encabezado" style="min-height: 1em; margin:5px auto 0;">
+			<h:outputText value="#{ordenAction.pojoObra != null ? ordenAction.pojoObra.id : '0'} "/>
+			<h:outputText value="#{ordenAction.pojoObra != null ? ordenAction.pojoObra.nombre : ''}" />
+		</h:panelGroup>
+
+		<h:panelGroup id="regListOrdenes">
+			<div class="tableParent" style="display:block; margin:10px auto 0; width:100%; padding:0; height:auto; max-height:500px; overflow-y:auto;">
+				<rich:dataTable id="dtOrdenes" value="#{ordenAction.listOrdenes}" var="var" rows="50" style="margin:0 auto;"
+					cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+					
+					<rich:column style="text-align:center; width:90px;" 
+						styleClass="#{var.estatus == 1 ? 'itemCancelado': (var.estatus == 2 ? 'itemUsado' : 'Descripcion')}">
+						<f:facet name="header"><h:outputText value="#{msg['id']}" /></f:facet>
+						<h:outputText value="#{var.id}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; width:90px;" 
+						styleClass="#{var.estatus == 1 ? 'itemCancelado': (var.estatus == 2 ? 'itemUsado' : 'Descripcion')}">
+						<f:facet name="header"><h:outputText value="#{msg['folio']}" /></f:facet>
+						<h:outputText value="#{var.folio}" title="#{msg['comprador']}: #{var.idCotizacion.nombreComprador}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; width:90px;" 
+						styleClass="#{var.estatus == 1 ? 'itemCancelado': (var.estatus == 2 ? 'itemUsado' : 'Descripcion')}">
+						<f:facet name="header"><h:outputText value="#{msg['fecha']}" /></f:facet>
+						<h:outputText value="#{var.fecha}"><f:convertDateTime type="date" pattern="dd/MMM/yyyy"/></h:outputText>
+					</rich:column>
+					
+					<rich:column style="text-align:left;" 
+						styleClass="#{var.estatus == 1 ? 'itemCancelado': (var.estatus == 2 ? 'itemUsado' : 'Descripcion')}">
+						<f:facet name="header"><h:outputText value="#{msg['proveedor']}" /></f:facet>
+						<h:outputText value="#{var.nombreProveedor}" />
+					</rich:column>
+		
+					<rich:column style="text-align:right; width:100px;" 
+						styleClass="#{var.estatus == 1 ? 'itemCancelado': (var.estatus == 2 ? 'itemUsado' : 'Descripcion')}">
+						<f:facet name="header"><h:outputText value="#{msg['total']}" /></f:facet>
+						<h:outputText value="#{var.total}"><f:convertNumber pattern="#{ordenAction.patternDecimal}" /></h:outputText>
+					</rich:column>
+					
+					<rich:column style="text-align:center; width:20px;" styleClass="Descripcion">
+						<a4j:commandButton id="cmdReporte"
+							rendered="#{var.estatus != 1 ? (ordenAction.permiteModificar ? true : false) : false}"
+							image="#{msg['imprimir16.img']}" title="#{msg['imprimir.e']}"
+							action="#{ordenAction.reporte}" 
+							onclick="#{rich:element('cmdReporte')}.disabled = true;"
+							oncomplete="reporte(#{ordenAction.operacion}, '#{rich:clientId('pnlMensajes')}'); #{rich:element('cmdReporte')}.disabled = false;"
+							render="pnlMensajes"
+							limitRender="true">
+							<f:setPropertyActionListener value="#{var.id}" target="#{ordenAction.ordenCompraId}" for="cmdReporte" />
+						</a4j:commandButton>
+					</rich:column>
+					
+					<rich:column style="text-align:center; width:20px;" styleClass="Descripcion">
+						<a4j:commandButton id="cmdEditar" 
+							rendered="#{var.estatus != 1 ? (ordenAction.permiteModificar ? true : false) : false}"
+							image="#{msg['editar16.img']}" title="#{msg['editar']}"
+							action="#{ordenAction.editar}" 
+							onclick="#{rich:element('cmdEditar')}.disabled = true; #{rich:component('tabOrdenCompra')}.switchToItem('@first');"
+							oncomplete="#{rich:component('pnlOrden')}.show(); #{rich:element('cmdEditar')}.disabled = false;"
+							render="pnlOrden,fsDatosComplementarios"
+							limitRender="true">
+							<f:setPropertyActionListener value="#{var.id}" target="#{ordenAction.ordenCompraId}" for="cmdEditar" />
+						</a4j:commandButton>
+					</rich:column>
+					
+					<rich:column style="text-align:center; width:20px;" styleClass="Descripcion">
+						<a4j:commandButton id="cmdEliminar" 
+							rendered="#{var.estatus == 0 ? (ordenAction.permiteModificar ? true : false) : false}"
+							image="#{msg['cancelar16.img']}" title="#{msg['cancelar']}"
+							onclick="#{rich:element('cmdEditar')}.disabled = true;"
+							oncomplete="#{rich:component('pnlEliminar')}.show(); #{rich:element('cmdEditar')}.disabled = false;" 
+							render="pnlEliminar"
+							limitRender="true">
+							<f:setPropertyActionListener value="#{var.id}" target="#{ordenAction.ordenCompraId}" for="cmdEliminar" />
+						</a4j:commandButton>
+					</rich:column>
+					
+					<f:facet name="footer">
+						<rich:dataScroller for="dtOrdenes" page="#{ordenAction.numPaginaOrdenes}" renderIfSinglePage="false" 
+							maxPages="10" fastStep="10" align="center" ajaxSingle="true" styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</div>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

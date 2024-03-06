@@ -1,0 +1,40 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlConfirmaOrigen" modal="true" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['maestro.tipo']}" styleClass="Descripcion" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.panel.cerrar.img']}" 
+				onclick="#{rich:component('pnlConfirmaOrigen')}.hide()" />
+		</f:facet>
+		
+		<h:panelGroup>
+			<h:outputText value="#{msg['maestro.seleccioneTipo']}"  styleClass="Descripcion" />
+		</h:panelGroup>
+			
+		<h:panelGrid columns="2" columnClasses="colTitulo,colTitulo" width="200" style="text-align:center; margin:10px auto 0;">
+			<a4j:commandButton value="#{msg['maestro.inventariosAlt']}" 
+				onclick="#{rich:component('pnlConfirmaOrigen')}.hide()" 
+				action="#{reqAction.nuevoMaestroInventarios}" 
+				oncomplete="#{rich:component('pnlRequisicion')}.show()" 
+				render="pnlRequisicion"
+				limitRender="true" />
+				
+			<a4j:commandButton value="#{msg['maestro.administrativoAlt']}" 
+				onclick="#{rich:component('pnlConfirmaOrigen')}.hide()" 
+				action="#{reqAction.nuevoMaestroAdminitrativo}" 
+				oncomplete="#{rich:component('pnlRequisicion')}.show()" 
+				render="pnlRequisicion" 
+				limitRender="true" />
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

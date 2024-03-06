@@ -1,0 +1,97 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlEditarMontoProgPagos" autosized="true" >
+		<f:facet name="header">
+			<h:outputText value="Editar el Monto del Gasto" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor:pointer;" id="imgCerrarEditarMontoProgPagos"/>
+				<rich:componentControl for="pnlEditarMontoProgPagos" attachTo="imgCerrarEditarMontoProgPagos" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="frmEditarMontoProgPagos">
+			<a4j:region id="loadEditarMontoProgPagos">
+				<div style = "display: block; width: 300px; height: 22px;">
+					<h:panelGrid columns="2" style="float:right; margin-right:5px;" >
+						<h:panelGroup style="vertical-align: middle; position:relative;">
+							<a4j:commandButton id="cmdSalvarEditMon" style="cursor: pointer;" 
+								image="#{msg['salvar22.img']}"
+								onclick="#{rich:element('cmdSalvarEditMon')}.disabled = true;" 
+								action="#{progPagosAction.editarGastoDet}" 
+								oncomplete="checaResultado('#{progPagosAction.resOperacion}', 'pnlEditarMontoProgPagos', 'pnlMsgGralesProgramacionPagos', 'guardar', #{rich:element('msgErrorEditMonto')}); #{rich:element('cmdSalvarEditMon')}.disabled = false;" 
+								reRender="dtResults,pnlMsgGralesProgramacionPagos" />									
+						</h:panelGroup>
+						
+						<h:panelGroup style="vertical-align: middle; position:relative;">
+							<a4j:status for="loadEditarMontoProgPagos">
+								<f:facet name="start">
+									<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;"/>
+								</f:facet>
+								
+								<f:facet name="stop">
+									<h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: middle; position:relative;"/>
+								</f:facet>
+							</a4j:status>
+						</h:panelGroup>
+					</h:panelGrid>
+				</div>
+
+				<rich:dataTable id="dtDetGastos" var="gasto" value="#{progPagosAction.listGastosEditar}" rows="20" style="margin-left:1px;" cellpadding="0" cellspacing="0" width="300" border="0" rowClasses="Row1, Row2" >
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column colspan="4" styleClass="Titulo">
+								<h:outputText value="#{msg['navegacion.label.gastos']}"/>
+							</rich:column>
+							
+							<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['navegacion.label.gto']}"  />
+							</rich:column>
+							
+							<rich:column  style="text-align:center; margin-left:10px;" styleClass="Titulo">
+								<h:outputText value="#{msg['navegacion.label.monto']}" />
+							</rich:column>
+							
+							<rich:column  style="text-align:center; margin-left:10px;" styleClass="Titulo">
+								<h:outputText value="#{msg['eliminar']}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column width="240" style="text-align:left;" styleClass="Descripcion">
+						<h:outputText value="#{gasto.tiposGastos.descripcion}" />													
+					</rich:column>
+					
+					<rich:column width="100" style="text-align:right;" styleClass="Descripcion">
+						<h:inputText value="#{gasto.monto}" />
+					</rich:column>
+					
+					<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;" styleClass="Descripcion">
+						<a4j:commandButton style="cursor: pointer;"
+							image="#{msg['eliminar22.img']}" 
+							action="#{progPagosAction.eliminarGastoEditar}" 
+							reRender="frmEditarMontoProgPagos, dtDetGastos" >  
+							<f:setPropertyActionListener target="#{progPagosAction.pojoProPagosDet}" value="#{gasto}" />
+							<rich:toolTip showDelay="300"><h:outputText value="#{msg['eliminar.e']}" styleClass="Descripcion" /></rich:toolTip>	
+						</a4j:commandButton>
+					</rich:column>
+
+					<f:facet name="footer" >
+						<rich:datascroller id="dScroll" align="center" for="dtDetGastos" maxPages="3" 
+							ajaxSingle="true" page="#{progPagosAction.numPaginagasto}" styleClass="Titulo"/>
+					</f:facet>
+				</rich:dataTable>
+			</a4j:region>
+		</a4j:form>
+		
+		<rich:messages id="msgErrorEditMonto" showDetail="false" showSummary="false"/>
+	</rich:modalPanel>
+</ui:composition>

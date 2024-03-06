@@ -1,0 +1,34 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlConfirmaCerrar" modal="true" autosized="true" domElementAttachment="form"
+		onshow="document.getElementById('#{rich:clientId('btnConfirmarCloseNo')}').focus();">
+		<f:facet name="header">
+			<h:outputText value="#{msg['atencion']}" styleClass="Descripcion" />
+		</f:facet>
+		
+		<h:panelGroup style="display:block; width:auto; min-width:300px; text-align:center;">
+			<h:outputText value="#{msg['cotizacionGuardada']}" style="display:block;" styleClass="Descripcion" />
+			<h:outputText value="#{msg['confirmacionCotCerrar']}" style="display:block;" styleClass="Descripcion" />
+			
+			<h:panelGrid columns="2" style="width:200px; margin:10px auto 0; padding:0; text-align:center;">
+				<a4j:commandButton id="btnConfirmarCloseSi" style="margin:0 auto; cursor:pointer; width:100px;" 
+					value="#{msg['si']}" 
+					onclick="#{rich:component('pnlConfirmaCerrar')}.hide()" 
+					action="#{cotizaAction.nuevo}"
+					oncomplete="#{rich:component('pnlCotizacion')}.hide()"
+					render="dtResults" />
+					
+				<a4j:commandButton id="btnConfirmarCloseNo" style="margin:0 auto; cursor:pointer; width:90px;"
+					value="#{msg['no']}"
+					onclick="#{rich:component('pnlConfirmaCerrar')}.hide()" 
+					render="dtResults" />
+			</h:panelGrid>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

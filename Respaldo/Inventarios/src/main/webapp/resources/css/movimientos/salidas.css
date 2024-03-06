@@ -1,0 +1,50 @@
+.colTitulo{
+	width: 130px;
+	text-align: right;
+}
+
+.colTituloDom{
+	width: 100px;
+	text-align: right;
+}
+.colDato{
+	text-align: left;
+}
+.modalTable{
+	width: 600px;
+	margin-right: 5px;
+}
+.fixedColumn{
+	font-weight: bold;
+	font-size: 12px;
+	color:#808080;
+	text-align: center; 
+	padding-left: 5px; 
+	overflow: hidden;
+	word-wrap: break-word;
+}
+.colPnlBusqIzq{
+	color		: #6A6868;
+	font-size	: 12px;
+	font-weight	: bold;
+	text-align	: right;
+	width		: 150px;
+}
+.colPnlBusqDer{
+	text-align 	: left;
+	width		: 570px;
+}
+.itemCancelado{	
+	color : green;
+	disabled: disabled;
+}
+
+.textoCentrado{
+	text-align: center; 
+}
+
+.colDescripcion{
+	font-weight: bold;
+	width: 230px;
+	text-align: left;
+}

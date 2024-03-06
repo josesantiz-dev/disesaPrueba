@@ -1,0 +1,114 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlTimbre" autosized="true" domElementAttachment="form" style="min-width:300px; max-width:1024px;" top="10"
+		onshow="document.getElementById('#{rich:clientId('cmdTimbreCancel')}').focus();"
+		header="#{msg['timbrar']}">
+		
+		<a4j:region>
+		<h:panelGroup styleClass="encabezado" style="margin:0 auto 15px; min-height:1em;">
+			<h:outputText value="#{facturaAction.tituloFactura}" />
+		</h:panelGroup>
+		
+		<rich:messages id="timbreValidadorCampos" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+			<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" /></f:facet>
+		</rich:messages>
+		
+		<h:panelGroup style="display:block; min-width:500px; text-align:center;">
+			<h:panelGrid columns="2" width="100%" style="margin:5px auto 0;" columnClasses="colTitulo,colDato">
+				<h:outputText value="#{msg['version']}:" styleClass="Descripcion" />
+				<h:selectOneMenu id="cbCfdiVersion" style="width:162px;" disabled="true"
+					value="#{facturaAction.cfdiVersion}"
+	            	required="#{!empty param[rich:clientId('cmdDoTimbrar')]}" 
+	            	requiredMessage="#{msg['version']} #{msg['mensaje.error.requerido']}">
+	            	<f:selectItem itemLabel="#{msg['seleccione']}" />
+					<f:selectItems value="#{facturaAction.listCFDIVersionItems}" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['tipoComprobante']}:" styleClass="Descripcion" />
+				<h:selectOneMenu id="cbTiposComprobanteTimbre" style="width:162px;" disabled="true"
+					value="#{facturaAction.idTipoComprobante}"
+	            	required="#{!empty param[rich:clientId('cmdDoTimbrar')]}" 
+	            	requiredMessage="#{msg['tipoComprobante']} #{msg['mensaje.error.requerido']}">
+					<f:selectItems value="#{facturaAction.listCFDITipoComprobanteItems}" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['usoCfdi']}:" styleClass="Descripcion" />
+				<h:selectOneMenu id="cbUsoCfdi" style="width:262px;"
+					value="#{facturaAction.idUsoCfdi}" 
+	            	required="#{!empty param[rich:clientId('cmdDoTimbrar')]}" 
+	            	requiredMessage="#{msg['usoCfdi']} #{msg['mensaje.error.requerido']}">
+	            	<f:selectItem itemLabel="#{msg['seleccione']}" />
+					<f:selectItems value="#{facturaAction.listCFDIUsoItems}" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['cfdiRelaciondo']}:" styleClass="Descripcion" />
+				<h:selectBooleanCheckbox value="#{facturaAction.cfdiRelacionado}">
+					<a4j:ajax event="change" 
+						render="cmdSeleccionarCfdiRelacionado,cbTipoRelacionCfdi" 
+						limitRender="true" />
+				</h:selectBooleanCheckbox>
+				
+				<h:outputText value="#{msg['uuid']}:" styleClass="Descripcion"/>
+				<h:panelGroup id="pnlCfdiRelacionado">
+					<h:panelGrid columns="2">
+						<h:outputText id="txtCfdiRelacionado" value="#{facturaAction.cfdiRelacionadoUuid}" styleClass="Titulo" />
+						<h:panelGroup>
+							<a4j:commandLink id="cmdSeleccionarCfdiRelacionado" style="display:#{facturaAction.cfdiRelacionado ? 'block' : 'none'}"
+								value="#{facturaAction.cfdiRelacionadoUuid == '' ? msg['seleccionar'] : msg['cambiar']}" 
+								action="#{facturaAction.nuevaBusquedaCFDI}" 
+								oncomplete="#{rich:component('pnlBusquedaCFDI')}.show();"
+								render="pnlBusquedaCFDI"
+								limitRender="true" />
+							
+							<!-- Este input es solo con propósito de que se permita hacer validator al proyecto -->
+							<h:inputText id="txtFacturaHidden" style="text-align:left;  display:none;"
+								value="#{facturaAction.cfdiRelacionadoUuid}"
+								required="#{facturaAction.cfdiRelacionado ? !empty param[rich:clientId('cmdDoTimbrar')] : false}" 
+								requiredMessage="#{msg['uuid']} #{msg['mensaje.error.requerido']}">
+							</h:inputText>
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+				
+				<h:outputText value="#{msg['tipoRelacionCfdi']}:" styleClass="Descripcion" />
+				<h:selectOneMenu id="cbTipoRelacionCfdi" style="width:262px;"
+					disabled="#{! facturaAction.cfdiRelacionado}"
+					value="#{facturaAction.idTipoRelacion}" 
+	            	required="#{facturaAction.cfdiRelacionado ? !empty param[rich:clientId('cmdDoTimbrar')] : false}" 
+	            	requiredMessage="#{msg['tipoRelacionCfdi']} #{msg['mensaje.error.requerido']}">
+	            	<f:selectItem itemLabel="#{msg['seleccione']}" />
+					<f:selectItems value="#{facturaAction.listCFDITipoRelacionItems}" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Descripcion" rendered="#{facturaAction.permisoAdmin}" />
+				<h:panelGroup rendered="#{facturaAction.permisoAdmin}">
+					<h:selectBooleanCheckbox id="ckTimbreTesting" value="#{facturaAction.testing}" />
+					<h:outputLabel for="ckTimbreTesting" value="Testing" style="margin:0 10px 0 2px;" />
+					
+					<h:selectBooleanCheckbox id="ckNoTimbre" value="#{facturaAction.noTimbrar}" />
+					<h:outputLabel for="ckNoTimbre" value="No Timbrar" style="margin:0 10px 0 2px;" />
+				</h:panelGroup>
+			</h:panelGrid>
+		</h:panelGroup>
+		
+		<h:panelGrid columns="2" style="margin:10px auto 0; text-align:center; width:200px;" cellpadding="0" cellspacing="0">
+			<a4j:commandButton id="cmdDoTimbrar" style="margin:0 auto; width:100px;"
+				value="#{msg['timbrar']}"
+				onclick="#{rich:element('cmdDoTimbrar')}.disabled = true;"
+				action="#{facturaAction.timbrar}" execute="@region" 
+				oncomplete="#{rich:element('cmdDoTimbrar')}.disabled = false; timbrar(#{facturaAction.band}, '#{rich:clientId('pnlTimbre')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('timbreValidadorCampos')});"
+				render="timbreValidadorCampos,pnlMensajes,botonera,tabFacturacion,dtFacturas" limitRender="true" />
+			
+			<a4j:commandButton id="cmdTimbreCancel" style="margin:0 auto; width:90px;"
+				value="#{msg['cancelar']}"
+				onclick="#{rich:component('pnlTimbre')}.hide()" />
+		</h:panelGrid>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

@@ -1,0 +1,31 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlMensajes" modal="true" autosized="true"
+		onshow="document.getElementById('#{rich:clientId('btnMensajes')}').focus();"
+		header="#{msg['navegacion.label.atencion']}">
+
+		<h:panelGrid columns="1" style="text-align:center; min-width:300px; max-width:500px;" cellspacing="0" cellpadding="0">
+			<h:outputText value="#{ordenesAction.mensaje}" styleClass="Descripcion" rendered="#{ordenesAction.tipoMensaje == -1}" escape="false" />
+			<h:outputText value="#{msg['mensaje.info.infoReg']}" styleClass="Descripcion" rendered="#{ordenesAction.tipoMensaje == 0}" />       			
+			<h:outputText value="#{msg['mensaje.error.inesperado']}" styleClass="Descripcion" rendered="#{ordenesAction.tipoMensaje == 1}" />
+			<h:outputText value="#{msg['mensaje.info.busquedaVacia']}" styleClass="Descripcion" rendered="#{ordenesAction.tipoMensaje == 2}" />
+			<h:outputText value="#{msg['mensaje.error.requerido']}" styleClass="Descripcion" rendered="#{ordenesAction.tipoMensaje == 3}" />
+			<h:outputText value="#{msg['listaProductosVacia']}" styleClass="Descripcion" rendered="#{ordenesAction.tipoMensaje == 4}" />
+			<h:outputText value="#{msg['ningunProductoSeleccionado']}" styleClass="Descripcion" rendered="#{ordenesAction.tipoMensaje == 5}" />
+			<h:outputText value="#{msg['tiempoEntregaMenorCero']}" styleClass="Descripcion" rendered="#{ordenesAction.tipoMensaje == 6}" />
+			<h:outputText value="#{msg['plazoMenorCero']}" styleClass="Descripcion" rendered="#{ordenesAction.tipoMensaje == 7}" />
+			<h:outputText value="#{msg['anticipoMenorCero']}" styleClass="Descripcion" rendered="#{ordenesAction.tipoMensaje == 8}" />
+			<h:outputText value="#{msg['tipoCambioMenorCero']}" styleClass="Descripcion" rendered="#{ordenesAction.tipoMensaje == 9}" />
+			
+			<a4j:commandButton id="btnMensajes" style="margin:10px auto 0; min-width:100px;"
+				value="#{msg['navegacion.label.aceptar']}" 
+				oncomplete="#{rich:component('pnlMensajes')}.hide()" />
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

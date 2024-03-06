@@ -1,0 +1,528 @@
+<!DOCTYPE composition PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:rich="http://richfaces.org/rich" 
+	xmlns:s="http://jboss.com/products/seam/taglib" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['sucursales']}"/>
+	</ui:define>
+	
+    <ui:define name="menuFrag">
+        <rich:toolBarGroup id="tbgBuscar" location="right">
+            <a4j:commandButton id="cmdBuscar" style="cursor:pointer;" styleClass="Titulo"
+            	image="#{msg['buscar22.img']}" 
+            	action="#{sucursalesAction.buscar}" 
+            	oncomplete="buscar('#{sucursalesAction.resOperacion}','pnlMsgGralSucursales');" 
+            	reRender="dtSucursales, pnlMsgGralSucursales">
+                <rich:toolTip for="cmdBuscar" id="ttBuscar" showDelay="300" value="#{msg['boton.buscar.e']}"/>
+            </a4j:commandButton>
+        </rich:toolBarGroup>
+        
+        <rich:toolBarGroup id="tbgNuevo" location="right">
+            <a4j:commandButton id="cmdNuevo" style="cursor:pointer;" styleClass="Titulo"
+            	image="#{msg['nuevo22.img']}" 
+            	action="#{sucursalesAction.nuevo}" 
+            	oncomplete="Richfaces.showModalPanel('pnlEditarSucursales');" 
+            	reRender="pnlEditarSucursales">
+                <rich:toolTip for="cmdNuevo" id="ttNuevo" showDelay="300" value="#{msg['boton.nuevo.e']}"/>
+            </a4j:commandButton>
+        </rich:toolBarGroup>
+    </ui:define>
+
+    <ui:define name="body">
+        <a4j:keepAlive beanName="sucursalesAction"/>
+        <a4j:loadStyle src="resource:///resources/css/adm/adm.css"/>
+        <a4j:loadStyle src="resource:///resources/css/negocio/sucursales.css"/>
+        <a4j:loadScript src="resource:///resources/scripts/negocio/sucursales.js"/>
+
+        <div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+            <h:outputText style="font-weight: bold; font-size: 28px; color:#525252;" value="#{msg['sucursales']}"/>
+        </div>
+
+        <div class="div_pagina">
+            <h:panelGrid columns="2" id="pnlDatosBusquedaSucursales" style="margin-bottom:10px; margin-top:10px; display:block;" width="740">
+                <h:outputText styleClass="Titulo" value="#{msg['nombre']}:"/>
+                <h:inputText maxlength="45" size="45" value="#{sucursalesAction.valorBusqueda}"/>
+            </h:panelGrid>
+            
+            <rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtSucursales" rowClasses="Row1, Row2" rows="20" styleClass="tabla_pagina" value="#{sucursalesAction.listSucursales}" var="sucursal">
+                <f:facet name="header">
+                    <rich:columnGroup>
+                        <rich:column colspan="9" styleClass="Titulo">
+                            <h:outputText value="#{msg['sucursales']}"/>
+                        </rich:column>
+                        
+                        <rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+                            <h:outputText value="#{msg['id']}"/>
+                        </rich:column>
+                        
+                        <rich:column style="text-align:center;" styleClass="Titulo">
+                            <h:outputText value="#{msg['sucursal']}"/>
+                        </rich:column>
+                        
+                        <rich:column style="text-align:center;" styleClass="Titulo">
+                            <h:outputText value="#{msg['colonia']}"/>
+                        </rich:column>
+                        
+                        <rich:column style="text-align:center;" styleClass="Titulo">
+                            <h:outputText value="#{msg['domicilio']}"/>
+                        </rich:column>
+                        
+                        <rich:column style="text-align:center;" styleClass="Titulo">
+                            <h:outputText value="#{msg['empresa']}"/>
+                        </rich:column>
+                        
+                        <rich:column style="text-align:center;" styleClass="Titulo">
+                            <h:outputText value="#{msg['serie']}"/>
+                        </rich:column>
+                        <!--  
+                           <rich:column style="text-align:center;" styleClass="Titulo"><h:outputText value="#{msg['region']}" /></rich:column>-->
+                        <rich:column style="text-align:center;" styleClass="Titulo">
+                            <h:outputText value="#{msg['editar']}"/>
+                        </rich:column>
+                        <!--  
+                           <rich:column style="text-align:center;" styleClass="Titulo"><h:outputText value="#{msg['eliminar']}" /></rich:column>-->
+                    </rich:columnGroup>
+                </f:facet>
+                
+                <rich:column style="text-align:center;" styleClass="Descripcion" width="30">
+                    <h:outputText value="#{sucursal.id}"/>
+                </rich:column>
+                
+                <rich:column styleClass="Descripcion" width="180">
+                    <h:outputText value="#{sucursal.sucursal}"/>
+                </rich:column>
+                
+                <rich:column style="text-align:left; padding-left: 5px;" styleClass="Descripcion">
+                    <h:outputText value="#{sucursal.colonia.nombre}"/>
+                </rich:column>
+                
+                <rich:column style="text-align:left; padding-left: 5px;" styleClass="Descripcion">
+                    <h:outputText value="#{sucursal.domicilio}"/>
+                </rich:column>
+                
+                <rich:column style="text-align:left; padding-left: 5px;" styleClass="Descripcion">
+                    <h:outputText value="#{sucursal.empresa.empresa}"/>
+                </rich:column>
+                
+                <rich:column style="text-align:center;" styleClass="Descripcion">
+                    <h:outputText value="#{sucursal.serie}"/>
+                </rich:column>
+                <!--  
+                   <rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;"><h:outputText value="#{sucursal.region.region}"/></rich:column>-->
+                <rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+                    <a4j:commandButton id="cmdEditarSucursal" 
+                    	image="#{msg['editar16.img']}"
+                    	action="#{sucursalesAction.editar}" 
+                    	oncomplete="Richfaces.showModalPanel('pnlEditarSucursales')" 
+                    	reRender="pnlEditarSucursales">
+                        <rich:toolTip for="cmdEditarSucursal" showDelay="300" value="#{msg['boton.editar.e']}"/>
+                        <f:setPropertyActionListener target="#{sucursalesAction.pojoSucursal}" value="#{sucursal}"/>
+                    </a4j:commandButton>
+                </rich:column>
+                <!--  
+                   <rich:column width="20" style="text-align:center;" styleClass="Descripcion"><a4j:commandButton id="cmdEliminarSucursal" image="#{msg['eliminar16.img']}" 
+                            oncomplete="Richfaces.showModalPanel('pnlEliminarSucursal')"
+                            reRender="pnlEliminarSucursal,dtSucursales"><rich:toolTip showDelay="300" value="#{msg['boton.eliminar.e']}" for="cmdEliminarSucursal"/><f:setPropertyActionListener target="#{sucursalesAction.pojoSucursal}" value="#{sucursal}" /></a4j:commandButton></rich:column>-->
+                <f:facet name="footer">
+                    <rich:datascroller ajaxSingle="true" align="center" for="dtSucursales" id="dScroll" maxPages="10" page="#{sucursalesAction.numPagina}" styleClass="Titulo"/>
+                </f:facet>
+            </rich:dataTable>
+        </div>
+    </ui:define>
+
+    <ui:define name="modals">
+        <!-- ####### MODAL NUEVO/EDITAR SUCURSAL  ######### -->
+        <rich:modalPanel autosized="true" id="pnlEditarSucursales">
+            <f:facet name="header">
+                <h:outputText id="lblTitulo" style="margin-left:10px" styleClass="Titulo" value="#{msg['sucursal']}"/>
+            </f:facet>
+            
+            <f:facet name="controls">
+                <h:panelGroup>
+                    <h:graphicImage id="imgCerrarEditarSucursal" style="cursor: pointer;" value="#{msg['navegacion.panel.cerrar.img']}"/>
+                    <rich:componentControl attachTo="imgCerrarEditarSucursal" event="onclick" for="pnlEditarSucursales" operation="hide"/>
+                </h:panelGroup>
+            </f:facet>
+            
+            <a4j:form id="frmEditarSucursal">
+                <!-- INICIA MENU MODAL -->
+                <div style="display: block; width: 400px; height: 22px; margin-bottom:1em;">
+                    <a4j:commandButton id="cmdSalvar" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+                    	image="#{msg['salvar22.img']}" 
+                    	disabled="#{!sucursalesAction.puedeEditar}"
+                    	action="#{sucursalesAction.guardar}" 
+                    	oncomplete="guardar('#{sucursalesAction.resOperacion}','pnlEditarSucursales','pnlMsgGralSucursales',#{rich:element('msgErrorSucursales')});" 
+                    	reRender="dtSucursales, pnlMsgGralSucursales, msgErrorSucursales">
+                        <rich:toolTip styleClass="Descripcion" value="#{msg['boton.salvar.e']}"/>
+                    </a4j:commandButton>
+                </div>
+                
+                <!-- FIN MENU MODAL -->
+                <rich:messages ajaxreRendered="false" globalOnly="false" id="msgErrorSucursales" showDetail="false" showSummary="true">
+                    <f:facet name="errorMarker">
+                        <h:graphicImage style="margin-right:1em;" value="#{msg['alert16.img']}"/>
+                    </f:facet>
+                </rich:messages>
+                
+                <h:panelGroup styleClass="encabezado">
+                    <h:outputText value="#{sucursalesAction.pojoSucursal.id != null ? sucursalesAction.pojoSucursal.id : ' '} "/>
+                    <h:outputText value="#{sucursalesAction.pojoSucursal.sucursal}"/>
+                </h:panelGroup>
+                
+                <fieldset>
+                	<legend><h:outputText styleClass="Titulo" value="#{msg['datosGenerales']}"/></legend>
+                	
+	                <h:panelGrid columnClasses="colTituloDom, colDato" columns="2" id="panelUbicacion" width="100%">
+	                    <h:outputText styleClass="Titulo" value="#{msg['empresa']}:"/>
+	                    <h:panelGroup id="groupEmpresa">
+	                        <h:outputText id="lblNombreEmpresa" style="margin-left: 5px;" 
+	                        	value="#{sucursalesAction.sucursalEmpresa}" />
+	                        <h:panelGroup>
+		                        <a4j:commandLink id="cmdLnkEmpresa" style="font-weight: bold; margin-left: 2px;"
+		                        	value="#{sucursalesAction.pojoSucursal.empresa != null ? msg['cambiar'] : 'Seleccionar'}"
+		                        	action="#{sucursalesAction.limpiaEmpresas}"  
+		                        	oncomplete="#{rich:component('pnlEmpresas')}.show()" 
+		                        	reRender="pnlEmpresas" />
+		                        	
+		                        <h:inputText style="margin-left:5px; display: none;" 
+			                    	value="#{sucursalesAction.sucursalEmpresa}"
+				           			required="#{!empty param[rich:clientId('cmdSalvar')]}"
+				           			requiredMessage="#{msg['empresa']} #{msg['mensaje.error.requerido']}" />
+	                        </h:panelGroup>
+	                    </h:panelGroup>
+	                    
+	                    <h:outputText styleClass="Titulo" value="#{msg['sucursal']}:"/>
+	                    <h:inputText style="margin-left:5px; width: 210px;" 
+	                    	value="#{sucursalesAction.pojoSucursal.sucursal}"
+		           			required="#{!empty param[rich:clientId('cmdSalvar')]}"
+		           			requiredMessage="#{msg['sucursal']} #{msg['mensaje.error.requerido']}"
+		           			onkeypress="return (validaCaracteres(event, true, true, true));" />
+	                    
+	                    <h:outputText styleClass="Titulo" value="#{msg['estado']}:"/>
+	                    <h:selectOneMenu style="margin-left:5px; width: 216px;" styleClass="Titulo" 
+	                    	value="#{sucursalesAction.idPojoEstado}"
+	                    	required="#{!empty param[rich:clientId('cmdSalvar')]}"
+				           	requiredMessage="#{msg['estado']} #{msg['mensaje.error.requerido']}">
+	                        <f:selectItem itemLabel="#{msg['seleccione']}..." />
+	                        <f:selectItems value="#{sucursalesAction.listTmpEstados}"/>
+	                        <a4j:support event="onchange" action="#{sucursalesAction.limpiaEstados()}" reRender="panelUbicacion"/>
+	                    </h:selectOneMenu>
+	                    
+	                    <h:outputText styleClass="Titulo" value="#{msg['municipio']}:"/>
+	                    <h:panelGroup id="groupMunicipio">
+	                        <h:outputText id="lblNombreMunicipio" style="margin-left: 5px;" 
+	                        	value="#{sucursalesAction.sucursalMunicipio}" />
+	                        <h:panelGroup>
+		                        <a4j:commandLink id="cmdBuscarMunicipios" style="font-weight: bold; margin-left: 2px;"
+		                        	value="#{sucursalesAction.pojoMunicipio == null ? msg['seleccionar'] : (sucursalesAction.pojoMunicipio.id &gt;0 ?  msg['cambiar'] : msg['seleccionar'])}" 
+		                        	action="#{sucursalesAction.limpiaMunicipios}" 
+		                        	oncomplete="#{rich:component('pnlBuscarMunicipios')}.show()" 
+		                        	reRender="pnlBuscarMunicipios" />
+		                        	
+		                        <h:inputText style="margin-left:5px; display: none;" 
+			                    	value="#{sucursalesAction.sucursalMunicipio}"
+				           			required="#{!empty param[rich:clientId('cmdSalvar')]}"
+				           			requiredMessage="#{msg['municipio']} #{msg['mensaje.error.requerido']}" />
+	                        </h:panelGroup>
+	                    </h:panelGroup>
+	                    
+	                    <h:outputText styleClass="Titulo" value="#{msg['localidad']}:"/>
+	                    <h:panelGroup id="groupLocalidad">
+	                        <h:outputText id="lblNombreLocalidad" style="margin-left: 5px;"
+	                        	value="#{sucursalesAction.sucursalLocalidad}" />
+	                        <h:panelGroup>
+		                        <a4j:commandLink id="cmdBuscarLocalidades" style="font-weight: bold; margin-left: 2px;"
+		                        	value="#{sucursalesAction.pojoLocalidad == null ? msg['seleccionar'] : (sucursalesAction.pojoLocalidad.id &gt;0 ?  msg['cambiar'] : msg['seleccionar'])}"
+		                        	action="#{sucursalesAction.limpiaLocalidades()}" 
+		                        	oncomplete="#{rich:component('pnlBuscarLocalidades')}.show()" 
+		                        	reRender="pnlBuscarLocalidades" />
+		                        	
+		                        <h:inputText style="margin-left:5px; display: none;" 
+			                    	value="#{sucursalesAction.sucursalLocalidad}"
+				           			required="#{!empty param[rich:clientId('cmdSalvar')]}"
+				           			requiredMessage="#{msg['localidad']} #{msg['mensaje.error.requerido']}" />
+	                        </h:panelGroup>
+	                    </h:panelGroup>
+	                    
+	                    <h:outputText styleClass="Titulo" value="#{msg['colonia']}:"/>
+	                    <h:panelGroup id="groupColonia">
+	                        <h:outputText id="lblNombreColonia" style="margin-left: 5px;" 
+	                        	value="#{sucursalesAction.sucursalColonia}" />
+	                        <h:panelGroup>
+		                        <a4j:commandLink id="cmdLnkColonia" style="font-weight: bold; margin-left: 2px;" 
+		                        	value="#{sucursalesAction.pojoSucursal.colonia != null ? msg['cambiar'] : 'Seleccionar'}"
+		                        	action="#{sucursalesAction.limpiaColonias}" 
+		                        	oncomplete="#{rich:component('pnlColonias')}.show()" 
+		                        	reRender="pnlColonias" />
+		                        	
+		                        <h:inputText style="margin-left:5px; display: none;" 
+			                    	value="#{sucursalesAction.sucursalColonia}"
+				           			required="#{!empty param[rich:clientId('cmdSalvar')]}"
+				           			requiredMessage="#{msg['colonia']} #{msg['mensaje.error.requerido']}" />
+	                        </h:panelGroup>
+	                    </h:panelGroup>
+	                </h:panelGrid>
+	                
+	                <h:panelGrid columnClasses="colTituloDom, colDato, colDato" columns="3" width="100%">
+	                    <h:outputText styleClass="Titulo" value="#{msg['ubicacion']}1:"/>
+	                    <h:selectOneMenu style="width:100%;" styleClass="Titulo" value="#{sucursalesAction.idDom1 }">
+	                        <f:selectItems value="#{sucursalesAction.listCatDomicilios1}"/>
+	                    </h:selectOneMenu>                    
+	                    <h:inputText style="width:100%;" value="#{sucursalesAction.pojoSucursal.descDomicilio1}"/>
+	                    
+	                    <h:outputText styleClass="Titulo" value="#{msg['ubicacion']}2:"/>
+	                    <h:selectOneMenu style="width:100%;" styleClass="Titulo" value="#{sucursalesAction.idDom2 }">
+	                        <f:selectItems value="#{sucursalesAction.listCatDomicilios1}"/>
+	                    </h:selectOneMenu>
+	                    <h:inputText style="width:100%;" value="#{sucursalesAction.pojoSucursal.descDomicilio2}"/>
+	                    
+	                    <h:outputText styleClass="Titulo" value="#{msg['ubicacion']}3:"/>
+	                    <h:selectOneMenu style="width:100%;" styleClass="Titulo" value="#{sucursalesAction.idDom3 }">
+	                        <f:selectItems value="#{sucursalesAction.listCatDomicilios1}"/>
+	                    </h:selectOneMenu>
+	                    <h:inputText style="width:100%;" value="#{sucursalesAction.pojoSucursal.descDomicilio3}"/>
+	                    
+	                    <h:outputText styleClass="Titulo" value="#{msg['ubicacion']}4:"/>
+	                    <h:selectOneMenu style="width:100%;" styleClass="Titulo" value="#{sucursalesAction.idDom4 }">
+	                        <f:selectItems value="#{sucursalesAction.listCatDomicilios2}"/>
+	                    </h:selectOneMenu>
+	                    <h:inputText style="width:100%;" value="#{sucursalesAction.pojoSucursal.descDomicilio4}"/>
+	                    
+	                    <h:outputText styleClass="Titulo" value="#{msg['ubicacion']}5:"/>
+	                    <h:selectOneMenu style="width:100%;" styleClass="Titulo" value="#{sucursalesAction.idDom5 }">
+	                        <f:selectItems value="#{sucursalesAction.listCatDomicilios2}"/>
+	                    </h:selectOneMenu>
+	                    <h:inputText style="width:100%;" value="#{sucursalesAction.pojoSucursal.descDomicilio5}"/>
+	                </h:panelGrid>
+	                
+	                <h:panelGrid columnClasses="colTituloDom, colDato" columns="2" width="100%">
+	                    <h:outputText styleClass="Titulo" value="#{msg['segmentoContable']}:"/>
+	                    <h:inputText value="#{sucursalesAction.pojoSucursal.segmentoContable}"/>
+	                    
+	                    <h:outputText styleClass="Titulo" value="#{msg['segmentoNegocio']}:"/>
+	                    <h:inputText value="#{sucursalesAction.pojoSucursal.segmentoNegocio}"/>
+	                </h:panelGrid>
+                </fieldset>
+                
+                 <fieldset style="margin: 10px auto 0;">
+                	<legend><h:outputText styleClass="Titulo" value="#{msg['datosFacturacion']}" /></legend>
+	                
+	                <h:panelGrid columnClasses="colTituloDom, colDato" columns="2" width="100%">
+	                    <h:outputText styleClass="Titulo" value="#{msg['serie']}:" />
+	                    <h:inputText maxlength="5" 
+	                    	value="#{sucursalesAction.pojoSucursal.serie}"
+		           			required="#{!empty param[rich:clientId('cmdSalvar')]}"
+		           			requiredMessage="#{msg['serie']} #{msg['mensaje.error.requerido']}"
+	                    	onkeypress="return (validaCaracteres(event));" />
+	                    
+	                    <h:outputText styleClass="Titulo" value="#{msg['folioActual']}:" />
+	                    <h:outputText styleClass="Titulo" value="#{sucursalesAction.pojoSucursal.folio}" title="Informativo" />
+	                    
+	                    <h:outputText styleClass="Titulo" value="#{msg['nombreSecuencia']}:" rendered="#{sucursalesAction.showNombreSecuencia}" />
+	                    <h:inputText rendered="#{sucursalesAction.showNombreSecuencia}"
+	                    	value="#{sucursalesAction.pojoSucursal.nombreSecuencia}" />
+	                </h:panelGrid>
+                </fieldset>
+            </a4j:form>
+        </rich:modalPanel>
+
+        <!-- BUSCAR COLONIAS -->
+        <rich:modalPanel autosized="true" id="pnlColonias">
+            <f:facet name="header">
+                <h:outputText style="margin-left:10px" styleClass="Titulo" value="#{msg['seleccionarColonia']}"/>
+            </f:facet>
+            <f:facet name="controls">
+                <h:graphicImage onclick="#{rich:component('pnlColonias')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+            </f:facet>
+            <a4j:form id="frmGralColonias" style="text-align:center;">
+                <div style="display: block; width: 450px; height: 22px;">
+                    <h:panelGrid columns="1" style="position:relative; float:right; margin-right:5px;">
+                        <h:panelGroup style="padding:0 2px 0 2px; float:right;">
+                            <a4j:commandButton action="#{sucursalesAction.buscarColonias}" id="cmdBuscarColonias" image="#{msg['buscar22.img']}" reRender="dtColonias">
+                                <rich:toolTip style="cursor:pointer;" styleClass="Descripcion" value="#{msg['buscar.e']}"/>
+                            </a4j:commandButton>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </div>
+                <h:panelGroup styleClass="encabezado">
+                    <h:outputText value="#{sucursalesAction.pojoSucursal.id != null ? sucursalesAction.pojoSucursal.id : ' '} "/>
+                    <h:outputText value="#{sucursalesAction.pojoSucursal.sucursal}"/>
+                </h:panelGroup>
+                <h:panelGroup style="display:block;">
+                    <h:outputText styleClass="Titulo" value="#{msg['nombre']}:"/>
+                    <h:inputText style="margin-left:5px;" value="#{sucursalesAction.busquedaColonia}"/>
+                </h:panelGroup>
+                <rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtColonias" rowClasses="Row1, Row2" rows="12" styleClass="tabla_pagina" value="#{sucursalesAction.listColonias}" var="col">
+                    <f:facet name="header">
+                        <rich:columnGroup>
+                            <rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+                                <h:outputText value="#{msg['id']}"/>
+                            </rich:column>
+                            <rich:column colspan="2" style="text-align:center;" styleClass="Titulo">
+                                <h:outputText value="#{msg['nombre']}"/>
+                            </rich:column>
+                        </rich:columnGroup>
+                    </f:facet>
+                    <rich:column styleClass="Descripcion" width="30">
+                        <h:outputText value="#{col.id}"/>
+                    </rich:column>
+                    <rich:column styleClass="Descripcion">
+                        <h:outputText value="#{col.nombre}"/>
+                    </rich:column>
+                    <rich:column style="text-align:center;" width="20">
+                        <a4j:commandButton ajaxSingle="true" image="#{msg['drag16.img']}" oncomplete="#{rich:component('pnlColonias')}.hide()" reRender="groupColonia">
+                            <f:setPropertyActionListener target="#{sucursalesAction.pojoSucursal.colonia}" value="#{col}"/>
+                        </a4j:commandButton>
+                    </rich:column>
+                    <f:facet name="footer">
+                        <rich:datascroller ajaxSingle="true" align="center" for="dtColonias" id="dScrollColonias" maxPages="10" page="#{sucursalesAction.numPaginaColonia}" styleClass="Titulo"/>
+                    </f:facet>
+                </rich:dataTable>
+            </a4j:form>
+        </rich:modalPanel>
+
+        <!-- BUSCAR EMPRESAS -->
+        <rich:modalPanel autosized="true" id="pnlEmpresas">
+            <f:facet name="header">
+                <h:outputText style="margin-left:10px" styleClass="Titulo" value="#{msg['seleccionarEmpresa']}"/>
+            </f:facet>
+            <f:facet name="controls">
+                <h:graphicImage onclick="#{rich:component('pnlEmpresas')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+            </f:facet>
+            <a4j:form id="frmGralEmpresas" style="text-align:center;">
+                <div style="display: block; width: 450px; height: 22px;">
+                    <h:panelGrid columns="1" style="position:relative; float:right; margin-right:5px;">
+                        <h:panelGroup style="padding:0 2px 0 2px; float:right;">
+                            <a4j:commandButton action="#{sucursalesAction.buscarEmpresas}" id="cmdBuscarEmpresas" image="#{msg['buscar22.img']}" reRender="dtEmpresas">
+                                <rich:toolTip style="cursor:pointer;" styleClass="Descripcion" value="#{msg['buscar.e']}"/>
+                            </a4j:commandButton>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </div>
+                <h:panelGroup styleClass="encabezado">
+                    <h:outputText value="#{sucursalesAction.pojoSucursal.id != null ? sucursalesAction.pojoSucursal.id : ' '} "/>
+                    <h:outputText value="#{sucursalesAction.pojoSucursal.sucursal}"/>
+                </h:panelGroup>
+                <h:panelGroup style="display:block;">
+                    <h:outputText styleClass="Titulo" value="#{msg['nombre']}:"/>
+                    <h:inputText style="margin-left:5px;" value="#{sucursalesAction.busquedaEmpresa}"/>
+                </h:panelGroup>
+                <rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtEmpresas" rowClasses="Row1, Row2" rows="12" styleClass="tabla_pagina" value="#{sucursalesAction.listEmpresas}" var="empresa">
+                    <f:facet name="header">
+                        <rich:columnGroup>
+                            <rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+                                <h:outputText value="#{msg['id']}"/>
+                            </rich:column>
+                            <rich:column colspan="2" style="text-align:center;" styleClass="Titulo">
+                                <h:outputText value="#{msg['nombre']}"/>
+                            </rich:column>
+                        </rich:columnGroup>
+                    </f:facet>
+                    <rich:column styleClass="Descripcion" width="30">
+                        <h:outputText value="#{empresa.id}"/>
+                    </rich:column>
+                    <rich:column styleClass="Descripcion">
+                        <h:outputText value="#{empresa.empresa}"/>
+                    </rich:column>
+                    <rich:column style="text-align:center;" width="20">
+                        <a4j:commandButton ajaxSingle="true" image="#{msg['drag16.img']}" oncomplete="#{rich:component('pnlEmpresas')}.hide()" reRender="groupEmpresa">
+                            <f:setPropertyActionListener target="#{sucursalesAction.pojoSucursal.empresa}" value="#{empresa}"/>
+                        </a4j:commandButton>
+                    </rich:column>
+                    <f:facet name="footer">
+                        <rich:datascroller ajaxSingle="true" align="center" for="dtEmpresas" id="dScrollEmpresas" maxPages="10" page="#{sucursalesAction.numPaginaEmpresa}" styleClass="Titulo"/>
+                    </f:facet>
+                </rich:dataTable>
+            </a4j:form>
+        </rich:modalPanel>
+        
+        <!-- BUSCAR REGIONES -->
+        <rich:modalPanel autosized="true" id="pnlRegiones">
+            <f:facet name="header">
+                <h:outputText style="margin-left:10px" styleClass="Titulo" value="#{msg['seleccionarRegion']}"/>
+            </f:facet>
+            <f:facet name="controls">
+                <h:graphicImage onclick="#{rich:component('pnlRegiones')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+            </f:facet>
+            <a4j:form id="frmGralRegiones" style="text-align:center;">
+                <div style="display: block; width: 450px; height: 22px;">
+                    <h:panelGrid columns="1" style="position:relative; float:right; margin-right:5px;">
+                        <h:panelGroup style="padding:0 2px 0 2px; float:right;">
+                            <a4j:commandButton action="#{sucursalesAction.buscarRegiones}" id="cmdBuscarRegion" image="#{msg['buscar22.img']}" reRender="dtRegiones">
+                                <rich:toolTip style="cursor:pointer;" styleClass="Descripcion" value="#{msg['buscar.e']}"/>
+                            </a4j:commandButton>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </div>
+                <h:panelGroup styleClass="encabezado">
+                    <h:outputText value="#{sucursalesAction.pojoSucursal.id != null ? sucursalesAction.pojoSucursal.id : ' '} "/>
+                    <h:outputText value="#{sucursalesAction.pojoSucursal.sucursal}"/>
+                </h:panelGroup>
+                <h:panelGroup style="display:block;">
+                    <h:outputText styleClass="Titulo" value="#{msg['nombre']}:"/>
+                    <h:inputText style="margin-left:5px;" value="#{sucursalesAction.busquedaRegiones}"/>
+                </h:panelGroup>
+                <rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtRegiones" rowClasses="Row1, Row2" rows="12" styleClass="tabla_pagina" value="#{sucursalesAction.listRegiones}" var="region">
+                    <f:facet name="header">
+                        <rich:columnGroup>
+                            <rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+                                <h:outputText value="#{msg['id']}"/>
+                            </rich:column>
+                            <rich:column colspan="2" style="text-align:center;" styleClass="Titulo">
+                                <h:outputText value="#{msg['nombre']}"/>
+                            </rich:column>
+                        </rich:columnGroup>
+                    </f:facet>
+                    <rich:column styleClass="Descripcion" width="30">
+                        <h:outputText value="#{region.id}"/>
+                    </rich:column>
+                    <rich:column styleClass="Descripcion">
+                        <h:outputText value="#{region.region}"/>
+                    </rich:column>
+                    <rich:column style="text-align:center;" width="20">
+                        <a4j:commandButton ajaxSingle="true" image="#{msg['drag16.img']}" oncomplete="#{rich:component('pnlRegiones')}.hide()" reRender="cmdLnkEmpresa">
+                            <f:setPropertyActionListener target="#{sucursalesAction.pojoSucursal.region}" value="#{region}"/>
+                        </a4j:commandButton>
+                    </rich:column>
+                    <f:facet name="footer">
+                        <rich:datascroller ajaxSingle="true" align="center" for="dtRegiones" id="dScrollRegiones" maxPages="10" page="#{sucursalesAction.numPaginaRegion}" styleClass="Titulo"/>
+                    </f:facet>
+                </rich:dataTable>
+            </a4j:form>
+        </rich:modalPanel>
+
+        <!-- Panel ELIMINAR SUCURSAL-->
+        <rich:modalPanel autosized="true" id="pnlEliminarSucursal" width="350">
+            <f:facet name="header">
+                <h:panelGroup>
+                    <h:outputText styleClass="Titulo" value="#{sucursalesAction.resOperacion == '' ? msg['informacion'] : msg['atencion']}"/>
+                </h:panelGroup>
+            </f:facet>
+            <f:facet name="controls">
+                <h:panelGroup>
+                    <h:graphicImage id="imgCerrarEliminarSucursal" styleClass="cursor:pointer;" value="#{msg['navegacion.panel.cerrar.img']}"/>
+                    <rich:componentControl attachTo="imgCerrarEliminarSucursal" event="onclick" for="pnlEliminarSucursal" operation="hide"/>
+                </h:panelGroup>
+            </f:facet>
+            <a4j:form id="frmEliminarPer">
+                <h:panelGrid cellspacing="10" columns="1" style="text-align:center;" width="200">
+                    <h:outputText style="display:block;" styleClass="Descripcion" value="#{msg['deseaEliminar']}"/>
+                    <h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+                        <a4j:commandButton action="#{sucursalesAction.eliminar}" id="cmdEliminar" oncomplete="eliminar('#{sucursalesAction.resOperacion}', 'pnlEliminarSucursal', 'pnlMsgGralSucursales');" reRender="dtSucursales, pnlMsgGralSucursales" value="#{msg['aceptar']}"/>
+                        <a4j:commandButton onclick="#{rich:component('pnlEliminarSucursal')}.hide()" style="margin-left:10px;" value="#{msg['cancelar']}"/>
+                    </h:panelGroup>
+                </h:panelGrid>
+            </a4j:form>
+        </rich:modalPanel>
+
+        <ui:include src="/negocio/sucursales/pnlBuscarMunicipios.xhtml"/>
+        <ui:include src="/negocio/sucursales/pnlBuscarLocalidades.xhtml"/>
+        <ui:include src="/negocio/sucursales/pnlMsgGralSucursales.xhtml"/>
+    </ui:define>
+</ui:composition>

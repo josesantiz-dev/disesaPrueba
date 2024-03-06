@@ -1,0 +1,91 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:modalPanel id="pnlEditarMovimientosCuentas" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText id="lblTitulo" value="#{msg['movimientosCuentas']}" styleClass="Titulo" style="margin-left:10px" />
+		</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlEditarMovimientosCuentas')}.hide()" />
+		</f:facet>
+		
+   		<a4j:commandButton id="cmdSalvarMovimientosCuentas"
+			action="#{cajaChicaMovimientosActionn.guardar}"
+			style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+			image="#{msg['salvar22.img']}"
+			oncomplete="salvar('#{cajaChicaMovimientosActionn.resOperacion}', '#{rich:clientId('pnlEditarMovimientosCuentas')}', '#{rich:clientId('pnlMsgGralCajaChica')}', #{rich:element('msgErrorEditarMovimientosCuentas')});"
+			render="dtMovimientosCuentas,pnlMsgGralCajaChica">
+			<rich:toolTip value="#{msg['salvar.e']}" styleClass="Descripcion" />
+		</a4j:commandButton>
+		
+		<rich:messages id="msgErrorEditarMovimientosCuentas" showDetail="false"
+			showSummary="true" globalOnly="false" title="Campos requeridos!">
+			<f:facet name="errorMarker">
+				<h:graphicImage value="#{msg['alert16.img']}"
+					style="margin-right:1em;" />
+			</f:facet>
+		</rich:messages>
+		
+		<h:panelGrid columns="2" width="600" columnClasses="colTitulo,colDato" style="margin-top: 10px;">
+			<h:outputText value="#{msg['cuentaOrigen']}:" styleClass="Titulo"/>
+			<h:panelGroup id="groupBusquedaCuentaBanco">
+				<h:outputText rendered="#{cajaChicaMovimientosActionn.pojoMovimientosCuentas.idCuentaOrigen != null}" value="#{cajaChicaMovimientosActionn.pojoMovimientosCuentas.idCuentaOrigen.numeroDeCuenta}" style="margin-right: 2px;"/>
+				<a4j:commandLink id="cmdBuscarCuentaOrigen" 
+					value="#{cajaChicaMovimientosActionn.pojoMovimientosCuentas.idCuentaOrigen != null ? msg['cambiar']  : msg['seleccionar.e'] }" 
+					oncomplete="#{rich:component('pnlBuscarCuentasBanco')}.show()" style ="font-weight: bold;"
+					render="pnlBuscarCuentasBanco"/>	
+			</h:panelGroup>
+			
+			<h:outputText value="#{msg['sucursal']}:" styleClass="Titulo"/>
+			<h:panelGroup id="groupBusquedaSucursal">
+				<h:outputText rendered="#{cajaChicaMovimientosActionn.pojoMovimientosCuentas.idSucursal != null}" value="#{cajaChicaMovimientosActionn.pojoMovimientosCuentas.idSucursal.sucursal}" style="margin-right: 2px;"/>
+				<a4j:commandLink id="cmdBuscarSucursal" 
+					value="#{cajaChicaMovimientosActionn.pojoMovimientosCuentas.idSucursal != null ? msg['cambiar']  : msg['seleccionar.e'] }" 
+					oncomplete="#{rich:component('pnlBuscarSucursales')}.show()" 
+					style ="font-weight: bold;"
+					render="pnlBuscarSucursales"/>	
+			</h:panelGroup>
+			
+			<h:outputText value="#{msg['numeroCheque']}"/>
+			<h:inputText value="#{cajaChicaMovimientosActionn.pojoMovimientosCuentas.noCheque}" required="#{!empty param[rich:clientId('cmdSalvarMovimientosCuentas')]}" requiredMessage="#{msg['numeroCheque']} #{msg['mensaje.error.requerido']}"/>
+			
+			<h:outputText value="#{msg['fecha']}:" styleClass="Titulo"/>
+			<rich:calendar
+				value="#{cajaChicaMovimientosActionn.pojoMovimientosCuentas.fecha}"
+				datePattern="dd MMM yyyy" 
+				style="width:150px"
+				required="#{!empty param[rich:clientId('cmdSalvarMovimientosCuentas')]}"
+				requiredMessage="#{msg['fecha']} #{msg['mensaje.error.requerido']}" />
+				
+			<h:outputText value="#{msg['monto']}"/>
+			<h:inputText value="#{cajaChicaMovimientosActionn.pojoMovimientosCuentas.monto}" required="#{!empty param[rich:clientId('cmdSalvarMovimientosCuentas')]}" requiredMessage="#{msg['monto']} #{msg['mensaje.error.requerido']}"/>
+			
+			<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"/>
+			<h:panelGroup >
+				<h:selectOneRadio value="#{cajaChicaMovimientosActionn.tipoPersona}" styleClass="Titulo">
+					<f:selectItem itemLabel="#{msg['persona']}" itemValue="P"/>
+					<f:selectItem itemLabel="#{msg['negocio']}" itemValue="N"/>
+					<a4j:support event="onchange" action="#{cajaChicaMovimientosActionn.cambioBeneficiario}" reRender="groupBusquedaPersona"/>								
+				</h:selectOneRadio>
+			</h:panelGroup>
+			
+			<h:outputText value="#{msg['beneficiario']}:" styleClass="Titulo"/>
+			<h:panelGroup id="groupBusquedaPersona">
+				<h:outputText rendered="#{cajaChicaMovimientosActionn.pojoMovimientosCuentas.idBeneficiario != null}" value="#{cajaChicaMovimientosActionn.pojoMovimientosCuentas.idBeneficiario.nombre} - #{cajaChicaMovimientosActionn.pojoMovimientosCuentas.idBeneficiario.numeroCuenta}" style="margin-right: 2px;"/>
+				<a4j:commandLink id="cmdBuscarPersona" 
+						value="#{cajaChicaMovimientosActionn.pojoMovimientosCuentas.idBeneficiario != null ? msg['cambiar']  : msg['seleccionar.e'] }" 
+						oncomplete="#{rich:component('pnlBuscarPersonas')}.show()" style ="font-weight: bold;"
+						render="pnlBusquedaPersonas"/>
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<fieldset style="margin-top: 10px;">
+			<legend> <h:outputText value="#{msg['comprobantes']}"/> </legend>
+		</fieldset>
+	</rich:modalPanel>
+</ui:composition>

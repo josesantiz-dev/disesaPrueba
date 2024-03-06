@@ -1,0 +1,122 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+	
+	<rich:popupPanel id="pnlObrasBusquedaEmpleados" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="10"
+		onshow="document.getElementById('#{rich:clientId('txtValorBusquedaEmpleados')}').focus();">
+		<f:facet name="header">
+			<h:outputText value="#{msg['buscar.e']} #{msg['empleado']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlObrasBusquedaEmpleados')}.hide()" />
+		</f:facet>
+		
+		<rich:hotKey id="richHotKeyBusquedaEmpleados" enabledInInput="true" preventDefault="true" 
+			selector="#txtValorBusquedaEmpleados" key="return"
+			onkeydown="#{rich:element('frmPrincipal:cmdBuscarEmpleados')}.click()" />
+		
+		<h:panelGroup style="width:100%; margin:0 auto; padding:0;">
+			<h:panelGrid columns="2" columnClasses="colLayoutTop,colLayoutBottom" style="width:100%; margin:0 auto; padding:0; min-height:22px; text-align:left;">
+				<h:panelGroup style="width:100%; text-align:left;">
+					<h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+						<h:inputText id="txtValorBusquedaEmpleados" maxlength="50" style="width:240px;"
+							value="#{empObraAction.busquedaEmpleadosValor}" title="#{msg['busqueda']}">
+							<rich:placeholder value="#{msg['busqueda']}" />
+						</h:inputText>
+						
+						<h:panelGroup style="text-align:left;">
+							<a4j:commandButton id="cmdBuscarEmpleados" style="margin:auto 5px; vertical-align:middle; cursor:pointer;"
+								image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+								action="#{empObraAction.buscarEmpleados}"
+								oncomplete="buscarEmpleados(#{empObraAction.operacion}, '#{rich:clientId('pnlMensajes')}');" 
+								render="dtEmpleados,dtEmpleadosScrollTop,pnlMensajes"
+								limitRender="true" />
+							
+							<a4j:commandButton id="cmdBusquedaEmpleadoAvanzada" 
+								image="#{msg['toggle.img']}" title="#{msg['busqueda']} #{msg['avanzada']}"
+								onclick="toggleAvanzado(this.id, 'gBusquedaObrasAvanzada', 'cbTipoBusquedaEmpleados', 'txtValorBusquedaEmpleados');"  />
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+				
+				<h:panelGroup style="width:100%; text-align:right; min-height:22px; overflow:hidden;">
+					<rich:dataScroller id="dtEmpleadosScrollTop" for="dtEmpleados" page="#{empObraAction.busquedaEmpleadosPagina}" renderIfSinglePage="false" 
+						maxPages="10" fastStep="10" align="center" ajaxSingle="true" styleClass="Titulo" style="float:left; margin:0 auto;" />
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<h:panelGroup id="gBusquedaObrasAvanzada" style="display:none; width:100%; margin:5px auto 0; padding:0;">
+				<h:panelGrid columns="2" style="margin:0; padding:0; text-align:left;" cellpadding="0" cellspacing="5">
+					<h:outputText styleClass="Titulo" value="#{msg['buscarPor']}:" />
+					<h:selectOneMenu id="cbTipoBusquedaEmpleados" style="width:216px;" 
+						value="#{empObraAction.busquedaEmpleadosCampo}">
+						<f:selectItems value="#{empObraAction.busquedaEmpleadosOpciones}" />
+					</h:selectOneMenu>
+					
+					<h:outputText value="#{msg['fecha']} #{msg['base']}:" styleClass="Titulo" rendered="#{empObraAction.permisoAdmin}" />
+					<h:panelGroup rendered="#{empObraAction.permisoAdmin}">
+						<rich:calendar id="txtFechaBase" datePattern="yyyy-MM-dd" enableManualInput="true" inputSize="9" 
+							disabled="#{not (empObraAction.activarFechaBase)}"
+							value="#{empObraAction.fechaBase}" style="margin:0;" />
+						<h:selectBooleanCheckbox value="#{empObraAction.activarFechaBase}" title="#{msg['activar']} #{msg['fecha']} #{msg['base']}">
+							<a4j:ajax event="change" render="txtFechaBase" />
+						</h:selectBooleanCheckbox>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+			
+			<div style="width:100%; margin:5px auto 0; padding:0; height:auto; max-height:450px; overflow-y:auto;">
+				<rich:dataTable id="dtEmpleados" value="#{empObraAction.listEmpleados}" var="var" style="width:100%; margin:0 auto;"
+					cellpadding="0" cellspacing="0" rows="50" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:70px; text-align:center;">
+								<h:outputText value="#{msg['id']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:100px; text-align:center;">
+								<h:outputText value="#{msg['clave']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+								<h:outputText value="#{msg['nombre']}" />
+							</rich:column>
+	
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:20px;" />
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column styleClass="Descripcion" style="text-align:center;">
+						<h:outputText value="#{var.id}" />
+					</rich:column> 
+					
+					<rich:column styleClass="Descripcion" style="text-align:left;">
+						<h:outputText value="#{var.clave}" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:left;">
+						<h:outputText value="#{var.nombre}" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+					   <a4j:commandButton id="cmdAgregarEmpleado" 
+					   		image="#{msg['agregar16.img']}" title="#{msg['seleccionar']}"
+							action="#{empObraAction.seleccionarEmpleado}" 
+							oncomplete="seleccionarEmpleado(#{empObraAction.operacion}, '#{rich:clientId('pnlObrasBusquedaEmpleados')}', '#{rich:clientId('pnlMensajes')}')"
+							render="dtObraEmpleados,pnlMensajes"
+							limitRender="true">
+							<f:setPropertyActionListener target="#{empObraAction.pojoEmpleado}" value="#{var}" for="cmdAgregarEmpleado" />
+					   </a4j:commandButton>
+					</rich:column>
+				</rich:dataTable>
+			</div>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

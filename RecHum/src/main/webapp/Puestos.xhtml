@@ -1,0 +1,114 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+
+    <ui:define name="title">
+		<h:outputText value="PUESTOS"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}" 
+				action="#{puestoAction.buscar}" 
+				oncomplete="buscar('#{puestoAction.resOperacion}','#{rich:clientId('pnlMensajes')}');"
+				render="dtPuestos,pnlMensajes" />
+		</rich:toolbarGroup>
+		
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['nuevo22.img']}" title="#{msg['nuevo.e']}"
+				action="#{puestoAction.nuevo}" 
+				oncomplete="#{rich:component('pnlPuesto')}.show()"
+				render="pnlPuesto" />
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="acc.css" />
+		<h:outputStylesheet library="css" name="cuentasporcobrar.css" />
+		<h:outputScript library="scripts/puestos" name="puestos.js" />
+		
+		<div class="div_titulo" style="margin:50px auto 30px;">
+			<h:outputText value="#{msg['puestos']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina" style="margin:0 auto; padding:0; text-align:left;">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="display:block; margin:10px; width:720px; text-align:left;">
+				<h:outputText value="#{msg['descripcion']}:" styleClass="Titulo" />
+				<h:inputText id="txtvalor" maxlength="50" size="30" 
+					value="#{puestoAction.valorBusqueda}" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtPuestos" value="#{puestoAction.listaPuestosGrid}" var="var" style="margin:0 auto; width: 100%;"
+				cellpadding="0" cellspacing="0" rows="100" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="text-align:center; width:80px; padding:2px 4px;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; padding:2px 4px;" styleClass="Titulo">
+							<h:outputText value="#{msg['descripcion']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:80px; padding:2px 4px;" styleClass="Titulo">
+							<h:outputText value="#{msg['estatus']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo" colspan="2" />
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align:center; width:80px; padding:2px 4px;">
+					<h:outputText value="#{var.id}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding:2px 4px;">
+					<h:outputText value="#{var.descripcion}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:80px; padding:2px 4px;">
+					<h:outputText value="#{var.estatus == 0 ? 'Activo' : 'Cancelado'}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:20px; padding:2px 4px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEditar" 
+						image="#{msg['editar16.img']}" title="#{msg['editar']}" 
+						rendered="#{var.estatus == 0}"
+						action="#{puestoAction.editar}" 
+						oncomplete="#{rich:component('pnlPuesto')}.show()"
+						render="pnlPuesto,dtPuestos"  >
+						<f:setPropertyActionListener target="#{puestoAction.pojoPuesto}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:20px; padding:2px 4px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEliminar" 
+						image="#{msg['eliminar16.img']}" title="#{msg['eliminar']}"
+						rendered="#{var.estatus == 0}"
+						oncomplete="#{rich:component('pnlEliminar')}.show()"
+						render="pnlEliminar">
+						<f:setPropertyActionListener target="#{puestoAction.pojoPuesto}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+ 				
+				<f:facet name="footer">
+					<rich:dataScroller page="#{puestoAction.numPagina}" for="dtPuestos" renderIfSinglePage="false"
+						align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modal/puestos/pnlPuesto.xhtml" /> 
+		<ui:include src="/modal/puestos/pnlEliminar.xhtml" /> 
+		<ui:include src="/modal/puestos/pnlMensajes.xhtml" /> 
+	</ui:define>
+</ui:composition>

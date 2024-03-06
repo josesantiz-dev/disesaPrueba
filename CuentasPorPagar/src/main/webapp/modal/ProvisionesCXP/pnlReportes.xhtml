@@ -1,0 +1,40 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlReportes" autosized="true">
+		<f:facet name="header">
+			<h:outputText value="#{msg['seleccionar.e']}" styleClass="Titulo"/>
+		</f:facet>
+		
+		<a4j:form id="frmReportes">
+			<a4j:region id="loadpnlReportes">
+				<h:panelGrid columns="1" width="280" style="text-align:center;" cellspacing="10">
+					<h:selectOneRadio value="#{registroGastosAction.tipoReporte}" styleClass="Titulo">
+						<f:selectItem itemValue="1" itemLabel="#{msg['navegacion.label.cheque']}" />
+						<f:selectItem itemValue="2" itemLabel="#{msg['navegacion.label.cedulaComprobacion']}" />
+					</h:selectOneRadio>
+					
+					<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+						<a4j:commandButton value="#{msg['navegacion.label.aceptar']}" 
+							action="#{registroGastosAction.reporte}" 
+							oncomplete="imprimeRep('pnlReportes')" />
+							
+						<a4j:commandButton style="margin-left:10px;"
+							onclick="#{rich:component('pnlReportes')}.hide()" 
+							value="#{msg['cancelar']}" />
+					</h:panelGroup>
+					
+					<a4j:status for="loadpnlReportes">
+						<f:facet name="start">
+							<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}"/>
+						</f:facet>
+					</a4j:status>
+				</h:panelGrid>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

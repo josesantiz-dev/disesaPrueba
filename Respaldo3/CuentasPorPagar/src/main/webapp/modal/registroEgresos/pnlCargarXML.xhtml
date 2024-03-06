@@ -1,0 +1,76 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlCargarXML" autosized="true" top="10">
+		<f:facet name="header">
+			<h:outputText value="#{msg['cargarFactura']}" styleClass="Titulo"/>
+		</f:facet>
+		
+		<f:facet name="controls">
+       		<h:graphicImage style="cursor:pointer;"
+       	  		value="#{msg['navegacion.gral.cerrar.img']}"
+       	  		onclick="#{rich:component('pnlCargarXML')}.hide()" />
+		</f:facet>
+		
+		<a4j:form id="frmCargarXML">
+			<a4j:region id="regCargarXML">
+				<div style="display: block; padding:0; min-width:400px; min-height:22px; text-align: left; background-color:none;">
+					<rich:fileUpload id="loadXML" listWidth="100%" listHeight="64" noDuplicate="true" 
+						acceptedTypes="xml" immediateUpload="true" maxFilesQuantity="1" 
+						addControlLabel="#{msg['navegacion.label.anadirArchivo']}" addLabel="#{msg['agregar.e']}" style="text-align:left;"
+						cancelEntryControlLabel="#{msg['navegacion.boton.eliminar.e']}" 
+						cleanButtonClass="Titulo" clearAllControlLabel="#{msg['borrarTodo']}" clearAllLabel="#{msg['borrarTodo']}" clearLabel="#{msg['borrar']}"
+						fileEntryControlClass="Descripcion" fileUploadListener="#{reegAction.importarXML}"
+						onerror="#{rich:element('loadXML')}.clear(); alert('Ocurrio un problema al cargar el XML.\nIntentelo nuevamente');"
+						ontyperejected="alert('#{msg['soloXML']}');"
+						progressLabel="#{msg['navegacion.label.enviando']}" doneLabel="#{msg['navegacion.label.archivoEnviado']}" 
+						stopButtonClass="Titulo" stopControlLabel="#{msg['navegacion.label.detener']}"
+						uploadButtonClass="Titulo" uploadButtonClassDisabled="true" uploadControlLabel="#{msg['navegacion.label.enviarArchivo']}">
+						<f:facet name="label"><h:outputText value="{_KB}KB de {KB}KB enviado - {mm}:{ss}" styleClass="Descripcion" /></f:facet>
+						<a4j:support event="onclear" action="#{reegAction.foolMethodReset('onclear')}" reRender="loadXML,confirmUpload" />
+						<a4j:support event="onerror" action="#{reegAction.foolMethodReset('onerror')}" reRender="loadXML,confirmUpload" />
+						<a4j:support event="onuploadcanceled" action="#{reegAction.foolMethodReset('onuploadcanceled')}" reRender="loadXML,confirmUpload" />
+						<a4j:support event="onuploadcomplete" action="#{reegAction.foolMethodUpload('onuploadcomplete')}" reRender="confirmUpload" />
+						<a4j:support event="onfileuploadcomplete" action="#{reegAction.foolMethodUpload('onfileuploadcomplete')}" reRender="confirmUpload" />
+			   		</rich:fileUpload>
+					
+					<h:panelGrid id="confirmUpload" columns="2" style="width:100%">
+						<h:panelGroup>
+							<a4j:status for="regCargarXML" >
+								<f:facet name="start">
+									<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" />
+									<h:outputLabel value="#{msg['procesando']}" styleClass="Titulo" />
+								</f:facet>
+								
+								<f:facet name="stop">
+									<h:outputLabel value="#{msg['navegacion.label.vacio']}" />
+								</f:facet>
+								
+								<f:facet name="success">
+									<h:graphicImage value="#{msg['aplicar22.img']}" />
+									<h:outputLabel value="Proceso terminado" styleClass="Titulo" />
+								</f:facet>
+							</a4j:status>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+					   		<a4j:commandButton id="cmdCargarXML" style="float:right; margin:5px;" 
+					   			rendered="#{reegAction.xmlCargado}"
+					   			image="#{msg['aplicar22.img']}" title="#{msg['procesarXML']}"
+							   	onclick="#{rich:element('cmdCargarXML')}.disabled = true;"
+								action="#{reegAction.procesarXML}" 
+								oncomplete="#{rich:element('cmdCargarXML')}.disabled = false; cargarXML(#{reegAction.operacionCancelada}, #{reegAction.tipoMensaje}, #{reegAction.multiplesConceptos}, '#{rich:clientId('pnlCargarXML')}', '#{rich:clientId('pnlComprobacionConFactura')}', '#{rich:clientId('pnlFactura')}', '#{rich:clientId('pnlMensajes')}');"
+								reRender="pnlComprobacionConFactura,pnlFactura,pnlMensajes"
+								limitToList="true" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</div>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

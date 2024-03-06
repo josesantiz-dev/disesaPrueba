@@ -1,0 +1,39 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlCancelarCheque" autosized="true">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Err"/>
+		</f:facet>
+		
+		<a4j:form id="frmCancelarCheque">
+			<a4j:region id="loadCancelarCheque">
+				<h:panelGrid columns="1" style="text-align:center; min-with:300px;" cellspacing="0">		     			
+					<h:outputText value="#{cajaChicaAction.mensaje}"  styleClass="Descripcion" rendered="#{cajaChicaAction.tipoMensaje == 7}" />
+					
+					<h:panelGroup style="margin:10px auto 0; text-align:center; display:block;">
+						<a4j:commandButton id="cmdElim" style="margin:0 auto; min-width:100px;"
+							value="#{msg['navegacion.label.aceptar']}"
+							onclick="#{rich:element('cmdElim')}.disabled = true;" 
+							action="#{cajaChicaAction.cancelarCheques}" 
+							oncomplete="msgRevisando(#{rich:element('msgErrorCajaChica')},'pnlCancelarCheque','pnlMensajes',#{cajaChicaAction.encontroMismoGrupo},'boton2','#{cajaChicaAction.mensaje}'); #{rich:element('cmdElim')}.disabled = false;"  
+							reRender="pnlMensajes,pnlCancelarCheque,pnlDatos2,dtResults,dtResultsComprobado" />
+						
+						<a4j:commandButton style="margin:0 auto; min-width:90px;"
+							value="#{msg['cancelar.e']}"
+							onclick="#{rich:component('pnlCancelarCheque')}.hide()" />
+					</h:panelGroup>
+					
+					<a4j:status for="loadCancelarCheque">
+						<f:facet name="start"><h:graphicImage value="#{msg['navegacion.loading.loading16.img']}"/></f:facet>			    			
+					</a4j:status>
+				</h:panelGrid>
+			</a4j:region>
+		</a4j:form>
+	 </rich:modalPanel>	
+</ui:composition>

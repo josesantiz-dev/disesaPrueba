@@ -1,0 +1,89 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlFamiliares" autosized="true" domElementAttachment="form" style="min-width:500px; max-width:1024px;" top="30">
+		<f:facet name="header">
+			<h:outputText  value="#{msg['empleado.df']}" styleClass="Titulo" style="margin-left:10px" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlFamiliares')}.hide()" />
+		</f:facet>
+		
+		<div style="display:block; min-height:22px; margin:0 auto 5px;">
+			<a4j:commandButton id="cmdNuevoFamiliar" rendered="#{empleadoAction.editable}" style="margin:0 5px; float:right;"
+				image="#{msg['nuevo22.img']}" title="#{msg['agregar.e']}"
+				action="#{empleadoAction.nuevoFamiliar}" 
+				oncomplete="#{rich:component('pnlAgregarFamiliares')}.show();"
+				render="cmdSeleccionarFamiliar, dtListaFamiliares, txtIdFamiliarSeleccionado" limitRender="true" />		
+		</div>
+		
+		<h:panelGroup id="grupoEncListaFamiliar" styleClass="encabezado" style="margin:0 auto;">
+			<h:outputText id="txtNombreEmpleado002" value="#{empleadoAction.empleado}" style="text-align:center;" />
+		</h:panelGroup>
+		
+		<rich:dataTable id="dtListaFamiliares" cellpadding="0" cellspacing="0" rows="20" border="0" var="var" rowClasses="Row1, Row2" styleClass="tabla_pagina" value="#{empleadoAction.listaFamiliaresGrid}">
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column style="text-align:center; font-weight: bold;">
+						<h:outputText value="#{msg['id']}" />
+					</rich:column>	
+					    
+					<rich:column style="text-align:center; font-weight: bold;">
+						<h:outputText value="#{msg['persona']}" />
+					</rich:column>
+						                       
+					<rich:column style="text-align:center; font-weight: bold;">
+						<h:outputText value="#{msg['relacion']}" />
+					</rich:column>
+					
+					<rich:column colspan="2" style="text-align:center; width:40px" styleClass="Titulo" />
+				</rich:columnGroup>
+			</f:facet>
+			
+			<rich:column width="50" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+				<h:outputText value="#{var.persona.id}" />
+			</rich:column>
+			
+			<rich:column width="50" styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+				<h:outputText value="#{var.persona.nombre}" />
+			</rich:column>
+			
+			<rich:column width="50" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+				<h:outputText value="#{var.relacion.valor}" />
+			</rich:column>
+			
+			<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+			   <a4j:commandButton id="cmdEditarFam" rendered="#{var.id != null ? (empleadoAction.editable) : false}" 
+			   		image="#{msg['editar16.img']}" title="#{msg['editar']}"
+					oncomplete="#{rich:component('pnlAgregarFamiliares')}.show() " 
+					action="#{empleadoAction.editarFamiliar}" 
+					reRender="pnlAgregarFamiliares"
+					render="pnlAgregarFamiliares, dtListaFamiliares, txtIdFamiliarSeleccionado, cmdSeleccionarFamiliar">
+					<f:setPropertyActionListener target="#{empleadoAction.pojoFamElimSeleccionado}" value="#{var}" />
+				</a4j:commandButton>
+			</rich:column>
+			
+			<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+			   <a4j:commandButton id="cmdEliminarFam" rendered="#{empleadoAction.editable}"
+			   		image="#{msg['eliminar16.img']}" title="#{msg['eliminar']}"
+					oncomplete="#{rich:component('pnlMsgConfElimFamiliar')}.show()"
+			   		render="pnlMsgConfElimFamiliar">
+					<f:setPropertyActionListener target="#{empleadoAction.pojoFamElimSeleccionado}" value="#{var}" />
+				</a4j:commandButton>
+			</rich:column>
+
+			<f:facet name="footer">
+				<rich:dataScroller for="dtListaFamiliares" page="#{empleadoAction.numPagina}" renderIfSinglePage="false"
+					align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+			</f:facet>
+		</rich:dataTable>
+	</rich:popupPanel>
+</ui:composition>

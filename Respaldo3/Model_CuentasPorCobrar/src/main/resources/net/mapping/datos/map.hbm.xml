@@ -1,0 +1,404 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="net.giro.co.beans.Correlativo" table="bbb4420d88" >
+		<composite-id name="id" class ="net.giro.co.beans.CorrelativoId" unsaved-value="none">
+			<key-property name="codigoEmpresa" type="long" column="c_codemp"/>
+			<key-property name="nombreTabla" type="string" column="c_nomtab"/>
+		</composite-id>
+		<property name="cbEmpresa" column="c_codemp" insert="false" update="false"/>
+		<property name="descriTabla" column="c_destab"/>
+		<property name="fechaInsercion" column="a_fecins"/>
+		<property name="fechaModificacion" column="a_fecmod"/>
+		<property name="ipInsercion" column="a_ipeins"/>
+		<property name="ipModificacion" column="a_ipemod"/>
+		<property name="numeroCorrelativo" column="n_numcor"/>
+		<property name="terminalInsercion" column="a_terins"/>
+		<property name="terminalModificacion" column="a_termod"/>
+		<property name="usuarioInsercion" column="a_usuins"/>
+		<property name="usuarioModificacion" column="a_usumod"/>
+	</class>
+	
+	<class name="net.giro.cxc.beans.ConceptoFacturacion" table="concepto_facturacion">
+		<id column="id" name="id"/>
+		<property column="descripcion" name="descripcion"/>
+		<property column="cuenta_contable" name="cuentaContable"/>
+		<property column="clave_sat" name="claveSat"/>
+		<property column="id_unidad_medida" name="idUnidadMedida"/>
+		<property column="clave_unidad_medida" name="claveUnidadMedida"/>
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="estatus" name="estatus"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+	</class>
+	
+	<class name="net.giro.cxc.beans.ConceptoFacturacionImpuestos" table="concepto_facturacion_impuestos">
+		<id column="id" name="id"/>
+		<property column="id_concepto_facturacion" name="idConceptoFacturacion"/>
+		<property column="id_impuesto" name="idImpuesto"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+	</class>
+	
+	<class name="net.giro.cxc.beans.Factura" table="factura">
+		<id column="id" name="id"/>
+		<property column="id_obra" name="idObra" />
+		<property column="nombre_obra" name="nombreObra" />
+		<property column="tipo_obra" name="tipoObra" />
+		<property column="folio_factura" name="folioFactura"/>
+		<property column="fecha_emision" name="fechaEmision"/>
+		<property column="fecha_vencimiento" name="fechaVencimiento"/>
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="id_sucursal" name="idSucursal" />
+		<property column="nombre_sucursal" name="nombreSucursal" />
+		<property column="tasa_iva" name="tasaIva" />
+		<property column="retension_iva" name="retensionIva" />
+		<property column="retension_isr" name="retensionIsr" />
+		<property column="descuento" name="descuento" />
+		<property column="subtotal" name="subtotal"/>
+		<property column="impuestos" name="impuestos"/>
+		<property column="retenciones" name="retenciones"/>
+		<property column="total" name="total" />
+		<property column="saldo" name="saldo" />
+		<property column="id_forma_pago" name="idFormaPago" />
+		<property column="forma_pago" name="formaPago" />
+		<property column="id_metodo_pago" name="idMetodoPago" />
+		<property column="metodo_pago" name="metodoPago" />
+		<property column="tipo_comprobante" name="tipoComprobante" />
+		<property column="motivo_descuento" name="motivoDescuento" />
+		<property column="tipo" name="tipo" />
+		<property column="condiciones_pago" name="condicionesPago" />
+		<property column="cuenta" name="cuenta" />
+		<property column="observaciones" name="observaciones" />
+		<property column="id_moneda" name="idMoneda" />
+		<property column="desc_moneda" name="descripcionMoneda" />
+		<property column="tipo_cambio" name="tipoCambio" />
+		<property column="id_factura_relacionada" name="idFacturaRelacionada" />
+		<property column="estatus" name="estatus"/><!-- 0-Cancelada, 1-Activa, 2-Pendiente Cancelacion, 3-Pendiente Aprobacion -->
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+		<property column="cancelado_por" name="canceladoPor" />
+		<property column="fecha_cancelacion" name="fechaCancelacion" />
+		<!-- cliente -->
+		<property column="id_cliente" name="idCliente" />
+		<property column="cliente" name="cliente" />
+		<property column="tipo_cliente" name="tipoCliente" />
+		<property column="rfc" name="rfc" />
+		<property column="domicilio" name="domicilio" />
+		<property column="ciudad" name="ciudad" />
+		<property column="no_externo" name="noExterno" />
+		<property column="no_interno" name="noInterno" />
+		<property column="colonia" name="colonia" />
+		<property column="cp" name="cp" />
+		<property column="municipio" name="municipio" />
+		<property column="estado" name="estado" />
+		<property column="pais" name="pais" />
+		<!-- cfdi -->
+		<property column="timbrado" name="timbrado" />
+		<property column="timbrado_por" name="timbradoPor"/>
+		<property column="fecha_timbrado" name="fechaTimbrado" />
+		<property column="id_timbre" name="idTimbre" />
+		<property column="uuid" name="Uuid" />
+		<!-- cfdi BORRAR -->
+		<property column="version" name="version" />
+		<property column="serie" name="serie" />
+		<property column="folio" name="folio" />
+		<property column="id_folio" name="idFolio" /><!--  SIN USO -->
+		<property column="id_certificado" name="idCertificado" /><!--  SIN USO -->
+		<property column="nocertificado" name="noCertificado" />
+		<property column="cadena_original" name="cadenaOriginal" />
+		<property column="sello" name="sello" />
+		<property column="state" name="state" />
+		<property column="descripcion" name="descripcion" />
+		<property column="xml" name="xml" />
+		<property column="cfdi" name="cfdi" />
+		<property column="timbre" name="timbre" />
+		<property column="sello_sat" name="selloSat" />
+		<property column="no_certificado_sat" name="noCertificadoSat" />
+		<property column="estado_cancelacion" name="estadoCancelacion" />
+		<property column="mensaje_cancelacion" name="mensajeCancelacion" />
+		<property column="acuse_cancelacion" name="acuseCancelacion" />
+		<property column="uso_cfdi" name="usoCfdi" />
+		<property column="cfdi_relacionado" name="cfdiRelacionado" />
+		<property column="cfdi_relacionado_uuid" name="cfdiRelacionadoUuid" />
+		<property column="cfdi_tipo_relacion" name="cfdiTipoRelacion" />
+		<!-- provision -->
+		<property column="provisionada" name="provisionada" />
+		<property column="provisionada_por" name="provisionadaPor" />
+		<property column="fecha_provisionada" name="fechaProvisionada" />
+	</class>
+	
+	
+	<class name="net.giro.cxc.beans.FacturasRelacionadas" table="facturas_relacionadas">
+		<id column="id" name="id"/>
+		<property column="id_factura" name="idFactura"/>
+		<property column="id_factura_relacionada" name="idFacturaRelacionada"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="cfdi_relacionado_uuid" name="cfdiRelacionadoUuid" />
+	</class>
+	
+	<class name="net.giro.cxc.beans.FacturaDetalle" table="factura_detalle">
+		<id column="id" name="id"/>
+		<!-- many-to-one column="id_factura" name="idFactura" class="net.giro.cxc.beans.Factura" fetch="join" insert="false" update="false"/-->
+		<property column="id_factura" name="idFactura"/>
+		<property column="id_concepto" name="idConcepto"/>
+		<property column="descripcion_concepto" name="descripcionConcepto"/>
+		<property column="clave_sat" name="claveSat"/>
+		<property column="id_unidad_medida" name="idUnidadMedida"/>
+		<property column="clave_unidad_medida" name="claveUnidadMedida"/>
+		<property column="porcentaje_iva" name="porcentajeIva"/>
+		<property column="porcentaje_retencion" name="porcentajeRetencion"/>
+		<property column="cantidad" name="cantidad"/>
+		<property column="costo" name="costo"/>
+		<property column="importe" name="importe"/>
+		<property column="impuestos" name="impuestos"/>
+		<property column="retenciones" name="retenciones"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+	</class>
+	
+	<class name="net.giro.cxc.beans.FacturaDetalleImpuesto" table="factura_detalle_impuesto">
+		<id column="id" name="id"/>
+		<property column="id_factura_detalle" name="idFacturaDetalle"/>
+		<property column="id_impuesto" name="idImpuesto"/>
+		<property column="tasa" name="tasa"/>
+		<property column="tipo_factor" name="tipoFactor"/>
+		<property column="base" name="base"/>
+		<property column="monto" name="importe"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+	</class>
+	
+	<class name="net.giro.cxc.beans.FacturaPagos" table="factura_pagos">
+		<id column="id" name="id"/>
+		<property column="fecha" name="fecha"/>
+		<many-to-one column="id_factura" name="idFactura" class="net.giro.cxc.beans.Factura" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="id_beneficiario" name="idBeneficiario"/>
+		<property column="beneficiario" name="beneficiario"/>
+		<property column="tipo_beneficiario" name="tipoBeneficiario"/>
+		<property column="id_forma_pago" name="idFormaPago"/>
+		<property column="forma_pago" name="formaPago" />
+		<property column="referencia_forma_pago" name="referenciaFormaPago"/>
+		<property column="id_banco_origen" name="idBancoOrigen"/>
+		<property column="pago_recibido" name="pagoRecibido"/>
+		<property column="diferencia" name="diferencia"/>
+		<property column="monto" name="pago"/>
+		<property column="id_moneda" name="idMoneda" />
+		<property column="moneda" name="moneda" />
+		<property column="tipo_cambio" name="tipoCambio" />
+		<property column="id_cuenta_deposito" name="idCuentaDeposito"/>
+		<property column="cuenta_banco" name="cuentaBanco" />
+		<property column="cuenta_numero" name="cuentaNumero" />
+		<property column="parcialidad" name="parcialidad" />
+		<property column="saldo_anterior" name="saldoAnterior" />
+		<property column="saldo_insoluto" name="saldoInsoluto" />
+		<property column="observaciones" name="observaciones"/>
+		<property column="timbrado" name="timbrado" />
+		<property column="timbrado_por" name="timbradoPor"/>
+		<property column="id_timbre" name="idTimbre" />
+		<property column="uuid" name="uuid" />
+		<property column="serie" name="serie" />
+		<property column="folio" name="folio" />
+		<property column="agrupador" name="agrupador"/>
+		<property column="sistema" name="sistema"/>
+		<property column="estatus" name="estatus"/><!-- ESTATUS: 0-Activo, 1-Cancelado, 2-Pendiente Cancelacion, 3-Pendiente Aprobacion -->
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+		<property column="cancelado_por" name="canceladoPor" />
+		<property column="fecha_cancelacion" name="fechaCancelacion" />
+		<!-- -->
+		<!--property column="codigo" name="codigo" />
+		<property column="mensaje" name="mensaje" />
+		<property column="fecha_timbrado" name="fechaTimbrado"/>
+		<property column="cadena_original" name="cadenaOriginal" />
+		<property column="sello" name="sello" />
+		<property column="sello_sat" name="selloSat" />
+		<property column="certificado_sat" name="certificadoSat" />
+		<property column="version_timbre" name="versionTimbre" />
+		<property column="xml_previo" name="xmlPrevio" />
+		<property column="xml_timbrado" name="xmlTimbrado" /-->
+	</class>
+	
+	<class name="net.giro.cxc.beans.Provisiones" table="provisiones">
+		<id name="id" column="id" />
+		<property column="grupo" name="grupo" />
+		<many-to-one column="id_factura" name="idFactura" class="net.giro.cxc.beans.Factura" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="monto" name="monto" />
+		<property column="monto_original" name="montoOriginal" />
+		<property column="observaciones" name="observaciones" />
+		<property column="estatus" name="estatus" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<!--  TIMBRES -->
+	<class name="net.giro.cxc.beans.FacturaTimbre" table="factura_timbres">
+		<id column="id" name="id"/>
+		<property column="state" name="state" />
+		<property column="descripcion" name="descripcion" /> 
+		<property column="timbrado" name="timbrado" />
+		<property column="timbrado_por" name="timbradoPor" />
+		<property column="fecha_timbrado" name="fechaTimbrado" />
+		<property column="pruebas" name="pruebas" />
+		<property column="version" name="version" />
+		<property column="uso_cfdi" name="usoCfdi" />
+		<property column="cfdi_relacionado" name="cfdiRelacionado" />
+		<property column="cfdi_relacionado_uuid" name="cfdiRelacionadoUuid" />
+		<property column="cfdi_tipo_relacion" name="cfdiTipoRelacion" />
+		<property column="uuid" name="uuid" />
+		<property column="serie" name="serie" />
+		<property column="folio" name="folio" />
+		<property column="no_certificado" name="noCertificado" />
+		<property column="cadena_original" name="cadenaOriginal" />
+		<property column="sello" name="sello" />
+		<property column="sello_sat" name="selloSat" />
+		<property column="no_certificado_sat" name="noCertificadoSat" />
+		<property column="certificado_sat" name="certificadoSat" />
+		<property column="version_timbre" name="versionTimbre" />
+		<property column="xml" name="xml" />
+		<property column="cfdi" name="cfdi" />
+		<property column="timbre" name="timbre" />
+		<property column="rfc_emisor" name="rfcEmisor"/>
+		<property column="rfc_receptor" name="rfcReceptor"/>
+		<!-- CANCELACION -->
+		<property column="cancelado" name="cancelado" />
+		<property column="cancelado_por" name="canceladoPor" />
+		<property column="fecha_solicitud_cancelacion" name="fechaSolicitudCancelacion" />
+		<property column="fecha_cancelacion" name="fechaCancelacion" />
+		<property column="estado_cancelacion" name="estadoCancelacion" />
+		<property column="mensaje_cancelacion" name="mensajeCancelacion" />
+		<property column="rfc_solicitante" name="rfcSolicitante" />
+		<property column="no_serie_firmante" name="noSerieFirmante" />
+		<property column="acuse_cancelacion" name="acuseCancelacion" />
+		<property column="motivo_cancelacion" name="motivoCancelacion" />
+		<property column="intentos_cancelacion" name="intentosCancelacion" />
+		<!-- AUDITORIA -->
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.cxc.beans.FacturaPagosTimbre" table="factura_pagos_timbres">
+		<id column="id" name="id"/>
+		<property column="codigo" name="codigo" />
+		<property column="mensaje" name="mensaje" />
+		<property column="timbrado" name="timbrado" />
+		<property column="timbrado_por" name="timbradoPor" />
+		<property column="fecha" name="fecha"/>
+		<property column="pruebas" name="pruebas" />
+		<property column="monto" name="monto"/>
+		<property column="uuid" name="uuid" />
+		<property column="serie" name="serie" />
+		<property column="folio" name="folio" />
+		<property column="cadena_original" name="cadenaOriginal" />
+		<property column="sello" name="sello" />
+		<property column="sello_sat" name="selloSat" />
+		<property column="certificado_sat" name="certificadoSat" />
+		<property column="version_timbre" name="versionTimbre" />
+		<property column="xml_previo" name="xmlPrevio" />
+		<property column="xml_timbrado" name="xmlTimbrado" />
+		<property column="rfc_emisor" name="rfcEmisor"/>
+		<property column="rfc_receptor" name="rfcReceptor"/>
+		<!-- CANCELACION -->
+		<property column="cancelado" name="cancelado" />
+		<property column="cancelado_por" name="canceladoPor" />
+		<property column="fecha_solicitud_cancelacion" name="fechaSolicitudCancelacion" />
+		<property column="fecha_cancelacion" name="fechaCancelacion" />
+		<property column="estado_cancelacion" name="estadoCancelacion" />
+		<property column="mensaje_cancelacion" name="mensajeCancelacion" />
+		<property column="rfc_solicitante" name="rfcSolicitante" />
+		<property column="no_serie_firmante" name="noSerieFirmante" />
+		<property column="acuse_cancelacion" name="acuseCancelacion" />
+		<property column="motivo_cancelacion" name="motivoCancelacion" />
+		<property column="intentos_cancelacion" name="intentosCancelacion" />
+		<!-- AUDITORIA -->
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.cxc.beans.FacturasAplicarPagos" table="facturas_aplicar_pagos"><!-- no se usa -->
+		<id column="id" name="id"/>
+		<property column="id_factura_original" name="idFacturaOriginal"/>
+		<property column="id_factura" name="idFactura"/>
+		<property column="aplicado" name="aplicado"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.cxc.beans.Impuesto" table="impuesto"><!-- no se usa -->
+		<id column="id" name="id"/>
+		<property column="descripcion" name="descripcion"/>
+		<property column="tipo" name="tipo"/>
+		<property column="porcentaje" name="porcentaje"/>
+		<property column="cuenta_contable" name="cuentaContable"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+	</class>
+	
+	<!--class name="net.giro.cxc.beans.Provisiones" table="provisiones">
+		<id name="id" column="id" />
+		<property name="idSucursal" column="id_sucursal" />
+		<property name="descripcionSucursal" column="desc_sucursal" />
+		<property name="fecha" column="fecha" />
+		<property name="total" column="total" />
+		<property name="observaciones" column="observaciones" />
+		<property name="idTransferencia" column="id_transferencia" />
+		<property name="montoAutorizado" column="monto_autorizado" />
+		<property name="saldoActual" column="saldo_actual" />
+		<property name="montoRevisado" column="monto_revisado" />
+		<property name="revisadoPor" column="revisado_por" />
+		<property name="fechaRevision" column="fecha_revision" />
+		<property name="idEmpresa" column="id_empresa" />
+		<property name="numLote" column="num_lote" />
+		<property name="tipoTransaccion" column="tipo_transaccion" />
+		<property name="idBeneficiario" column="id_beneficiario" />
+		<property name="tipoBeneficiario" column="tipo_beneficiario" />
+		<property name="estatus" column="estatus" />
+		<property name="creadoPor" column="creado_por" />
+		<property name="fechaCreacion" column="fecha_creacion" />
+		<property name="modificadoPor" column="modificado_por" />
+		<property name="fechaModificacion" column="fecha_modificacion" />
+	</class>
+	
+	<class name="net.giro.cxc.beans.ProvisionesDetalle" table="provisiones_detalle">
+		<id name="id" column="id" />
+		<property name="idProvision" column="id_provision" />
+		<property name="idFactura" column="id_factura" />
+		<property name="idTipoGasto" column="id_tipo_gasto" />
+		<property name="monto" column="monto" />
+		<property name="montoRevisado" column="monto_revisado" />
+		<property name="montoOriginal" column="monto_original" />
+		<property name="idBeneficiario" column="id_beneficiario" />
+		<property name="tipoBeneficiario" column="tipo_beneficiario" />
+		<property name="idOrdenCompra" column="id_orden_compra" />
+		<property name="estatus" column="estatus" />
+		<property name="fechaCreacion" column="fecha_creacion" />
+		<property name="creadoPor" column="creado_por" />
+		<property name="fechaModificacion" column="fecha_modificacion" />
+		<property name="modificadoPor" column="modificado_por" />
+	</class-->
+</hibernate-mapping>

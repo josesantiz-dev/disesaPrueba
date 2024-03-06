@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlLlavesValores" autosized="true" domElementAttachment="form" header="#{msg['llaves']} #{msg['valores']}">
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" onclick="#{rich:component('pnlLlavesValores')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+
+		<div style="margin: 10px auto 0; min-width:500px;">
+			<h:panelGroup id="bandGrupoData1" styleClass="encabezado" style="min-height: 1em;">
+				<h:outputText value="#{gruposAction.grupoDescripcion}" />
+			</h:panelGroup>
+			
+			<fieldset>
+				<legend><h:outputText value="#{msg['llaves']} - #{msg['grupo']}" /></legend>
+		
+				<div style="display:block; min-width:500px; width:100%; height: 22px;">
+					<a4j:commandButton id="cmdNuevoGrupoLlaveValor" 
+						image="#{msg['agregar22.img']}" 
+						style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+						action="#{gruposAction.nuevoLlaveValor}" 
+						oncomplete="#{rich:component('pnlLlaveValor')}.show()"
+						render="pnlLlaveValor, pnlValidaciones, bandGrupoData2"
+						limitRender="true"
+						execute="@this">
+						<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['agregar.e']}" for="cmdNuevoGrupoLlaveValor"/>
+					</a4j:commandButton>
+				</div>
+
+				<rich:dataTable id="dtGrupoLlavesValores" value="#{gruposAction.listLlavesValores}" var="var" cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column colspan="6" style="text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['llaves']} - #{msg['valores']}" />
+							</rich:column>
+							
+							<rich:column breakRowBefore="true" style="width: 80px; text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['id']}" />
+							</rich:column>
+							
+							<rich:column style="width: 70px; text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['cuenta']}" />
+							</rich:column>
+							
+							<rich:column style="width: 70px; text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['llave']} 1" />
+							</rich:column>
+							
+							<rich:column style="width: 70px; text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['llave']} 2" />
+							</rich:column>
+							
+							<rich:column style="width: 70px; text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['llave']} 3" />
+							</rich:column>
+							
+							<rich:column style="width: 20px; text-align:center;" styleClass="Titulo" />
+						</rich:columnGroup>
+					</f:facet>
+						
+					<rich:column style="width: 80px; text-align: center;" styleClass="Descripcion">
+						<h:outputText value="#{var.id}" />
+					</rich:column>
+					
+					<rich:column style="width: 50px; text-align: center;" styleClass="Descripcion">
+						<h:outputText value="#{var.noCuenta}" />
+					</rich:column>
+					
+					<rich:column style="width: 70px; text-align: center;" styleClass="Descripcion">
+						<h:outputText value="#{var.valorLlave1}" />
+					</rich:column>
+					
+					<rich:column style="width: 70px; text-align: center;" styleClass="Descripcion">
+						<h:outputText value="#{var.valorLlave2}" />
+					</rich:column>
+					
+					<rich:column style="width: 70px; text-align: center;" styleClass="Descripcion">
+						<h:outputText value="#{var.valorLlave3}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+						<a4j:commandButton id="cmdBorrarLLaveValor" 
+							image="#{msg['eliminar16.img']}" 
+							oncomplete="#{rich:component('pnlEliminarLlaveValor')}.show()" 
+							render="pnlEliminarLlaveValor">
+							<f:setPropertyActionListener value="#{var}" target="#{gruposAction.pojoLlaveValorBorrar}" for="cmdBorrarLLaveValor" />
+							<rich:tooltip showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarLLaveValor" />
+						</a4j:commandButton>
+					</rich:column> 
+	
+					<f:facet name="footer">
+						<rich:column breakRowBefore="true" colspan="11" style="text-align:center;">
+							<rich:dataScroller id="dScrollGrupoLlavesValores" align="center" for="dtGrupoLlavesValores" maxPages="10"
+								ajaxSingle="true" page="#{gruposAction.numPaginaGrupoLlavesValores}" styleClass="Titulo" />
+						</rich:column>
+					</f:facet>
+				</rich:dataTable>
+			</fieldset>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

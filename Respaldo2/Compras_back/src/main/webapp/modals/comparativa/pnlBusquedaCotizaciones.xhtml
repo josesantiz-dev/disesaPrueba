@@ -1,0 +1,119 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlBusquedaCotizaciones" modal="true" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+		<f:facet name="header">
+			<h:outputText value="#{msg['buscar.e']} #{msg['cotizacion']}" styleClass="Descripcion" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.panel.cerrar.img']}" 
+				onclick="#{rich:component('pnlBusquedaCotizaciones')}.hide()" />
+		</f:facet>
+		
+		<div style = "display: block; min-width:500px; width: 100%; height: 22px;">
+			<a4j:commandButton id="cmdBuscarCotizaciones" image="#{msg['buscar22.img']}" execute="@region"
+				action="#{comAction.buscarCotizaciones}" 
+				style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+				oncomplete="buscar(#{comAction.operacion}, '#{rich:clientId('pnlMensajes')}')" 
+				render="dtBusquedaCotizaciones, pnlMensajes">
+				<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarCotizaciones"/>
+			</a4j:commandButton>
+		</div>
+
+		<div style="margin: 10px auto 0;">
+			<h:panelGrid id="pnlBusquedaCotizacionesPrincipal" columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin-left:10px; margin-bottom:20px; display:block;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+				
+				<h:selectOneMenu value="#{comAction.busquedaCampoCotizacion}" styleClass="Titulo" style="width: 216px;">
+					<f:selectItems value="#{comAction.busquedaTiposCotizacion}" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText id="txtValorBusquedaCotizaciones" maxlength="50" style="width: 210px;"
+					value="#{comAction.busquedaValorCotizacion}" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtBusquedaCotizaciones" value="#{comAction.listCotizaciones}" var="var" 
+				cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="text-align:center; width: 90px;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['folio']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['obra']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['proveedor']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['comprador']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 100px;" styleClass="Titulo">
+							<h:outputText value="#{msg['total']}" />
+						</rich:column>
+
+						<rich:column style="text-align:center; width: 30px;" styleClass="Titulo">
+							<h:outputText value="#{msg['seleccionar']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width: 90px;">
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.folio}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.nombreObra}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.nombreProveedor}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.nombreComprador}" />
+				</rich:column>
+
+				<rich:column styleClass="Descripcion" style="text-align:right; width: 100px;">
+					<h:outputText value="#{var.total}"><f:convertNumber pattern="###,###,##0.00" /></h:outputText>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width: 30px;">
+				   <a4j:commandButton id="cmdSeleccionar" image="#{msg['agregar16.img']}" 
+						action="#{comAction.seleccionarCotizacion}"
+						oncomplete="seleccionar(#{comAction.operacion}, '#{rich:clientId('pnlBusquedaCotizaciones')}', '#{rich:clientId('pnlMensajes')}')"
+						render="dtDetalles, pnlMensajes"
+						limitRender="true">
+						<rich:tooltip showDelay="300" value="#{msg['agregar.e']}" for="cmdSeleccionar" />	
+						<f:setPropertyActionListener target="#{comAction.pojoCotizacion}" value="#{var}" />
+				   </a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller page="#{comAction.busquedaPaginacionCotizacion}" for="dtBusquedaCotizaciones" 
+						maxPages="10" ajaxSingle="true" align="center" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

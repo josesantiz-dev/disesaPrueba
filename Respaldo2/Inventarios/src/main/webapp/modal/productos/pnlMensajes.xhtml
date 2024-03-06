@@ -1,0 +1,51 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlMensajes" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText styleClass="Titulo"
+					value="#{productoAction.operacionCompleta == true ? msg['informacion'] : msg['atencion']}" />
+			</h:panelGroup>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;"
+				value="#{msg['navegacion.gral.cerrar.img']}"
+				onclick="#{rich:component('pnlMensajes')}.hide()" />
+		</f:facet>
+		
+		<h:panelGroup id="grupoResOperacion" style="display:block; width:300px; float:center;">
+			<!--h:outputText value="#{productoAction.resOperacion}" styleClass="Descripcion" rendered="#{productoAction.resOperacion != '' &amp;&amp; productoAction.tipoMensaje == 0}" /-->
+			<h:outputText value="#{productoAction.resOperacion}" styleClass="Descripcion" rendered="#{productoAction.tipoMensaje == -1}" escape="false" /> 
+			<h:outputText value="#{msg['mensaje.info.infoReg']}" styleClass="Descripcion" rendered="#{productoAction.tipoMensaje == 0}" />       			
+			<h:outputText value="#{msg['mensaje.error.inesperado']}" styleClass="Descripcion" rendered="#{productoAction.tipoMensaje == 1}" />
+			<h:outputText value="#{msg['mensaje.info.busquedaVacia']}" styleClass="Descripcion" rendered="#{productoAction.tipoMensaje == 2}" />
+			<h:outputText value="#{msg['mensaje.error.requerido']}" styleClass="Descripcion" rendered="#{productoAction.tipoMensaje == 3}" />
+			<h:outputText value="#{msg['indiqueCriterioBusqueda']}" styleClass="Descripcion" rendered="#{productoAction.tipoMensaje == 4}" />
+			<h:outputText value="#{msg['archivoMaestroCargado']}" styleClass="Descripcion" rendered="#{productoAction.tipoMensaje == 5}" />
+			
+			<h:outputText value="#{msg['mensaje.errorProducto10']}" styleClass="Descripcion"  rendered="#{productoAction.tipoMensaje == -10}" />
+			<h:outputText value="#{msg['mensaje.errorProducto11']}" styleClass="Descripcion"  rendered="#{productoAction.tipoMensaje == -11}" />
+			<h:outputText value="#{msg['mensaje.errorProducto12']}" styleClass="Descripcion"  rendered="#{productoAction.tipoMensaje == -12}" />
+			<h:outputText value="#{msg['mensaje.errorProducto13']}" styleClass="Descripcion"  rendered="#{productoAction.tipoMensaje == -13}" />
+			<h:outputText value="#{msg['mensaje.errorProducto14']}" styleClass="Descripcion"  rendered="#{productoAction.tipoMensaje == -14}" />
+			<h:outputText value="#{msg['mensaje.errorProducto15']}" styleClass="Descripcion"  rendered="#{productoAction.tipoMensaje == -15}" />
+			<h:outputText value="#{msg['mensaje.errorProducto16']}" styleClass="Descripcion"  rendered="#{productoAction.tipoMensaje == -16}" />
+			<h:outputText value="#{msg['mensaje.errorProducto17']}" styleClass="Descripcion"  rendered="#{productoAction.tipoMensaje == -17}" />
+			<h:outputText value="#{msg['mensaje.errorProducto18']}" styleClass="Descripcion"  rendered="#{productoAction.tipoMensaje == -18}" />
+			<h:outputText value="#{msg['mensaje.errorProducto19']}" styleClass="Descripcion"  rendered="#{productoAction.tipoMensaje == -19}" />
+			<h:outputText value="#{msg['mensaje.errorProducto20']}" styleClass="Descripcion"  rendered="#{productoAction.tipoMensaje == -20}" />
+			<h:outputText value="#{msg['mensaje.errorProducto21']}" styleClass="Descripcion"  rendered="#{productoAction.tipoMensaje == -21}" />
+		</h:panelGroup>
+		
+		<a4j:commandButton value="#{msg['aceptar']}"
+			onclick="#{rich:component('pnlMensajes')}.hide()"
+			style="margin-top:10px; cursor:pointer;" />	
+	</rich:popupPanel>
+</ui:composition>

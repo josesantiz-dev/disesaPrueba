@@ -1,0 +1,161 @@
+<!DOCTYPE composition>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich"
+	template="/layout/template.xhtml">
+
+	<ui:define name="title">
+		<h:outputText value="#{msg['navegacion.modulo']} - Caja Chica" />
+	</ui:define>
+
+	<ui:define name="menuFrag">
+		<rich:toolBarGroup location="right" style="padding:0 2px 0 2px;" >
+			<a4j:commandButton id="cmdBuscar" style="vertical-align: middle; position:relative; cursor:pointer;"
+				image="#{msg['buscar22.img']}" 
+				onclick="#{rich:element('cmdBuscar')}.disabled = true;" 
+				action="#{cajaChicaAction.buscar}"
+				oncomplete="buscar(#{cajaChicaAction.encontroMismoGrupo}, 'pnlMensajes'); #{rich:element('cmdBuscar')}.disabled = false;" 
+				reRender="dtResults,pnlMensajes" />
+				<!-- oncomplete="msgRevisando(#{rich:element('msgErrorFactura')},'pnlCajaChica','pnlMensajes',#{cajaChicaAction.encontroMismoGrupo},'buscar','#{cajaChicaAction.mensaje}'); #{rich:element('cmdBuscar')}.disabled = false;" -->
+			<h:outputLabel for="cmdBuscar" value="#{msg['buscar.e']}" style="cursor:pointer; " styleClass="Titulo"/>
+		</rich:toolBarGroup>
+		
+		<rich:toolBarGroup location="right" style="padding:0 2px 0 2px;" >
+			<a4j:commandButton id="cmdNuevo" style="cursor: pointer;" 
+				image="#{msg['nuevo22.img']}" 
+				onclick="#{rich:element('cmdNuevo')}.disabled = true;" 
+				action="#{cajaChicaAction.nuevo}"  
+				oncomplete="Richfaces.showModalPanel('pnlCajaChica'); #{rich:element('cmdNuevo')}.disabled = false;" 
+				reRender="pnlCajaChica" />
+			<h:outputLabel for="cmdNuevo" value="#{msg['nuevo.e']}" style="cursor:pointer;" styleClass="Titulo"/>
+		</rich:toolBarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<!-- DETEDIT -->
+		<a4j:queue id="suggQRepCaja" name="suggQRepCaja" sizeExceededBehavior="fireNew" ignoreDupResponses="true" size="1"/>
+		<a4j:keepAlive beanName="cajaChicaAction" />
+		<a4j:loadStyle  src="resource:///resources/css/cajachica/cajachica.css" />
+		<a4j:loadScript src="resource:///resources/scripts/gastos/cajaChica.js"/>
+		<br/>
+
+		<h:panelGrid id="panel_busqueda" columns="2" style="margin: 10px auto; display:block;" width="700">
+			<h:outputText value="#{msg['navegacion.label.tipoBusqueda']}:" styleClass="Titulo"/>	
+			<rich:comboBox id="cmbTipoBusqueda" width="180" listStyle="text-align:left;" enableManualInput="false"
+				value="#{cajaChicaAction.valTipoBusqueda}" 
+				suggestionValues="#{cajaChicaAction.tipoBusqueda}" />
+			
+			<h:outputText value="#{msg['navegacion.label.valor']}:" styleClass="Titulo"/>
+			<h:inputText id="txtvalor" size="50" maxlength="35" value="#{cajaChicaAction.campoBusqueda}" />
+		</h:panelGrid>
+		
+		<rich:dataTable id="dtResults" cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" style="margin:10px auto 20px; min-width:720px; width:100%;"
+			value="#{cajaChicaAction.listCajaChica}" var="caja" rows="100">
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column colspan="#{cajaChicaAction.debugging ? 10 : 9}" styleClass="Titulo">
+						<h:outputText value="#{msg['navegacion.label.cajaChica']}"/>
+					</rich:column>
+				</rich:columnGroup>
+			</f:facet>
+			
+			<rich:column width="100" style="text-align:center;" sortBy="#{caja.id}">
+				<f:facet name="header"><h:outputText value="#{msg['navegacion.label.id']}" styleClass="Titulo" /></f:facet>
+				<h:outputText value="#{caja.id}" styleClass="#{caja.estatus == 'X' ? 'rowCancelado' : 'Descripcion'}"/>
+			</rich:column>
+			
+			<rich:column width="100" style="text-align:center;" sortBy="#{caja.noCheque}">
+				<f:facet name="header"><h:outputText value="#{msg['navegacion.label.cheque']}" styleClass="Titulo" /></f:facet>
+				<h:outputText value="#{caja.noCheque}" styleClass="#{caja.estatus == 'X' ? 'rowCancelado' : 'Descripcion'}"/>
+			</rich:column>
+			
+			<rich:column width="100" style="text-align:center;" sortBy="#{caja.fecha}">
+				<f:facet name="header"><h:outputText value="#{msg['navegacion.label.fecha']}" styleClass="Titulo" /></f:facet>
+				<h:outputText value="#{caja.fecha}" styleClass="#{caja.estatus == 'X' ? 'rowCancelado' : 'Descripcion'}">
+					<f:convertDateTime pattern="dd-MMM-yyyy" />
+				</h:outputText>		                 
+			</rich:column>
+			
+			<rich:column width="295" style="text-align:left;" sortBy="#{caja.beneficiario}">
+				<f:facet name="header"><h:outputText value="#{msg['navegacion.label.beneficiario']}" styleClass="Titulo" /></f:facet>
+				<h:outputText value="#{caja.beneficiario}" styleClass="#{caja.estatus == 'X' ? 'rowCancelado' : 'Descripcion'}"/>
+			</rich:column>
+			
+			<rich:column  width="95" style="text-align:center;">
+				<f:facet name="header"><h:outputText value="#{msg['navegacion.label.cuenta']}" styleClass="Titulo" /></f:facet>
+				<h:outputText value="#{caja.numeroCuentaOrigen}" styleClass="#{caja.estatus == 'X' ? 'rowCancelado' : 'Descripcion'}"/>
+			</rich:column>
+			
+			<rich:column  width="110" style="text-align:right;" >
+				<f:facet name="header"><h:outputText value="#{msg['navegacion.label.monto']}" styleClass="Titulo" /></f:facet>
+				<h:outputText value="#{caja.monto}" styleClass="#{caja.estatus == 'X' ? 'rowCancelado' : 'Descripcion'}">
+					<f:convertNumber pattern="$###,###.00" /> 
+				</h:outputText>		               
+			</rich:column>
+			
+			<rich:column width="20" style="text-align:center;" rendered="#{cajaChicaAction.debugging}">
+				<a4j:commandButton style="cursor: pointer;" 
+					image="#{msg['devolucion16.img']}" 
+					action="#{cajaChicaAction.mensajeTransaccion}"> 
+					<f:setPropertyActionListener target="#{cajaChicaAction.pojoCaja}" value="#{caja}" />
+					<rich:toolTip showDelay="300" value="#{msg['enviar']}" styleClass="Descripcion" />
+				</a4j:commandButton>
+			</rich:column>
+			
+			<rich:column width="20" style="text-align:center;">
+				<a4j:commandButton image="#{msg['editar16.img']}" style="cursor: pointer;" 
+					rendered="#{caja.estatus == 'G'}" 
+					action="#{cajaChicaAction.editar}" 
+					oncomplete="Richfaces.showModalPanel('pnlCajaChica');"
+					reRender="pnlMensajes, pnlCajaChica"> 
+					<f:setPropertyActionListener target="#{cajaChicaAction.pojoCaja}" value="#{caja}" />
+					<rich:toolTip showDelay="300"><h:outputText value="#{msg['editar.e']}" styleClass="Descripcion" /></rich:toolTip>	
+				</a4j:commandButton>
+			</rich:column>
+			
+			<rich:column width="20" style="text-align:center;">
+				<a4j:commandButton image="#{msg['cancelar16.img']}" style="cursor: pointer;" 
+					rendered="#{caja.estatus == 'G'}" 
+					action="#{cajaChicaAction.evaluaCancelar}" 
+					oncomplete="Richfaces.showModalPanel('pnlCancelar');" 
+					reRender="pnlCancelar"> 
+					<f:setPropertyActionListener target="#{cajaChicaAction.pojoCaja}" value="#{caja}" />
+					<rich:toolTip showDelay="300"><h:outputText value="#{msg['cancelar.e']}" styleClass="Descripcion" /></rich:toolTip>	
+				</a4j:commandButton>
+			</rich:column>
+			
+			<rich:column width="20" style="text-align:center;">
+				<a4j:commandButton id="cmdImprimir" image="#{msg['imprimir16.img']}" style="cursor: pointer;"
+					rendered="#{caja.estatus == 'G' &amp;&amp; (caja.operacion == '2' || caja.operacion == 'C')}"
+					action="#{cajaChicaAction.reporte}" 
+					oncomplete="javascript:window.open('#{msg['urlapp']}/reportes/ReporteGeneric.faces', 'Caja Chica', 'menubar=0, toolbar=0, scrollbars=1,location=0, status=1');">
+					<f:setPropertyActionListener target="#{cajaChicaAction.pojoCaja}" value="#{caja}" />
+					<rich:toolTip showDelay="300"><h:outputText value="#{msg['imprimir.e']}" styleClass="tygCatDesc" /></rich:toolTip>	
+				</a4j:commandButton>
+			</rich:column>
+			
+			<f:facet name="footer" >
+				<rich:datascroller align="center" for="dtResults" maxPages="10" ajaxSingle="true" page="#{cajaChicaAction.numPagina}" id="dScroll" styleClass="tygCatTit"/>
+			</f:facet>
+		</rich:dataTable>
+		
+		<a4j:log rendered="#{cajaChicaAction.debugging}" level="ALL" style="width:auto; min-width:500px; margin:0 auto; max-height:600px;" />
+	</ui:define>
+
+	<ui:define name="modals">
+		<ui:include src="/modal/CajaChica/pnlUploadFile.xhtml" /> 
+		<ui:include src="/modal/CajaChica/pnlCajaChica.xhtml" />
+		<ui:include src="/modal/CajaChica/pnlBusquedaObras.xhtml" />
+		<ui:include src="/modal/CajaChica/pnlFactura.xhtml" />
+		<ui:include src="/modal/CajaChica/pnlBuscarRetenciones.xhtml" />
+		<ui:include src="/modal/CajaChica/pnlMensajes.xhtml" />
+		<ui:include src="/modal/CajaChica/pnlCancelar.xhtml" />
+		<ui:include src="/modal/CajaChica/pnlMsgCancelarCheque.xhtml" />
+		<ui:include src="/modal/CajaChica/pnlCancelarCheque.xhtml" />
+		<ui:include src="/modal/CajaChica/pnlEliminarcomprobado.xhtml" />
+		<ui:include src="/modal/CajaChica/pnlReportes.xhtml" />
+	</ui:define>
+</ui:composition>

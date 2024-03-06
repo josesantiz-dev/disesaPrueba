@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich">
+    <!--xmlns:izel="http://www.izel.com.mx/izel-composite-comps"-->
+    
+<h:head>
+	<meta http-equiv="X-UA-Compatible" content="EmulateIE8" />
+	<meta content='text/html; charset=UTF-8' http-equiv="Content-Type" />
+	<title>::.PROCESOS.::</title>
+	<h:outputStylesheet library="css" name="Main.css" />
+	<h:outputScript library="javascript" name="Main.js" />
+</h:head>
+
+<h:body>
+	<a4j:region id="loadGral">
+		<a4j:status id="statusMensaje" for="loadGral" onstart="#{rich:component('wait')}.show()" onstop="#{rich:component('wait')}.hide()" />
+		<a4j:queue id="quePrincipal" name="miQueue" ignoreDupResponses="true" requestDelay="500" size="1" />
+		
+		<h:form id="frmOperaciones" style="padding:0px; position:absolute: top:0px; left:0px;">
+			<div id="divHeader" class="div-header">
+				<ui:insert name="header">
+					<ui:include src="header.xhtml" />
+				</ui:insert>
+			</div>
+			
+			<h:panelGroup styleClass="body-principal">			
+				<h:panelGroup id="divMenu" styleClass="div-menu">
+					<ui:include src="menu-lateral.xhtml" />
+				</h:panelGroup>
+				
+				<h:panelGroup id="divContent" styleClass="div-content">
+					<ui:insert name="content" />
+				</h:panelGroup>
+			</h:panelGroup>
+			
+			<ui:insert name="popups" />
+		</h:form>
+	</a4j:region>
+	
+	<rich:popupPanel id="wait" header="Procesando" width="100" height="100">
+		<h:graphicImage value="/resources/#{msgComunPlataforma['comun.ruta.app']}#{msgComunPlataforma['comun.img.loading']}" />
+	</rich:popupPanel>
+</h:body>
+</html>

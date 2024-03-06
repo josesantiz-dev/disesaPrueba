@@ -1,0 +1,420 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['cobranza']} - #{msg['modulo']}"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag" />
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="obras.css" />
+		
+		<div class="div_titulo" style="margin:50px auto 0;">
+			<h:outputText value="#{msg['estadoCuenta']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina" style="margin:0 auto; z-index:-1;">
+			<h:panelGrid columns="1" columnClasses="colLayoutBottom" cellpadding="0" cellspacing="0" style="margin:10px auto; display:block;">
+				<h:panelGroup layout="block" style="width:100%;">
+					<h:panelGrid columns="2" columnClasses="colPnlBusqIzq" style="margin:0 auto;">
+						<h:outputText value="#{msg['obra']}:" styleClass="Titulo" />
+						<h:panelGroup id="groupObra">
+							<h:panelGrid columns="2">
+								<h:outputText id="txtObra" value="#{edoCuentaAction.nombreObra}" styleClass="Titulo" style="text-align:left; display:block;" />
+								<h:panelGroup>
+									<a4j:commandLink id="cmdObraSeleccionar"
+									 	value="#{edoCuentaAction.nombreObra == '' ? msg['seleccionar'] : msg['cambiar'] }"
+									 	action="#{edoCuentaAction.nuevaBusquedaObra}" 
+										oncomplete="#{rich:component('pnlBusquedaObras')}.show()" 
+										render="pnlBusquedaObras" limitRender="true" />
+									
+									<a4j:commandLink id="cmdObraQuitar" style="margin:0 8px;" 
+										rendered="#{edoCuentaAction.nombreObra ne ''}"
+									 	value="#{msg['quitar']}"
+									 	action="#{edoCuentaAction.quitarObra}" 
+										render="groupObra,txtCliente,groupPorcetajes,groupBotones,dtCobranza" limitRender="true" />
+									
+									<!-- Este input es solo con propósito de que se permita hacer validator al proyecto uedeTimbrar || edoCuentaAction.factura.id == null || edoCuentaAction.factura.id == 0 -->
+									<h:inputText id="txtObraHidden" style="text-align:left; display:none;"
+										value="#{edoCuentaAction.nombreObra}"
+										required="#{!empty param[rich:clientId('cmdSalvar')]}"
+										requiredMessage="#{msg['obra']} #{msg['mensaje.error.requerido']}" />
+								</h:panelGroup> 
+							</h:panelGrid>
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['cliente']}:" styleClass="Titulo" />
+						<h:outputText id="txtCliente" styleClass="Titulo" style="text-align:left; display:block;" 
+							value="#{edoCuentaAction.nombreCliente}" />
+						
+						<h:outputText value="#{msg['anticipo']}:" styleClass="Titulo" />
+						<h:panelGroup id="groupPorcetajes">
+							<h:panelGroup style="margin:0 5px 0 0;">
+								<h:inputText id="txtPorcentajeAnticipo" style="width:46px; text-align:right; margin:0 auto;"
+									disabled="#{edoCuentaAction.nombreObra eq ''}"
+									value="#{edoCuentaAction.porcentajeAnticipo}"
+									onkeypress="return soloDecimales(event, this.value, 3, 4);"
+									validatorMessage="#{msg['porcentaje']} #{msg['anticipo']}: #{msg['mensaje.validacion.valorCeroCien']}">
+									<f:convertNumber pattern="#{edoCuentaAction.porcentajeFormat}" />
+									<f:validateLongRange minimum="0" maximum="100" for="txtPorcentajeAnticipo" />
+									<a4j:ajax event="blur" execute="@region" 
+										listener="#{edoCuentaAction.reasignarPorcentajes}"
+										render="groupPorcetajes,groupBotones,dtCobranza" limitRender="true" />
+								</h:inputText>
+								<h:outputText value="#{msg['%']}" styleClass="Titulo" />
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['retencion']}:" styleClass="Titulo" style="margin:0 5px 0 10px;" />
+							<h:panelGroup>
+								<h:inputText id="txtPorcentajeRetencion" style="width:46px; text-align:right; margin:0 auto;"
+									disabled="#{edoCuentaAction.nombreObra eq ''}"
+									value="#{edoCuentaAction.porcentajeRetencion}"
+									onkeypress="return soloDecimales(event, this.value, 3, 4);"
+									validatorMessage="#{msg['porcentaje']} #{msg['retencion']}: #{msg['mensaje.validacion.valorCeroCien']}">
+									<f:convertNumber pattern="#{edoCuentaAction.porcentajeFormat}" />
+									<f:validateLongRange minimum="0" maximum="100" for="txtPorcentajeRetencion" />
+									<a4j:ajax event="blur" execute="@region" 
+										listener="#{edoCuentaAction.reasignarPorcentajes}"
+										render="groupPorcetajes,groupBotones,dtCobranza" limitRender="true" />
+								</h:inputText>
+								<h:outputText value="#{msg['%']}" styleClass="Titulo" />
+							</h:panelGroup>
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<h:panelGroup id="groupBotones" layout="block" style="display:inline-block; position:absolute; right:0; text-align:right; margin:-28px 10px 0; width:98px; height:28px; z-index:1;">
+				<a4j:commandButton id="cmdReporte" style="margin:auto 5px; vertical-align:middle; cursor:pointer;" 
+					rendered="#{edoCuentaAction.nombreObra ne ''}"
+					image="#{msg['imprimir22.img']}" title="#{msg['imprimir.e']} #{msg['estadoCuenta']} #{msg['cobranza']}"
+					action="#{edoCuentaAction.reporte}"
+					oncomplete="reporte(#{edoCuentaAction.band}, '#{rich:clientId('pnlMensajes')}')"
+					render="pnlMensajes" limitRender="true" />
+				
+				<a4j:commandButton id="cmdActualizaObraCobranza" style="margin:auto 5px; vertical-align:middle; cursor:pointer;"
+					rendered="#{edoCuentaAction.nombreObra ne ''}"
+					image="#{msg['actualizar22.img']}" title="#{msg['actualizar']}" 
+					action="#{edoCuentaAction.ver}"
+					render="groupPorcetajes,groupBotones,dtCobranza" limitRender="true" />
+				
+				<a4j:commandButton id="cmdSalvarObraCobranza" style="margin:auto 5px; vertical-align:middle; cursor:pointer;" 
+					rendered="#{edoCuentaAction.nombreObra ne '' ? (edoCuentaAction.guardar) : false}"
+					image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+					action="#{edoCuentaAction.guardar}" execute="@region" 
+					oncomplete="buscar(#{edoCuentaAction.band}, '#{rich:clientId('pnlMensajes')}')"
+					render="pnlMensajes,groupPorcetajes,groupBotones,dtCobranza" limitRender="true" />
+			</h:panelGroup>
+			
+			<a4j:region id="regionCobranza">
+				<rich:dataTable id="dtCobranza" value="#{edoCuentaAction.listCobranza}" var="item" style="margin:5px 0 30px;"
+					cellpadding="0" cellspacing="0" rows="100" border="0" rowClasses="Row2" styleClass="tabla_pagina">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;" colspan="5">
+								<h:outputLabel value="#{msg['facturacion']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;" colspan="12">
+								<h:outputLabel value="#{msg['cobranza']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:20px;" breakRowBefore="true">
+								<h:outputLabel value="#" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:80px;">
+								<h:outputLabel value="#{msg['factura']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; min-width:70px;">
+								<h:outputLabel value="#{msg['fecha']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; min-width:150px;">
+								<h:outputLabel value="#{msg['concepto']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+								<h:outputLabel value="#{msg['facturado']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:60px;">
+								<h:outputLabel value="#{msg['porcentaje']} #{msg['anticipo']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:60px;">
+								<h:outputLabel value="#{msg['porcentaje']} #{msg['retencion']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+								<h:outputText value="#{msg['anticipo']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+								<h:outputLabel value="#{msg['estimacion']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+								<h:outputLabel value="#{msg['amortizacion']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+								<h:outputLabel value="#{msg['fondo']} #{msg['garantia']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+								<h:outputLabel value="#{msg['pago']} #{msg['fondo']} #{msg['garantia']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+								<h:outputLabel value="#{msg['subtotal']} #{msg['con']} #{msg['retenciones']}" title="#{msg['subtotal']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+								<h:outputLabel value="#{msg['iva']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+								<h:outputLabel value="#{msg['cargos']} #{msg['cliente']} #{msg['con']} #{msg['iva']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+								<h:outputLabel value="#{msg['estimacion']} #{msg['retenciones']} #{msg['e']} #{msg['iva']}" title="#{msg['total']} (#{msg['estimacion']} - #{msg['amortizacion']} - #{msg['fondo']} #{msg['garantia']})" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+								<h:outputLabel value="#{msg['cobradoLiquido']}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+			         
+					<rich:column styleClass="Titulo" style="text-align:center;">
+						<rich:collapsibleSubTableToggler id="togglerCobranza" for="stCobranza" />
+					</rich:column>
+					
+					<rich:column styleClass="Titulo" style="text-align:left;" colspan="3">
+						<h:outputLabel value="#{item.descripcion}" title="#{item.idMoneda}" for="togglerCobranza" />
+					</rich:column>
+					
+					<rich:column styleClass="Titulo" style="text-align:right;">
+						<h:outputText value="#{item.facturado}"><f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" /></h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Titulo" style="text-align:right;" colspan="2">
+						<h:outputText value="#{msg['navegacion.label.vacio']}" />
+					</rich:column>
+					
+					<rich:column styleClass="Titulo" style="text-align:right;">
+						<h:outputText value="#{item.anticipo}"><f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" /></h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Titulo" style="text-align:right;">
+						<h:outputText value="#{item.estimacion}"><f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" /></h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Titulo" style="text-align:right;">
+						<h:outputText value="#{item.amortizacion}"><f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" /></h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Titulo" style="text-align:right;">
+						<h:outputText value="#{item.fondoGarantia}"><f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" /></h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Titulo" style="text-align:right;">
+						<h:outputText value="#{item.pagoFondoGarantia}"><f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" /></h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Titulo" style="text-align:right;">
+						<h:outputText value="#{item.subtotal}"><f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" /></h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Titulo" style="text-align:right;">
+						<h:outputText value="#{item.iva}" title="#{msg['iva']} #{item.porcentajeIva} %"><f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" /></h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Titulo" style="text-align:right;">
+						<h:outputText value="#{item.cargos}"><f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" /></h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Titulo" style="text-align:right;">
+						<h:outputText value="#{item.total}"><f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" /></h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Titulo" style="text-align:right;">
+						<h:outputText value="#{item.cobrado}"><f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" /></h:outputText>
+					</rich:column>
+					
+					<rich:collapsibleSubTable id="stCobranza" value="#{item.listCobranza}" var="var" iterationStatusVar="it"
+						noDataLabel="Sin Facturas" expandMode="client" rowClasses="Row1,Row2" rows="50">
+						<rich:column style="text-align:center;">
+							<h:outputLabel value="#{it.index + 1}"><f:convertNumber pattern="00" /></h:outputLabel>
+						</rich:column>
+						
+						<rich:column style="text-align:center;">
+							<h:outputLabel value="#{var.folio}" title="#{msg['factura']}: #{var.idFactura}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;">
+							<h:outputLabel value="#{var.fecha}"><f:convertDateTime type="date" pattern="dd-MMM-yyyy" /></h:outputLabel>
+							<h:panelGroup rendered="#{var.tipoCambio > 1}" style="display:block; font-size:0.9em;">
+								<h:outputLabel value="#{msg['tc']}:" title="#{msg['tipoCambio']}" />
+								<h:outputLabel value="#{var.tipoCambio}" title="#{msg['tipoCambio']}"><f:convertNumber pattern="#{edoCuentaAction.porcentajeFormat}" /></h:outputLabel>
+							</h:panelGroup>
+						</rich:column>
+						
+						<rich:column style="text-align:left;">
+							<h:outputLabel value="#{var.concepto}" title="#{var.concepto}" 
+								style="display:inline-block; width:100%; height:100%; max-height:72px; font-size:0.9em; overflow:hidden; text-overflow:ellipsis; text-align:left; text-transform:uppercase;" />
+						</rich:column>
+						
+						<rich:column style="text-align:right;">
+							<h:outputLabel value="#{var.facturaTotal}" title="#{msg['saldo']}: #{var.facturaSaldo}"><f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" /></h:outputLabel>
+						</rich:column>
+						
+						<rich:column style="text-align:center;">
+							<h:inputText style="width:48px; text-align:right; font-size:0.95em;"
+								value="#{var.porcentajeAnticipo}" 
+								onkeypress="return soloDecimales(event, this.value, 3, 4);">
+								<f:convertNumber pattern="#{edoCuentaAction.porcentajeFormat}" />
+								<a4j:ajax event="blur" execute="@region" 
+									listener="#{edoCuentaAction.totalizarCobranza}" 
+									render="groupPorcetajes,groupBotones,dtCobranza" limitRender="true" />
+							</h:inputText>
+						</rich:column> 
+						
+						<rich:column style="text-align:center;">
+							<h:inputText style="width:48px; text-align:right; font-size:0.95em;"
+								value="#{var.porcentajeRetencion}" 
+								onkeypress="return soloDecimales(event, this.value, 3, 4);">
+								<f:convertNumber pattern="#{edoCuentaAction.porcentajeFormat}" />
+								<a4j:ajax event="blur" execute="@region"
+									listener="#{edoCuentaAction.totalizarCobranza}" 
+									render="groupPorcetajes,groupBotones,dtCobranza" limitRender="true" />
+							</h:inputText>
+						</rich:column> 
+						
+						<rich:column style="text-align:center;">
+							<h:inputText style="width:72px; text-align:right; font-size:0.95em;"
+								value="#{var.anticipo}" 
+								onkeypress="return soloDecimales(event, this.value, 10, 4);">
+								<f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" />
+								<a4j:ajax event="blur" execute="@region"
+									listener="#{edoCuentaAction.totalizarCobranza}" 
+									render="groupPorcetajes,groupBotones,dtCobranza" limitRender="true" />
+							</h:inputText>
+						</rich:column>
+						
+						<rich:column style="text-align:center;">
+							<h:inputText style="width:72px; text-align:right; font-size:0.95em;"
+								value="#{var.estimacion}" 
+								onkeypress="return soloDecimales(event, this.value, 10, 4);">
+								<f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" />
+								<a4j:ajax event="blur" execute="@region"
+									listener="#{edoCuentaAction.totalizarCobranza}" 
+									render="groupPorcetajes,groupBotones,dtCobranza" limitRender="true" />
+							</h:inputText>
+						</rich:column>
+						
+						<rich:column style="text-align:right;">
+							<h:inputText style="width:72px; text-align:right; font-size:0.95em;"
+								value="#{var.amortizacion}" 
+								onkeypress="return soloDecimales(event, this.value, 10, 4);">
+								<f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" />
+								<!-- <a4j:ajax event="blur" execute="@region"
+									listener="#{edoCuentaAction.calculoReversaPorcentajes}" 
+									render="groupPorcetajes,groupBotones,dtCobranza" limitRender="true" />
+								<f:attribute name="targetMoneda" value="#{item.idMoneda}" /> 
+								<f:attribute name="targetIndex" value="#{it.index}" /> --> 
+								<a4j:ajax event="blur" execute="@region"
+									listener="#{edoCuentaAction.totalizarCobranza}" 
+									render="groupPorcetajes,groupBotones,dtCobranza" limitRender="true" />
+							</h:inputText>
+						</rich:column>
+						
+						<rich:column style="text-align:right;">
+							<h:inputText style="width:72px; text-align:right; font-size:0.95em;"
+								value="#{var.fondoGarantia}" 
+								onkeypress="return soloDecimales(event, this.value, 10, 4);">
+								<f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" />
+								<!-- <a4j:ajax event="blur" execute="@region"
+									listener="#{edoCuentaAction.calculoReversaPorcentajes}" 
+									render="groupPorcetajes,groupBotones,dtCobranza" limitRender="true" />
+								<f:attribute name="targetMoneda" value="#{item.idMoneda}" /> 
+								<f:attribute name="targetIndex" value="#{it.index}" />  -->
+								<a4j:ajax event="blur" execute="@region"
+									listener="#{edoCuentaAction.totalizarCobranza}" 
+									render="groupPorcetajes,groupBotones,dtCobranza" limitRender="true" />
+							</h:inputText>
+						</rich:column>
+						
+						<rich:column style="text-align:right;">
+							<h:inputText style="width:72px; text-align:right; font-size:0.95em;"
+								value="#{var.pagoFondoGarantia}" 
+								onkeypress="return soloDecimales(event, this.value, 10, 4);">
+								<f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" />
+								<a4j:ajax event="blur" execute="@region"
+									listener="#{edoCuentaAction.validarPagoFondoGarantia}" 
+									render="groupPorcetajes,groupBotones,dtCobranza" limitRender="true" />
+								<f:attribute name="targetMoneda" value="#{item.idMoneda}" /> 
+								<f:attribute name="targetIndex" value="#{it.index}" /> 
+							</h:inputText>
+						</rich:column>
+						
+						<rich:column style="text-align:right;">
+							<h:outputLabel value="#{var.subtotal}"><f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" /></h:outputLabel>
+						</rich:column>
+						
+						<rich:column style="text-align:right;">
+							<h:outputLabel value="#{var.iva}" title="#{msg['iva']} #{var.porcentajeIva} %"><f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" /></h:outputLabel>
+						</rich:column>
+						
+						<rich:column style="text-align:right;">
+							<h:inputText style="width:72px; text-align:right; font-size:0.95em;"
+								value="#{var.cargos}" 
+								onkeypress="return soloDecimales(event, this.value, 10, 4);">
+								<f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" />
+								<a4j:ajax event="blur" execute="@region"
+									listener="#{edoCuentaAction.totalizarCobranza}" 
+									render="groupBotones,dtCobranza" limitRender="true" />
+							</h:inputText>
+						</rich:column>
+						
+						<rich:column style="text-align:right;">
+							<h:outputLabel value="#{var.total}"><f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" /></h:outputLabel>
+						</rich:column>
+						
+						<rich:column style="text-align:right;">
+							<h:outputLabel value="#{var.facturaCobrado}" rendered="#{var.idMoneda eq 10000002}"><f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" /></h:outputLabel>
+							<h:outputLabel value="#{var.facturaCobradoPesos}" rendered="#{var.idMoneda eq 10000001}"><f:convertNumber pattern="#{edoCuentaAction.decimalFormat}" /></h:outputLabel>
+						</rich:column>
+					
+						<f:facet name="footer">
+							<rich:column colspan="14" style="text-align:center;">
+								<rich:dataScroller for="stCobranza" page="#{item.paginacion}" renderIfSinglePage="false"
+									ajaxSingle="true" maxPages="10" fastStep="10" align="center" styleClass="Titulo" />
+							</rich:column>
+						</f:facet>
+					</rich:collapsibleSubTable>
+					
+					<f:facet name="footer">
+						<rich:dataScroller for="dtCobranza" page="#{edoCuentaAction.paginacionCobranza}" renderIfSinglePage="false"
+							ajaxSingle="true" maxPages="10" fastStep="10" align="center" styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</a4j:region>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modals/estado_cuenta/pnlMensajes.xhtml" />
+		<ui:include src="/modals/estado_cuenta/pnlBusquedaObras.xhtml" />
+	</ui:define>
+</ui:composition>

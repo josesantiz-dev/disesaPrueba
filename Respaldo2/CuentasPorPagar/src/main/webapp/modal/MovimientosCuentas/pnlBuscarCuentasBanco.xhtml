@@ -1,0 +1,97 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:modalPanel id="pnlBuscarCuentasBanco" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['cuentasBancarias']}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlBuscarCuentasBanco')}.hide()" />
+		</f:facet>
+
+		<div style="display: block; width: 900px; height: 22px;">
+			<a4j:commandButton id="cmdBuscarCuentasBanco"
+				action="#{cajaChicaMovimientosAction.buscarCuentasBanco}"
+				image="#{msg['buscar22.img']}"
+				style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+				oncomplete="buscar('#{cajaChicaMovimientosAction.resOperacion}', '#{rich:clientId('pnlMsgGralCajaChica')}');"
+				render="dtBusquedaCuentasBanco,pnlMsgGralCajaChica"
+				reRender="dtBusquedaCuentasBanco">
+				<rich:toolTip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarCuentasBanco" />
+			</a4j:commandButton>
+		</div>
+
+		<h:panelGrid width="100%" columns="2" columnClasses="valorBusqueda1, alignLeft">
+			<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo" />
+			<h:selectOneMenu id="cbtipoBusquedaCuentasBanco" value="#{cajaChicaMovimientosAction.tipoBusquedaCuentasBanco}" styleClass="Titulo">
+				<f:selectItem itemLabel="#{msg['numeroCuenta']}" itemValue="numeroDeCuenta" />
+				<f:selectItem itemLabel="#{msg['clabe']}" itemValue="clabe" />
+			</h:selectOneMenu>
+			<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+			<h:inputText id="txtValorBusquedaCuentasBanco" maxlength="50" value="#{cajaChicaMovimientosAction.valorBusquedaCuentasBanco}" size="50" />
+		</h:panelGrid>
+
+		<rich:dataTable id="dtBusquedaCuentasBanco" cellpadding="0" cellspacing="0" rows="5" border="0" var="var" rowClasses="Row1, Row2" styleClass="tabla_pagina" value="#{cajaChicaMovimientosAction.listBusquedaCuentasBanco}">
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['id']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['numeroCuenta']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['clabe']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['banco']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['sucursal']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['seleccionar']}" />
+					</rich:column>
+				</rich:columnGroup>
+			</f:facet>
+
+			<rich:column width="50" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+				<h:outputText value="#{var.id}" />
+			</rich:column>
+			<rich:column width="300" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+				<h:outputText
+					value="#{var.numeroDeCuenta}" />
+			</rich:column>
+			<rich:column width="300" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+				<h:outputText value="#{var.clave}" />
+			</rich:column>
+			<rich:column width="100" styleClass="Descripcion" style="text-align:center padding-left: 5px;">
+				<h:outputText value="#{var.institucionBancaria.nombreLargo}">
+					<f:convertDateTime type="date" pattern="dd-MMM-yyyy" />
+				</h:outputText>
+			</rich:column>
+			<rich:column width="100" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+				<h:outputText
+					value="#{var.sucursalBancaria.nombre}" />
+			</rich:column>
+			<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+				<a4j:commandButton id="cmdSeleccionarCuentaBanco" image="#{msg['agregar16.img']}"
+					action="#{cajaChicaMovimientosAction.seleccionarCuentaBanco}"
+					onclick="#{rich:component('pnlBuscarCuentasBanco')}.hide();"
+					render="groupBusquedaCuentaBanco" reRender="groupBusquedaCuentaBanco">
+					<rich:toolTip showDelay="300" value="#{msg['agregar.e']}" for="cmdSeleccionarCuentaBanco" />
+					<f:setPropertyActionListener target="#{cajaChicaMovimientosAction.pojoMovimientosCuentas.idCuentaOrigen}" value="#{var}" />
+				</a4j:commandButton>
+			</rich:column>
+			<h:panelGroup>
+				<rich:datascroller align="center" for="dtBusquedaCuentasBanco" maxPages="10" ajaxSingle="true" page="#{cajaChicaMovimientosAction.numPaginaBusquedaCuentasBanco}" id="dScrollCuentasBanco" styleClass="Titulo" />
+			</h:panelGroup>
+		</rich:dataTable>
+	</rich:modalPanel>
+</ui:composition>

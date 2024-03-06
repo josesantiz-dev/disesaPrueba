@@ -1,0 +1,32 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlMsgGralImpto" autosized="true" width="350">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText value="#{msg['navegacion.label.atencion']}" rendered="#{ImpuestosAction.resOperacion != ''}" styleClass="Titulo" />
+				<h:outputText value="#{msg['informacion']}" rendered="#{ImpuestosAction.resOperacion == ''}" styleClass="Titulo" />
+			</h:panelGroup>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="imgCerrarMsg"/>
+				<rich:componentControl for="pnlMsgGralImpto" attachTo="imgCerrarMsg" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="frmMsgAsig" style="text-align:center;" >
+			<h:panelGroup style="display:block; width:300px; float:center;">
+				<h:outputText value="#{msg['mensaje.info.infoReg']}" rendered="#{ImpuestosAction.resOperacion == ''}" style="display:block;" styleClass="Descripcion"/>
+				<h:outputText value="#{ImpuestosAction.resOperacion}" rendered="#{ImpuestosAction.resOperacion != ''}" style="display:block;" styleClass="Descripcion"/>
+			</h:panelGroup>
+			<a4j:commandButton value="#{msg['navegacion.label.aceptar']}" onclick="#{rich:component('pnlMsgGralImpto')}.hide()" style="margin-top:10px; cursor:pointer;"/>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

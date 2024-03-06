@@ -1,0 +1,109 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlNuevoEditarFiniquito" autosized="true" domElementAttachment="form"
+    	header="#{finiquitoAction.pojoFiniquito.id==null ? 'Finiquito' : 'Editar Finiquito'}">
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" 
+				onclick="#{rich:component('pnlNuevoEditarFiniquito')}.hide()" />
+		</f:facet>
+		
+		<a4j:region id="regFiniquito">
+			<div id="botonera" style="display: block; min-width: 500px; height: 22px; margin-bottom: 1em;">
+				<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%" />
+				
+				<h:panelGroup id="grupoBotonesDerechos" style="width:100%" >
+					<h:panelGrid columns="2" style="float:right; margin-right:5px;" >
+						<h:panelGroup style="vertical-align: middle; position:relative; ">
+							<a4j:commandButton id="cmdSalvar" image="#{msg['salvar22.img']}" style="vertical-align: right; position:relative;"
+								rendered="#{finiquitoAction.pojoFiniquito.estatus==0}" 
+								action="#{finiquitoAction.guardar}" 
+								oncomplete="validaGuardarFiniquito(#{finiquitoAction.operacionCompleta}, '#{rich:clientId('pnlNuevoEditarFiniquito')}', '#{rich:clientId('pnlMsgGralFiniquito')}');"
+								render="dtFiniquitos,pnlMsgGralFiniquito"
+								limitRender="true" />
+						</h:panelGroup>
+						
+						<h:panelGroup style="vertical-align: middle; position:relative;">
+							<a4j:status>
+								<f:facet name="start">
+									<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;"/>
+								</f:facet>
+								
+								<f:facet name="stop">
+									<h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: middle; position:relative;"/>
+								</f:facet>
+							</a4j:status>
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+			</div>
+			
+			<h:panelGroup id="grupoDatos">
+				<div style = "display: block; margin-bottom:10px;">
+					<h:panelGrid id="pnlEmpleadoDatos" columns="2" columnClasses="colTitulo,colDato" style="text-align:left; width:100%;">
+						<h:outputText value="#{msg['empleado']}:" styleClass="Titulo"/>
+						<a4j:commandLink id="cmdSeleccionarEmpleado" 
+							onclick="#{rich:component('pnlBusquedaEmpleados')}.show();"
+							value="#{finiquitoAction.pojoFiniquito.empleado.persona.id == null ? msg['seleccionar'] : finiquitoAction.pojoFiniquito.empleado.persona.nombre }" 
+							oncomplete="#{rich:component('pnlBusquedaEmpleados')}.show();"  
+							rendered="#{true}">
+							<a4j:ajax execute="@form" render="pnlEmpleadoDatos" />
+						</a4j:commandLink>
+					</h:panelGrid>
+					
+					<h:panelGrid columns="4" columnClasses="colTitulo,colDato,colTitulo,colDato" style="text-align:left;">
+						<h:outputLabel value="#{msg['ef.fechaSolicitudBaja']}:" styleClass="Titulo"/>
+			            <rich:calendar value="#{finiquitoAction.fechaSolicitudBaja}" enableManualInput="false" datePattern="dd/MMM/yyyy">
+			                <rich:placeholder value="dd/MMM/yyyy" />
+			            </rich:calendar>
+						
+						<h:outputLabel value="#{msg['ef.fechaElaboracionEnvio']}:" styleClass="Titulo" />
+			            <rich:calendar value="#{finiquitoAction.fechaElaboracionEnvio}" enableManualInput="false" datePattern="dd/MMM/yyyy">
+			                <rich:placeholder value="dd/MMM/yyyy" />
+			            </rich:calendar>
+			            
+						<h:outputText value="#{msg['monto']}:" style="margin-left: 10px; margin-right: 0px" styleClass="Titulo"/>
+			 			<h:inputText maxlength="20"  style="width: 100px;" size="50"
+			 				value="#{finiquitoAction.pojoFiniquito.monto}" 
+			 				onkeypress="return (soloDecimal( event.which));" />
+			            
+			            <h:outputText value="#{msg['ef.solicitadoPor']}:" style="margin-left: 10px; margin-right: 10px" styleClass="Titulo"/>
+						<h:selectOneMenu value="#{finiquitoAction.solicitadoPor}" style="width:200px;" >
+							<f:selectItems value="#{finiquitoAction.listaCboSolicitadoPor}"/> 
+						</h:selectOneMenu>
+			            
+			            <h:outputLabel value="#{msg['observaciones']}:" styleClass="Titulo" />
+						<h:inputTextarea rows="3" style="width: 200px; resize: none;" 
+							value="#{finiquitoAction.pojoFiniquito.observaciones}" size="50" />
+		 				
+			 			<h:outputText value="#{msg['navegacion.label.vacio']}" />
+			 			<h:outputText value="#{msg['navegacion.label.vacio']}" />
+					
+						<h:outputText value="#{msg['ef.firmaRenuncia']}:" styleClass="Titulo"/>
+						<h:selectBooleanCheckbox value="#{finiquitoAction.firmaRenuncia}" />
+		 				
+			 			<h:outputText value="#{msg['navegacion.label.vacio']}" />
+			 			<h:outputText value="#{msg['navegacion.label.vacio']}" />
+				
+						<h:outputText value="#{msg['ef.voborh']}:" styleClass="Titulo"/>
+		 				<h:selectBooleanCheckbox value="#{finiquitoAction.voBoRH}" />
+		 				
+			 			<h:outputText value="#{msg['navegacion.label.vacio']}" />
+			 			<h:outputText value="#{msg['navegacion.label.vacio']}" />
+						
+						<h:outputText value="#{msg['ef.aprobacion']}:" styleClass="Titulo"/>
+		 				<h:selectBooleanCheckbox value="#{finiquitoAction.aprobacion}" />
+		 				
+			 			<h:outputText value="#{msg['navegacion.label.vacio']}" />
+			 			<h:outputText value="#{msg['navegacion.label.vacio']}" />
+					</h:panelGrid>
+				</div>
+			</h:panelGroup>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

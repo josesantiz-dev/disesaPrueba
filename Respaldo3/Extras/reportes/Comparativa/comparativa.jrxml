@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="comparativa" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3158e80b-7bcc-44e3-9e47-ebe442e80ec1">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<parameter name="ruta_img" class="java.lang.String">
+		<defaultValueExpression><![CDATA["D:/CONDESE/JAVA/DISESA/Desarrollo/2.2/Extras/imagen/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idFamilia" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[10000805L]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idObra" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[10000009L]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT cot.id AS id_cotizacion
+    , det.id AS id_cotizacion_detalle
+    , cot.id_proveedor
+    , o.id_obra
+    , o.nombre AS obra
+    , pro.id AS id_producto
+    , pro.clave AS codigo
+    , pro.descripcion AS producto
+    , fam.af AS familia
+    , med.af AS unidad_medida
+    , pro.precio_unitario
+    , pro.familia AS id_familia
+    , pro.unidad_medida AS id_unidad_medida
+    , CURRENT_DATE AS fecha_emision
+    , prv.ag AS proveedor
+    , det.cantidad AS prov_cantidad
+    , det.precio_unitario AS prov_pu
+    , det.importe AS prov_importe
+FROM cotizacion cot
+    INNER JOIN cotizacion_detalle det ON det.id_cotizacion = cot.id
+    INNER JOIN obra o ON o.id_obra = cot.id_obra
+    INNER JOIN c81498d458 prv ON prv.aa = cot.id_proveedor
+    INNER JOIN producto pro ON pro.id = det.id_producto
+    INNER JOIN de7a4d94446 fam ON fam.aa = pro.familia
+    INNER JOIN de7a4d94446 med ON med.aa = pro.unidad_medida
+WHERE cot.id_obra = $P{idObra}
+  AND pro.familia = $P{idFamilia}
+ORDER BY pro.descripcion;]]>
+	</queryString>
+	<field name="id_cotizacion" class="java.math.BigDecimal"/>
+	<field name="id_cotizacion_detalle" class="java.math.BigDecimal"/>
+	<field name="id_proveedor" class="java.math.BigDecimal"/>
+	<field name="id_obra" class="java.math.BigDecimal"/>
+	<field name="obra" class="java.lang.String"/>
+	<field name="id_producto" class="java.lang.Integer"/>
+	<field name="codigo" class="java.lang.String"/>
+	<field name="producto" class="java.lang.String"/>
+	<field name="familia" class="java.lang.String"/>
+	<field name="unidad_medida" class="java.lang.String"/>
+	<field name="precio_unitario" class="java.math.BigDecimal"/>
+	<field name="id_familia" class="java.lang.Integer"/>
+	<field name="id_unidad_medida" class="java.lang.Integer"/>
+	<field name="fecha_emision" class="java.sql.Date"/>
+	<field name="proveedor" class="java.lang.String"/>
+	<field name="prov_cantidad" class="java.lang.Double"/>
+	<field name="prov_pu" class="java.lang.Double"/>
+	<field name="prov_importe" class="java.lang.Double"/>
+	<variable name="emision" class="java.util.Date">
+		<variableExpression><![CDATA[$F{fecha_emision}]]></variableExpression>
+	</variable>
+	<variable name="REGISTRO_NUMBER" class="java.lang.Integer" incrementType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$V{REGISTRO_NUMBER} + 1]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<title>
+		<band height="88" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="802" height="37" uuid="42c9d92c-a31a-42e7-aaa5-c545bb48a018"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["COMPARATIVA FAMILIA " + $F{familia}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame" hAlign="Right" onErrorType="Icon">
+				<reportElement x="0" y="0" width="139" height="69" uuid="6070feb0-d9cd-47b4-b30c-d3c8f4fbdaa7"/>
+				<imageExpression><![CDATA[$P{ruta_img} + "logo_disesa.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="0" y="37" width="802" height="20" uuid="771b8c73-7d27-4d35-b2c9-7be921923338"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{id_obra} + " - " + $F{obra}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="57" width="802" height="20" uuid="e66a1432-c438-4440-8488-0a92b68c61ec"/>
+				<textElement textAlignment="Center" verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$F{fecha_emision}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="32" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="32">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="30" height="32" backcolor="#CCCCCC" uuid="36bf1e9a-1249-462a-9f05-5eb61a8921e7"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="263" y="0" width="46" height="16" backcolor="#CCCCCC" uuid="3a815fb9-da24-446f-ba14-9510a4688737"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[DISESA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="30" y="0" width="52" height="32" backcolor="#CCCCCC" uuid="78efce83-bd84-46b9-adb7-9c0091785721"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[CODIGO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="82" y="0" width="148" height="32" backcolor="#CCCCCC" uuid="c0c974a0-18b6-4a6d-b7b8-734a925a85de"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[DESCRIPCION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="230" y="0" width="33" height="32" backcolor="#CCCCCC" uuid="07949c91-6e38-4de8-9fca-db11a3969b20"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[U.M.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="263" y="16" width="46" height="16" backcolor="#CCCCCC" uuid="a9a05a30-4988-490e-9675-a58697f3bd74"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[P.U.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="309" y="16" width="46" height="16" backcolor="#CCCCCC" uuid="d38aae2e-4989-4103-96d0-679851acb80a"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[CANTIDAD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="355" y="16" width="66" height="16" backcolor="#CCCCCC" uuid="a587e753-0994-4ca6-8256-e87e6e96f4ff"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[P.U.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="421" y="16" width="72" height="16" backcolor="#CCCCCC" uuid="8cd9e603-6fb8-48bc-ae17-0f3bafde9813"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[IMPORTE]]></text>
+			</staticText>
+			<textField>
+				<reportElement mode="Opaque" x="309" y="0" width="184" height="16" backcolor="#CCCCCC" uuid="271125e4-03e6-4778-a82e-1218ab172cdd"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{proveedor}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="30" height="20" uuid="95cd0c67-03f0-4718-a925-ccd445b8071b"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REGISTRO_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" x="30" y="0" width="52" height="20" uuid="ef8ff563-7498-4c16-b9fc-8a08c026183e"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigo}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" x="82" y="0" width="148" height="20" uuid="7869ef9e-8ac1-4d4b-b2a0-54c6c568fcbb"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{producto}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" x="230" y="0" width="33" height="20" uuid="999371d8-e65c-4bf4-8d24-bbb164c7d422"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{unidad_medida}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
+				<reportElement stretchType="RelativeToTallestObject" x="263" y="0" width="46" height="20" uuid="aa355f41-9c9a-44a7-a450-ad1f23a099f4"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{precio_unitario}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="85">
+			<crosstab>
+				<reportElement x="0" y="0" width="493" height="20" uuid="35624a5e-822a-4161-84d2-34a4dcb9d842"/>
+				<rowGroup name="codigo" width="70" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{codigo}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" x="0" y="0" width="70" height="25" uuid="5e932d1e-a181-4a1b-a31a-e8d2d16e0bdf"/>
+								<textFieldExpression><![CDATA[$V{codigo}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents backcolor="#BFE1FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement x="0" y="0" width="70" height="25" uuid="dadf779d-549e-4a0f-b90b-740b26764571"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<text><![CDATA[Total codigo]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="proveedor" height="30" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{proveedor}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="30" uuid="1617ec3f-5b3e-45bc-a0c9-52cb5e06557d"/>
+								<textFieldExpression><![CDATA[$V{proveedor}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents backcolor="#BFE1FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement x="0" y="0" width="50" height="30" uuid="e2b839de-51bc-49b8-9b64-f3c1df01fd11"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<text><![CDATA[Total proveedor]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="prov_importeMeasure" class="java.lang.Double" calculation="Sum">
+					<measureExpression><![CDATA[$F{prov_importe}]]></measureExpression>
+				</measure>
+				<measure name="prov_cantidadMmeasure" class="java.lang.Double">
+					<measureExpression><![CDATA[$F{prov_cantidad}]]></measureExpression>
+				</measure>
+				<measure name="prov_puMeasure" class="java.lang.Double">
+					<measureExpression><![CDATA[$F{prov_pu}]]></measureExpression>
+				</measure>
+				<crosstabCell width="50" height="25">
+					<cellContents>
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25" uuid="b76dc7f5-e828-4296-9108-9bedc0c70cfe"/>
+							<textFieldExpression><![CDATA[$V{prov_importeMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell height="25" rowTotalGroup="codigo">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25" uuid="a9c8e88a-8a06-4515-8933-9b7328cf91ad"/>
+							<textFieldExpression><![CDATA[$V{prov_importeMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="50" columnTotalGroup="proveedor">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25" uuid="54885d45-6905-413a-9565-fd8943bc2093"/>
+							<textFieldExpression><![CDATA[$V{prov_importeMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="codigo" columnTotalGroup="proveedor">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25" uuid="d8d181c7-27f4-4488-ba98-a46152961cc2"/>
+							<textFieldExpression><![CDATA[$V{prov_importeMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+			</crosstab>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,350 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlCotizacion" autosized="true" domElementAttachment="form" style="min-width:1024px; max-width:1044px;" top="15">
+    	<f:facet name="header">
+    		<h:outputText id="txtTitulo" styleClass="Titulo"
+    			value="#{cotizaAction.pojoCotizacion.id == null ? msg['nueva'] : ''} #{msg['cotizacion']} #{cotizaAction.cotizacionTitulo}" />
+    	</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlCotizacion')}.hide()" />
+		</f:facet>
+		
+		<h:panelGrid columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+			<h:panelGroup id="grupoCotizacionBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+				<h:panelGroup style="margin:10px auto 5px 0;">
+					<h:outputText value="#{cotizaAction.cotizacionRequisicion}" rendered="#{cotizaAction.cotizacionRequisicion != ''}" styleClass="Titulo" style="margin:5px;" title="#{msg['requisicion']}" />
+					<h:outputText value="#{cotizaAction.cotizacionOrdenCompra}" rendered="#{cotizaAction.cotizacionOrdenCompra != ''}" styleClass="Titulo" style="margin:5px;" title="#{msg['ordenCompra']}" />
+				</h:panelGroup>
+	
+				<rich:messages id="msgErrores" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin:10px; text-align:left;" /></f:facet>
+				</rich:messages>
+			</h:panelGroup>
+		
+			<h:panelGroup id="grupoCotizacionBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdSalvar" style="float:right; margin: 0 5px auto; vertical-align: middle; position:relative;"
+					image="#{msg['salvar22.img']}" 
+					rendered="#{cotizaAction.editarCotizacion}"
+					action="#{cotizaAction.guardar}" 
+					oncomplete="salvarSinCerrar(#{cotizaAction.operacion}, '#{rich:clientId('pnlConfirmaCerrar')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrores')});"
+					render="dtCotizaciones,dScrollCotizaciones, msgErrores, pnlMensajes, txtTitulo, txtCotizacionFolio, dtProductos"
+					limitRender="true">
+					<rich:tooltip id="ttSalvar" showDelay="300" value="#{msg['salvar.e']}" for="cmdSalvar" />
+				</a4j:commandButton>
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<h:panelGroup styleClass="encabezado" style="min-height: 1em;">
+			<h:outputText value="#{cotizaAction.cotizacionObra}" />
+		</h:panelGroup>
+		
+		<div style="display:block; margin:1px auto; padding:0; text-align:left; background-color:none;">
+			<rich:tabPanel id="tabCotizacion" switchType="client">
+				<rich:tab header="#{msg['datosGenerales']}">
+					<h:panelGroup id="grupoDatosGenerales">
+						<h:panelGrid columns="2" columnClasses="colLayout,colLayout">
+							<h:panelGroup style="width:70%; margin:0; padding:0;">
+								<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+									<h:outputText value="#{msg['folio']}:" styleClass="Titulo" />
+									<h:outputText id="txtCotizacionFolio" style="text-align:left; display:block;" 
+										value=" #{cotizaAction.pojoCotizacion.folio}" />
+									
+									<h:outputText value="#{msg['proveedor']}:" styleClass="Titulo" />
+									<h:panelGroup id="pnlProveedorDatos">
+										<h:panelGrid columns="2">
+											<h:outputText id="txtProveedor" value="#{cotizaAction.cotizacionProveedor}" style="text-align:left; display:block;" />
+											<h:panelGroup>
+												<a4j:commandLink id="cmdSeleccionarProveedor" styleClass="linkColor"
+													rendered="#{cotizaAction.editarCotizacion}"
+													action="#{cotizaAction.nuevaBusquedaProveedores}" 
+													value="#{cotizaAction.pojoCotizacion.idProveedor == null ? msg['seleccionar'] : msg['cambiar'] }"
+													oncomplete="#{rich:component('pnlBusquedaProveedores')}.show()"
+													render="pnlBusquedaProveedores, pnlBusquedaProveedoresPrincipal, dtProveedores" />
+													
+												<h:inputText id="txtProveedorHidden" style="text-align:left;  display:none;"
+													value="#{cotizaAction.cotizacionProveedor}"
+													required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+													requiredMessage="#{msg['proveedor']} #{msg['mensaje.error.requerido']}" />
+											</h:panelGroup>
+										</h:panelGrid>
+									</h:panelGroup>
+									
+									<h:outputText value="#{msg['contacto']}:" styleClass="Titulo" />
+									<h:outputText id="pnlContactoDatos" value=" #{cotizaAction.proveedorContacto}" style="text-align:left; display:block;" />
+									
+									<h:outputText value="#{msg['comprador']}:" styleClass="Titulo" /> 
+									<h:selectOneMenu id="cmbCompradores" style="width: 316px"
+										disabled="#{cotizaAction.editarCotizacion == false}"
+										value="#{cotizaAction.valComprador}"
+										required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+										requiredMessage="#{msg['comprador']} #{msg['mensaje.error.requerido']}">
+							            <f:selectItem itemLabel="#{msg['seleccionar']}" />
+							            <f:selectItems value="#{cotizaAction.listCompradoresItems}" />
+							        </h:selectOneMenu>
+									
+									<h:outputText value="#{msg['flete']}:" styleClass="Titulo" />
+									<h:inputText id="txtFlete" styleClass="Titulo" style="width: 120px; text-align: right"
+										disabled="#{cotizaAction.editarCotizacion == false}"
+										value="#{cotizaAction.pojoCotizacion.flete}"
+										required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+										requiredMessage="#{msg['flete']} #{msg['mensaje.error.requerido']}"
+										validatorMessage="#{msg['fleteMenorCero']}"
+										onkeypress="return soloDecimales(event, this.value, 10, 2)">
+										<f:validateLongRange minimum="0" />
+										<f:convertNumber pattern="###,###,##0.00" />
+										<a4j:ajax event="change" render="txtFlete" />
+									</h:inputText>
+									
+									<h:outputLabel value="#{msg['fecha']}:" styleClass="Titulo" />
+									<rich:calendar id="txtFecha" enableManualInput="false" datePattern="dd/MM/yyyy"
+										disabled="#{cotizaAction.editarCotizacion == false}"
+										value="#{cotizaAction.pojoCotizacion.fecha}"
+										required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+										requiredMessage="#{msg['fecha']} #{msg['mensaje.error.requerido']}">
+										<rich:placeholder value="dd/MM/yyyy" />
+									</rich:calendar>
+									
+									<h:outputLabel value="#{msg['tiempoEntrega']}:" styleClass="Titulo" /> 
+									<h:panelGroup>
+										<h:inputText id="txtTiemporEntrega" name="TiempoEntrega" styleClass="Titulo" style="text-align: center; width: 40px;"
+											disabled="#{cotizaAction.editarCotizacion == false}"
+											value="#{cotizaAction.pojoCotizacion.tiempoEntrega}"
+											required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+											requiredMessage="#{msg['tiempoEntrega']} #{msg['mensaje.error.requerido']}" 
+											validatorMessage="#{msg['tiempoEntregaMenorCero']}"
+											onkeydown="return soloNumeros(event)">
+											<f:validateLongRange minimum="0" for="txtTiemporEntrega" />
+											<f:convertNumber pattern="###,###,##0" />
+											<a4j:ajax event="change" render="txtTiemporEntrega" />
+										</h:inputText>
+										<h:outputLabel value="#{msg['dias']}" styleClass="Titulo" />
+									</h:panelGroup>
+								</h:panelGrid>
+							</h:panelGroup>
+							
+							<h:panelGroup style="width:30%; margin:0; padding:0;">
+								<h:panelGrid id="panelCotizacionTotales" columns="2" columnClasses="colTitulo, colDato">
+									<h:outputText value="#{msg['subtotal']}:" styleClass="Titulo"/>
+									<h:inputText id="txtSubtotal" styleClass="Titulo" readonly="true" style="width: 120px; text-align:right;"
+										value="#{cotizaAction.subtotal}">
+										<f:convertNumber pattern="###,###,##0.00" />
+									</h:inputText>
+									
+									<h:outputText value="#{msg['iva']}:" styleClass="Titulo"/>
+									<h:inputText id="txtIva" styleClass="Titulo" readonly="true" style="width: 120px; text-align:right;"
+										value="#{cotizaAction.iva}">
+										<f:convertNumber pattern="###,###,##0.00" />
+									</h:inputText>
+									
+									<h:outputText value="#{msg['total']}:" styleClass="Titulo"/>
+									<h:inputText id="txtTotal" styleClass="Titulo" readonly="true" style="width: 120px; text-align:right;"
+										value="#{cotizaAction.total}">
+										<f:convertNumber pattern="###,###,##0.00" />
+									</h:inputText>
+								</h:panelGrid>
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGroup>
+				</rich:tab>
+				
+				<rich:tab header="#{msg['productos']}">
+					<h:panelGroup id="grupoInsumos">
+						<div style="width: 100%; vertical-align: middle; position:relative;">
+							<a4j:commandButton id="cmdCorreo" 
+								style="float:right; margin-left: 5px; vertical-align: middle; position:relative;"
+								rendered="#{cotizaAction.editarCotizacion}"
+								image="#{msg['mail22.img']}"
+								action="#{cotizaAction.nuevoEnvio}"
+								oncomplete="nuevoEnvioCorreo(#{cotizaAction.operacion}, '#{rich:clientId('pnlCorreo')}', '#{rich:clientId('pnlMensajes')}');" 
+								render="pnlCorreo, pnlMensajes"
+								limitRender="true">
+								<rich:tooltip id="ttCorreo" showDelay="300" value="#{msg['correo']}" for="cmdCorreo" />
+							</a4j:commandButton>
+							
+							<h:panelGrid columns="3" columnClasses="colTitulo, colDato, colDato">
+								<h:outputText value="#{msg['familia']}:" styleClass="Titulo" /><a4j:region>
+								<h:selectOneMenu id="cmbFamilias" style="width: 216px"
+									value="#{cotizaAction.valFamilia}" 
+									disabled="#{cotizaAction.editarCotizacion == false}">
+						            <f:selectItem itemLabel="#{msg['todos']}" itemValue="0" />
+						            <f:selectItems value="#{cotizaAction.listFamiliasItems}" />
+						            <a4j:ajax event="change" 
+						            	execute="@region" 
+						            	listener="#{cotizaAction.filtrarProductos}" 
+						            	render="dtProductos"
+						            	limitRender="true" /> 
+						        </h:selectOneMenu></a4j:region>
+							</h:panelGrid>
+						</div>
+						
+						<h:panelGroup id="regCotiListDetalles">
+							<div style="display:block; margin:0 auto; width:100%; padding:0; height:auto; max-height:400px; overflow-y:auto;">
+								<rich:dataTable id="dtProductos" value="#{cotizaAction.listCotiDetalles}" var="var" rows="10" style="margin:0 auto;"
+									cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+									<f:facet name="header">
+										<rich:columnGroup>
+											<rich:column style="text-align:center; font-weight: bold;">
+												<h:outputText value="#{msg['clave']}" styleClass="Titulo" />
+											</rich:column>
+											
+											<rich:column style="text-align:center;">
+												<h:outputText value="#{msg['descripcion']}" styleClass="Titulo" />
+											</rich:column>
+								
+											<rich:column style="text-align:center;">
+												<h:outputText value="#{msg['um']}" title="#{msg['unidadMedida']}" styleClass="Titulo" />
+											</rich:column>
+								
+											<rich:column style="text-align:center;">
+												<h:outputText value="#{msg['familia']}" styleClass="Titulo" />
+											</rich:column>
+								
+											<rich:column style="text-align:center;">
+												<h:outputText value="#{msg['cantidad']}" styleClass="Titulo" />
+											</rich:column>
+								
+											<rich:column style="text-align:center;">
+												<h:outputText value="#{msg['existensia']}" styleClass="Titulo" />
+											</rich:column>
+								
+											<rich:column style="text-align:center;">
+												<h:outputText value="#{msg['cotizar']}" styleClass="Titulo" />
+											</rich:column>
+								
+											<rich:column style="text-align:center;">
+												<h:outputText value="#{msg['pu']}" title="#{msg['precioUnitario']}" styleClass="Titulo" />
+											</rich:column>
+								
+											<rich:column style="text-align:center;">
+												<h:outputText value="#{msg['importe']}" styleClass="Titulo" />
+											</rich:column>
+								
+											<rich:column width="30px" style="text-align:center;">
+												<h:selectBooleanCheckbox title="#{msg['incluirTodo']}" 
+													value="#{cotizaAction.seleccionarTodos}" 
+													disabled="#{cotizaAction.pojoCotizacion.id == null ? false : true}">
+													<a4j:ajax event="change" 
+														execute="@this" 
+														listener="#{cotizaAction.totalizarCotizacionesDetalles}"
+														render="dtProductos" 
+														limitRender="true" />
+												</h:selectBooleanCheckbox>
+											</rich:column>
+										</rich:columnGroup>
+									</f:facet>
+									
+									<rich:column style="text-align:center;" styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemUsado'}">
+										<h:outputText value="#{var.productoClave}" />
+									</rich:column>
+									
+									<rich:column style="text-align:left;" styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemUsado'}">
+										<h:outputText value="#{var.productoNombre}" />
+									</rich:column>
+								
+									<rich:column style="text-align:center;" styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemUsado'}">
+										<h:outputText value="#{var.productoUnidad}" />
+									</rich:column>
+								
+									<rich:column style="text-align:center;" styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemUsado'}">
+										<h:outputText value="#{var.productoFamilia}" />
+									</rich:column>
+								
+									<rich:column style="text-align:center;" styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemUsado'}">
+										<h:outputText value="#{var.cantidad}" />
+									</rich:column>
+								
+									<rich:column style="text-align:center;" styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemUsado'}">
+										<h:outputText value="#{var.existensia}" />
+									</rich:column>
+								
+									<rich:column style="text-align:center; width:90px" styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemUsado'}">
+										<h:outputText value="#{var.cotizar}"
+											rendered="#{cotizaAction.esNuevaCotizacion == false}">
+											<f:convertNumber pattern="###,###,##0.00" />
+										</h:outputText>
+										<h:inputText value="#{var.cotizar}" style="text-align:right; width: 80px;"
+											disabled="#{var.estatus != 0}"
+											onkeypress="return soloDecimales(event, this.value, 8, 2);"
+											rendered="#{cotizaAction.esNuevaCotizacion == true}">
+											<f:convertNumber pattern="###,###,##0.00" />
+											<f:validateLongRange minimum="0" />
+											<a4j:ajax event="blur" 
+												listener="#{cotizaAction.totalizarCotizacionesDetalles}"
+												render="dtProductos, txtSubtotal, txtIva, txtTotal" 
+												limitRender="true" execute="@this" />
+										</h:inputText>
+									</rich:column>
+								
+									<rich:column style="text-align:right; width:90px" styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemUsado'}">
+										<h:outputText value="#{var.precioUnitario}"
+											rendered="#{cotizaAction.esNuevaCotizacion == true}">
+											<f:convertNumber pattern="###,###,##0.00" />
+										</h:outputText>
+										<h:inputText value="#{var.precioUnitario}" style="text-align:right; width: 80px;"
+											disabled="#{cotizaAction.editarCotizacion == false}"
+											onkeypress="return soloDecimales(event, this.value, 8, 2);"
+											rendered="#{cotizaAction.esNuevaCotizacion == false}">
+											<f:convertNumber pattern="###,###,##0.00" />
+											<f:validateLongRange minimum="0" />
+											<a4j:ajax event="blur"  
+												execute="@this"
+												listener="#{cotizaAction.totalizarCotizacionesDetalles}"
+												render="dtProductos, txtSubtotal, txtIva, txtTotal" 
+												limitRender="true" />
+										</h:inputText>
+									</rich:column>
+								
+									<rich:column style="text-align:right; width:90px" styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemUsado'}">
+										<h:outputText value="#{var.importe}">
+											<f:convertNumber pattern="###,###,##0.00" />
+										</h:outputText>
+									</rich:column>
+								
+									<rich:column width="30px" style="text-align:center;">
+										<h:selectBooleanCheckbox styleClass="Titulo"
+											disabled="#{cotizaAction.pojoCotizacion.id == null ? false : true}"
+											value="#{var.seleccionar}">
+											<a4j:ajax event="change"  
+												execute="@this"
+												listener="#{cotizaAction.totalizarCotizacionesDetalles}" 
+												render="dtProductos, txtSubtotal, txtIva, txtTotal" 
+												limitRender="true" />
+										</h:selectBooleanCheckbox>
+									</rich:column>
+									
+									<f:facet name="footer">
+										<rich:columnGroup>
+											<rich:column colspan="8" style="text-align:right;" styleClass="Titulo">
+												<h:outputText value="#{msg['subtotal']}:" />
+											</rich:column>
+											
+											<rich:column style="text-align:right; width:90px" styleClass="Titulo">
+												<h:outputText value="#{cotizaAction.subtotal}"><f:convertNumber pattern="###,###,##0.00" /></h:outputText> 
+											</rich:column>
+											
+											<rich:column style="text-align:center;" styleClass="Titulo" />
+										</rich:columnGroup>
+									</f:facet>
+								</rich:dataTable>
+							</div>
+							
+							<div style="margin:0 auto; padding:5px 0; background-color:#ccc; width:100%; text-align:center;">
+								<rich:dataScroller id="paginacionCotiDetalles" for="dtProductos" page="#{cotizaAction.numPaginaProductos}"  
+									align="center" maxPages="10" fastStep="10" renderIfSinglePage="false" ajaxSingle="true" styleClass="Titulo" />
+							</div>
+						</h:panelGroup>
+					</h:panelGroup>
+				</rich:tab>
+			</rich:tabPanel>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

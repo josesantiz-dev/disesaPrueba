@@ -1,0 +1,392 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="net.giro.co.beans.Correlativo" table="bbb4420d88" >
+		<composite-id name="id" class ="net.giro.co.beans.CorrelativoId" unsaved-value="none">
+			<key-property name="codigoEmpresa" type="long" column="c_codemp"/>
+			<key-property name="nombreTabla" type="string" column="c_nomtab"/>
+		</composite-id>
+		<property name="cbEmpresa" column="c_codemp" insert="false" update="false"/>
+		<property name="descriTabla" column="c_destab"/>
+		<property name="fechaInsercion" column="a_fecins"/>
+		<property name="fechaModificacion" column="a_fecmod"/>
+		<property name="ipInsercion" column="a_ipeins"/>
+		<property name="ipModificacion" column="a_ipemod"/>
+		<property name="numeroCorrelativo" column="n_numcor"/>
+		<property name="terminalInsercion" column="a_terins"/>
+		<property name="terminalModificacion" column="a_termod"/>
+		<property name="usuarioInsercion" column="a_usuins"/>
+		<property name="usuarioModificacion" column="a_usumod"/>
+	</class>
+	
+	<class name="net.giro.adp.beans.Obra" table="obra">
+		<id column="id_obra" name="id"/>
+		<property column="tipo" name="tipoObra"/>
+		<property column="nombre" name="nombre"/>
+		<property column="id_obra_principal" name="idObraPrincipal"/>
+		<property column="id_cliente" name="idCliente"/>
+		<property column="nombre_cliente" name="nombreCliente"/>
+		<property column="rfc_cliente" name="rfcCliente"/>
+		<property column="tipo_cliente" name="tipoCliente"/>
+		<property column="domicilio" name="domicilio"/>
+		<property column="id_domicilio" name="idDomicilio"/>
+		<property column="nombre_contrato" name="nombreContrato"/>
+		<property column="objeto_contrato" name="objetoContrato"/>
+		<property column="estatus_contrato" name="estatusContrato"/>
+		<property column="satic02" name="satic02"/>
+		<property column="tipo_cambio" name="tipoCambio" />
+		<property column="monto_contratado" name="montoContratado"/>
+		<property column="tipo_cambio_anticipo" name="tipoCambioAnticipo"/>
+		<property column="monto_anticipo" name="montoAnticipo"/>
+		<property column="porcentaje_anticipo" name="porcentajeAnticipo"/>
+		<property column="tipo_cambio_deductiva" name="tipoCambioDeductiva"/>
+		<property column="monto_deductiva" name="montoDeductiva"/>
+		<property column="fecha_inicio" name="fechaInicio"/>
+		<property column="fecha_terminacion" name="fechaTerminacion"/>
+		<property column="observaciones" name="observaciones"/>
+		<property column="id_sucursal" name="idSucursal"/>
+		<property column="nombre_sucursal" name="nombreSucursal"/>
+		<property column="id_responsable" name="idResponsable"/>
+		<property column="nombre_responsable" name="nombreResponsable"/>
+		<property column="nombre_obra_principal" name="nombreObraPrincipal"/>
+		<property column="autorizado" name="autorizado"/>
+		<property column="id_usuario_autorizo" name="idUsuarioAutorizo"/>
+		<property column="fecha_autorizacion" name="fechaAutorizacion"/>
+		<property column="revisado" name="revisado" />
+		<property column="revisado_por" name="revisadoPor" />
+		<property column="fecha_revisado" name="fechaRevisado" />
+		<property column="id_moneda" name="idMoneda" />
+		<property column="desc_moneda" name="descripcionMoneda" />
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="fecha_estatus" name="fechaEstatus"/>
+		<property column="estatus" name="estatus"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.adp.beans.ObraAlmacenes" table="obra_almacenes">
+		<id column="id" name="id" />
+		<many-to-one column="id_obra" name="idObra" class="net.giro.adp.beans.Obra" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="nombre_obra" name="nombreObra"/>
+		<property column="id_almacen" name="idAlmacen" />
+		<property column="nombre_almacen" name="nombreAlmacen"/>
+		<property column="tipo" name="tipo" />
+		<property column="almacen_principal" name="almacenPrincipal" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.adp.beans.ObraAvance" table="obra_avance">
+		<id column="id" name="id" />
+		<many-to-one column="id_obra" name="idObra" class="net.giro.adp.beans.Obra" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="fecha" name="fecha" />
+		<property column="porcentaje" name="porcentaje" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.adp.beans.ObraEmpleado" table="obra_empleado">
+		<id column="id" name="id"/>
+		<many-to-one column="id_obra" name="idObra" class="net.giro.adp.beans.Obra" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="nombre_obra" name="nombreObra"/>
+		<property column="id_empleado" name="idEmpleado"/>
+		<property column="nombre_empleado" name="nombreEmpleado"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+
+	<class name="net.giro.adp.beans.ObraEmpleadoHistorico" table="obra_empleado_historico">
+		<id column="id" name="id"/>
+		<property column="id_obra" name="idObra" />
+		<property column="id_empleado" name="idEmpleado" />
+		<property column="fecha_asignacion" name="fechaAsignacion" />
+		<property column="fecha_terminacion" name="fechaTerminacion" />
+		<property column="eliminado_por" name="eliminadoPor"/>
+	</class>
+
+	<class name="net.giro.adp.beans.ObraSatics" table="obra_satics">
+		<id column="id" name="id" />
+		<many-to-one column="id_obra" name="idObra" class="net.giro.adp.beans.Obra" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="nombre_obra" name="nombreObra" />
+		<property column="id_contrato_obra" name="idContratoObra" />
+		<property column="id_satics" name="idSatics" />
+		<property column="nombre_satics" name="nombreSatics" />
+		<property column="numero" name="numero" />
+		<property column="fecha" name="fecha" />
+		<property column="fecha_finalizacion" name="fechaFinalizacion" />
+		<property column="tipo" name="tipo" />
+		<property column="id_satics_adendum" name="idSaticsAdendum" />
+		<property column="nombre_satics_adendum" name="nombreSaticsAdendum" />
+		<property column="importe" name="importe" />
+		<property column="observaciones" name="observaciones" />
+		<property column="pdf_cargado" name="pdfCargado" />
+		<property column="estatus" name="estatus" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.adp.beans.ObraCobranza" table="obra_cobranza">
+		<id column="id" name="id" />
+		<many-to-one column="id_obra" name="idObra" class="net.giro.adp.beans.Obra" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="nombre_obra" name="nombreObra" />
+		<property column="porcentaje_iva" name="porcentajeIva" />
+		<property column="porcentaje_anticipo" name="porcentajeAnticipo" />
+		<property column="porcentaje_retencion" name="porcentajeRetencion" />
+		<property column="id_factura" name="idFactura" />
+		<property column="fecha" name="fecha" />
+		<property column="folio" name="folio" />
+		<property column="factura_total" name="facturaTotal" />
+		<property column="factura_saldo" name="facturaSaldo" />
+		<property column="factura_cobrado" name="facturaCobrado" />
+		<property column="factura_cobrado_pesos" name="facturaCobradoPesos" />
+		<property column="tipo_cambio" name="tipoCambio" />
+		<property column="id_moneda" name="idMoneda" />
+		<property column="moneda_nombre" name="monedaNombre" />
+		<property column="moneda_abreviacion" name="monedaAbreviacion" />
+		<property column="id_concepto" name="idConcepto"/>
+		<property column="concepto" name="concepto" />
+		<property column="anticipo" name="anticipo" />
+		<property column="estimacion" name="estimacion" />
+		<property column="amortizacion" name="amortizacion" />
+		<property column="fondo_garantia" name="fondoGarantia" />
+		<property column="subtotal" name="subtotal" />
+		<property column="iva" name="iva" />
+		<property column="cargos" name="cargos" /><!-- cargos de cliente -->
+		<property column="total" name="total" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.adp.beans.ObraCobranzaImpuestos" table="obra_cobranza_impuestos">
+		<id column="id" name="id" />
+		<many-to-one column="id_obra_cobranza" name="idObraCobranza" class="net.giro.adp.beans.ObraCobranza" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="id_impuesto" name="idImpuesto" />
+		<property column="nombre_impuesto" name="nombreImpuesto" />
+		<property column="tasa_impuesto" name="tasaImpuesto" />
+		<property column="base_impuesto" name="baseImpuesto" />
+		<property column="importe" name="importe" />
+		<property column="retencion" name="retencion" />
+		<property column="excluir" name="excluir" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.adp.beans.ObraCobranzaHistorico" table="obra_cobranza_historico">
+		<id column="id" name="id" />
+		<property column="id_origen" name="idOrigen" />
+		<property column="id_obra" name="idObra" />
+		<property column="nombre_obra" name="nombreObra" />
+		<property column="porcentaje_iva" name="porcentajeIva" />
+		<property column="porcentaje_anticipo" name="porcentajeAnticipo" />
+		<property column="porcentaje_retencion" name="porcentajeRetencion" />
+		<property column="id_factura" name="idFactura" />
+		<property column="fecha" name="fecha" />
+		<property column="folio" name="folio" />
+		<property column="id_concepto" name="idConcepto"/>
+		<property column="concepto" name="concepto" />
+		<property column="factura_total" name="facturaTotal" />
+		<property column="factura_saldo" name="facturaSaldo" />
+		<property column="factura_cobrado" name="facturaCobrado" />
+		<property column="factura_cobrado_pesos" name="facturaCobradoPesos" />
+		<property column="tipo_cambio" name="tipoCambio" />
+		<property column="id_moneda" name="idMoneda" />
+		<property column="moneda_nombre" name="monedaNombre" />
+		<property column="moneda_abreviacion" name="monedaAbreviacion" />
+		<property column="anticipo" name="anticipo" />
+		<property column="estimacion" name="estimacion" />
+		<property column="amortizacion" name="amortizacion" />
+		<property column="fondo_garantia" name="fondoGarantia" />
+		<property column="subtotal" name="subtotal" />
+		<property column="iva" name="iva" />
+		<property column="cargos" name="cargos" /><!--  cargos de cliente -->
+		<property column="total" name="total" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+	</class>
+	
+	<class name="net.giro.adp.beans.ObraSubcontratista" table="obra_subcontratista">
+		<id column="id" name="id" />
+		<property column="fecha" name="fecha" />
+		<property column="descripcion" name="descripcion" />
+		<many-to-one column="id_obra" name="idObra" class="net.giro.adp.beans.Obra" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="id_orden_compra" name="idOrdenCompra" />
+		<property column="folio_orden_compra" name="folioOrdenCompra" />
+		<property column="total_orden_compra" name="totalOrdenCompra" />
+		<property column="saldo_orden_compra" name="saldoOrdenCompra" />
+		<property column="id_moneda" name="idMoneda" />
+		<property column="moneda" name="moneda" />
+		<property column="tipo_cambio" name="tipoCambio" />
+		<!--property column="porcentaje_iva" name="porcentajeIva" /-->
+		<property column="porcentaje_anticipo" name="porcentajeAnticipo" />
+		<property column="porcentaje_retencion" name="porcentajeRetencion" />
+		<property column="anticipo" name="anticipo" />
+		<property column="estimacion" name="estimacion" />
+		<property column="amortizacion" name="amortizacion" />
+		<property column="fondo_garantia" name="fondoGarantia" />
+		<property column="subtotal" name="subtotal" />
+		<property column="impuestos" name="impuestos" />
+		<property column="retenciones" name="retenciones" />
+		<property column="cargos" name="cargos" />
+		<property column="total" name="total" />
+		<!-- -->
+		<property column="id_factura" name="idFactura" />
+		<property column="folio_factura" name="folioFactura" />
+		<property column="id_cliente" name="idCliente" />
+		<property column="nombre_cliente" name="nombreCliente" />
+		<property column="rfc_cliente" name="rfcCliente" />
+		<property column="id_concepto" name="idConcepto" />
+		<property column="concepto" name="concepto" />
+		<property column="factura_total" name="facturaTotal" />
+		<property column="factura_total_pesos" name="facturaTotalPesos" />
+		<!-- -->
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="estatus" name="estatus"/>
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.adp.beans.ObraSubcontratistaImpuestos" table="obra_subcontratista_impuestos">
+		<id column="id" name="id" />
+		<many-to-one column="id_obra_subcontratista" name="idObraSubcontratista" class="net.giro.adp.beans.ObraSubcontratista" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="id_impuesto" name="idImpuesto" />
+		<property column="nombre_impuesto" name="nombreImpuesto" />
+		<property column="tasa_impuesto" name="tasaImpuesto" />
+		<property column="base_impuesto" name="baseImpuesto" />
+		<property column="importe" name="importe" />
+		<property column="retencion" name="retencion" />
+		<property column="excluir" name="excluir" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.adp.beans.ObraContratos" table="obra_contratos">
+		<id column="id" name="id" />
+		<many-to-one column="id_obra" name="idObra" class="net.giro.adp.beans.Obra" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="id_subcontratante" name="idSubcontratante" />
+		<property column="nombre_subcontratante" name="nombreSubcontratante" />
+		<property column="monto" name="monto" />
+		<property column="iva" name="iva" />
+		<property column="observaciones" name="observaciones" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+
+	<class name="net.giro.adp.beans.Insumos" table="insumos_presupuesto">
+		<id column="id" name="id" />
+		<property column="id_presupuesto" name="idPresupuesto" />
+		<property column="id_obra" name="idObra" />
+		<property column="nombre_obra" name="nombreObra" />
+		<property column="total_materiales" name="totalMateriales" />
+		<property column="total_mano_obra" name="totalManoDeObra" />
+		<property column="total_herramientas" name="totalHerramientas" />
+		<property column="total_equipos" name="totalEquipos" />
+		<property column="total_otros" name="totalOtros" />
+		<property column="total_general" name="total" />
+		<property column="observaciones" name="observaciones" />
+		<property column="nombre_archivo" name="nombreArchivo" />
+		<property column="id_moneda" name="idMoneda" />
+		<property column="moneda" name="moneda" />
+		<property column="tipo_cambio" name="tipoCambio" />
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="estatus" name="estatus" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.adp.beans.InsumosDetalles" table="insumos_detalles">
+		<id column="id" name="id" />
+		<property column="id_insumo" name="idInsumo" />
+		<property column="id_producto" name="idProducto" />
+		<property column="nombre_producto" name="nombreProducto" />
+		<property column="cantidad" name="cantidad" />
+		<property column="precio_unitario" name="precioUnitario" />
+		<property column="monto" name="monto" />
+		<property column="porcentaje" name="porcentaje" />
+		<property column="tipo" name="tipo" />
+		<property column="cantidad_surtida" name="cantidadSurtida" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.adp.beans.ConceptoPresupuesto" table="concepto_presupuesto">
+		<id column="id" name="id"/>
+		<property column="concepto" name="concepto"/>
+		<property column="variable" name="variable"/>
+		<property column="formula" name="formula"/>
+		<property column="formula_porcentaje_insumos" name="formulaPorcentajeInsumos"/>
+		<property column="formula_porcentaje_total" name="formulaPorcentajeTotal"/>
+		<property column="orden" name="orden"/>
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.adp.beans.Presupuesto" table="presupuesto">
+		<id column="id" name="id" />
+		<many-to-one column="id_obra" name="idObra" class="net.giro.adp.beans.Obra" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="tema" name="tema" />
+		<property column="ruta" name="ruta" />
+		<property column="monto_total" name="montoTotal" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+		<property column="nombre_archivo" name="nombreArchivo" />
+	</class>
+	
+	<class name="net.giro.adp.beans.PresupuestoDetalle" table="presupuesto_detalle">
+		<id column="id" name="id" />
+		<property column="id_presupuesto" name="idPresupuesto" />
+		<property column="id_concepto_presupuesto" name="idConceptoPresupuesto" />
+		<property column="monto" name="monto" />
+		<property column="porcentaje" name="porcentaje" />
+		<property column="porcentaje_totales" name="porcentajeTotales" />
+		<property column="notas" name="notas" />
+		<property column="formula" name="formula" />
+		<property column="ejercido" name="ejercido" />
+		<property column="transito" name="transito" />
+		<property column="aditiva" name="aditiva" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<!-- NO SE USA 
+	<class name="net.giro.adp.beans.PlantillaPresupuesto" table="plantilla_presupuesto">
+		<id column="id" name="id" />
+		<property column="nombre_plantilla" name="nombre" />
+		<property column="concepto" name="concepto" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	-->
+</hibernate-mapping>

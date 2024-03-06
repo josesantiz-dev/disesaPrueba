@@ -1,0 +1,31 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlMensajes" autosized="true"
+		onshow="document.getElementById('#{rich:clientId('btnMensajesOk')}').focus();">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo" />
+		</f:facet>
+
+		<a4j:form id="frmMensajes" style="display:block; text-align:center; min-width:300px; max-width:500px;">
+			<h:panelGroup style="display:block; text-align:center;">
+				<h:outputText styleClass="Descripcion" rendered="#{gastosComprobarAction.tipoMensaje ==  0}" value="#{msg['mensaje.info.infoReg']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{gastosComprobarAction.tipoMensaje ==  1}" value="#{gastosComprobarAction.mensaje}" escape="false" />
+				<h:outputText styleClass="Descripcion" rendered="#{gastosComprobarAction.tipoMensaje ==  3}" value="#{msg['navegacion.label.montoInvalido']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{gastosComprobarAction.tipoMensaje ==  4}" value="#{msg['mensaje.info.noCancelar']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{gastosComprobarAction.tipoMensaje ==  5}" value="#{msg['mensaje.error.inesperado']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{gastosComprobarAction.tipoMensaje ==  6}" value="#{msg['mensaje.info.busquedaVacia']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{gastosComprobarAction.tipoMensaje ==  7}" value="#{msg['navegacion.label.saldoInsuficiente']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{gastosComprobarAction.tipoMensaje ==  8}" value="#{msg['mensaje.info.gastosPen']}" />
+			</h:panelGroup>
+			
+			<a4j:commandButton id="btnMensajesOk" style="margin:10px auto 0; width:100px; display:block;"
+				value="#{msg['navegacion.label.aceptar']}"
+				onclick="#{rich:component('pnlMensajes')}.hide()" />
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

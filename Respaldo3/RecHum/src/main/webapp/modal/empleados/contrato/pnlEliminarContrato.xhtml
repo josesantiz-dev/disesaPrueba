@@ -1,0 +1,30 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlEliminarContrato" autosized="true" domElementAttachment="form" style="min-width:300px; max-width:500px;"
+    	onshow="document.getElementById('#{rich:clientId('btnEliminarContratoNo')}').focus();"
+		header="#{msg['atencion']}">
+		
+		<h:panelGroup style="display:block; width:300px; float:center;">
+			<h:outputText value="#{msg['confirmacionEliminar']}" styleClass="Descripcion" />
+		</h:panelGroup>
+		
+		<h:panelGrid columns="2" width="100%" style="margin:10px auto 0; width:100%; text-align:center;">
+			<a4j:commandButton id="btnEliminarContratoSi" style="margin:0 auto; min-width:100px;" 
+				value="#{msg['si']}, #{msg['cancelar']}"
+				onclick="#{rich:component('pnlEliminarContrato')}.hide()"
+				action="#{empleadoAction.cancelarContrato}"
+				oncomplete="eliminarContrato(#{empleadoAction.band},'#{rich:clientId('pnlEliminarContrato')}','#{rich:clientId('pnlMensajes')}')"
+				render="dtListaContratos,pnlMensajes" limitRender="true" />
+			
+			<a4j:commandButton id="btnEliminarContratoNo" style="margin:0 auto; min-width:90px;" 
+				value="#{msg['no']}"
+				onclick="#{rich:component('pnlEliminarContrato')}.hide()" />
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

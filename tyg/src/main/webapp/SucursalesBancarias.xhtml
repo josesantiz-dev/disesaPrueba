@@ -1,0 +1,214 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+<ui:define name="menuFrag" >
+	
+	<rich:toolBarGroup id="tbgBuscar" location="right">
+		<a4j:commandButton id="cmdBuscar" action="#{SucursalesBancariasAction.buscar}" image="#{msgTyg['navegacion.boton.buscar.img']}"
+		oncomplete="buscar('#{SucursalesBancariasAction.resOperacion}','pnlMsgSucursalesBancarias');"
+			reRender="dtSucursalesBancarias,pnlMsgSucursalesBancarias" styleClass="Titulo" style="cursor:pointer;">
+			<rich:toolTip id="ttBuscar" showDelay="300" value="#{msgTyg['navegacion.boton.buscar.e']}" for="cmdBuscar"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>
+
+	<rich:toolBarGroup id="tbgNuevo" location="right">
+		<a4j:commandButton id="cmdNuevo" action="#{SucursalesBancariasAction.nuevo}" image="#{msgTyg['navegacion.boton.nuevo.img']}"
+			oncomplete="Richfaces.showModalPanel('pnlEditarSucursalesBancarias');" reRender="pnlEditarSucursalesBancarias" styleClass="Titulo" style="cursor:pointer;">
+			<rich:toolTip id="ttNuevo" showDelay="300" value="#{msgTyg['navegacion.boton.nuevo.e']}" for="cmdNuevo"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>
+	
+</ui:define>
+
+<ui:define name="body" >
+	<a4j:keepAlive beanName="SucursalesBancariasAction" />
+	<a4j:loadStyle src="resource:///resources/css/tyg/tyg.css" />
+	<a4j:loadStyle src="resource:///resources/css/tyg/SucursalesBancarias.css" />
+	<a4j:loadScript src="resource:///resources/scripts/tyg/SucursalesBancarias.js"/>
+	
+	<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+		<h:outputText value="#{msg['sucursalesBancarias']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+	</div>
+	
+	<div class="div_pagina" >
+		  <h:panelGrid id="pnlResponsabil" columns="2" style="margin-bottom:10px; margin-top:10px; display:block;" width="740">
+		           <h:outputText value="#{msgTyg['tipo']}:" styleClass="Titulo"/>
+		 		  <h:selectOneMenu value="#{SucursalesBancariasAction.campoBusqueda}" styleClass="Titulo" style="margin-left:5px;">
+				<f:selectItem itemLabel="#{msgTyg['nombre']}" itemValue="nombre"/>
+				<f:selectItem itemLabel="#{msgTyg['domicilio']}" itemValue="domicilio"/>
+			</h:selectOneMenu>
+	             <h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+			<h:inputText id="txtvalor" value="#{SucursalesBancariasAction.valTipoBusqueda}" maxlength="45" size="45"/>
+	  </h:panelGrid>	
+		<rich:dataTable id="dtSucursalesBancarias" cellpadding="0" cellspacing="0"  rows="20" 
+	               border="0" var="SucursalesBancarias" rowClasses="Row1, Row2" styleClass="tabla_pagina" 
+	               value="#{SucursalesBancariasAction.listValores}">
+	           		
+	               <f:facet name="header">
+	                   <rich:columnGroup>
+	                       <rich:column colspan="7" styleClass="Titulo">
+	                           <h:outputText value="#{msgTyg['navegacion.label.sucursales']}"/>
+	                       </rich:column>
+	                       <rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msgTyg['navegacion.label.id']}" />
+	                       </rich:column>	                       
+	                       <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msgTyg['navegacion.label.nombre']}" />
+	                       </rich:column>
+	                       <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msgTyg['navegacion.label.domicilio']}" />
+	                       </rich:column>
+	                       <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msgTyg['navegacion.label.estado']}" />
+	                       </rich:column>
+	                       <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msgTyg['navegacion.label.institucionesBancarias']}" />
+	                       </rich:column>
+	                       <rich:column colspan="2"/>
+	                   </rich:columnGroup>
+	               </f:facet>
+	               <rich:column width="30" style="text-align:center;" styleClass="Descripcion">
+	                   <h:outputText value="#{SucursalesBancarias.id}"/>
+	               </rich:column>
+	               <rich:column styleClass="Descripcion">
+	                   		<h:outputText value="#{SucursalesBancarias.nombre}" />
+	               </rich:column>
+	                <rich:column styleClass="Descripcion">
+	                   		<h:outputText value="#{SucursalesBancarias.domicilio}" />
+	               </rich:column>
+	                <rich:column styleClass="Descripcion">
+	                   		<h:outputText value="#{SucursalesBancariasAction.getNombreEstado(SucursalesBancarias.estado)}" />
+	               </rich:column>
+	                <rich:column styleClass="Descripcion">
+	                   		<h:outputText value="#{SucursalesBancarias.catBancoId.nombreCorto}" />
+	               </rich:column>	               
+	               <rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+	                   <a4j:commandButton id="cmdEditar" image="#{msgTyg['navegacion.boton.editar.img']}" action="#{SucursalesBancariasAction.editar}" oncomplete="Richfaces.showModalPanel('pnlEditarSucursalesBancarias')" reRender="pnlEditarSucursalesBancarias" >
+	                   		<f:setPropertyActionListener target="#{SucursalesBancariasAction.pojoSucursalBancaria}" value="#{SucursalesBancarias}"/>
+	                   		<rich:toolTip showDelay="300" value="#{msgTyg['navegacion.boton.editar.e']}" for="cmdEditar" styleClass="Titulo"/>	
+	                   </a4j:commandButton>
+	               </rich:column>
+	               <rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+	                   <a4j:commandButton image="#{msgTyg['navegacion.boton.eliminar.img']}" oncomplete="Richfaces.showModalPanel('pnlEliminarSucursalesBancarias')">
+	                   		<f:setPropertyActionListener target="#{SucursalesBancariasAction.pojoSucursalBancaria}" value="#{SucursalesBancarias}" />
+	                   		<rich:toolTip showDelay="300" value="#{msgTyg['navegacion.boton.eliminar.e']}" styleClass="Titulo"/>
+	                   </a4j:commandButton>
+	               </rich:column>
+	               <f:facet name="footer" >
+		               	<rich:datascroller align="center" for="dtSucursalesBancarias" maxPages="10" ajaxSingle="true" renderIfSinglePage="false"
+		            		page="#{SucursalesBancariasAction.numPagina}" id="dScroll" styleClass="Titulo"/>
+	               </f:facet>	               
+	      </rich:dataTable>		               
+	</div>	
+</ui:define>
+
+
+<ui:define name="modals">
+	 <!-- ####### MODAL NUEVO Y EDITAR  ######### -->
+	 <rich:modalPanel id="pnlEditarSucursalesBancarias" autosized="true">
+		<f:facet name="header">
+			<h:outputText id="lblTitulo" value="#{not empty SucursalesBancariasAction.pojoSucursalBancaria.id ? SucursalesBancariasAction.pojoSucursalBancaria.nombre: msgTyg['navegacion.label.registroNuevo']}" styleClass="Titulo" style="margin-left:10px"/>
+		</f:facet>
+		<f:facet name="controls">
+           <h:panelGroup>
+               <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor: pointer;" id="imgCerrarEditar"/>
+               	<rich:componentControl for="pnlEditarSucursalesBancarias" attachTo="imgCerrarEditar" operation="hide" event="onclick"/>
+            </h:panelGroup>
+         </f:facet>
+         <a4j:form id="frmEditarSucursalesBancarias">
+         	<div style = "display: block; width: 440px; height: 22px;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">						
+ 					<h:panelGroup style="vertical-align: middle; position:relative;">
+          				<a4j:commandButton id="cmdSalvar" action="#{SucursalesBancariasAction.guardar}" image="#{msgTyg['navegacion.boton.salvar.img']}" style="vertical-align: middle; margin-right:5px; cursor: pointer;" 
+					    oncomplete="guardar('#{SucursalesBancariasAction.resOperacion}', 'pnlEditarSucursalesBancarias', 'pnlMsgSucursalesBancarias', #{rich:element('msgErrorSucursalesBancarias')});"   reRender="dtSucursalesBancarias, pnlMsgSucursalesBancarias">
+					    <rich:toolTip id="ttSalvarr" showDelay="300" value="#{msgTyg['navegacion.boton.salvar.e']}" for="cmdSalvar"/>
+					    </a4j:commandButton>  
+         			</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			
+			<rich:messages id="msgErrorSucursalesBancarias" showDetail="false" showSummary="true" title="Campos requeridos!">
+				<f:facet name="errorMarker">
+                    <h:graphicImage value="#{msgTyg['navegacion.boton.alert.img']}" style="margin-right:1em;"/>   
+                </f:facet>
+			</rich:messages>
+			
+			<h:panelGrid columns="2" columnClasses="colModalIzq, colModalCent">
+           		<h:outputText value="#{msgTyg['navegacion.label.id']}:" styleClass="Titulo" style="float:right;"/>
+	           	<h:outputText id="lblId" value="#{SucursalesBancariasAction.pojoSucursalBancaria.id}" styleClass="Descripcion"/>	
+           		<h:outputText value="#{msgTyg['navegacion.label.nombre']}:" styleClass="Titulo" style="float:right;"/>
+	           	<h:inputText id="txtNombre" value="#{SucursalesBancariasAction.pojoSucursalBancaria.nombre}" required="#{!empty param[rich:clientId('cmdSalvar')]}" requiredMessage="#{msgTyg['navegacion.label.nombre']} #{msgTyg['mensajes.error.requerido']}" size="40" />
+	           	<h:outputText value="#{msgTyg['navegacion.label.domicilio']}:" styleClass="Titulo" style="float:right;"/>
+	           	<h:inputText id="txtDomicilio" value="#{SucursalesBancariasAction.pojoSucursalBancaria.domicilio}" required="#{!empty param[rich:clientId('cmdSalvar')]}" requiredMessage="#{msgTyg['navegacion.label.domicilio']} #{msgTyg['mensajes.error.requerido']}" size="40" />
+	           	<h:outputText value="#{msgTyg['navegacion.label.estado']}:"  styleClass="Titulo" style="float:right;"/>
+	          		  <h:selectOneMenu value="#{SucursalesBancariasAction.suggEstado}"  styleClass="Titulo" style="width:130px;">
+								<f:selectItems value="#{SucursalesBancariasAction.listEstados}"/>	           
+	           			</h:selectOneMenu> 
+        		<h:outputText value="#{msgTyg['navegacion.label.institucionesBancarias']}:" styleClass="Titulo" style="float:right;"/>
+	            <h:selectOneMenu value="#{SucursalesBancariasAction.suggBanco}"  styleClass="Titulo" style="width:130px;">
+							<f:selectItems value="#{SucursalesBancariasAction.listBancos}"/>					
+	           </h:selectOneMenu>
+           </h:panelGrid>
+		   </a4j:form>
+     </rich:modalPanel>	
+		  
+		  
+		 <!-- Panel Eliminar -->		
+    <rich:modalPanel id="pnlEliminarSucursalesBancarias" autosized="true">
+	 <f:facet name="header">
+		<h:outputText value="#{msgTyg['navegacion.label.atencion']}" styleClass="Titulo"/>
+	 </f:facet>
+	 <f:facet name="controls">
+         <h:panelGroup>
+             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor:pointer;" id="imgCerrarDelSucursalesBancarias"/>
+             	<rich:componentControl for="pnlEliminarSucursalesBancarias" attachTo="imgCerrarDelSucursalesBancarias" operation="hide" event="onclick"/>
+          </h:panelGroup>
+       </f:facet>
+       <a4j:form id="frmEliminarSucursalesBancarias">
+       		<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+       			<h:outputText value="#{msgTyg['navegacion.label.deseaEliminar']}" style="display:block;"  styleClass="Descripcion"/>
+	       		<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+		       		<a4j:commandButton id="cmdEliminar" action="#{SucursalesBancariasAction.eliminarSucursal()}" value="#{msgTyg['navegacion.label.aceptar']}" reRender="dtSucursalesBancarias, pnlMsgSucursalesBancarias"
+		       			oncomplete = "eliminar('#{SucursalesBancariasAction.resOperacion}', 'pnlEliminarSucursalesBancarias', 'pnlMsgSucursalesBancarias');"/>
+		       		<a4j:commandButton onclick="#{rich:component('pnlEliminarSucursalesBancarias')}.hide()" value="#{msgTyg['navegacion.label.cancelar']}" style="margin-left:10px;"/>
+	       		</h:panelGroup>
+       		</h:panelGrid>
+       </a4j:form>
+     </rich:modalPanel>		 
+	<!--  Fin Panel Eliminar-->
+	
+
+	
+	<!-- #### Panel MsgLayout #### -->		
+	    <rich:modalPanel id="pnlMsgSucursalesBancarias" autosized="true" width="350">
+		 <f:facet name="header">
+		 	<h:panelGroup>
+				<h:outputText value="#{SucursalesBancariasAction.resOperacion == '' ? msgTyg['navegacion.label.informacion'] : msgTyg['navegacion.label.atencion']}" styleClass="Titulo" />
+			</h:panelGroup>
+		 </f:facet>
+		 <f:facet name="controls">
+	         <h:panelGroup>
+	             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="imgCerrarMsgSucursalesBancarias"/>
+	             	<rich:componentControl for="pnlMsgSucursalesBancarias" attachTo="imgCerrarMsgSucursalesBancarias" operation="hide" event="onclick"/>
+	          </h:panelGroup>
+	       </f:facet>
+	       <a4j:form id="frmMsgSucursalesBancarias" style="text-align:center;" >
+	       		<h:panelGroup style="display:block; width:300px; float:center;">
+		       		<h:outputText value="#{SucursalesBancariasAction.resOperacion == '' ? msg['mensaje.info.infoReg'] : SucursalesBancariasAction.resOperacion}" style="display:block;" styleClass="Descripcion"/>
+	       		</h:panelGroup>
+	       		<a4j:commandButton value="#{msgTyg['navegacion.label.aceptar']}" onclick="#{rich:component('pnlMsgSucursalesBancarias')}.hide()" style="margin-top:10px; cursor:pointer;"/>
+	       </a4j:form>
+	     </rich:modalPanel>		 
+		<!--  Fin Panel Msg-->
+		
+</ui:define>
+	 
+    
+</ui:composition>

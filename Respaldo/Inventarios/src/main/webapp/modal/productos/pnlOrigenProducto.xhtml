@@ -1,0 +1,42 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlOrigenProducto" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['maestro']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;"
+				value="#{msg['navegacion.gral.cerrar.img']}"
+				onclick="#{rich:component('pnlOrigenProducto')}.hide()" />
+		</f:facet>
+		
+		<h:panelGroup>
+			<h:outputText value="#{msg['maestro.seleccioneTipo']}" styleClass="Descripcion" />
+		</h:panelGroup>
+		
+		<h:panelGrid columns="2" width="100%">
+			<a4j:commandButton style="margin:10px auto 0; cursor:pointer;" 
+				value="#{msg['maestro.inventariosAlt']}"
+				onclick="#{rich:component('pnlOrigenProducto')}.hide()"
+				action="#{productoAction.nuevoMaestroInventarios}"
+				oncomplete="#{rich:component('pnlProducto')}.show()" 
+				render="pnlProducto"
+				limitRender="true" />
+				
+			<a4j:commandButton style="margin:10px auto 0; cursor:pointer;" 
+				value="#{msg['maestro.administrativoAlt']}"
+				onclick="#{rich:component('pnlOrigenProducto')}.hide()"
+				action="#{productoAction.nuevoMaestroAdministrativo}"
+				oncomplete="#{rich:component('pnlProducto')}.show()" 
+				render="pnlProducto"
+				limitRender="true" />
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

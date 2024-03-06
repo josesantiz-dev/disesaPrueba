@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="org.w3c.css.sac" xmlns="urn:jboss:module:1.1">
+	<resources>
+		<resource-root path="sac-1.3.jar"/>
+	</resources>
+
+	<dependencies />
+</module>

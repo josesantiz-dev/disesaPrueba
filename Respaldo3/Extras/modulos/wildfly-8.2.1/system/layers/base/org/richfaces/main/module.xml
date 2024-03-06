@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="org.richfaces" xmlns="urn:jboss:module:1.1">
+	<resources>
+		<resource-root path="richfaces-4.5.17.Final.jar" />
+		<resource-root path="richfaces-a4j-4.5.17.Final.jar" />
+		<resource-root path="richfaces-core-4.5.17.Final.jar" />
+	</resources>
+
+	<dependencies>
+		<module export="true" name="com.fasterxml.classmate" slot="1.1.0" />
+		<module export="true" name="com.google.guava" slot="18.0" />
+		<module export="true" name="com.sun.jsf-impl" />
+		<module export="true" name="javaee.api" />
+		<module export="true" name="javax.annotation.api"  />
+		<module export="true" name="javax.api" />
+		<module export="true" name="javax.el.api" />
+		<module export="true" name="javax.faces.api" />
+		<module export="true" name="javax.jms.api" />
+		<module export="true" name="javax.servlet.api" />
+		<module export="true" name="javax.servlet.jsp.api" />
+		<module export="true" name="javax.servlet.jstl.api" />
+		<module export="true" name="javax.validation.api" />
+		<module export="true" name="net.sourceforge.cssparser" slot="0.9.18" />
+		<module export="true" name="org.apache.commons.beanutils" />
+		<module export="true" name="org.apache.commons.collections" />
+		<module export="true" name="org.apache.commons.digester" />
+		<module export="true" name="org.apache.commons.logging" />
+		<module export="true" name="org.hibernate.validator" slot="5.2.2" />
+		<module export="true" name="org.w3c.css.sac" />
+	</dependencies>
+</module>

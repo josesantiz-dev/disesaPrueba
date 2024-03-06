@@ -1,0 +1,105 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlProductosNoEncontrados" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+    	<f:facet name="header">
+			<h:outputText value="#{msg['atencion']}" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" onclick="#{rich:component('pnlProductosNoEncontrados')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+		
+		<div style="display: block; margin: 10px auto; min-width:700px; padding: 0; text-align: left; background-color: none;">
+			<h:panelGroup styleClass="encabezado" style="min-height: 1em;">
+				<h:outputText value="#{msg['maestroNoActualizado']}" styleClass="itemCancelado" />
+			</h:panelGroup>
+		
+			<h:panelGroup id="grupoProductosNoEncontrados">
+				<rich:dataTable id="dtProductos" cellpadding="0" cellspacing="0" rows="12" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+					var="var" value="#{insumosAction.listProductos}" style="margin:0 auto;">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column style="text-align:center;" styleClass="Titulo" colspan="7">
+								<h:outputText value="#{msg['productosNoEncontrados']}" /> 
+							</rich:column>
+							
+							<rich:column style="text-align:center; with:auto; max-width:100px" styleClass="Titulo" breakRowBefore="true">
+								<h:outputText value="#{msg['clave']}" /> 
+							</rich:column>
+							
+							<rich:column style="text-align:center; with:auto; max-width:400px;" styleClass="Titulo">
+								<h:outputText value="#{msg['descripcion']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; with:auto; max-width:100px;" styleClass="Titulo">
+								<h:outputText value="#{msg['unidad']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; with:auto; max-width:100px;" styleClass="Titulo">
+								<h:outputText value="#{msg['cantidad']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; with:auto; max-width:100px;" styleClass="Titulo">
+								<h:outputText value="#{msg['costoUnitario']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; with:auto; max-width:120px;" styleClass="Titulo">
+								<h:outputText value="#{msg['importe']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; with:auto; max-width:70px;" styleClass="Titulo">
+								<h:outputText value="#{msg['%']}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column style="text-align:center; with:auto; max-width:100px" styleClass="Titulo">
+						<h:outputText value="#{var.clave}" styleClass="Descripcion" /> 
+					</rich:column>
+					
+					<rich:column style="text-align:left; with:auto; max-width:400px;" styleClass="Titulo">
+						<h:outputText value="#{var.descripcion}" styleClass="Descripcion" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; with:auto; max-width:100px;" styleClass="Titulo">
+						<h:outputText value="#{var.unidad}" styleClass="Descripcion" />
+					</rich:column>
+					
+					<rich:column style="text-align:right; with:auto; max-width:100px;" styleClass="Titulo">
+						<h:outputText value="#{var.cantidad}" styleClass="Descripcion">
+							<f:convertNumber pattern="###,###,##0.00"/>
+						</h:outputText>
+					</rich:column>
+					
+					<rich:column style="text-align:right; padding-left: 5px; with:auto; max-width: 100px;">
+						<h:outputText value="#{var.costoUnitario}" styleClass="Descripcion">
+							<f:convertNumber pattern="###,###,##0.00"/>
+						</h:outputText>
+					</rich:column>
+					
+					<rich:column style="text-align:right; padding-left: 5px; with:auto; max-width: 120px;">
+						<h:outputText value="#{var.monto}" styleClass="Descripcion">
+							<f:convertNumber pattern="###,###,##0.00"/>
+						</h:outputText>
+					</rich:column>
+					
+					<rich:column style="text-align:center; with:auto; max-width:70px;" styleClass="Titulo">
+						<h:outputText value="#{var.porcentaje}" styleClass="Descripcion">
+							<f:convertNumber pattern="##0.00"/>
+						</h:outputText>
+					</rich:column>
+
+					<f:facet name="footer">
+						<rich:dataScroller id="dScrollProductos" page="#{insumosAction.numPaginaProductos}" for="dtProductos" align="center" maxPages="10" ajaxSingle="true" styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</h:panelGroup>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

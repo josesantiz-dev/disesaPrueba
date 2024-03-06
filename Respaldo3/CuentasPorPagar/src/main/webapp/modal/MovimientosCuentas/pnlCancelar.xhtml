@@ -1,0 +1,39 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlCancelar" autosized="true">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo"/>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="imgCerrarCancelarCheque"/>
+				<rich:componentControl for="pnlCancelar" attachTo="imgCerrarCancelarCheque" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmCancelar">
+			<a4j:region id="loadCancelar">
+				<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+					<h:outputText value="#{msg['navegacion.label.deseaCancelar']}"  styleClass="Descripcion" />
+					<!--<h:outputText value="#{cajaChicaMovimientosAction.mensaje == '' ? msg['navegacion.label.deseaCancelar'] : cajaChicaMovimientosAction.mensaje}"  styleClass="Descripcion" />-->
+					<h:panelGroup style="margin-top:10px; text-align:center; display:block;" rendered="#{ReposicioncajaChicaMovimientosAction.mensaje != ''}">
+						<a4j:commandButton id="cmdElimCheq" onclick="#{rich:element('cmdElimCheq')}.disabled = false;" action="#{cajaChicaMovimientosAction.cancelar}" oncomplete="#{rich:element('cmdElimCheq')}.disabled = false; checaCancelacion('#{cajaChicaMovimientosAction.mensaje}', 'pnlCancelar', 'pnlMsgCancelarCheque');" reRender="pnlMsgCancelarCheque, dtResults" value="#{msg['navegacion.label.aceptar']}"/>
+						<a4j:commandButton onclick="#{rich:component('pnlCancelar')}.hide()" value="#{msg['cancelar.e']}" style="margin-left:10px;"/>
+					</h:panelGroup>
+					<a4j:status for="loadCancelar">
+						<f:facet name="start">
+							<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}"/>
+						</f:facet>
+					</a4j:status>
+				</h:panelGrid>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

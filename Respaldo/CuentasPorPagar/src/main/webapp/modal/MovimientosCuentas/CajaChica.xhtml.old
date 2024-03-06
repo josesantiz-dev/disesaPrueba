@@ -1,0 +1,153 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	template="/layout/template.xhtml">
+	
+	<ui:define name="menuFrag">
+    	<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" action="#{cajaChicaAction.buscar}"
+				image="#{msg['buscar22.img']}"
+				oncomplete="buscar('#{cajaChicaAction.resOperacion}','#{rich:clientId('pnlMsgGralCajaChica')}');"
+				render="dtCMovimientosCuentas,pnlMsgGralCajaChica" styleClass="Titulo"
+				style="cursor:pointer;">
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+    	<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevoMovimientosCuentas" action="#{cajaChicaAction.nuevo}"
+				image="#{msg['nuevo22.img']}"
+				oncomplete="#{rich:component('pnlEditarMovimientosCuentas')}.show()"
+				render="pnlEditarMovimientosCuentas" styleClass="Titulo"
+				style="cursor:pointer;">
+				<rich:tooltip id="ttNuevo" showDelay="300" value="#{msg['nuevo.e']}"
+					for="cmdNuevoMovimientosCuentas" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css/cajachica" name="cajachica.css" />
+		<h:outputScript library="scripts/cajachica" name="cajachica.js" />
+		
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText value="#{msg['reposicionCajaChica']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+
+		<div class="div_pagina">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer"
+				style="margin-left:10px; margin-bottom:20px; display:block;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>	  				
+				<h:selectOneMenu value="#{cajaChicaAction.tipoBusqueda}" styleClass="Titulo" style="margin-left:5px;">
+					<f:selectItem itemLabel="#{msg['fecha']}" itemValue="fecha"/>
+					<f:selectItem itemLabel="#{msg['beneficiario']}" itemValue="beneficiario"/>
+					<f:selectItem itemLabel="#{msg['cuentaOrigen']}" itemValue="idCuentaOrigen"/>
+					<a4j:ajax event="change" render="groupValorBusqueda" />
+				</h:selectOneMenu>	
+				
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo"/>
+				<h:panelGroup id="groupValorBusqueda">
+					<h:inputText value="#{cajaChicaAction.valorBusqueda}" rendered="#{cajaChicaAction.tipoBusqueda == 'beneficiario'}"/> 
+					
+					<rich:calendar
+						value="#{cajaChicaAction.valorBusquedaFecha}"
+						datePattern="dd MMM yyyy" style="width:150px"
+						required="#{!empty param[rich:clientId('cmdSalvarMovimientosCuentas')]}"
+						requiredMessage="#{msg['fecha']} #{msg['mensaje.error.requerido']}" 
+						rendered="#{cajaChicaAction.tipoBusqueda == 'fecha'}"/>
+						
+					<h:panelGroup id="groupBusquedaCuentaBanco2" rendered="#{cajaChicaAction.tipoBusqueda == 'idCuentaOrigen'}">
+						<h:outputText rendered="#{cajaChicaAction.valorBusquedaCuenta != null}" value="#{cajaChicaAction.valorBusquedaCuenta.numeroDeCuenta}" styleClass="Titulo"/>
+						<a4j:commandLink id="cmdBuscarCuentaOrigenBusqueda" 
+							value="#{cajaChicaAction.valorBusquedaCuenta != null ? msg['cambiar']  : msg['seleccionar.e'] }" 
+							oncomplete="#{rich:component('pnlBuscarCuentasBanco2')}.show()" style ="font-weight: bold;"
+							render="pnlBuscarCuentasBanco2" styleClass="Titulo"/>	
+					</h:panelGroup>
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<rich:dataTable id="dtMovimientosCuentas" cellpadding="0" cellspacing="0"
+				rows="20" border="0" var="var" rowClasses="Row1, Row2"
+				styleClass="tabla_pagina" value="#{cajaChicaAction.listMovimientosCuentas}">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['cheque']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['fecha']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['beneficiario']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['cuentaOrigen']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['cuentaDestino']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['monto']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo"/>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column width="50" styleClass="Descripcion"
+					style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+				<rich:column width="50" styleClass="Descripcion"
+					style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.noCheque}" />
+				</rich:column>
+				<rich:column width="50" styleClass="Descripcion"
+					style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.fecha}" />
+				</rich:column>
+				<rich:column width="50" styleClass="Descripcion"
+					style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.idBeneficiario}" />
+				</rich:column>
+				<rich:column width="50" styleClass="Descripcion"
+					style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.idCuentaDestino}" />
+				</rich:column>
+				<rich:column width="50" styleClass="Descripcion"
+					style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.monto}" />
+				</rich:column>
+				<rich:column width="20" style="text-align:center;"
+					styleClass="Descripcion">
+					<a4j:commandButton id="cmdEditarMovimientosCuentas" image="#{msg['editar16.img']}"
+						oncomplete="#{rich:component('pnlEditarMovimientosCuentas')}.show()"
+						action="#{cajaChicaAction.editar}" render="pnlEditarMovimientosCuentas">
+						<rich:tooltip showDelay="300" value="#{msg['editar']}" for="cmdEditarMovimientosCuentas" />
+						<f:setPropertyActionListener target="#{cajaChicaAction.pojoMovimientosCuentas}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<f:facet name="footer">
+					<rich:dataScroller align="center" for="dtMovimientosCuentas" maxPages="10"
+						ajaxSingle="true" page="#{cajaChicaAction.numPagina}" id="dScroll"
+						styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/MovimientosCuentas/pnlEditarMovimientosCuentas.xhtml" />
+		<ui:include src="/MovimientosCuentas/pnlBuscarSucursales.xhtml" />
+		<ui:include src="/MovimientosCuentas/pnlBuscarCuentasBanco.xhtml" />
+		<ui:include src="/MovimientosCuentas/pnlBuscarPersonas.xhtml" />
+		<ui:include src="/MovimientosCuentas/pnlMsgGralCajaChica.xhtml" />
+	</ui:define>
+	
+</ui:composition>

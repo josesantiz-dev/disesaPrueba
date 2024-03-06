@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<ui:composition template="/layout/template.xhtml"> 
+		<ui:define name="title">
+			<h:outputText value="Catalogo de Impuestos"/>
+		</ui:define>
+
+		<ui:define name="menuFrag">
+			<rich:toolBarGroup location="right" style="padding:0 2px 0 2px;" >
+				<a4j:commandButton id="cmdBuscar" onclick="#{rich:element('cmdBuscar')}.disabled = true;" 
+				action="#{ImpuestosAction.buscar}" image="#{msg['buscar22.img']}" 
+				oncomplete="checaResultado(#{rich:element('txtResultado')}, 'pnlNuevoEditarImpto','pnlMsgGralImpto','buscar', #{rich:element('msgErrorImpto')}); #{rich:element('cmdBuscar')}.disabled = false;" 
+				reRender="dtResults,pnlMsgGralImpto,txtResultado" style="vertical-align: middle; position:relative;"/>
+				<h:outputLabel for="cmdBuscar" value="#{msg['buscar.e']}" style="cursor:pointer; font-weight: bold; font-family: Arial, Verdana, sans-serif; font-size: 11px;" styleClass="Titulo"/>
+			</rich:toolBarGroup>
+			
+			<rich:toolBarGroup location="right" style="padding:0 2px 0 2px;" >
+				<a4j:commandButton id="cmdNuevo" onclick="#{rich:element('cmdNuevo')}.disabled = true;" action="#{ImpuestosAction.nuevo}" image="#{msg['nuevo22.img']}" style="cursor: pointer;" oncomplete="#{rich:element('cmdNuevo')}.disabled = false; Richfaces.showModalPanel('pnlNuevoEditarImpto'); "  reRender="pnlNuevoEditarImpto"/>
+				<h:outputLabel for="cmdNuevo" value="#{msg['nuevo.e']}" style="cursor:pointer;" styleClass="Titulo"/>
+			</rich:toolBarGroup>
+		</ui:define>
+		
+		<ui:define name="body">
+			<a4j:keepAlive beanName="ImpuestosAction" />
+			<a4j:loadStyle src="resource:///resources/css/negocio/impuestos.css" />
+			<a4j:loadScript src="resource:///resources/scripts/negocio/impuestos.js"/>
+			<h:inputHidden id="txtResultado" value="#{ImpuestosAction.resOperacion}" />
+			<br/>
+			<h:panelGrid id="panel_busqueda" columns="2" style="margin:10px auto; display:block;" width="720">
+				<h:outputText value="#{msg['navegacion.label.tipoBusqueda']}:" styleClass="Titulo"/>	  				
+				<rich:comboBox id="cmbTipoBusqueda" listStyle="text-align:left;" enableManualInput="false"
+					value="#{ImpuestosAction.valTipoBusqueda}" 
+					suggestionValues="#{ImpuestosAction.tipoBusqueda}" />											
+				
+				<h:outputText value="#{msg['navegacion.label.valor']}:" styleClass="Titulo"/>
+				<h:inputText id="txtvalor" value="#{ImpuestosAction.campoBusqueda}" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtResults" rows="20" cellpadding="0" cellspacing="0" width="720" border="0" var="impuesto" rowClasses="Row1, Row2" value="#{ImpuestosAction.listImpuestos}" style="margin:10px auto;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column colspan="6" styleClass="tygImpTit">
+							<h:outputText value="#{msg['impuestos']}"/>
+						</rich:column>
+						
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="tygImpTit">
+							<h:outputText value="#{msg['navegacion.label.clave']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; margin-left:10px;" styleClass="tygImpTit">
+							<h:outputText value="#{msg['impuesto']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; margin-left:10px;" styleClass="tygImpTit">
+							<h:outputText value="#{msg['navegacion.label.ctaCont']}" />
+						</rich:column>  
+						
+						<rich:column style="text-align:center; margin-left:10px;" styleClass="tygImpTit">
+							<h:outputText value="#{msg['porcentaje']}" />
+						</rich:column>  
+						
+						<rich:column style="text-align:center; margin-left:10px;"  styleClass="tygImpTit"/>	
+						<rich:column style="text-align:center; margin-left:10px;"  styleClass="tygImpTit"/>  
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column width="150" style="text-align:center;" styleClass="tygImpDesc">
+					<h:outputText id="txtClave" value="#{impuesto.id}"/>					  
+				</rich:column>
+				
+				<rich:column width="220" style="text-align:center;" styleClass="tygImpDesc">
+					<h:outputText id="txtImpuesto" value="#{impuesto.descripcion}"/>
+				</rich:column>
+				
+				<rich:column  width="270" style="text-align:center;"  styleClass="tygImpDesc">
+					<h:outputText id="txtCtaContable" value="#{impuesto.valor}"/>
+				</rich:column>
+				
+				<rich:column width="100" style="text-align:center;" styleClass="tygImpDesc">
+					<h:outputText id="txtPorcentaje" value="#{impuesto.atributo1}"/>
+				</rich:column>
+				
+				<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;" styleClass="tygImpDesc">
+					<a4j:commandButton style="cursor:pointer;"
+						image="#{msg['editar16.img']}" 
+						oncomplete="Richfaces.showModalPanel('pnlNuevoEditarImpto')" 
+						reRender="pnlNuevoEditarImpto"> 
+						<f:setPropertyActionListener target="#{ImpuestosAction.pojoValores}" value="#{impuesto}" />
+						<rich:toolTip showDelay="300">
+							<h:outputText value="#{msg['editar.e']}" styleClass="Descripcion"/>
+						</rich:toolTip>	
+					</a4j:commandButton>							  								
+				</rich:column>	
+				
+				<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;">
+					<a4j:commandButton style="cursor:pointer;"
+						image="#{msg['eliminar16.img']}" 
+						oncomplete="Richfaces.showModalPanel('pnlEliminarImpto')">
+						<f:setPropertyActionListener target="#{ImpuestosAction.pojoValores}" value="#{impuesto}" />
+						<rich:toolTip showDelay="300">
+							<h:outputText value="#{msg['eliminar.e']}" styleClass="Descripcion"/>
+						</rich:toolTip>	
+					</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer" >
+					<rich:datascroller align="center" for="dtResults" maxPages="10" ajaxSingle="true" page="#{ImpuestosAction.numPagina}" id="dScroll" styleClass="tygImpTit"/>
+				</f:facet>
+			</rich:dataTable>
+			<br/>
+		</ui:define>
+
+		<ui:define name="modals">
+			<ui:include src="/negocio/Impuestos/pnlNuevoEditarImpto.xhtml" />
+			<ui:include src="/negocio/Impuestos/pnlMsgGralImpto.xhtml" />
+			<ui:include src="/negocio/Impuestos/pnlEliminarImpto.xhtml" />
+		</ui:define>
+	</ui:composition>
+</html>

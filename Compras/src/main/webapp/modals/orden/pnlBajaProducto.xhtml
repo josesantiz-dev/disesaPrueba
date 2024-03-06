@@ -1,0 +1,35 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+    <rich:popupPanel id="pnlBajaProducto" autosized="true" domElementAttachment="form" style="min-width: 600px; max-width: 600px; " top="5">
+        <f:facet name="header">
+            <h:outputText id="txtTitulo1" styleClass="Titulo" value="#{ordenesAction.nombreProductoSeleccionado}" />
+        </f:facet>
+        <f:facet name="controls">
+            <h:graphicImage style="cursor:pointer;" 
+                value="#{msg['navegacion.gral.cerrar.img']}" 
+                onclick="#{rich:component('pnlBajaProducto')}.hide()" />
+        </f:facet>
+        <h:panelGrid id="botoneraOrdenCompra1" columns="2" style="padding:0; width:570px; text-align: left;">
+            <h:panelGroup id="grupoCotizacionBotonesDerechos1" style="width:100%; vertical-align:middle; position:relative;">                
+                <a4j:commandButton id="cmdGuardarBaja" style="float:right; margin:auto 5px; vertical-align: middle; position:relative;"
+                    rendered="#{ordenesAction.hasId}"
+                    image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+                    onclick="#{rich:element('cmdGuardarBaja')}.disabled = true;"
+                    action="#{ordenesAction.cancelarProducto}" 
+                    oncomplete="#{rich:component('pnlBajaProducto')}.hide(); #{rich:element('cmdImprimir')}.disabled = false;actualizarTablaProductos()"
+                    render="pnlMensajes" limitRender="true" />
+            </h:panelGroup>
+        </h:panelGrid>
+        <h:panelGrid id="botoneraOrdenCompra2" columns="2" style="padding:0; width:570px; text-align: left;">
+			<h:inputTextarea id="txtComentarios" style="width:100%" rows="4" value="#{ordenesAction.comentarios}">
+				<rich:placeholder value="#{msg['comentarios']}" />
+    		</h:inputTextarea>            
+        </h:panelGrid>
+    </rich:popupPanel>
+</ui:composition>

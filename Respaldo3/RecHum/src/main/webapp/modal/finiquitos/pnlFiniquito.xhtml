@@ -1,0 +1,247 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <h:outputStylesheet>
+        .disableDay {
+            background-color: gray;
+        }
+    </h:outputStylesheet>
+    
+    <h:outputScript>
+		var curDt = new Date();
+		
+		function disablementFunction(day) {
+			var dayAllow = new Date();
+			var stringToday = '';
+			var stringAllow = '';
+			var stringDate = '';
+			var restarDias = 3;
+			
+			if (curDt == undefined)
+				curDt = day.date.getDate();
+		
+			dayAllow.setDate(curDt.getDate() - restarDias);
+			if (dayAllow.getDay() == 0 || dayAllow.getDay() &gt;= 5) // domingo o viernes o sabado
+				restarDias = restarDias + 1;
+			else
+				restarDias = 0;
+			
+			if (restarDias > 0)
+				dayAllow.setDate(curDt.getDate() - restarDias);
+			
+			stringToday = curDt.getFullYear() + '-' + (curDt.getMonth() + 1) + '-' + curDt.getDate();
+			stringAllow = dayAllow.getFullYear() + '-' + (dayAllow.getMonth() + 1) + '-' + dayAllow.getDate();
+			stringDate  = day.date.getFullYear() + '-' + (day.date.getMonth() + 1) + '-' + day.date.getDate();
+			/*
+			console.log('---------------------------------');
+			console.log('disablementFunction(day)');
+			console.log('---------------------------------');
+			console.log('Fecha Permitida : ' + stringAllow);
+			console.log('Fecha input Cal : ' + stringDate);
+			console.log(' Dias p/calculo : ' + (restarDias == 0 ? 3 : restarDias));
+			console.log('     Dia semana : ' + day.weekDayNumber);
+			console.log(dayAllow);
+			console.log(day);
+			console.log('STATEMENTS-----------------------');
+			console.log('(stringDate == stringAllow || stringDate == stringToday) 	RETURN ' + (stringDate == stringAllow || stringDate == stringToday));
+			console.log('(day.weekDayNumber == 0) 								  	RETURN ' + (day.weekDayNumber == 0));
+			console.log('(day.date.getTime() &gt; dayAllow.getTime()) 				RETURN ' + (day.date.getTime() &gt; dayAllow.getTime()));
+			console.log('---------------------------------');
+			*/
+			if (stringDate == stringAllow || stringDate == stringToday)
+				return true;
+			if (day.weekDayNumber == 0)
+				return false;
+			return (day.date.getTime() &gt; dayAllow.getTime());
+		}
+ 
+		function disabledClassesProv(day) {
+			var dayAllow = new Date();
+			var stringToday = '';
+			var stringAllow = '';
+			var stringDate = '';
+			var restarDias = 3;
+			var res = '';
+				
+			if (curDt == undefined)
+				curDt = day.date.getDate();
+			
+			dayAllow.setDate(curDt.getDate() - restarDias);
+			if (dayAllow.getDay() == 0 || dayAllow.getDay() &gt;= 5) // domingo o viernes o sabado
+				restarDias = restarDias + 1;
+			else
+				restarDias = 0;
+			
+			if (restarDias > 0)
+				dayAllow.setDate(curDt.getDate() - restarDias);
+			
+			stringToday = curDt.getFullYear() + '-' + (curDt.getMonth() + 1) + '-' + curDt.getDate();
+			stringAllow = dayAllow.getFullYear() + '-' + (dayAllow.getMonth() + 1) + '-' + dayAllow.getDate();
+			stringDate  = day.date.getFullYear() + '-' + (day.date.getMonth() + 1) + '-' + day.date.getDate();
+			/*
+			console.log('---------------------------------');
+			console.log('disabledClassesProv(day)');
+			console.log('---------------------------------');
+			console.log('Fecha Permitida : ' + stringAllow);
+			console.log('Fecha input Cal : ' + stringDate);
+			console.log(' Dias p/calculo : ' + (restarDias == 0 ? 3 : restarDias));
+			console.log('     Dia semana : ' + day.weekDayNumber);
+			console.log(dayAllow);
+			console.log(curDt);
+			console.log(day);
+			console.log('STATEMENTS-----------------------');
+			console.log('(stringDate == stringAllow || stringDate == stringToday) 	RETURN ' + (stringDate == stringAllow || stringDate == stringToday));
+			console.log('(day.weekDayNumber == 0) 									RETURN ' + (day.weekDayNumber == 0));
+			console.log('(dayAllow &lt; day.date) 									RETURN ' + (dayAllow &lt; day.date));
+			console.log('---------------------------------');
+			*/
+			if (stringDate == stringAllow || stringDate == stringToday)
+				return res;
+			if (day.weekDayNumber == 0)
+				return 'disableDay';
+			if (dayAllow &lt; day.date)
+				return res;
+			return 'rf-cal-boundary-day';
+		}
+    </h:outputScript>
+    
+    <rich:popupPanel id="pnlFiniquito" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+		<f:facet name="header">
+			<h:outputText value="#{finiquitoAction.titulo}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlFiniquito')}.hide()" />
+		</f:facet>
+		
+		<h:panelGrid id="botonera" columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align:left;">
+			<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+				<rich:messages id="validadorFiniquito" ajaxRendered="true" title="Campos requeridos!" >
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" /></f:facet>
+				</rich:messages>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdSalvar" style="float:right; margin-left: 5px; vertical-align:top; position:relative;"
+					image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+					rendered="#{finiquitoAction.pojoFiniquito.estatus == 0}" 
+					action="#{finiquitoAction.guardar}" 
+					oncomplete="salvarFiniquito(#{finiquitoAction.operacionCompleta}, '#{rich:clientId('pnlFiniquito')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorFiniquito')});"
+					render="validadorFiniquito,pnlMensajes,dtFiniquitos,dtFiniquitos"
+					limitRender="true" />
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<a4j:region id="regFiniquito">
+			<h:panelGroup id="grupoDatos">
+				<div style = "display: block; margin-bottom:10px;">
+					<fieldset style="margin:10px auto;">
+						<legend><h:outputText value="#{msg['empleado']}" styleClass="Titulo"/></legend>
+						
+						<h:panelGrid columns="2" columnClasses="colTitulo,colDato" style="text-align:left; width:100%;">
+							<h:outputText value="#{msg['empleado']}:" styleClass="Titulo"/>
+							<h:panelGroup id="pnlEmpleadoDatos">
+								<h:panelGrid columns="2">
+									<h:outputText id="txtEmpleado" styleClass="Titulo" style="text-align:left; display:block;" 
+										value="#{finiquitoAction.empleado}" />
+									<h:panelGroup>
+										<a4j:commandLink id="cmdSeleccionarEmpleado" 
+											rendered="#{not finiquitoAction.edicionBloqueada ? (finiquitoAction.nivelAcceso == 1 || finiquitoAction.nivelAcceso == 4 || finiquitoAction.nivelAcceso == 5 || finiquitoAction.nivelAcceso == 7) : false}"
+											value="#{finiquitoAction.empleado == '' ? msg['seleccionar'] : msg['cambiar']}"
+											action="#{finiquitoAction.nuevaBusquedaEmpleados}"
+											oncomplete="#{rich:component('pnlBusquedaEmpleados')}.show();"
+											render="pnlBusquedaEmpleados"
+											limitRender="true">
+										</a4j:commandLink>
+										
+										<h:inputText id="txtEmpleadoHidden" style="text-align:left; display:none;"
+											value="#{finiquitoAction.empleado}"
+											required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+											requiredMessage="#{msg['empleado']} #{msg['mensaje.error.requerido']}" />
+									</h:panelGroup>
+								</h:panelGrid>
+							</h:panelGroup>
+						</h:panelGrid>
+					</fieldset>
+					
+					<fieldset style="margin:10px auto;">
+						<legend><h:outputText value="#{msg['datos']}" styleClass="Titulo"/></legend>
+					
+						<h:panelGrid columns="2" columnClasses="colTitulo,colDato" style="text-align:left;">
+							<h:outputLabel value="#{msg['ef.fechaSolicitudBaja']}:" styleClass="Titulo"/>
+				            <rich:calendar id="txtFechaBaja" enableManualInput="false" datePattern="dd/MMM/yyyy" showFooter="false" inputSize="9"
+				            	dayDisableFunction="disablementFunction" dayClassFunction="disabledClassesProv" boundaryDatesMode="scroll" 
+								disabled="#{not finiquitoAction.edicionBloqueada ? ((finiquitoAction.nivelAcceso == 1 || finiquitoAction.nivelAcceso == 4 || finiquitoAction.nivelAcceso == 5 || finiquitoAction.nivelAcceso == 7) ? finiquitoAction.fechaBloqueada : true) : true}"
+				            	value="#{finiquitoAction.fechaSolicitudBaja}"
+				            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+				            	requiredMessage="#{msg['ef.fechaSolicitudBaja']} #{msg['mensaje.error.requerido']}" />
+							
+				            <h:outputText value="#{msg['ef.solicitadoPor']}:" styleClass="Titulo"/>
+							<h:selectOneMenu id="cbSolicitadoPor" style="width:316px;"
+								disabled="#{not finiquitoAction.edicionBloqueada ? ! (finiquitoAction.nivelAcceso == 1 || finiquitoAction.nivelAcceso == 4 || finiquitoAction.nivelAcceso == 5 || finiquitoAction.nivelAcceso == 7) : true}"
+								value="#{finiquitoAction.solicitadoPor}"
+				            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+				            	requiredMessage="#{msg['ef.solicitadoPor']} #{msg['mensaje.error.requerido']}">
+								<f:selectItem itemLabel="#{msg['seleccione']}" /> 
+								<f:selectItems value="#{finiquitoAction.listaCboSolicitadoPor}" /> 
+							</h:selectOneMenu>
+				            
+				            <h:outputLabel value="#{msg['observaciones']}:" styleClass="Titulo" />
+							<h:inputTextarea id="txtObservaciones" rows="3" style="width:95%; resize: none;"
+								disabled="#{not finiquitoAction.edicionBloqueada ? ! (finiquitoAction.nivelAcceso == 1 || finiquitoAction.nivelAcceso == 4 || finiquitoAction.nivelAcceso == 5 || finiquitoAction.nivelAcceso == 7) : true}"
+								value="#{finiquitoAction.pojoFiniquito.observaciones}" 
+				            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+				            	requiredMessage="#{msg['observaciones']} #{msg['mensaje.error.requerido']}" />
+						
+							<h:outputText value="#{msg['ef.firmaRenuncia']}:" styleClass="Titulo"/>
+							<h:selectBooleanCheckbox id="txtFirmaRenuncia" 
+								disabled="#{not finiquitoAction.edicionBloqueada ? ! (finiquitoAction.nivelAcceso == 1 || finiquitoAction.nivelAcceso == 4 || finiquitoAction.nivelAcceso == 5 || finiquitoAction.nivelAcceso == 7) : true}"
+								value="#{finiquitoAction.firmaRenuncia}" />
+			 				
+							<h:outputLabel value="#{msg['ef.fechaElaboracionEnvio']}:" styleClass="Titulo" />
+				            <rich:calendar id="txtFechaElaboracion" enableManualInput="false" datePattern="dd/MMM/yyyy" showFooter="false" inputSize="9"
+				            	disabled="#{not finiquitoAction.edicionBloqueada ? ! (finiquitoAction.nivelAcceso == 2 || finiquitoAction.nivelAcceso == 4 || finiquitoAction.nivelAcceso == 6 || finiquitoAction.nivelAcceso == 7) : true}"
+				            	value="#{finiquitoAction.fechaElaboracionEnvio}"
+				            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+				            	requiredMessage="#{msg['ef.fechaElaboracionEnvio']} #{msg['mensaje.error.requerido']}" />
+				            
+							<h:outputText value="#{msg['monto']}:" styleClass="Titulo"/>
+				 			<h:inputText id="txtMontoFiniquito" maxlength="20" style="width:210px; text-align:right;" size="50"
+				 				disabled="#{not finiquitoAction.edicionBloqueada ? ! (finiquitoAction.nivelAcceso == 2 || finiquitoAction.nivelAcceso == 4 || finiquitoAction.nivelAcceso == 6 || finiquitoAction.nivelAcceso == 7) : true}"
+				 				value="#{finiquitoAction.pojoFiniquito.monto}" 
+				            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+				            	requiredMessage="#{msg['monto']} #{msg['mensaje.error.requerido']}"
+				 				onkeypress="return (soloDecimal( event.which));" />
+				            
+				 			<h:outputText value="#{msg['navegacion.label.vacio']}" />
+				 			<h:outputText value="#{msg['navegacion.label.vacio']}" />
+					
+							<h:outputText styleClass="Titulo" value="#{msg['ef.voborh']}:" />
+							<h:panelGroup>
+				 				<h:selectBooleanCheckbox id="txtVoBo" 
+				 					disabled="#{not finiquitoAction.edicionBloqueada ? ! (finiquitoAction.nivelAcceso == 2 || finiquitoAction.nivelAcceso == 4 || finiquitoAction.nivelAcceso == 6 || finiquitoAction.nivelAcceso == 7) : true}"
+				 					value="#{finiquitoAction.voBoRH}" />
+								<h:outputText styleClass="Titulo" value="#{finiquitoAction.fechaVoBoRH}" style="margin:auto 5px;" />
+							</h:panelGroup>
+							
+							<h:outputText styleClass="Titulo" value="#{msg['ef.aprobacion']}:" />
+							<h:panelGroup>
+				 				<h:selectBooleanCheckbox id="txtAprobacion" 
+				 					disabled="#{not finiquitoAction.edicionBloqueada ? ! (finiquitoAction.nivelAcceso == 3 || finiquitoAction.nivelAcceso == 5 || finiquitoAction.nivelAcceso == 6 || finiquitoAction.nivelAcceso == 7) : true}"
+				 					value="#{finiquitoAction.aprobacion}" />
+								<h:outputText styleClass="Titulo" value="#{finiquitoAction.fechaAprobacion}" style="margin:auto 5px;" />
+							</h:panelGroup>
+						</h:panelGrid>
+					</fieldset>
+				</div>
+			</h:panelGroup>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

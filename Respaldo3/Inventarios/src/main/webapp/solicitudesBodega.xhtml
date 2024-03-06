@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['solicitudBodega']}" />
+	</ui:define>
+	
+	<ui:define name="menuFrag" />
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="inventarios.css" />
+		<h:outputScript library="scripts" name="inventarios.js" />
+		
+		<div class="div_titulo" style="margin:50px auto 10px; padding:0;">
+			<h:outputText value="#{msg['solicitudBodega']}" style="font-weight:bold; font-size:28px; color:#525252;" />
+		</div>
+			
+		<h:panelGrid style="margin:20px auto 0; padding:0; width:100%; min-height:22px; text-align:center;" rendered="#{! sboAction.permisoConsultar}">
+			<h:outputText value="#{msg['accesoRestringido']}" styleClass="Titulo" style="padding:20px auto; color:red; font-size:1.3em; font-weight:bold;" />
+			<h:outputText value="No cuenta con el permiso necesario para visualizar esta pantalla" styleClass="Titulo" />
+		</h:panelGrid>
+		
+		<rich:hotKey id="richHotKeyRSB" enabledInInput="true" preventDefault="true" 
+			selector="#txtValorBusqueda" key="return" 
+			onkeydown="#{rich:element('frmPrincipal:cmdBuscar')}.click()" />
+		
+		<h:panelGroup class="div_pagina" style="margin:5px auto 0; padding:0; text-align:left;"
+			rendered="#{sboAction.permisoConsultar}">
+			<h:panelGrid id="gBusqueda" columns="2" columnClasses="colLayoutMiddle,colLayoutBottom" cellpadding="0" cellspacing="2" style="width:100%;">
+				<h:panelGroup style="width:100%; text-align:left;">
+					<h:panelGrid columns="3" columnClasses="colTitulo,colDato,colDato" cellpadding="0" cellspacing="4">
+						<h:outputText value="#{msg['almacen']}:" styleClass="Titulo"/>
+						<h:selectOneMenu id="cbAlmacenes" style="margin:0 auto; width:100%; max-width:356px;" 
+							value="#{sboAction.idAlmacen}"
+							disabled="#{sboAction.almacenLock}"
+							required="#{!empty param[rich:clientId('cmdBuscar')]}"
+							requiredMessage="#{msg['almacen']} #{msg['mensaje.error.requerido']}">
+							<f:selectItems value="#{sboAction.listAlmacenesItems}" />
+						</h:selectOneMenu>
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						
+						<h:outputText value="#{msg['busqueda']}:" styleClass="Titulo"/>
+						<h:inputText id="txtValorBusqueda" maxlength="50" style="margin:0 auto; width:100%; max-width:340px;"
+							value="#{sboAction.resultsBusquedaValor}" />
+						<h:panelGroup>
+							<a4j:commandButton id="cmdBuscar" style="margin:0 3px 0 0; vertical-align: middle; cursor: pointer;"
+								rendered="#{sboAction.permisoConsultar}" 
+								image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+								onclick="#{rich:element('cmdBuscar')}.disabled = true;" 
+								action="#{sboAction.buscar}" 
+								oncomplete="#{rich:element('cmdBuscar')}.disabled = false; busqueda(#{sboAction.operacionCancelada}, '#{rich:clientId('pnlMensajes')}')"
+								render="dtResults,scrollResultsTop,pnlMensajes" />
+								
+							<a4j:commandButton id="cmdBusquedaAvanzada" image="#{msg['toggle.img']}" title="#{msg['busqueda']} #{msg['avanzada']}" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+				
+				<h:panelGroup style="width:100%; text-align:right;">
+					<h:panelGroup style="width:100%; text-align:left;">
+						<rich:dataScroller id="scrollResultsTop" for="dtResults" page="#{sboAction.resultsPaginas}" renderIfSinglePage="false"
+							align="center" maxPages="5" fastStep="5" ajaxSingle="true" styleClass="Titulo" style="float:right; clear:both; margin:0;" />
+					</h:panelGroup>
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<h:panelGroup id="gBusquedaAvanzada" style="display:none; width:100%; margin:0 auto; padding:0;">
+				<h:panelGrid columns="2" columnClasses="colTitulo,colDato" style="margin:0; padding:0;" cellpadding="0" cellspacing="2">
+					<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo" />
+					<h:selectOneMenu id="cmbTipoBusquedaProducto" style="width:216px;"
+						value="#{sboAction.resultsBusquedaCampo}">
+						<f:selectItems value="#{sboAction.resultsBusquedaTipos}" />
+					</h:selectOneMenu>
+					
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" rendered="#{sboAction.esAdministrativo}" />
+					<h:panelGroup rendered="#{sboAction.esAdministrativo}">
+						<h:selectBooleanCheckbox id="txtBuscarAdmivo" value="#{sboAction.buscarAdministrativos}">
+							<a4j:ajax event="change" 
+								listener="#{sboAction.filtrarAlmacenes}"
+								render="cbAlmacenes"
+								limitRender="true" />
+						</h:selectBooleanCheckbox>
+						<h:outputLabel value="#{msg['incluir']} #{msg['administrativa']}" for="txtBuscarAdmivo" styleClass="Titulo" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+
+			<rich:dataTable id="dtResults" value="#{sboAction.listSolicitudes}" var="var" iterationStatusVar="it" style="margin:5px auto 30px; width:100%;"
+				cellpadding="0" cellspacing="0" rows="100" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="text-align:center; width:90px; padding:4px;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:90px; padding:4px;" styleClass="Titulo">
+							<h:outputText value="#{msg['fecha']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:auto; max-width:250px; padding:4px;" styleClass="Titulo">
+							<h:outputText value="#{msg['obra']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:auto; max-width:250px; padding:4px;" styleClass="Titulo">
+							<h:outputText value="#{msg['bodega']} #{msg['destino']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:auto; max-width:250px; padding:4px;" styleClass="Titulo">
+							<h:outputText value="#{msg['recibe']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:auto; max-width:250px; padding:4px;" styleClass="Titulo">
+							<h:outputText value="#{msg['base']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:120px; padding:4px;" styleClass="Titulo">
+							<h:outputText value="#{msg['estatus']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:20px; padding:4px;" styleClass="Titulo" colspan="2" />
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column style="text-align:center; width:90px; padding:2px 4px;">
+					<h:outputText value="#{var.id}" styleClass="#{var.estatus == 1 ? 'itemCancelado' : ''}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:90px; padding:2px 4px;">
+					<h:outputText value="#{var.fecha}" styleClass="#{var.estatus == 1 ? 'itemCancelado' : ''}">
+						<f:convertDateTime type="date" pattern="dd-MMM-yyyy"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:left; width:auto; max-width:150px; padding:2px 4px;">
+					<h:outputText styleClass="#{var.estatus == 1 ? 'itemCancelado' : ''}"
+						value="#{var.nombreObra}" title="#{var.idObra}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:left; width:auto; max-width:150px; padding:2px 4px;">
+					<h:outputText styleClass="#{var.estatus == 1 ? 'itemCancelado' : ''}"
+						value="#{var.idAlmacenDestino.nombre} (#{var.idAlmacenDestino.identificador})" title="#{var.idAlmacenDestino.id}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:left; width:auto; max-width:150px; padding:2px 4px;">
+					<h:outputText value="#{var.recibeNombre}" styleClass="#{var.estatus == 1 ? 'itemCancelado' : ''}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; width:auto; max-width:150px; padding:2px 4px;">
+					<h:outputText value="#{msg['requisicion']}: #{var.solicitudRequisicion}" rendered="#{var.solicitudRequisicion > 0}" styleClass="#{var.estatus == 1 ? 'itemCancelado' : ''}" />
+					<h:outputText value="#{msg['explosionInsumos']}" rendered="#{var.solicitudRequisicion == 0}" styleClass="#{var.estatus == 1 ? 'itemCancelado' : ''}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; width:120px; padding:2px 4px;">
+					<h:outputText value="#{msg['cancelada']}" rendered="#{var.estatus == 1}" styleClass="#{var.estatus == 1 ? 'itemCancelado' : ''}" />
+					<h:outputText value="#{msg['pendiente']}" rendered="#{var.estatus == 0 ? var.completo == 0 : false}" />
+					<h:outputText value="#{msg['enviada']}"   rendered="#{var.estatus == 2 ? var.completo == 0 : false}" style="color:green" />
+					<h:outputText value="#{msg['recibida']}"  rendered="#{var.estatus == 2 ? var.completo == 1 : false}" style="color:blue" /> 
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:20px;">
+					<a4j:commandButton id="cmdImprimir"
+						image="#{msg['imprimir16.img']}" title="#{msg['imprimir.e']}"
+						onclick="#{rich:element('cmdImprimir')}.disabled = true;" 
+						action="#{sboAction.reporte}" 
+						oncomplete="#{rich:element('cmdImprimir')}.disabled = false; reporte(#{sboAction.operacionCancelada}, '#{rich:clientId('pnlMensajes')}')"
+						render="pnlMensajes"
+						limitRender="true">
+						<f:setPropertyActionListener value="#{var.idObra}" target="#{sboAction.idSolicitud}" for="cmdImprimir" />
+					</a4j:commandButton>
+				</rich:column>
+ 				
+				<rich:column style="text-align:center; width:20px;">
+					<a4j:commandButton id="cmdEditar"
+						image="#{msg['consultarMovimiento22.img']}" title="#{msg['ver']}"
+						onclick="#{rich:element('cmdEditar')}.disabled = true;" 
+						action="#{sboAction.editar}" 
+						oncomplete="#{rich:element('cmdEditar')}.disabled = false; verEditar(#{sboAction.operacionCancelada}, '#{rich:clientId('pnlSolicitud')}', '#{rich:clientId('pnlMensajes')}')"
+						render="pnlSolicitud,pnlMensajes"
+						limitRender="true">
+						<f:setPropertyActionListener value="#{var}" target="#{sboAction.pojoSolicitud}" for="cmdEditar" />
+					</a4j:commandButton>
+				</rich:column>
+ 				
+				<f:facet name="footer">
+					<rich:dataScroller page="#{sboAction.resultsPaginas}" for="dtResults" renderIfSinglePage="false"
+						align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</h:panelGroup>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modal/solicitudesBodega/pnlMensajes.xhtml" />
+		<ui:include src="/modal/solicitudesBodega/pnlSolicitud.xhtml" />
+		<ui:include src="/modal/solicitudesBodega/pnlEliminar.xhtml" />
+		<ui:include src="/modal/solicitudesBodega/pnlBusquedaProductos.xhtml" />
+	</ui:define>	
+</ui:composition>    

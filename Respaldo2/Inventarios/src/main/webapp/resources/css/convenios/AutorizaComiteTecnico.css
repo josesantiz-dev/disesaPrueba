@@ -1,0 +1,60 @@
+.colModalIzq{
+	text-align: right;	
+}
+.colModalDer{
+	text-align: left;
+	
+}
+.colBusqIzq{
+	width:100px;
+	text-align:right;
+}
+.colGralIzq{
+	width:125px;
+	text-align:right;
+}
+.colFechas{
+	width:180px;
+	text-align:right;
+}
+.colDato{
+	text-align: left;
+}
+
+.colArriba{
+	width:150px;
+	text-align:right;
+}
+.estatusSeg{
+	float:right; 
+	font-weight: bold;
+	font-size: 10px; 
+	color:#6A6868;
+	margin-right: 5px;
+}
+.fechaSeg{
+	font-weight: bold;
+	font-size: 10px;
+	color:#525252;
+	margin-left:10px; 
+}
+.nombreSeg{
+	font-weight: bold;
+	font-size: 12px;
+	color:#525252;
+	margin-left:5px; 
+}
+
+.tituloSeg{
+	display:block; 
+	text-align:left; 
+	background-color:#FFFFFF; 
+	padding:.2em .2em 0 .2em;
+}
+
+.descripcionSeg{
+	display:block; 
+	text-align:left; 
+	background-color:#f1f1f1; 
+	padding:0 .2em .2em .2em;
+}

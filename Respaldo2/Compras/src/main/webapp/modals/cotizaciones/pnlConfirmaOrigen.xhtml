@@ -1,0 +1,45 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlConfirmaOrigen" modal="true" autosized="true"
+		onshow="document.getElementById('#{rich:clientId('cmdOrigenInsumos')}').focus();">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}"  styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlConfirmaOrigen')}.hide()" />
+		</f:facet>
+
+		<a4j:region>
+			<h:panelGroup style="text-align:center; margin:0 auto; min-width:300px;">
+				<h:outputText value="#{msg['indiqueOrigenProductos']}" styleClass="Descripcion" />
+			
+				<h:panelGrid columns="2" style="text-align:center; margin:10px auto 0; width:100%; min-width:200px;" cellspacing="5" cellpadding="0">
+					<a4j:commandButton id="cmdOrigenInsumos" style="margin:0 auto; min-width:100px;"
+						value="#{msg['insumos']}" 
+						onclick="#{rich:component('pnlConfirmaOrigen')}.hide()"
+						action="#{cotizaAction.nuevoInsumos}"
+						oncomplete="comprobarOperacion(#{cotizaAction.operacion}, #{cotizaAction.tipoMensaje}, '#{rich:clientId('pnlCotizacion')}', '#{rich:clientId('pnlMensajes')}', '#{rich:clientId('pnlConfirmaSolicitud')}');" 
+						render="pnlCotizacion,pnlMensajes,pnlConfirmaSolicitud"
+						limitRender="true" />
+					
+					<a4j:commandButton id="cmdOrigenRequisicion" style="margin:0 auto; min-width:100px;"
+						value="#{msg['requisicion']}" 
+						onclick="#{rich:component('pnlConfirmaOrigen')}.hide()"
+						action="#{cotizaAction.nuevaBusquedaRequisiciones}"
+						oncomplete="#{rich:component('pnlBusquedaRequisiciones')}.show();" 
+						render="pnlBusquedaRequisiciones"
+						limitRender="true" />
+				</h:panelGrid>
+			</h:panelGroup>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

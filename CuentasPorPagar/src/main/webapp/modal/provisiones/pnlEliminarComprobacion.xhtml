@@ -1,0 +1,48 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:rich="http://richfaces.org/rich" 
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+	<rich:modalPanel id="pnlEliminarComprobacion" autosized="true"
+		onshow="document.getElementById('#{rich:clientId('btnEliminarComprobacionNo')}').focus();">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}"/>
+		</f:facet>
+		
+		<a4j:form id="frmEliminarComprobacion" style="text-align:center; margin:0; padding:0; min-width:300px; max-width:500px; width:auto;">
+			<a4j:region id="loadEliminarComprobacion">
+				<a4j:status for="loadEliminarComprobacion">
+					<f:facet name="stop">
+						<h:panelGrid columns="1" style="text-align:center; margin:0; padding:0; width:100%;">
+							<h:outputText value="#{msg['deseaEliminar']}" style="cursor:default; display:block;" styleClass="Descripcion" />
+							
+							<h:panelGroup style="width:200px; margin:10px auto 0; text-align:center; display:block;">
+								<a4j:commandButton id="btnEliminarComprobacionSi" style="width:100px; margin:0 5px 0 0;" 
+									value="#{msg['navegacion.label.aceptar']}"
+									action="#{provAction.eliminarComprobacion}" 
+									oncomplete="borrar(#{provAction.operacionCancelada}, 'pnlEliminarComprobacion', 'pnlMensajes')"
+									reRender="pnlMensajes,dtResultsComprobado" />
+									
+								<a4j:commandButton id="btnEliminarComprobacionNo" style="width:90px; margin:0 0 0 5px;" 
+									value="#{msg['cancelar.e']}"
+									onclick="#{rich:component('pnlEliminarComprobacion')}.hide()" />
+							</h:panelGroup>
+						</h:panelGrid>
+					</f:facet>
+					
+					<f:facet name="start">
+						<h:panelGrid columns="1" style="text-align:center; margin:0; padding:0; width:100%;">
+							<h:outputText value="#{msg['eliminando']}" style="cursor:default; display:block;" styleClass="Titulo" />
+								
+							<h:panelGroup style="width:200px; margin:10px auto 0; text-align:center; display:block;">
+								<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;" />
+							</h:panelGroup>
+						</h:panelGrid>
+					</f:facet>
+				</a4j:status>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

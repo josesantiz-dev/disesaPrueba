@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich">
+	<h:head>
+		<meta http-equiv="Cache-Control" content="no-store" />
+		<meta http-equiv="Cache-Control" content="no-cache" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="Expires" content="-1" />
+	    <title><ui:insert name="title" /></title>
+	    <ui:insert name="metas" />
+	    <script language="javascript">
+		    A4J.AJAX.onExpired = function(loc,expiredMsg){
+			    //alert(expiredMsg);
+			    console.log(loc);
+			    console.log(expiredMsg);
+			    document.location="/cas/logout"; 
+			};
+			A4J.AJAX.onError = function(req, status, message){
+		    	// window.alert("Custom onError handler "+message);
+		    	console.log("Custom onError handler " + message);
+		    	console.log(req);
+		    	console.log(status);
+			};
+	    </script>
+	    <h:outputStylesheet library="css/general"  name="general.css" />
+	  	<h:outputScript library="scripts/general" name="general.js" />
+	</h:head>
+	 
+  	<h:body style="text-align:left;">
+       	<a4j:region id="loadGral">
+       		<a4j:status id="statusMensaje" for="loadGral" onstart="#{rich:component('wait')}.show()" onstop="#{rich:component('wait')}.hide()" />
+	 		<a4j:queue id="quePrincipal" name="miQueue" ignoreDupResponses="true" requestDelay="500" size="1" />
+	 		
+	       	<h:form id="frmPrincipal" ignoreDupResponses="true" style="text-align:center; float:center; width:100%;">
+				<rich:toolbar id="miMenu" binding="#{appMediator.navegador.arbolMenu}" itemSeparator="none" styleClass="div_header">
+					<ui:insert name="menuFrag"/>
+				</rich:toolbar>
+				
+	      		<div id="div_footer">
+      				<h:outputText id="txtFooterUsuario" value="#{msg['usuario']}: #{loginManager.usuario}" styleClass="div_footer_txt"/>
+      				<h:outputText id="txtFooterResp" value="#{msg['responsabilidad']}: #{loginManager.usuarioResponsabilidad.responsabilidad.responsabilidad}" styleClass="div_footer_txt"/>
+      				<h:outputText id="txtFooterFecha" value="#{msg['fecha']}: #{navegador.fecha}" styleClass="div_footer_txt"/>
+      				
+      				<a4j:commandButton id="cmdCerrarSession" image="#{msg['ruta_img_22']}#{msg['salir.img']}"  action="#{navegador.cerrarSession}" styleClass="div_footer_cerrar_session">
+      					<rich:tooltip value="#{msg['cerrarSession']}" styleClass="DescripcionGral"/>
+      				</a4j:commandButton>
+      				
+      				<a4j:commandButton id="cmdCambiarResponsabilidad"  image="#{msg['ruta_img_22']}#{msg['responsabilidad.img']}" oncomplete="#{rich:component('pnlSeleccionResponsabilidad')}.show()" render="pnlSeleccionResponsabilidad" styleClass="div_footer_cambia_responsabilidad" >
+      					<rich:tooltip value="#{msg['cambiarResponsabilidad']}" styleClass="DescripcionGral"/>
+      				</a4j:commandButton>
+      				
+      				<a4j:commandButton id="cmdCambiarModulo"  image="#{msg['ruta_img_22']}#{msg['modulo.img']}" action="#{navegador.cambiarModulo}" styleClass="div_footer_cambia_responsabilidad" >
+      					<rich:tooltip value="#{msg['cambiarModulo']}" styleClass="DescripcionGral"/>
+      				</a4j:commandButton>
+      				
+      				<a4j:commandButton id="cmdCambiarPass" image="#{msg['ruta_img_22']}#{msg['password.img']}"  action="#{loginManager.resetContrasena}" oncomplete="Richfaces.showModalPanel('pnlCambioPass');" styleClass="div_footer_cambia_responsabilidad" reRender="pnlCambioPass">
+      					<a4j:param name="origenCambioPass" value="admon" assignTo="#{navegador.origenCambioPass}"/>
+      					<rich:tooltip value="#{msg['cambiarContrasena']}" styleClass="DescripcionGral"/>
+      				</a4j:commandButton>
+	      		</div>
+	      		
+	      		<div id="divContainer">
+					<ui:insert name="body"/>
+	      		</div>
+					
+	      		<ui:insert name="modals"/>
+			</h:form>
+		 
+			<ui:include src="/layout/modalsGenerales.xhtml"/>
+		</a4j:region>
+	</h:body>
+</html>
+ 

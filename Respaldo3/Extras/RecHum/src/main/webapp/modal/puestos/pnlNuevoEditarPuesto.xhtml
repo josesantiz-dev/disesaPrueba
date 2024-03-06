@@ -1,0 +1,70 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlNuevoEditarPuesto" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText id="lblTitulo" value="#{puestoAction.pojoPuesto.id==null ? 'Recursos Humanos: Nuevo Puesto' : 'Recursos Humanos: Editar Puesto'}" styleClass="Titulo" style="margin-left:10px" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlNuevoEditarPuesto')}.hide()" />
+		</f:facet>
+		
+		<div style = "display: block; height: 22px; margin-bottom:10px;">
+			<h:panelGrid columns="2" style="float:right; margin-right:5px;" >
+				<h:panelGroup style="vertical-align: middle; position:relative; ">
+					<a4j:commandButton id="cmdSalvar" onclick="#{rich:element('cmdSalvar')}.disabled = true;" image="#{msg['salvar22.img']}" style="vertical-align: right; position:relative;" 
+						action="#{puestoAction.guardar}" 
+						oncomplete="msgRevisando(#{rich:element('msgErrorPuesto')},'#{rich:clientId('pnlNuevoEditarPuesto')}','#{rich:clientId('pnlMsgGralPuestos')}',#{puestoAction.band},'guardar'); #{rich:element('cmdSalvar')}.disabled = false;"
+						render="dtPuestos, pnlMsgGralPuestos, msgErrorPuesto"/>
+				</h:panelGroup>
+				
+				<h:panelGroup style="vertical-align: middle; position:relative;">
+					<a4j:status>
+						<f:facet name="start">
+							<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;"/>
+						</f:facet>
+						<f:facet name="stop">
+							<h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: middle; position:relative;"/>
+						</f:facet>
+					</a4j:status>
+				</h:panelGroup>
+			</h:panelGrid>
+		</div>
+		<h:panelGroup id="grupoEncabezado">
+		
+		</h:panelGroup>
+		
+		<rich:messages id="msgErrorPuesto" rendered="#{true}" showDetail="false"
+			showSummary="true" globalOnly="false" title="Campos requeridos!" >
+			<f:facet name="errorMarker">
+				<h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" />
+			</f:facet>
+		</rich:messages>
+		
+		<h:panelGroup id="grupoDatos">
+			<fieldset style="margin-top: 10px; margin-bottom: 10px">
+				<legend>#{msg['categoria']}</legend>
+				
+				<h:panelGrid columns="2" width="500" columnClasses="colTitulo,colDato,colTitulo">
+					
+					<h:outputText value="#{msg['id']}:" styleClass="Titulo"/>
+					<h:outputText id="txtIdPuesto" value="#{puestoAction.pojoPuesto.id}"  style="text-align:left; width: 500px; display:block;" />
+					
+					<h:outputText value="#{msg['descripcion']}:" styleClass="Titulo"/>
+					<h:inputText id="txtDescripcion" value="#{puestoAction.descripcion}" size="80"
+						required="#{!empty param[rich:clientId('cmdSalvar')]}"
+						requiredMessage="#{msg['mensage.error.descripcion']} #{msg['mensaje.error.requerido']}" />
+					
+				</h:panelGrid>
+				
+			</fieldset>
+		</h:panelGroup>
+		
+	</rich:popupPanel>
+</ui:composition>

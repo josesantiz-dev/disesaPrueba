@@ -1,0 +1,104 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:modalPanel id="pnlBuscarPersonas" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['personas']}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlBuscarPersonas')}.hide()" />
+		</f:facet>
+
+		<!-- INICIA MENU MODAL -->
+		<div style="display: block; width: 900px; height: 22px;">
+			<a4j:commandButton id="cmdBuscarPersonas"
+				action="#{cajaChicaMovimientosAction.buscarPersonas}"
+				image="#{msg['buscar22.img']}"
+				style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+				oncomplete="buscar('#{cajaChicaMovimientosAction.resOperacion}', '#{rich:clientId('pnlMsgGralCajaChica')}');"
+				render="dtBusquedaPersonas,pnlMsgGralCajaChica" reRender="dtBusquedaPersonas">
+				<rich:toolTip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarPersonas" />
+			</a4j:commandButton>
+		</div>
+		<!-- FIN MENU MODAL -->
+
+		<h:panelGrid width="100%" columns="2" columnClasses="valorBusqueda1, alignLeft">
+			<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo" />
+			<h:selectOneMenu value="#{cajaChicaMovimientosAction.tipoBusquedaPersonas}" styleClass="Titulo" style="margin-left:5px;">
+				<f:selectItem itemLabel="#{msg['numeroCuenta']}" itemValue="numeroCuenta" />
+				<f:selectItem itemLabel="#{msg['nombre']}" itemValue="nombre" />
+				<f:selectItem itemLabel="#{msg['rfc']}" itemValue="rfc" />
+			</h:selectOneMenu>
+
+			<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+			<h:inputText id="txtValorBusquedaPersonas" maxlength="50" value="#{cajaChicaMovimientosAction.valorBusquedaPersonas}" size="50" />
+		</h:panelGrid>
+
+		<rich:dataTable id="dtBusquedaPersonas" cellpadding="0" cellspacing="0"
+			rows="5" border="0" var="var" rowClasses="Row1, Row2"
+			styleClass="tabla_pagina"
+			value="#{cajaChicaMovimientosAction.listBusquedaPersonas}">
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['id']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['nombre']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['numeroCuenta']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['clabe']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['banco']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['seleccionar']}" />
+					</rich:column>
+				</rich:columnGroup>
+			</f:facet>
+
+			<rich:column width="50" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+				<h:outputText value="#{var.id}" />
+			</rich:column>
+			<rich:column width="100" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+				<h:outputText value="#{var.nombre}" />
+			</rich:column>
+			<rich:column width="300" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+				<h:outputText value="#{var.numeroCuenta}" />
+			</rich:column>
+			<rich:column width="300" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+				<h:outputText value="#{var.clabeInterbancaria}" />
+			</rich:column>
+			<rich:column width="100" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+				<h:outputText value="#{var.banco.nombreLargo}">
+					<f:convertDateTime type="date" pattern="dd-MMM-yyyy" />
+				</h:outputText>
+			</rich:column>
+			<rich:column width="20" style="text-align:center;"
+				styleClass="Descripcion">
+				<a4j:commandButton id="cmdSeleccionarPersona" image="#{msg['agregar16.img']}"
+					action="#{cajaChicaMovimientosAction.seleccionarPersona}"
+					onclick="#{rich:component('pnlBuscarPersonas')}.hide();"
+					render="groupBusquedaPersona" reRender="groupBusquedaPersona">
+					<rich:toolTip showDelay="300" value="#{msg['agregar.e']}" for="cmdSeleccionarPersonas" />
+					<f:setPropertyActionListener target="#{cajaChicaMovimientosAction.pojoMovimientosCuentas.idBeneficiario}" value="#{var}" />
+				</a4j:commandButton>
+			</rich:column>
+			<h:panelGroup>
+				<rich:datascroller align="center" maxPages="10" for="dtBusquedaPersonas"
+					ajaxSingle="true" page="#{cajaChicaMovimientosAction.numPaginaBusquedaPersonas}" id="dScroll_javaz"
+					styleClass="Titulo" />
+			</h:panelGroup>
+		</rich:dataTable>
+	</rich:modalPanel>
+</ui:composition>

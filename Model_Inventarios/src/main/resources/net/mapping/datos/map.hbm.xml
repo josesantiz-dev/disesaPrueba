@@ -1,0 +1,230 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC '-//Hibernate/Hibernate Mapping DTD 3.0//EN' 'http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd'>
+<hibernate-mapping>
+	<class name="net.giro.co.beans.Correlativo" table="bbb4420d88">
+		<composite-id class="net.giro.co.beans.CorrelativoId" name="id" unsaved-value="none">
+			<key-property column="c_codemp" name="codigoEmpresa" type="long"/>
+			<key-property column="c_nomtab" name="nombreTabla" type="string"/>
+		</composite-id>
+		<property column="c_codemp" insert="false" name="cbEmpresa" update="false"/>
+		<property column="c_destab" name="descriTabla"/>
+		<property column="a_fecins" name="fechaInsercion"/>
+		<property column="a_fecmod" name="fechaModificacion"/>
+		<property column="a_ipeins" name="ipInsercion"/>
+		<property column="a_ipemod" name="ipModificacion"/>
+		<property column="n_numcor" name="numeroCorrelativo"/>
+		<property column="a_terins" name="terminalInsercion"/>
+		<property column="a_termod" name="terminalModificacion"/>
+		<property column="a_usuins" name="usuarioInsercion"/>
+		<property column="a_usumod" name="usuarioModificacion"/>
+	</class>
+	
+	<class name="net.giro.inventarios.beans.Producto" table="producto">
+		<id column="id" name="id"/>
+		<property column="clave" name="clave"/>
+		<property column="descripcion" name="descripcion"/>
+		<property column="unidad_medida" name="unidadMedida"/>
+		<property column="desc_unidad_medida" name="descUnidadMedida" />
+		<property column="especialidad" name="especialidad"/>
+		<property column="desc_especialidad" name="descEspecialidad" />
+		<property column="familia" name="familia"/>
+		<property column="desc_familia" name="descFamilia" />
+		<property column="subfamilia" name="subfamilia"/>
+		<property column="desc_subfamilia" name="descSubfamilia" />
+		<property column="precio_compra" name="precioCompra"/>
+		<property column="precio_venta" name="precioVenta"/>
+		<property column="precio_unitario" name="precioUnitario"/>
+		<property column="precio_compra_pesos" name="precioCompraPesos"/>
+		<property column="id_moneda" name="idMoneda"/>
+		<property column="desc_moneda" name="descMoneda" />
+		<property column="desc_moneda_abreviatura" name="descMonedaAbreviatura" />
+		<property column="tipo_cambio" name="tipoCambio"/>
+		<property column="existencia" name="existencia"/>
+		<property column="maximo" name="maximo"/>
+		<property column="minimo" name="minimo"/>
+		<property column="permite_excedente" name="permiteExcedente"/>
+		<property column="origen_codigo" name="origenCodigo"/>
+		<property column="tipo_insumo" name="tipoInsumo" />
+		<property column="tipo" name="tipo" />
+		<property column="oculto" name="oculto" />
+		<property column="clave_sat" name="claveSat" />
+		<property column="clave_previa" name="clavePrevia" />
+		<property column="id_orden_compra" name="idOrdenCompra" />
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="estatus" name="estatus"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.inventarios.beans.Almacen" table="almacen">
+		<id column="id" name="id"/>
+		<property column="nombre" name="nombre"/>
+		<property column="identificador" name="identificador"/>
+		<property column="tipo" name="tipo"/>
+		<property column="id_sucursal" name="idSucursal"/>
+		<property column="nombre_sucursal" name="nombreSucursal"/>
+		<property column="id_encargado" name="idEncargado"/>
+		<property column="nombre_encargado" name="nombreEncargado"/>
+		<property column="id_domicilio" name="idDomicilio"/>
+		<property column="domicilio" name="domicilio"/>
+		<property column="permitir_sbo" name="permitirSBO" /><!-- Permitir Solicitud a Bodega -->
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="estatus" name="estatus"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.inventarios.beans.AlmacenProducto" table="almacen_producto">
+		<id column="id" name="id"/>
+		<many-to-one column="id_almacen" name="idAlmacen" class="net.giro.inventarios.beans.Almacen" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<!--many-to-one column="id_producto" name="idProducto" class="net.giro.inventarios.beans.Producto" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" /-->
+		<property column="id_producto" name="idProducto"/>
+		<property column="precio_unitario" name="precioUnitario"/>
+		<property column="existencia" name="existencia"/>
+		<property column="solicitud" name="solicitud"/>
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="estatus" name="estatus"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.inventarios.beans.AlmacenMovimientos" table="almacen_movimientos">
+		<id column="id" name="id"/>
+		<property column="fecha" name="fecha"/>
+		<property column="tipo" name="tipo"/>
+		<property column="tipo_entrada" name="tipoEntrada"/>
+		<property column="folio_factura" name="folioFactura"/>
+		<many-to-one column="id_almacen" name="idAlmacen" class="net.giro.inventarios.beans.Almacen" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="recibe" name="recibe"/>
+		<property column="recibe_nombre" name="recibeNombre"/>
+		<property column="entrega" name="entrega"/>
+		<property column="entrega_nombre" name="entregaNombre"/>
+		<property column="id_obra" name="idObra"/>
+		<property column="nombre_obra" name="nombreObra"/>
+		<property column="id_orden_compra" name="idOrdenCompra"/>
+		<property column="folio_orden_compra" name="folioOrdenCompra"/>
+		<property column="id_traspaso" name="idTraspaso"/>
+		<property column="id_salida" name="idSalida"/>
+		<property column="owner" name="owner"/><!-- AlmacenMovimiento que origino este registro -->
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="sistema" name="sistema"/>
+		<property column="estatus" name="estatus"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+		<!-- FOLIO -->
+		<property column="folio" name="folio"/>
+		<property column="consecutivo" name="consecutivo"/>
+	</class>
+	
+	<class name="net.giro.inventarios.beans.MovimientosDetalle" table="movimientos_detalle">
+		<id column="id" name="id"/>
+		<!--many-to-one column="id_almacen_movimiento" name="idAlmacenMovimiento" class="net.giro.inventarios.beans.AlmacenMovimientos" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="id_producto" name="idProducto" class="net.giro.inventarios.beans.Producto" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" /-->
+		<property column="id_almacen_movimiento" name="idAlmacenMovimiento"/>
+		<property column="id_producto" name="idProducto"/>
+		<property column="cantidad" name="cantidad"/>
+		<property column="precio_unitario" name="precioUnitario"/>
+		<property column="cantidad_solicitada" name="cantidadSolicitada"/>
+		<property column="ejecutado" name="ejecutado"/> <!-- 0:sin Carga/Descarga, 1:Cargado/Descargado -->
+		<property column="estatus" name="estatus"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.inventarios.beans.AlmacenTraspaso" table="almacen_traspaso">
+		<id column="id" name="id"/>
+		<property column="tipo" name="tipo"/>
+		<property column="fecha" name="fecha"/>
+		<many-to-one column="id_almacen_origen" name="idAlmacenOrigen" class="net.giro.inventarios.beans.Almacen" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="entrega" name="entrega"/>
+		<property column="entrega_nombre" name="entregaNombre"/>
+		<property column="id_obra" name="idObra"/>
+		<property column="nombre_obra" name="nombreObra"/>
+		<many-to-one column="id_almacen_destino" name="idAlmacenDestino" class="net.giro.inventarios.beans.Almacen" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="recibe" name="recibe"/>
+		<property column="recibe_nombre" name="recibeNombre"/>
+		<many-to-one column="id_traspaso" name="idTraspaso" class="net.giro.inventarios.beans.AlmacenTraspaso" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="solicitud_cotizacion"  name="solicitudCotizacion"/>
+		<property column="solicitud_requisicion" name="solicitudRequisicion"/>
+		<property column="completo" name="completo"/>
+		<property column="owner" name="owner"/><!-- AlmacenMovimiento que origino este registro -->
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="sistema" name="sistema"/>
+		<property column="estatus" name="estatus"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+		<!-- FOLIO -->
+		<property column="folio" name="folio"/>
+		<property column="consecutivo" name="consecutivo"/>
+		<!-- RECIBIDO -->
+		<property column="recibido" name="recibido"/>
+		<property column="recibido_por" name="recibidoPor"/>
+		<property column="fecha_recibido" name="fechaRecibido"/>
+	</class>
+	
+	<class name="net.giro.inventarios.beans.TraspasoDetalle" table="traspaso_detalle">
+		<id column="id" name="id"/>
+		<!--many-to-one column="id_almacen_traspaso" name="idAlmacenTraspaso" class="net.giro.inventarios.beans.AlmacenTraspaso" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="id_producto" name="idProducto" class="net.giro.inventarios.beans.Producto" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" /-->
+		<property column="id_almacen_traspaso" name="idAlmacenTraspaso"/>
+		<property column="id_producto" name="idProducto"/>
+		<property column="cantidad" name="cantidad"/>
+		<property column="precio_unitario" name="precioUnitario"/>
+		<property column="cantidad_recibida" name="cantidadRecibida"/>
+		<property column="id_producto_previo" name="idProductoPrevio"/>
+		<property column="estatus" name="estatus"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.inventarios.beans.TraspasoBodegaBodega" table="traspaso_bodega_bodega">
+		<id column="id" name="id"/>
+		<property column="id_traspaso" name="idTraspaso"/>
+		<property column="id_obra_origen" name="idObraOrigen"/>
+		<property column="id_obra_destino" name="idObraDestino"/>
+		<property column="estatus" name="estatus"/>
+	</class>
+	
+	<class name="net.giro.inventarios.beans.SolicitudBodegaEstatus" table="solicitud_bodega_estatus">
+		<id column="id" name="id"/>
+		<property column="id_solicitud" name="idSolicitud"/>
+		<property column="id_traspaso" name="idTraspaso"/>
+		<property column="id_movimiento" name="idMovimiento"/>
+		<property column="id_empresa" name="idEmpresa"/>
+		<property column="estatus" name="estatus"/><!-- 0:Pendiente, 1:Cancelado, 2:Traspaso, 3:Recibido -->
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.inventarios.beans.AuditoriaInventarios" table="auditoria_inventarios">
+		<id column="id" name="id" />
+		<property column="fecha" name="fecha" />
+		<property column="descripcion" name="descripcion" />
+		<property column="id_producto" name="idProducto" />
+		<property column="codigo" name="codigo" />
+		<property column="cantidad" name="cantidad" />
+		<property column="id_almacen" name="idAlmacen" />
+		<property column="almacen" name="almacen" />
+		<property column="id_movimiento" name="idMovimiento" />
+		<property column="tipo_movimiento" name="tipoMovimiento" />
+		<property column="tipo_referencia" name="tipoReferencia" />
+		<property column="creado_por" name="creadoPor"/>
+		<property column="id_empresa" name="idEmpresa" />
+	</class>
+</hibernate-mapping>

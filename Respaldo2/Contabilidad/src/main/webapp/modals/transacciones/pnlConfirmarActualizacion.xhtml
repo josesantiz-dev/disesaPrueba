@@ -1,0 +1,30 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlConfirmarActualizacion" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['atencion']}" styleClass="Descripcion" />
+		</f:facet>
+		
+		<h:outputText value="¿Desea actualizar los Conceptos en Operaciones Integradas Transacciones?" styleClass="Descripcion" />
+	
+		<h:panelGrid columns="2" width="100%" style="margin:10px auto 0; text-align:center;">
+			<a4j:commandButton style="margin:0 auto; cursor:pointer; width:120px;"
+				value="#{msg['si']}" 
+				action="#{transAction.actualizarConceptos}" 
+				oncomplete="eliminar(#{transAction.operacion}, '#{rich:clientId('pnlConfirmarActualizacion')}', '#{rich:clientId('pnlMensajes')}')"
+				render="pnlMensajes"
+				limitRender="true" />
+				
+			<a4j:commandButton style="margin:0 auto; cursor:pointer; width:100px;"
+				value="#{msg['no']}" 
+				action="#{transAction.nuevaBusquedaConceptos}" 
+				onclick="#{rich:component('pnlConfirmarActualizacion')}.hide()" />
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

@@ -1,0 +1,199 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlSolicitud" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="10" 
+    	onshow="document.getElementById('#{rich:clientId('cmdImprimir')}').focus();"
+    	onhide="document.getElementById('#{rich:clientId('txtValorBusqueda')}').focus();">
+    	
+		<f:facet name="header">
+			<h:outputText value="#{msg['solicitudBodega']} #{sboAction.idSolictud}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlSolicitud')}.hide()" />
+		</f:facet>
+		
+		<h:panelGrid id="botonera" columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+			<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+				<h:panelGroup>
+					<h:outputText value="#{msg['requisicion']} #{sboAction.pojoSolicitud.solicitudRequisicion}" rendered="#{sboAction.pojoSolicitud.solicitudRequisicion > 0}" styleClass="Titulo" style="margin:auto 5px auto 0;" />
+					<h:outputText value="#{msg['explosionInsumos']} #{sboAction.idExplosionInsumos}" rendered="#{sboAction.idExplosionInsumos > 0}" styleClass="Titulo" style="margin:auto 5px auto 0;" />
+					<h:outputText value="#{msg['movimientoSalida']} #{sboAction.idMovimientoSalida}" rendered="#{sboAction.idMovimientoSalida > 0 ? (sboAction.datosExtras) : false}" styleClass="Titulo" style="margin:auto 5px auto 0;" />
+					<h:outputText value="#{msg['traspaso']} #{sboAction.traspaso}" rendered="#{sboAction.traspaso != ''}" styleClass="Titulo" style="margin:auto 5px auto 0;" />
+				</h:panelGroup>
+				
+				<rich:messages id="validadorSolicitud" rendered="#{true}" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" /></f:facet>
+				</rich:messages>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoBotonesDerechos" style="text-align:right; width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdImprimir" style="float:right; margin:0 5px; vertical-align:top; position:relative;"
+					image="#{msg['imprimir22.img']}" title="#{msg['imprimir.e']}"
+					onclick="#{rich:element('cmdImprimir')}.disabled = true;" 
+					action="#{sboAction.reporte}" 
+					oncomplete="#{rich:element('cmdImprimir')}.disabled = false; reporte(#{sboAction.operacionCancelada}, '#{rich:clientId('pnlMensajes')}')"
+					render="pnlMensajes"
+					limitRender="true" />
+				
+				<a4j:commandButton id="cmdSalvar" style="float:right; margin:0 5px; vertical-align:top; position:relative;"
+					image="#{msg['enviar24.img']}" title="#{msg['generar']} #{msg['traspaso']}"
+					rendered="#{sboAction.traspasable}"
+					onclick="#{rich:element('cmdSalvar')}.disabled = true;" 
+					action="#{sboAction.guardar}" 
+					oncomplete="#{rich:element('cmdSalvar')}.disabled = false; salvar(#{sboAction.operacionCancelada}, '#{rich:clientId('pnlSolicitud')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorSolicitud')})"
+					render="validadorSolicitud,pnlMensajes,dtResults" limitRender="true" />
+				
+				<a4j:commandButton id="btnEliminar" style="float:right; margin:0 5px; vertical-align:top; position:relative;"
+					image="#{msg['cancelar22.img']}" title="#{msg['cancelar']}" 
+					rendered="#{sboAction.cancelable}" 
+					onclick="#{rich:element('btnEliminar')}.disabled = true;" 
+					action="#{sboAction.cancelar}" 
+					oncomplete="#{rich:element('btnEliminar')}.disabled = false; eliminarCancelar(#{sboAction.operacionCancelada}, '#{rich:clientId('pnlSolicitud')}', '#{rich:clientId('pnlMensajes')}')"
+					render="pnlMensajes,dtResults" limitRender="true" />
+				
+				<a4j:commandButton id="cmdDescarga" style="float:right; margin:0 5px; vertical-align:top; position:relative;"
+					image="#{msg['abajo22.img']}" title="#{msg['descargar']}" 
+					rendered="#{sboAction.descargable}" 
+					onclick="#{rich:element('cmdDescarga')}.disabled = true;" 
+					action="#{sboAction.descarga}" 
+					oncomplete="#{rich:element('cmdDescarga')}.disabled = false;" />
+					
+				<h:panelGroup id="groupCantidadInventario" style="float:right; clear:both; margin:5px auto 0;" rendered="#{sboAction.puedeEditarProducto}">
+					<h:selectBooleanCheckbox id="txtCantidadInventario" value="#{sboAction.valorEditarProducto}">
+						<a4j:ajax event="change" render="groupAgregarProducto,dtDetalles" limitRender="true" />
+					</h:selectBooleanCheckbox>
+					<h:outputLabel for="txtCantidadInventario" value="#{msg['editar']} #{msg['productos']}" styleClass="Titulo" />
+					
+					<h:panelGroup id="groupAgregarProducto">
+						<a4j:commandButton id="cmdAgregarProducto" style="margin:auto 5px auto 10px; vertical-align:middle; cursor:pointer;" 
+							image="#{msg['agregar22.img']}" title="#{msg['agregar.e']}"
+							rendered="#{sboAction.valorEditarProducto}" 
+							action="#{sboAction.nuevaBusquedaProductos}" 
+							oncomplete="nuevaBusqueda(#{sboAction.operacionCancelada}, '#{rich:clientId('pnlBusquedaProductos')}', '#{rich:clientId('pnlMensajes')}')"
+							render="pnlBusquedaProductos,pnlMensajes" limitRender="true" />
+					</h:panelGroup>
+				</h:panelGroup>
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<h:panelGroup id="grupoDatos">
+			<fieldset style="margin:5px auto 0;">
+				<legend><h:outputLabel value="#{msg['datosGenerales']}" /></legend>
+				
+				<h:panelGrid id="gDatosGrales" columns="4" columnClasses="colTitulo,colDato,colTitulo,colDato" style="width:100%; margin:0 auto; text-align:left;">
+					<h:outputText value="#{msg['obra']}:" styleClass="Titulo" />
+					<h:outputText value="#{sboAction.pojoSolicitud.idObra} - #{sboAction.pojoSolicitud.nombreObra}" style="text-align:left; display:block;" />
+					
+					<h:outputText value="#{msg['fecha']}:" styleClass="Titulo" />
+		            <rich:calendar enableManualInput="false" datePattern="dd-MMM-yyyy" disabled="true"
+		            	value="#{sboAction.pojoSolicitud.fecha}" 
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}"
+						requiredMessage="#{msg['fecha']} #{msg['mensaje.error.requerido']}" />
+		            
+		            <h:outputText value="#{msg['almacen']}:" styleClass="Titulo"/>
+		            <h:outputText value="#{sboAction.pojoSolicitud.idAlmacenOrigen.nombre} (#{sboAction.pojoSolicitud.idAlmacenOrigen.identificador})" />
+					
+		            <h:outputText value="#{msg['entrega']}:" styleClass="Titulo" />
+		            <h:outputText value="#{sboAction.pojoSolicitud.entregaNombre}" />
+
+		            <h:outputText value="#{msg['bodega']}:" styleClass="Titulo"/>
+		            <h:outputText value="#{sboAction.pojoSolicitud.idAlmacenDestino.nombre} (#{sboAction.pojoSolicitud.idAlmacenDestino.identificador})" />
+					
+		            <h:outputText value="#{msg['recibe']}:" styleClass="Titulo" />
+		            <h:outputText value="#{sboAction.pojoSolicitud.recibeNombre}" />
+				</h:panelGrid>
+			</fieldset>
+		</h:panelGroup>
+		
+		<div class="tableParent" style="display:block; margin:5px auto 0; width:100%; padding:0; height:auto; max-height:420px; overflow-y:auto;">
+			<rich:dataTable id="dtDetalles" value="#{sboAction.listSolicitudProductos}" var="var" iterationStatusVar="it"
+				cellpadding="0" cellspacing="0" rows="50" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" style="margin:0 auto; width:100%;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:20px;">
+							<h:outputText value="#" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:70px;">
+							<h:outputText value="#{msg['productos.id']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:70px;">
+							<h:outputText value="#{msg['productos.clave']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; min-width:200px;">
+							<h:outputText value="#{msg['productos.descripcion']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:60px;">
+							<h:outputText value="#{msg['productos.um']}" title="#{msg['productos.unidadMedida']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:60px;">
+							<h:outputText value="#{msg['productos.cantidad']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+					<h:outputText value="#{it.index + 1}"><f:convertNumber pattern="00" /></h:outputText>
+				</rich:column>
+	
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText value="#{var.idProducto.id}" />
+				</rich:column>
+	
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText value="#{var.idProducto.clave}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left;">
+					<h:outputText value="#{var.idProducto.descripcion}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText value="#{var.idProducto.unidadMedida.valor}" title="#{var.idProducto.unidadMedida.descripcion}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:right;">
+					<h:outputText value="#{var.cantidad}" rendered="#{sboAction.valorEditarProducto eq false}"><f:convertNumber pattern="0.00"/></h:outputText>
+					
+					<h:panelGrid columns="2" cellpadding="0" cellspacing="0" rendered="#{sboAction.valorEditarProducto eq true}">
+						<h:inputText  value="#{var.cantidad}" style="text-align:right; width:72px;" onkeypress="return noEnter(event);">
+							<f:convertNumber pattern="0.00"/>
+							<f:attribute name="targetIndex" value="#{it.index}" />
+							<a4j:ajax event="focus" listener="#{sboAction.guardaCantidadPrevia}" render="@none" limitRender="true" />
+							<a4j:ajax event="blur" execute="@this"
+								listener="#{sboAction.guardaCantidadProducto}" 
+								oncomplete="#{rich:component('pnlMensajes')}.show();" 
+								render="dtDetalles,pnlMensajes" 
+								limitRender="true" />
+						</h:inputText>
+	
+						<a4j:commandButton id="btnEliminar" style="margin:auto 0 auto 5px;"
+							rendered="#{sboAction.puedeEliminarProducto}"
+							image="#{msg['cancelar16.img']}" title="#{msg['eliminar']}"
+							oncomplete="#{rich:component('pnlEliminar')}.show();"
+							render="pnlEliminar">
+							<f:setPropertyActionListener target="#{sboAction.pojoDetalleQuitar}" value="#{var}" />
+						</a4j:commandButton>
+					</h:panelGrid>
+				</rich:column>
+				
+				<f:facet name="footer">
+					<rich:dataScroller for="dtDetalles" page="#{sboAction.paginacionSolicitudDetalles}" renderIfSinglePage="false"
+						align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

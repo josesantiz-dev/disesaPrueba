@@ -1,0 +1,16 @@
+.colTitulo{
+	width: 130px;
+	text-align: right;
+}
+.colTituloDom{
+	width: 100px;
+	text-align: right;
+}
+.colDato{
+	text-align: left;
+}
+.colTituloAnalisis{
+	text-align: right;
+	width: 200px;
+	margin-right: 5px;
+}

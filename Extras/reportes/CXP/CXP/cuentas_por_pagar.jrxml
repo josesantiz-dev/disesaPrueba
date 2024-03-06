@@ -1,0 +1,1819 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cuentas_por_pagar" pageWidth="1770" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="1730" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e566537c-de3a-4e08-bef5-458ab0ccbce1">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.2" value="pageFooter"/>
+	<parameter name="ruta_img" class="java.lang.String">
+		<defaultValueExpression><![CDATA["D:/CONDESE/JAVA/DISESA/Desarrollo/Extras/imagen/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idObra" class="java.lang.String">
+		<defaultValueExpression><![CDATA["10000009"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idProveedor" class="java.lang.String">
+		<defaultValueExpression><![CDATA["10000011"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT oc.id
+    , oc.folio
+    , DATE(oc.fecha) AS fecha
+    , DATE(CURRENT_DATE) AS fecha_corte
+    , oc.id_proveedor
+    , oc.nombre_proveedor
+    , CASE WHEN oc.estatus <> 1 AND oc.autorizado = 0 THEN 'COMPARATIVA'
+           WHEN oc.estatus <> 1 AND oc.autorizado = 1 AND oc.id NOT IN (
+                    SELECT id_orden_compra
+                    FROM almacen_movimientos
+                    WHERE tipo = 1 AND id_orden_compra = oc.id
+                ) THEN 'ORDEN DE COMPRA'
+           WHEN oc.estatus <> 1 AND oc.completa   = 1 THEN 'SUMINISTRADO'
+           WHEN oc.estatus <> 1 AND oc.completa   = 0 AND oc.id IN (
+                    SELECT id_orden_compra
+                    FROM almacen_movimientos
+                    WHERE tipo = 1 AND id_orden_compra = oc.id
+                ) THEN 'SUMINISTRO PARCIAL'
+           WHEN oc.autorizado = 0 AND DATE(oc.fecha_creacion) > DATE(CURRENT_DATE + 15) THEN 'STB.'
+           ELSE ''
+      END AS estatus_compras
+    , COALESCE(pr.familia, 0) AS id_familia
+    , COALESCE(fam.ag, 'NA') AS familia
+    , COALESCE((
+            SELECT (SUM(COALESCE(aux1.cantidad_recibida, 0)) / SUM(COALESCE(aux1.cantidad, 1)))
+            FROM orden_compra_detalle aux1 INNER JOIN producto aux2 ON aux2.id = aux1.id_producto
+            WHERE aux1.id_orden_compra = oc.id_obra AND aux2.familia = pr.familia)
+        , 0) AS suministro
+    , COALESCE(CASE oc.id_moneda
+            WHEN 10000001 THEN oc.total
+            ELSE NULL END
+        , 0.0) AS monto_pesos
+    , COALESCE(CASE oc.id_moneda
+            WHEN 10000002 THEN oc.total
+            ELSE NULL END
+        , 0.0) AS monto_dolares
+    , COALESCE((
+            SELECT COALESCE(aux.monto, 0)
+            FROM pagos_gastos aux INNER JOIN a95f1327c6 x ON x.aa = aux.cuenta_origen
+            WHERE aux.estatus <> 'X' AND aux.id_orden_compra = oc.id AND x.av = 10000001)
+        , 0.0) AS pagado_fecha_pesos
+    , COALESCE((
+            SELECT COALESCE(aux.monto, 0)
+            FROM pagos_gastos aux INNER JOIN a95f1327c6 x ON x.aa = aux.cuenta_origen
+            WHERE aux.estatus <> 'X' AND aux.id_orden_compra = oc.id AND x.av = 10000002)
+        , 0.0) AS pagado_fecha_dolares
+    , 0.0 AS saldo_x_pagar_pesos -- CALCULADO
+    , 0.0 AS saldo_x_pagar_dolares -- CALCULADO
+    , 0.0 AS monto_vencido_pesos -- PENDIENTE
+    , 0.0 AS monto_vencido_dolares -- PENDIENTE
+    , COALESCE(
+        CASE oc.id_moneda
+            WHEN 10000001 THEN (
+                SELECT COALESCE(aux.monto, 0)
+                FROM prog_pagos_detalle aux
+                WHERE aux.id_orden_compra = oc.id)
+            ELSE NULL END
+        , 0.0) AS pago_propuesto_pesos
+    , COALESCE(
+        CASE oc.id_moneda
+            WHEN 10000001 THEN ''
+            ELSE NULL END
+        , '') AS pago_propuesto_pesos_observaciones
+    , COALESCE(
+        CASE oc.id_moneda
+            WHEN 10000001 THEN ''
+            ELSE NULL END
+        , '') AS pago_propuesto_pesos_vb
+    , COALESCE(
+        CASE oc.id_moneda
+            WHEN 10000002 THEN (
+                 SELECT COALESCE(aux.monto, 0)
+                 FROM prog_pagos_detalle aux
+                 WHERE aux.id_orden_compra = oc.id)
+            ELSE NULL END
+        , 0.0) AS pago_propuesto_dolares
+    , COALESCE(
+        CASE oc.id_moneda
+            WHEN 10000001 THEN ''
+            ELSE NULL END
+        , '') AS pago_propuesto_dolares_observaciones
+    , COALESCE(
+        CASE oc.id_moneda
+            WHEN 10000001 THEN ''
+            ELSE NULL END
+        , '') AS pago_propuesto_dolares_vb
+    , 0.0 AS saldo_nuevo_pesos -- CALCULADO
+    , 0.0 AS saldo_nuevo_dolares -- CALCULADO
+FROM orden_compra oc
+    INNER JOIN orden_compra_detalle det ON det.id_orden_compra = oc.id
+    LEFT  JOIN moneda mon ON mon.clave = oc.id_moneda
+    LEFT  JOIN producto pr ON pr.id = det.id_producto
+    LEFT  JOIN de7a4d94446 fam ON fam.aa = pr.familia
+WHERE ($P{idObra} = '' AND $P{idProveedor} = '' AND oc.id = -1)
+    OR (($P{idObra} = '' OR ($P{idObra} <> '' AND CAST(oc.id_obra AS VARCHAR) = $P{idObra}))
+        AND ($P{idProveedor} = '' OR ($P{idProveedor} <> '' AND CAST(oc.id_proveedor AS VARCHAR) = $P{idProveedor}))
+    )
+ORDER BY oc.folio, fam.ag
+;]]>
+	</queryString>
+	<field name="id" class="java.math.BigDecimal"/>
+	<field name="folio" class="java.lang.String"/>
+	<field name="fecha" class="java.sql.Date"/>
+	<field name="fecha_corte" class="java.sql.Date"/>
+	<field name="id_proveedor" class="java.math.BigDecimal"/>
+	<field name="nombre_proveedor" class="java.lang.String"/>
+	<field name="estatus_compras" class="java.lang.String"/>
+	<field name="id_familia" class="java.lang.Integer"/>
+	<field name="familia" class="java.lang.String"/>
+	<field name="suministro" class="java.lang.Double"/>
+	<field name="monto_pesos" class="java.lang.Double"/>
+	<field name="monto_dolares" class="java.lang.Double"/>
+	<field name="pagado_fecha_pesos" class="java.lang.Double"/>
+	<field name="pagado_fecha_dolares" class="java.lang.Double"/>
+	<field name="saldo_x_pagar_pesos" class="java.lang.Double"/>
+	<field name="saldo_x_pagar_dolares" class="java.lang.Double"/>
+	<field name="monto_vencido_pesos" class="java.lang.Double"/>
+	<field name="monto_vencido_dolares" class="java.lang.Double"/>
+	<field name="pago_propuesto_pesos" class="java.lang.Double"/>
+	<field name="pago_propuesto_pesos_observaciones" class="java.lang.String"/>
+	<field name="pago_propuesto_pesos_vb" class="java.lang.String"/>
+	<field name="pago_propuesto_dolares" class="java.lang.Double"/>
+	<field name="pago_propuesto_dolares_observaciones" class="java.lang.String"/>
+	<field name="pago_propuesto_dolares_vb" class="java.lang.String"/>
+	<field name="saldo_nuevo_pesos" class="java.lang.Double"/>
+	<field name="saldo_nuevo_dolares" class="java.lang.Double"/>
+	<variable name="saldo_x_pagar_pesos" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{monto_pesos} - $F{pagado_fecha_pesos}]]></variableExpression>
+	</variable>
+	<variable name="saldo_x_pagar_dolares" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{monto_dolares} - $F{pagado_fecha_dolares}]]></variableExpression>
+	</variable>
+	<variable name="saldo_nuevo_pesos" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{saldo_x_pagar_pesos} - $F{pago_propuesto_pesos}]]></variableExpression>
+	</variable>
+	<variable name="saldo_nuevo_dolares" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{saldo_x_pagar_dolares} - $F{pago_propuesto_dolares}]]></variableExpression>
+	</variable>
+	<variable name="monto_pesos_1" class="java.lang.Double" resetType="Group" resetGroup="gFAMILIA">
+		<variableExpression><![CDATA[$F{monto_pesos}]]></variableExpression>
+	</variable>
+	<variable name="monto_dolares_1" class="java.lang.Double" resetType="Group" resetGroup="gFAMILIA">
+		<variableExpression><![CDATA[$F{monto_dolares}]]></variableExpression>
+	</variable>
+	<variable name="pagado_fecha_pesos_1" class="java.lang.Double" resetType="Group" resetGroup="gFAMILIA">
+		<variableExpression><![CDATA[$F{pagado_fecha_pesos}]]></variableExpression>
+	</variable>
+	<variable name="pagado_fecha_dolares_1" class="java.lang.Double" resetType="Group" resetGroup="gFAMILIA">
+		<variableExpression><![CDATA[$F{pagado_fecha_dolares}]]></variableExpression>
+	</variable>
+	<variable name="saldo_x_pagar_pesos_1" class="java.lang.Double" resetType="Group" resetGroup="gFAMILIA">
+		<variableExpression><![CDATA[$V{saldo_x_pagar_pesos}]]></variableExpression>
+	</variable>
+	<variable name="saldo_x_pagar_dolares_1" class="java.lang.Double" resetType="Group" resetGroup="gFAMILIA">
+		<variableExpression><![CDATA[$V{saldo_x_pagar_dolares}]]></variableExpression>
+	</variable>
+	<variable name="monto_vencido_pesos_1" class="java.lang.Double" resetType="Group" resetGroup="gFAMILIA">
+		<variableExpression><![CDATA[$F{monto_vencido_pesos}]]></variableExpression>
+	</variable>
+	<variable name="monto_vencido_dolares_1" class="java.lang.Double" resetType="Group" resetGroup="gFAMILIA">
+		<variableExpression><![CDATA[$F{monto_vencido_dolares}]]></variableExpression>
+	</variable>
+	<variable name="pago_propuesto_pesos_1" class="java.lang.Double" resetType="Group" resetGroup="gFAMILIA">
+		<variableExpression><![CDATA[$F{pago_propuesto_pesos}]]></variableExpression>
+	</variable>
+	<variable name="pago_propuesto_dolares_1" class="java.lang.Double" resetType="Group" resetGroup="gFAMILIA">
+		<variableExpression><![CDATA[$F{pago_propuesto_dolares}]]></variableExpression>
+	</variable>
+	<variable name="saldo_nuevo_pesos_1" class="java.lang.Double" resetType="Group" resetGroup="gFAMILIA">
+		<variableExpression><![CDATA[$V{saldo_nuevo_pesos}]]></variableExpression>
+	</variable>
+	<variable name="saldo_nuevo_dolares_1" class="java.lang.Double" resetType="Group" resetGroup="gFAMILIA">
+		<variableExpression><![CDATA[$V{saldo_nuevo_dolares}]]></variableExpression>
+	</variable>
+	<variable name="monto_pesos_2" class="java.lang.Double" resetType="Group" resetGroup="gORDEN_COMPRA" incrementType="Group" incrementGroup="gFAMILIA" calculation="Sum">
+		<variableExpression><![CDATA[$V{monto_pesos_1}]]></variableExpression>
+	</variable>
+	<variable name="monto_dolares_2" class="java.lang.Double" resetType="Group" resetGroup="gORDEN_COMPRA" incrementType="Group" incrementGroup="gFAMILIA" calculation="Sum">
+		<variableExpression><![CDATA[$V{monto_dolares_1}]]></variableExpression>
+	</variable>
+	<variable name="pagado_fecha_pesos_2" class="java.lang.Double" resetType="Group" resetGroup="gORDEN_COMPRA" incrementType="Group" incrementGroup="gFAMILIA" calculation="Sum">
+		<variableExpression><![CDATA[$V{pagado_fecha_pesos_1}]]></variableExpression>
+	</variable>
+	<variable name="pagado_fecha_dolares_2" class="java.lang.Double" resetType="Group" resetGroup="gORDEN_COMPRA" incrementType="Group" incrementGroup="gFAMILIA" calculation="Sum">
+		<variableExpression><![CDATA[$V{pagado_fecha_dolares_1}]]></variableExpression>
+	</variable>
+	<variable name="saldo_x_pagar_pesos_2" class="java.math.BigDecimal" resetType="Group" resetGroup="gORDEN_COMPRA" incrementType="Group" incrementGroup="gFAMILIA" calculation="Sum">
+		<variableExpression><![CDATA[$V{saldo_x_pagar_pesos_1}]]></variableExpression>
+	</variable>
+	<variable name="saldo_x_pagar_dolares_2" class="java.math.BigDecimal" resetType="Group" resetGroup="gORDEN_COMPRA" incrementType="Group" incrementGroup="gFAMILIA" calculation="Sum">
+		<variableExpression><![CDATA[$V{saldo_x_pagar_dolares_1}]]></variableExpression>
+	</variable>
+	<variable name="monto_vencido_pesos_2" class="java.math.BigDecimal" resetType="Group" resetGroup="gORDEN_COMPRA" incrementType="Group" incrementGroup="gFAMILIA" calculation="Sum">
+		<variableExpression><![CDATA[$V{monto_vencido_pesos_1}]]></variableExpression>
+	</variable>
+	<variable name="monto_vencido_dolares_2" class="java.math.BigDecimal" resetType="Group" resetGroup="gORDEN_COMPRA" incrementType="Group" incrementGroup="gFAMILIA" calculation="Sum">
+		<variableExpression><![CDATA[$V{monto_vencido_dolares_1}]]></variableExpression>
+	</variable>
+	<variable name="pago_propuesto_pesos_2" class="java.lang.Double" resetType="Group" resetGroup="gORDEN_COMPRA" incrementType="Group" incrementGroup="gFAMILIA" calculation="Sum">
+		<variableExpression><![CDATA[$V{pago_propuesto_pesos_1}]]></variableExpression>
+	</variable>
+	<variable name="pago_propuesto_dolares_2" class="java.lang.Double" resetType="Group" resetGroup="gORDEN_COMPRA" incrementType="Group" incrementGroup="gFAMILIA" calculation="Sum">
+		<variableExpression><![CDATA[$V{pago_propuesto_dolares_1}]]></variableExpression>
+	</variable>
+	<variable name="saldo_nuevo_pesos_2" class="java.math.BigDecimal" resetType="Group" resetGroup="gORDEN_COMPRA" incrementType="Group" incrementGroup="gFAMILIA" calculation="Sum">
+		<variableExpression><![CDATA[$V{saldo_nuevo_pesos_1}]]></variableExpression>
+	</variable>
+	<variable name="saldo_nuevo_dolares_2" class="java.math.BigDecimal" resetType="Group" resetGroup="gORDEN_COMPRA" incrementType="Group" incrementGroup="gFAMILIA" calculation="Sum">
+		<variableExpression><![CDATA[$V{saldo_nuevo_dolares_1}]]></variableExpression>
+	</variable>
+	<variable name="monto_pesos_3" class="java.lang.Double" incrementType="Group" incrementGroup="gORDEN_COMPRA" calculation="Sum">
+		<variableExpression><![CDATA[$V{monto_pesos_2}]]></variableExpression>
+	</variable>
+	<variable name="monto_dolares_3" class="java.lang.Double" incrementType="Group" incrementGroup="gORDEN_COMPRA" calculation="Sum">
+		<variableExpression><![CDATA[$V{monto_dolares_2}]]></variableExpression>
+	</variable>
+	<variable name="pagado_fecha_pesos_3" class="java.lang.Double" incrementType="Group" incrementGroup="gORDEN_COMPRA" calculation="Sum">
+		<variableExpression><![CDATA[$V{pagado_fecha_pesos_2}]]></variableExpression>
+	</variable>
+	<variable name="pagado_fecha_dolares_3" class="java.lang.Double" incrementType="Group" incrementGroup="gORDEN_COMPRA" calculation="Sum">
+		<variableExpression><![CDATA[$V{pagado_fecha_dolares_2}]]></variableExpression>
+	</variable>
+	<variable name="saldo_x_pagar_pesos_3" class="java.math.BigDecimal" incrementType="Group" incrementGroup="gORDEN_COMPRA" calculation="Sum">
+		<variableExpression><![CDATA[$V{saldo_x_pagar_pesos_2}]]></variableExpression>
+	</variable>
+	<variable name="saldo_x_pagar_dolares_3" class="java.math.BigDecimal" incrementType="Group" incrementGroup="gORDEN_COMPRA" calculation="Sum">
+		<variableExpression><![CDATA[$V{saldo_x_pagar_dolares_2}]]></variableExpression>
+	</variable>
+	<variable name="monto_vencido_pesos_3" class="java.math.BigDecimal" incrementType="Group" incrementGroup="gORDEN_COMPRA" calculation="Sum">
+		<variableExpression><![CDATA[$V{monto_vencido_pesos_2}]]></variableExpression>
+	</variable>
+	<variable name="monto_vencido_dolares_3" class="java.math.BigDecimal" incrementType="Group" incrementGroup="gORDEN_COMPRA" calculation="Sum">
+		<variableExpression><![CDATA[$V{monto_vencido_dolares_2}]]></variableExpression>
+	</variable>
+	<variable name="pago_propuesto_pesos_3" class="java.lang.Double" incrementType="Group" incrementGroup="gORDEN_COMPRA" calculation="Sum">
+		<variableExpression><![CDATA[$V{pago_propuesto_pesos_2}]]></variableExpression>
+	</variable>
+	<variable name="pago_propuesto_dolares_3" class="java.lang.Double" incrementType="Group" incrementGroup="gORDEN_COMPRA" calculation="Sum">
+		<variableExpression><![CDATA[$V{pago_propuesto_dolares_2}]]></variableExpression>
+	</variable>
+	<variable name="saldo_nuevo_pesos_3" class="java.math.BigDecimal" incrementType="Group" incrementGroup="gORDEN_COMPRA" calculation="Sum">
+		<variableExpression><![CDATA[$V{saldo_nuevo_pesos_2}]]></variableExpression>
+	</variable>
+	<variable name="saldo_nuevo_dolares_3" class="java.math.BigDecimal" incrementType="Group" incrementGroup="gORDEN_COMPRA" calculation="Sum">
+		<variableExpression><![CDATA[$V{saldo_nuevo_dolares_2}]]></variableExpression>
+	</variable>
+	<group name="gProveedor">
+		<groupExpression><![CDATA[$F{id_proveedor}]]></groupExpression>
+		<groupHeader>
+			<band height="20">
+				<textField>
+					<reportElement mode="Opaque" x="0" y="0" width="1730" height="20" backcolor="#E1E1E1" uuid="aa9c17c1-5c9a-461a-96b6-d7ca4dc60949"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nombre_proveedor}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="20">
+				<printWhenExpression><![CDATA[false]]></printWhenExpression>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="gORDEN_COMPRA">
+		<groupExpression><![CDATA[$F{id}]]></groupExpression>
+		<groupHeader>
+			<band height="20">
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="120" height="20" uuid="8ba2e8c2-eef0-4e6b-bb1a-84c9632746df"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA["OC-" + $F{folio}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement stretchType="RelativeToTallestObject" x="120" y="0" width="120" height="20" uuid="e7f5a999-6148-4d21-bc10-3aa50240f5a4"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement stretchType="RelativeToTallestObject" x="240" y="0" width="64" height="20" uuid="942dee1d-84e8-4575-8d1b-472d561b48a5"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gORDEN_COMPRA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="304" y="0" width="88" height="20" uuid="cb656cba-5b99-4db3-a562-c95abd5cdefe"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{monto_pesos_2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gORDEN_COMPRA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="392" y="0" width="88" height="20" uuid="8474ffb4-57c7-4036-953b-15696178401d"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{monto_dolares_2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gORDEN_COMPRA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="480" y="0" width="88" height="20" uuid="3a050268-400c-44ba-8280-b77f72b430dc"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{pagado_fecha_pesos_2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gORDEN_COMPRA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="568" y="0" width="88" height="20" uuid="adf6a5e3-9729-4dc0-8f32-264219f04c84"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{pagado_fecha_dolares_2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gORDEN_COMPRA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="656" y="0" width="88" height="20" uuid="e06f89ec-7aa0-4b18-8492-2a540fba2c32"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{saldo_x_pagar_pesos_2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gORDEN_COMPRA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="744" y="0" width="88" height="20" uuid="a1cdd99c-7e4d-402f-be3b-1f1fb445f9f0"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{saldo_x_pagar_dolares_2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gORDEN_COMPRA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="832" y="0" width="88" height="20" uuid="47e566db-aecd-421f-8911-023c9c17c86d"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{monto_vencido_pesos_2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gORDEN_COMPRA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="920" y="0" width="88" height="20" uuid="6d71b462-600e-40a5-9f54-078ecd17a960"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{monto_vencido_dolares_2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gORDEN_COMPRA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="1008" y="0" width="76" height="20" uuid="15bcc035-7c54-4b13-97c8-19b5fdab59e3"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{pago_propuesto_pesos_2}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement stretchType="RelativeToTallestObject" x="1084" y="0" width="160" height="20" uuid="427c88cd-c9e9-44b3-9762-7ba3af685fc1"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement stretchType="RelativeToTallestObject" x="1244" y="0" width="37" height="20" uuid="48160010-7fde-4301-b340-2ff891e25e36"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gORDEN_COMPRA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="1281" y="0" width="76" height="20" uuid="bd0d15e9-f19c-41a3-a4cb-b6ce6b178ce6"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{pago_propuesto_dolares_2}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement stretchType="RelativeToTallestObject" x="1517" y="0" width="37" height="20" uuid="395cf3ef-9db7-4687-896b-a751b303dd0c"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement stretchType="RelativeToTallestObject" x="1357" y="0" width="160" height="20" uuid="6eaff924-5593-44a7-9140-f88b771fb733"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gORDEN_COMPRA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="1554" y="0" width="88" height="20" uuid="ac55d14a-b859-43e8-b0f0-96c5f562ad85"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{saldo_nuevo_pesos_2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gORDEN_COMPRA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="1642" y="0" width="88" height="20" uuid="ace166b0-9840-465c-9d1f-63522cca82fe"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{saldo_nuevo_dolares_2}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="20">
+				<printWhenExpression><![CDATA[false]]></printWhenExpression>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="gFAMILIA">
+		<groupExpression><![CDATA[$F{id_familia}]]></groupExpression>
+		<groupHeader>
+			<band height="20">
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="120" height="20" uuid="4cee1f19-728b-4424-8fb6-8d924eda0aaa"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{familia}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="120" y="0" width="120" height="20" uuid="49335ce7-f14b-4ab4-9395-c4cee7724604"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{estatus_compras}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#0.0 &apos;%&apos;" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="240" y="0" width="64" height="20" uuid="5401b266-cb1c-4a40-8074-7ec1987a9031"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{suministro}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gFAMILIA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="304" y="0" width="88" height="20" uuid="0cb916c5-062a-4745-972a-fa93cccfc6a3"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{monto_pesos_1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gFAMILIA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="392" y="0" width="88" height="20" uuid="b010641f-78b7-4bb9-a4df-34538410f6ca"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{monto_dolares_1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gFAMILIA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="480" y="0" width="88" height="20" uuid="4884758c-ac71-46e7-b26b-0cc984bc7685"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{pagado_fecha_pesos_1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gFAMILIA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="568" y="0" width="88" height="20" uuid="dc6efc16-e819-4071-8f42-5e8b1acce717"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{pagado_fecha_dolares_1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gFAMILIA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="656" y="0" width="88" height="20" uuid="312d3ba6-5339-4197-95c7-62c5c621cffd"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{saldo_x_pagar_pesos_1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gFAMILIA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="744" y="0" width="88" height="20" uuid="0f833fac-ca12-48a0-a7a5-3eed54e1383b"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{saldo_x_pagar_dolares_1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gFAMILIA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="832" y="0" width="88" height="20" uuid="293985ea-0b66-4826-8633-0a354f947a28"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{monto_vencido_pesos_1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gFAMILIA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="920" y="0" width="88" height="20" uuid="45bb791f-502e-4113-b16b-90507e69ffa8"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{monto_vencido_dolares_1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gFAMILIA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="1008" y="0" width="76" height="20" uuid="32a4a616-8fa5-4c7c-8776-8a81213328bd"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{pago_propuesto_pesos_1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="1084" y="0" width="160" height="20" uuid="41e680ae-fcfe-451d-9180-c699da661fe1"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{pago_propuesto_pesos_observaciones}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="1244" y="0" width="37" height="20" uuid="b89c00cd-50e8-4113-b1fb-f99697342fda"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{pago_propuesto_pesos_vb}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gFAMILIA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="1281" y="0" width="76" height="20" uuid="3de8fdac-b9a5-451c-8f6c-a94d3b1b3927"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{pago_propuesto_dolares_1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="1357" y="0" width="160" height="20" uuid="8a722f68-aa93-4e5c-ba51-5ab14cb8093b"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{pago_propuesto_dolares_observaciones}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="1517" y="0" width="37" height="20" uuid="caf94890-9894-41b3-a709-c56f52e451d6"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{pago_propuesto_dolares_vb}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gFAMILIA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="1554" y="0" width="88" height="20" uuid="3465c4ab-6267-4791-98a5-94b7585de748"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{saldo_nuevo_pesos_1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="gFAMILIA" pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="1642" y="0" width="88" height="20" uuid="dd216285-d728-422d-b06f-a1522b6e5fef"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{saldo_nuevo_dolares_1}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="20">
+				<printWhenExpression><![CDATA[false]]></printWhenExpression>
+			</band>
+		</groupFooter>
+	</group>
+	<title>
+		<band height="72" splitType="Stretch">
+			<image scaleImage="RetainShape" hAlign="Right" onErrorType="Icon">
+				<reportElement positionType="Float" x="1554" y="0" width="176" height="72" uuid="567c19c6-1f76-4de7-9b78-8d7900e9883e"/>
+				<imageExpression><![CDATA[$P{ruta_img} + "logo_disesa.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="176" y="0" width="1378" height="36" uuid="e80d5775-c4e2-46c4-ae12-ac6a23833d78"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CUENTAS POR PAGAR]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="176" y="36" width="1378" height="18" uuid="97b7a22f-0222-4be1-af25-bb5a4d4838f3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CORTE AL " + (new SimpleDateFormat("dd MMMMM yyyy").format($F{fecha_corte})).toUpperCase()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="176" y="54" width="1378" height="18" uuid="69d1f2b0-87ca-44f5-acaa-64f5477d6f81"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PROVEEDORES]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="40" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="120" height="40" backcolor="#CCCCCC" uuid="5c22cf1e-b3ba-4a93-9b4f-fd3abe2ada28"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[FAMILIA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="120" y="0" width="120" height="40" backcolor="#CCCCCC" uuid="1702319a-3dc3-42eb-8d7a-789ddf367853"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[ESTATUS DE COMPRAS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="240" y="0" width="64" height="40" backcolor="#CCCCCC" uuid="2bef9d97-9d09-416a-9bc2-1cbb8929d29f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[SUMINISTRO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="304" y="0" width="176" height="24" backcolor="#CCCCCC" uuid="9157eda0-203c-408c-9150-ca4d3cab6526"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[MONTO DE ORDEN DE COMPRA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="480" y="0" width="176" height="24" backcolor="#CCCCCC" uuid="c15a0bec-47ae-4dda-86f6-44bc16ede731"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[PAGADO A LA FECHA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="568" y="24" width="88" height="16" backcolor="#CCCCCC" uuid="dcbde98b-1edb-4511-862f-de7f2d1ed3eb"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[DOLARES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="656" y="0" width="176" height="24" backcolor="#CCCCCC" uuid="293c023f-f23f-44ff-b5b7-5f5b5ae6129e"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[SALDO POR PAGAR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="744" y="24" width="88" height="16" backcolor="#CCCCCC" uuid="2bda4911-bcec-47fd-a9a6-9fdddf026d3d"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[DOLARES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="656" y="24" width="88" height="16" backcolor="#CCCCCC" uuid="ad3c495b-e5e9-4298-be25-c8f7d152df2a"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[PESOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="480" y="24" width="88" height="16" backcolor="#CCCCCC" uuid="bd6699e2-7f54-4fc5-b7b2-55d3e4b7bca7"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[PESOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="392" y="24" width="88" height="16" backcolor="#CCCCCC" uuid="005ec672-fc27-4d92-9458-debde9291284"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[DOLARES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="304" y="24" width="88" height="16" backcolor="#CCCCCC" uuid="895bb26e-95ef-454d-b15e-12d847c25da2"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[PESOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="832" y="0" width="176" height="24" backcolor="#CCCCCC" uuid="d89a8dee-d065-4242-9b43-7873e2dd27dd"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[MONTOS VENCIDOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="832" y="24" width="88" height="16" backcolor="#CCCCCC" uuid="c0668d4a-7ebd-4397-95ff-74a89247a440"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[PESOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="920" y="24" width="88" height="16" backcolor="#CCCCCC" uuid="bd6fb1fe-285d-4f6e-a7af-e1c114259c97"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[DOLARES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1008" y="0" width="273" height="24" backcolor="#CCCCCC" uuid="fb1e3a2c-3255-4242-964b-a2dc40085d16"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[PAGO PROPUESTO PESOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1084" y="24" width="160" height="16" backcolor="#CCCCCC" uuid="99b370c0-8e32-43ce-be3e-2fd09dc1a729"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[OBSERVACIONES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1244" y="24" width="37" height="16" backcolor="#CCCCCC" uuid="b59c0a77-484a-4965-8bad-f02d4bddd87f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[VB]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1357" y="24" width="160" height="16" backcolor="#CCCCCC" uuid="26918ea9-255d-4ba3-b4eb-da8e8c7cd3bd"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[OBSERVACIONES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1517" y="24" width="37" height="16" backcolor="#CCCCCC" uuid="bb099b69-4739-44c9-9ab1-3975f56668ed"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[VB]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1281" y="0" width="273" height="24" backcolor="#CCCCCC" uuid="f51bb982-18a6-4146-ac79-f331134ddc4f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[PAGO PROPUESTO DOLARES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1642" y="24" width="88" height="16" backcolor="#CCCCCC" uuid="d87693b2-5ea6-4149-8cdf-a10cdae26f5f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[DOLARES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1554" y="0" width="176" height="24" backcolor="#CCCCCC" uuid="c80127a1-6ffc-4a9d-a4a7-1c7eed3a9dbe"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[SALDO NUEVO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1554" y="24" width="88" height="16" backcolor="#CCCCCC" uuid="d13708da-c49b-4313-a3c3-fa1096a4f6ad"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[PESOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1008" y="24" width="76" height="16" backcolor="#CCCCCC" uuid="371d779c-a996-48bc-9722-32dda16ffc8f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[MONTO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1281" y="24" width="76" height="16" backcolor="#CCCCCC" uuid="e360826f-b15d-4867-a785-f7a88a01d110"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[MONTO]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<printWhenExpression><![CDATA[false]]></printWhenExpression>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="304" y="0" width="88" height="16" uuid="56ff45b9-19f3-4a3c-855e-62dd10100f73"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{monto_pesos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="392" y="0" width="88" height="16" uuid="c33831fb-f8fb-4c86-9956-a04e947414c7"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{monto_dolares}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="480" y="0" width="88" height="16" uuid="452e3177-a078-4470-a088-a6d63624ed2b"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pagado_fecha_pesos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="568" y="0" width="88" height="16" uuid="bab27ef7-eee0-4757-a554-cf40bf9a5000"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pagado_fecha_dolares}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="656" y="0" width="88" height="16" uuid="5ee2e6e2-06a2-4e22-a883-99dd4933b315"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{saldo_x_pagar_pesos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="744" y="0" width="88" height="16" uuid="be7cc1cb-cbbb-49bc-a620-a2f628505951"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{saldo_x_pagar_dolares}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="832" y="0" width="88" height="16" uuid="7298ea5f-368c-476a-afc0-4c589ea9e332"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{monto_vencido_pesos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="920" y="0" width="88" height="16" uuid="9ba54166-c78d-4c37-a673-c3bc45ffadb1"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{monto_vencido_dolares}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1008" y="0" width="76" height="16" uuid="b867c1db-af69-4a4d-952c-0b039a531c22"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pago_propuesto_pesos}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement stretchType="RelativeToTallestObject" x="1084" y="0" width="160" height="16" uuid="b228d2b4-85c0-450f-86ff-7e373516487b"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pago_propuesto_pesos_observaciones}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement stretchType="RelativeToTallestObject" x="1244" y="0" width="37" height="16" uuid="7d207137-916c-4598-816d-5db9c5ed122c"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pago_propuesto_pesos_vb}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1281" y="0" width="76" height="16" uuid="ca1fc32a-ce4e-4946-9802-c3037fe2f9be"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pago_propuesto_dolares}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement stretchType="RelativeToTallestObject" x="1357" y="0" width="160" height="16" uuid="729a7693-f4ca-47c3-b231-2dd0d6ea18ef"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pago_propuesto_dolares_observaciones}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement stretchType="RelativeToTallestObject" x="1517" y="0" width="37" height="16" uuid="3627ab58-1664-4168-a28e-92351cae01d9"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pago_propuesto_dolares_vb}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1554" y="0" width="88" height="16" uuid="fb41f3a0-3a52-4117-bcba-709f3046ec51"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{saldo_nuevo_pesos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1642" y="0" width="88" height="16" uuid="dff01548-1ab3-4645-b63c-8e9ede371065"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{saldo_nuevo_dolares}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="20" splitType="Stretch">
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="0" width="240" height="20" uuid="cc1e5897-93d5-4275-b46d-49d8c80f5929"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="1698" y="0" width="32" height="20" uuid="0cbf0558-daa4-4c9a-8100-977af3a12226"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1554" y="0" width="144" height="20" uuid="c610c788-3774-4800-998f-28d6b58b4673"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="24" splitType="Stretch">
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="0" width="240" height="24" backcolor="#CCCCCC" uuid="48f550bd-3813-42cf-badc-35e54a100407"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[TOTALES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="240" y="0" width="64" height="24" backcolor="#CCCCCC" uuid="be75393f-e21b-47fc-a3a3-0e1c3109c6cd"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="304" y="0" width="88" height="24" backcolor="#CCCCCC" uuid="c496b55c-935e-46bb-bf21-eb0a574bc049"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{monto_pesos_3}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="392" y="0" width="88" height="24" backcolor="#CCCCCC" uuid="16fb1bbe-60e2-437c-9ab2-bb689df16144"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{monto_dolares_3}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="480" y="0" width="88" height="24" backcolor="#CCCCCC" uuid="8bb833b7-ae83-4fb7-84d4-c1391733b1ed"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{pagado_fecha_pesos_3}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="568" y="0" width="88" height="24" backcolor="#CCCCCC" uuid="1ef39f05-e981-4a0f-8534-f7bdd83496a5"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{pagado_fecha_dolares_3}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="656" y="0" width="88" height="24" backcolor="#CCCCCC" uuid="c7238f69-b334-4b5e-aa6c-4a3835cfba4d"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{saldo_x_pagar_pesos_3}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="744" y="0" width="88" height="24" backcolor="#CCCCCC" uuid="59eb24e1-eb6d-4c9f-854b-aac159f02df4"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{saldo_x_pagar_dolares_3}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="832" y="0" width="88" height="24" backcolor="#CCCCCC" uuid="b468b215-23a8-4f1c-9011-5b463fb14a10"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{monto_vencido_pesos_3}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="920" y="0" width="88" height="24" backcolor="#CCCCCC" uuid="8ad405f9-b538-44f8-bf1c-f88ca2b5e21d"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{monto_vencido_dolares_3}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="1008" y="0" width="76" height="24" backcolor="#CCCCCC" uuid="0a572f51-fb6a-447d-9e9e-d769a48b55c9"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{pago_propuesto_pesos_3}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="1281" y="0" width="76" height="24" backcolor="#CCCCCC" uuid="3cec6882-69c6-408f-aca9-9e42a6a1a6c8"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{pago_propuesto_dolares_3}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="1554" y="0" width="88" height="24" backcolor="#CCCCCC" uuid="89ff2f85-9af5-4959-8d7e-a03e8a963b84"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{saldo_nuevo_pesos_3}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="1642" y="0" width="88" height="24" backcolor="#CCCCCC" uuid="3fca6cf2-03e0-41f3-ac9a-e7020853b595"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{saldo_nuevo_dolares_3}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="1084" y="0" width="160" height="24" backcolor="#CCCCCC" uuid="1f6d23a7-18b3-4e0e-a6ce-26b8ea19c389"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="1244" y="0" width="37" height="24" backcolor="#CCCCCC" uuid="f9f6af76-4982-4233-af84-5359dde1c782"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="1357" y="0" width="160" height="24" backcolor="#CCCCCC" uuid="de82e00a-7eb5-43f5-aff3-455049cdb558"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="1517" y="0" width="37" height="24" backcolor="#CCCCCC" uuid="23a0c5d2-2002-4ae1-9d0b-d3e52a0b4394"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

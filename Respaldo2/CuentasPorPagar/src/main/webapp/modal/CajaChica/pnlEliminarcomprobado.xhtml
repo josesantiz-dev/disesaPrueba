@@ -1,0 +1,40 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlEliminarcomprobado" autosized="true">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo"/>
+		</f:facet>
+		
+		<a4j:keepAlive beanName="cajaChicaAction" />
+		
+		<a4j:form id="frmEliminarFactura">
+			<a4j:region id="loadEliminarFactura">
+				<h:panelGrid columns="1" style="text-align:center; min-width:300px;" cellspacing="0">
+					<h:outputText value="#{msg['navegacion.label.deseaEliminar']}" style="display:block;" styleClass="Descripcion"/>
+					
+					<h:panelGrid columns="2" style="margin:10px auto 0; text-align:center; width:100%;" cellspacing="0">
+						<a4j:commandButton style="margin:0 auto; cursor:pointer; min-width:100px;"
+							value="#{msg['navegacion.label.aceptar']}" 
+							onclick="#{rich:component('pnlEliminarcomprobado')}.hide()"
+							action="#{cajaChicaAction.eliminar}"
+							reRender="dtResultsComprobado"/>
+							
+						<a4j:commandButton style="margin:0 auto; cursor:pointer; min-width:90px;"
+							value="#{msg['cancelar.e']}" 
+							onclick="#{rich:component('pnlEliminarcomprobado')}.hide()" />
+					</h:panelGrid>
+					
+					<a4j:status for="loadEliminarFactura">
+						<f:facet name="start"><h:graphicImage value="#{msg['navegacion.loading.loading16.img']}"/></f:facet>			    			
+					</a4j:status>
+				</h:panelGrid>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>	
+</ui:composition>

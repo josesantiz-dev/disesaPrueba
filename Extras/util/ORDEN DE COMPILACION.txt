@@ -1,0 +1,44 @@
+ORDEN DE COMPILACION
+-------------------------------------
+Comun
+>>> TODOS LOS MODEL's
+FRAMEWORK
+Logica_Publico
+Logica_Cargas_Documentos
+Logica_Clientes
+Logica_TYG
+Logica_RecHum
+Logica_Inventarios
+Logica_GestionProyectos
+Logica_Compras
+Logica_Contabilidad
+Logica_CuentasPorCobrar
+Logica_CuentasPorPagar
+Navegador
+Navegador4
+>>> TODAS LAS VISTAS's
+
+SEARCH BY:
+<groupId>net.giro</groupId>
+			<artifactId>(([a-zA-Z0-9/_?=.":])+)</artifactId>
+			<version>1.0</version>
+REPLACE WITH:
+<groupId>net.giro</groupId>
+			<artifactId>$1</artifactId>
+			<version>1.3</version>
+
+--> COMPILA COMUN
+compila Comun
+
+--> COMPILA MODELOS
+compila Model_Cargas_Documentos && compila Model_Clientes && compila Model_Compras && compila Model_Contabilidad && compila Model_Credito && compila Model_CuentasPorCobrar && compila Model_CuentasPorPagar && compila Model_GestionProyectos && compila Model_Inventarios && compila Model_Publico && compila Model_RecHum && compila Model_Tesoreria && compila Model_TYG
+
+--> COMPILA LOGICAS
+compila Logica_Publico && compila Logica_Cargas_Documentos && compila Logica_Clientes && compila Logica_TYG && compila Logica_RecHum && compila Logica_Inventarios && compila Logica_GestionProyectos && compila Logica_Compras && compila Logica_Contabilidad && compila Logica_CuentasPorCobrar && compila Logica_CuentasPorPagar 
+
+--> COMPILA NAVEGADOR
+compila Navegador && compila Navegador4 && compila FRAMEWORK
+
+--> COMPILA VISTAS
+compila DISESA && compila Compras && compila Contabilidad && compila CuentasPorCobrar && compila CuentasPorPagar && compila Clientes && compila GestionProyectos && compila Inventarios && compila Publico && compila RecHum && compila tyg && compila Mobile && compila PROCESOS
+

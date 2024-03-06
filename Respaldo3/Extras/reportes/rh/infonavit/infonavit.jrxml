@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="infonavit" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d35aa16e-70e5-4b53-af5c-aafccac2839a">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="idSucursal" class="java.lang.String">
+		<defaultValueExpression><![CDATA["1"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fechaDesde" class="java.lang.String">
+		<defaultValueExpression><![CDATA["01/01/2016"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fechaHasta" class="java.lang.String">
+		<defaultValueExpression><![CDATA["06/30/2016"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ruta_img" class="java.lang.String">
+		<defaultValueExpression><![CDATA["D:/CONDESE/JAVA/DISESA/Desarrollo/Extras/imagen/"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT source.id_empleado
+    , emp.nombre AS empleado
+    , source.fecha
+    , source.fecha_hasta
+    , CASE source.registro WHEN 'CARGO' THEN source.monto ELSE 0 END AS cargo
+    , CASE source.registro WHEN 'ABONO' THEN source.monto ELSE 0 END AS abono
+    , source.observaciones
+    , suc.af AS sucursal
+    , suc.aa AS id_sucursal
+    , DATE($P{fechaDesde}) AS fecha_inicio
+    , DATE($P{fechaHasta}) AS fecha_fin
+FROM (  SELECT ei.id
+            , 'CARGO' AS registro
+            , ei.id_empleado
+            , ei.fecha_desde AS fecha
+            , ei.fecha_hasta
+            , ei.monto
+            , ei.observaciones
+        FROM empleado_infonavit ei
+        WHERE DATE(ei.fecha_desde) BETWEEN DATE($P{fechaDesde}) AND DATE($P{fechaHasta})
+           OR DATE(ei.fecha_hasta) BETWEEN DATE($P{fechaDesde}) AND DATE($P{fechaHasta})
+        UNION ALL
+        SELECT ed.id
+            , 'ABONO' AS registro
+            , ed.id_empleado
+            , ed.fecha
+            , null AS fecha_hasta
+            , ed.monto
+            , ed.observaciones
+        FROM empleado_descuento ed
+            INNER JOIN de7a4d94446 con ON con.aa = ed.id_descuento
+        WHERE DATE(ed.fecha) BETWEEN DATE($P{fechaDesde}) AND DATE($P{fechaHasta})
+          AND ed.estatus > 0
+          AND TRIM(con.atributo1) = 'Retencion Infonavit'
+        ORDER BY fecha) AS source
+    INNER JOIN c5f822917f emp ON emp.aa = source.id_empleado
+    LEFT  JOIN a535303dbc suc ON suc.aa = emp.id_sucursal
+WHERE emp.estatus = 0
+  AND cast(emp.id_sucursal as varchar) = $P{idSucursal}
+ORDER BY emp.nombre, source.fecha;]]>
+	</queryString>
+	<field name="id_empleado" class="java.math.BigDecimal"/>
+	<field name="empleado" class="java.lang.String"/>
+	<field name="fecha" class="java.sql.Date"/>
+	<field name="fecha_hasta" class="java.sql.Date"/>
+	<field name="cargo" class="java.math.BigDecimal"/>
+	<field name="abono" class="java.math.BigDecimal"/>
+	<field name="observaciones" class="java.lang.String"/>
+	<field name="sucursal" class="java.lang.String"/>
+	<field name="id_sucursal" class="java.math.BigDecimal"/>
+	<field name="fecha_inicio" class="java.sql.Date"/>
+	<field name="fecha_fin" class="java.sql.Date"/>
+	<variable name="saldo_anterior" class="java.math.BigDecimal" resetType="Group" resetGroup="empleado">
+		<variableExpression><![CDATA[$V{saldo_anterior}.add(new BigDecimal($F{cargo}.doubleValue() - $F{abono}.doubleValue()))]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<variable name="cargo_1" class="java.math.BigDecimal" resetType="Group" resetGroup="empleado" calculation="Sum">
+		<variableExpression><![CDATA[$F{cargo}]]></variableExpression>
+	</variable>
+	<variable name="abono_1" class="java.math.BigDecimal" resetType="Group" resetGroup="empleado" calculation="Sum">
+		<variableExpression><![CDATA[$F{abono}]]></variableExpression>
+	</variable>
+	<variable name="fecha_desde_formateada" class="java.lang.String">
+		<initialValueExpression><![CDATA[new SimpleDateFormat("dd 'de' MMMMM 'de' yyyy", Locale.forLanguageTag("es-Mx")).format($F{fecha_inicio})]]></initialValueExpression>
+	</variable>
+	<variable name="fecha_hasta_formateada" class="java.lang.String">
+		<initialValueExpression><![CDATA[new SimpleDateFormat("dd 'de' MMMMM 'de' yyyy", Locale.forLanguageTag("es-Mx")).format($F{fecha_fin})]]></initialValueExpression>
+	</variable>
+	<group name="empleado">
+		<groupExpression><![CDATA[$F{id_empleado}]]></groupExpression>
+		<groupHeader>
+			<band height="16">
+				<textField isBlankWhenNull="true">
+					<reportElement mode="Opaque" x="0" y="0" width="555" height="16" backcolor="#CCCCCC" uuid="fcd10aeb-ca78-427f-9d37-4d2bf381c1ed"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true" isItalic="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{empleado}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="20">
+				<staticText>
+					<reportElement x="0" y="0" width="100" height="20" uuid="37580bf9-cfc4-4be5-9b6d-254cd43b7dc9"/>
+					<box>
+						<topPen lineWidth="1.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true" isItalic="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<text><![CDATA[TOTALES:]]></text>
+				</staticText>
+				<textField pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement x="100" y="0" width="80" height="20" uuid="1b0db85c-075b-44bb-8d89-3e8e87c017a4"/>
+					<box>
+						<topPen lineWidth="1.5" lineStyle="Solid"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{cargo_1}]]></textFieldExpression>
+				</textField>
+				<textField pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement x="180" y="0" width="80" height="20" uuid="5bf08df1-9497-4985-9e08-74905355945c"/>
+					<box>
+						<topPen lineWidth="1.5" lineStyle="Solid"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{abono_1}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="340" y="0" width="215" height="20" uuid="d4a080d0-05a6-4d1f-9fee-c339f07053d8"/>
+					<box>
+						<topPen lineWidth="1.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="0" width="80" height="20" uuid="ce65382c-ce1d-4edf-b06a-df6235370882"/>
+					<box>
+						<topPen lineWidth="1.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{cargo_1}.subtract($V{abono_1})]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<title>
+		<band height="72" splitType="Stretch">
+			<image scaleImage="RealSize" hAlign="Left" vAlign="Middle" onErrorType="Icon">
+				<reportElement x="0" y="0" width="120" height="72" uuid="de522d80-0bbc-429b-b3ac-527e8530a9db"/>
+				<imageExpression><![CDATA[$P{ruta_img} + "logo_disesa.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="120" y="0" width="435" height="37" uuid="35da45d4-46bc-422b-924f-ddbbf0494ee1"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="12" isBold="true"/>
+					<paragraph leftIndent="10" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE INFONAVIT]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="120" y="37" width="435" height="16" uuid="1b12c175-5a84-4d4e-ac8f-2277fb166b65"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="10" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA["SUCURSAL " + $F{sucursal}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement x="120" y="53" width="435" height="19" uuid="bf6a170b-30ac-47e2-b635-a3aae721203e"/>
+				<textElement verticalAlignment="Top">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="10" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA["DEL " + $V{fecha_desde_formateada}.toUpperCase() + " AL " + $V{fecha_hasta_formateada}.toUpperCase()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="31" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="15" width="100" height="16" backcolor="#CCCCCC" uuid="7b6a0243-681f-4959-b776-c4eb2553ef6f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FECHA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="100" y="15" width="80" height="16" backcolor="#CCCCCC" uuid="e7b21d51-af08-4bfe-9f35-637c7b755f5b"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CARGO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="180" y="15" width="80" height="16" backcolor="#CCCCCC" uuid="001389a5-637d-4573-89aa-b8e88ec53af2"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ABONO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="260" y="15" width="80" height="16" backcolor="#CCCCCC" uuid="5b9dc485-0af9-44c8-8df0-b3ff1ea0a214"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SALDO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="340" y="15" width="215" height="16" backcolor="#CCCCCC" uuid="f402035a-0040-4132-b77f-98ab7b8a11a5"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[OBSERVACIONES]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="18" splitType="Stretch">
+			<textField pattern="dd-MMM-yyyy" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="100" height="18" uuid="ecc0df1f-b343-4787-abe7-b8a737742c1c"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression>
+			</textField>
+			<textField pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="100" y="0" width="80" height="18" uuid="89953303-9e35-41f5-98ad-cc4fb1f91bf8"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cargo}]]></textFieldExpression>
+			</textField>
+			<textField pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="180" y="0" width="80" height="18" uuid="dfd5ef72-6f9f-4c67-abf8-941623e271fa"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{abono}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="340" y="0" width="215" height="18" uuid="34f275ce-0cc2-4db7-afcd-cf30f32f6303"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{observaciones}]]></textFieldExpression>
+			</textField>
+			<textField pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="260" y="0" width="80" height="18" uuid="f0766ad0-6a3c-442f-aadf-ab3e14aab8cc"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{saldo_anterior}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="17">
+			<textField>
+				<reportElement x="340" y="0" width="215" height="17" uuid="bc23c77b-e60e-4fa2-ae57-b6dc0ae66740"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pagina " + $V{PAGE_NUMBER} + "/" + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMMM yyyy">
+				<reportElement x="0" y="1" width="260" height="16" uuid="da8ca6c1-5782-4d22-9b49-21c8b58e9195"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd MMMMM yyyy", Locale.forLanguageTag("es-Mx")).format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

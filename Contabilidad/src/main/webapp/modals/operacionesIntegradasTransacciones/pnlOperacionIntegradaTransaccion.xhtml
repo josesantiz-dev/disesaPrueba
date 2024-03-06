@@ -1,0 +1,201 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlOperacionIntegradaTransaccion" autosized="true" domElementAttachment="form" top="10">
+		<f:facet name="header">
+			<h:outputText value="#{operIntTransAction.titulo == '' ? msg['nueva'] : ''} #{msg['operacionIntegrada']} #{operIntTransAction.titulo}" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlOperacionIntegradaTransaccion')}.hide()" />
+		</f:facet>
+		
+		<div style="display: block; padding:0 0 10px; min-width:500px; height: 22px; text-align: left; background-color: none;">
+			<h:panelGroup id="botoneraOperacion" style="display: block; width: 100%; height: 22px; margin-bottom: 1em;">
+				<h:panelGroup id="grupoOperacionBotonesDerechos" style="width: 100%; vertical-align: middle; position:relative; ">
+					<a4j:commandButton id="cmdSalvar" style="float:right; margin-left: 5px; vertical-align: middle; position:relative;"
+						image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+						action="#{operIntTransAction.guardar}" 
+						oncomplete="salvar(#{operIntTransAction.operacion}, '#{rich:clientId('pnlOperacionIntegradaTransaccion')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorOperacionIntegrada')});"
+						render="dtResults, validadorOperacionIntegrada, pnlMensajes"
+						limitRender="true" />
+				</h:panelGroup>
+			</h:panelGroup>
+		</div>
+		
+		<rich:messages id="validadorOperacionIntegrada" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+			<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+		</rich:messages>
+		
+		<div style="display:block; margin: 1px auto; padding: 0; text-align: left; background-color: none;">
+			<fieldset id="fsDatosGenerales" style="margin: 5px auto;">
+				<legend><h:outputText value="#{msg['datosGenerales']}" styleClass="Titulo" /></legend>
+				
+				<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+					<h:outputText value="#{msg['transaccion']}:" styleClass="Titulo" />
+					<h:panelGroup id="pnlTransaccionDatos">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtTransaccion" style="text-align:left; display:block;" 
+								value="#{operIntTransAction.transaccion}" />
+							
+							<h:panelGroup>
+								<a4j:commandLink id="cmdBusquedaTransacciones" styleClass="linkColor" 
+									value="#{operIntTransAction.transaccion == '' ? msg['seleccionar'] : msg['cambiar']}"
+									action="#{operIntTransAction.nuevaBusquedaTransacciones}" 
+									oncomplete="#{rich:component('pnlBusquedaTransacciones')}.show()"
+									render="pnlBusquedaTransacciones" />
+									
+								<h:inputText id="txtTransaccionHidden" style="text-align:left;  display:none;"
+									value="#{operIntTransAction.transaccion}"
+									required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+									requiredMessage="#{msg['transaccion']} #{msg['mensaje.error.requerido']}" />
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText value="#{msg['operacion']}:" styleClass="Titulo" />
+					<h:panelGroup id="pnlOperacionIntegradaDatos">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtOperacionIntegrada" style="text-align:left; display:block;" 
+								value="#{operIntTransAction.idOperacion}" />
+							
+							<h:panelGroup>
+								<a4j:commandLink id="cmdBusquedaOperacionIntegrada" styleClass="linkColor" 
+									value="#{operIntTransAction.idOperacion == '' ? msg['seleccionar'] : msg['cambiar']}"
+									action="#{operIntTransAction.nuevaBusquedaOperaciones}" 
+									oncomplete="#{rich:component('pnlBusquedaOperaciones')}.show()"
+									render="pnlBusquedaOperaciones"
+									limitRender="true" />
+									
+								<h:inputText id="txtOperacionIntegradaHidden" style="text-align:left;  display:none;"
+									value="#{operIntTransAction.idOperacion}"
+									required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+									requiredMessage="#{msg['operacion']} #{msg['mensaje.error.requerido']}" />
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGroup>
+				</h:panelGrid>
+			</fieldset>
+			
+			<rich:tabPanel id="tabs" activeItem="tabConceptos" switchType="client" style="margin:10px auto 0;">
+				<rich:tab id="tabConceptos" header="#{msg['conceptos']}" rendered="#{not (operIntTransAction.transaccion == '')}">
+					<rich:dataTable id="dtTransaccionConceptos" value="#{operIntTransAction.listOperIntegradasConceptosSql}" var="var" 
+						cellpadding="0" cellspacing="0" rows="12" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" style="margin:0 auto;">
+						<f:facet name="header"> 
+							<rich:columnGroup>
+								<rich:column style="text-align:center; width:80px" styleClass="Titulo">
+									<h:outputText value="#{msg['id']}" /> 
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:80px" styleClass="Titulo">
+									<h:outputText value="#{msg['id']} #{msg['concepto']}" /> 
+								</rich:column>
+								
+								<rich:column style="text-align:center;" styleClass="Titulo">
+									<h:outputText value="#{msg['concepto']}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width: 20px;" styleClass="Titulo" />
+							</rich:columnGroup>
+						</f:facet>
+		
+						<rich:column style="text-align:center; width:80px;">
+							<h:outputText value="#{var.id}" styleClass="Descripcion" />
+						</rich:column>
+		
+						<rich:column style="text-align:center; width:80px;">
+							<h:outputText value="#{var.idConcepto.id}" styleClass="Descripcion" />
+						</rich:column>
+						
+						<rich:column style="text-align:left;">
+							<h:outputText value="#{var.idConcepto.descripcion}" styleClass="Descripcion" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+							<a4j:commandButton id="cmdTransaccionConceptoSQL" 
+								image="#{msg['sql22.img']}" title="#{msg['editar']}"
+								oncomplete="#{rich:component('pnlOperacionIntegradaConceptoSQL')}.show()" 
+								render="pnlOperacionIntegradaConceptoSQL"
+								limitRender="true">
+								<f:setPropertyActionListener value="#{var}" target="#{operIntTransAction.pojoOperIntegradasConceptosSql}" for="cmdTransaccionConceptoSQL" />
+							</a4j:commandButton>
+						</rich:column>
+		
+						<f:facet name="footer">
+							<rich:dataScroller page="#{operIntTransAction.numPaginaOperIntegradasConceptosSql}" for="dtTransaccionConceptos" 
+								align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" renderIfSinglePage="false" />
+						</f:facet>
+					</rich:dataTable>
+				</rich:tab>
+				
+				<rich:tab id="tabCampos" header="#{msg['campos']}" rendered="#{not (operIntTransAction.transaccion == '')}">
+					<h:panelGroup style="display:block; padding:0; width:100%; min-height:22px; text-align:left; overflow: auto;">
+						<a4j:commandButton id="cmdNuevaOperacionIntegradaSQL" style="float:right; margin:5px; vertical-align: middle; position:relative;"
+							image="#{msg['agregar22.img']}" title="#{msg['agregar.e']} #{msg['campo']}"
+							action="#{operIntTransAction.nuevaOperacionIntegradaSQL}" 
+							oncomplete="#{rich:component('pnlOperacionIntegradaSQL')}.show()"
+							render="pnlOperacionIntegradaSQL"
+							limitRender="true" />
+					</h:panelGroup>
+					
+					<rich:dataTable id="dtOperIntegradaSQLConceptos" value="#{operIntTransAction.listCamposSQL}" var="var" 
+						cellpadding="0" cellspacing="0" rows="12" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" style="margin:0 auto;">
+						<f:facet name="header"> 
+							<rich:columnGroup>
+								<rich:column styleClass="Titulo" style="text-align:center; width:80px">
+									<h:outputText value="#{msg['id']}" /> 
+								</rich:column>
+								
+								<rich:column styleClass="Titulo" style="text-align:center;">
+									<h:outputText value="#{msg['campo']}" />
+								</rich:column>
+								
+								<rich:column styleClass="Titulo" style="text-align:center; width:40px;" colspan="2" />
+							</rich:columnGroup>
+						</f:facet>
+		
+						<rich:column style="text-align: center; width:80px;">
+							<h:outputText value="#{var.id}" styleClass="Descripcion" />
+						</rich:column>
+						
+						<rich:column style="text-align:left;">
+							<h:outputText value="#{var.campo}" styleClass="Descripcion" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:20px;" styleClass="Descripcion">
+							<a4j:commandButton id="cmdEditarOperacionIntegradaSQL" 
+								image="#{msg['editar16.img']}" title="#{msg['editar']}"
+								oncomplete="#{rich:component('pnlOperacionIntegradaSQL')}.show()" 
+								render="pnlOperacionIntegradaSQL"
+								limitRender="true">
+								<f:setPropertyActionListener value="#{var}" target="#{operIntTransAction.pojoCampoSQL}" for="cmdEditarOperacionIntegradaSQL" />
+							</a4j:commandButton>
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:20px;" styleClass="Descripcion">
+							<a4j:commandButton id="cmdEliminarOperacionIntegradaSQL" 
+								image="#{msg['eliminar16.img']}" title="#{msg['eliminar']}"
+								oncomplete="#{rich:component('pnlEliminarOperacionIntegradaSQL')}.show()" 
+								render="pnlEliminarOperacionIntegradaSQL"
+								limitRender="true">
+								<f:setPropertyActionListener value="#{var}" target="#{operIntTransAction.pojoCampoSQLBorrar}" for="cmdEliminarOperacionIntegradaSQL" />
+							</a4j:commandButton>
+						</rich:column>
+		
+						<f:facet name="footer">
+							<rich:dataScroller page="#{operIntTransAction.numPaginaCamposSQL}" for="dtOperIntegradaSQLConceptos"
+								align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" renderIfSinglePage="false" />
+						</f:facet>
+					</rich:dataTable>
+				</rich:tab>
+			</rich:tabPanel>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

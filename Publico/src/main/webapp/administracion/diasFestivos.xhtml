@@ -1,0 +1,236 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title" >
+    	<h:outputText value="#{msg['diasFestivos']}" />
+    </ui:define>
+
+	<ui:define name="menuFrag">
+		<rich:toolBarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" styleClass="Titulo"
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}" 
+				action="#{festivosAction.buscar}"
+            	oncomplete="buscar(#{festivosAction.operacion}, 'pnlMensajes')" 
+				reRender="dtDiasFestivos,pnlMensajes" />
+		</rich:toolBarGroup>
+		
+		<rich:toolBarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" styleClass="Titulo"
+				image="#{msg['nuevo22.img']}" title="#{msg['boton.nuevo.e']}"
+				action="#{festivosAction.nuevo}"
+            	oncomplete="nuevo(#{festivosAction.operacion}, 'pnlDiaFestivo', 'pnlMensajes')" 
+            	reRender="pnlDiaFestivo,pnlMensajes" />
+		</rich:toolBarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<a4j:loadStyle src="resource:///resources/css/adm/adm.css" />
+        <a4j:loadStyle src="resource:///resources/css/negocio/sucursales.css"/>
+        <a4j:loadScript src="resource:///resources/scripts/general/general.js"/>
+        <a4j:loadScript src="resource:///resources/scripts/publico.js"/>
+		
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText value="#{msg['diasFestivos']}" style="font-weight: bold; font-size: 28px; color:#525252;" />
+		</div>
+		
+		<div class="div_pagina">
+			<rich:dataTable id="dtDiasFestivos" value="#{festivosAction.listDiasFestivos}" var="var" style="margin:0 auto 20px;"
+				cellpadding="0" cellspacing="0" rows="100" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="text-align:center; width:80px; padding:2px 4px;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+							<h:outputText value="#{msg['dia']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['descripcion']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:80px;" styleClass="Titulo">
+							<h:outputText value="#{msg['factor']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:80px;" styleClass="Titulo">
+							<h:outputText value="#{msg['frecuencia']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; max-width:80px;" styleClass="Titulo">
+							<h:outputText value="#{msg['estatus']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:40px;" styleClass="Titulo" colspan="2" />
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:80px; padding:2px 4px;">
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:100px; padding:2px 4px;">
+					<h:outputText value="#{var.diaFestivo}">
+						<f:convertDateTime type="date" pattern="dd MMM"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding:2px 4px;">
+					<h:outputText value="#{var.descripcion}" title="#{var.estatus}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:80px; padding:2px 4px;">
+					<h:outputText value="#{var.factor}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:80px; padding:2px 4px;">
+					<h:outputText value="#{var.frecuencia}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; width:80px; padding:2px 4px;">
+					<h:outputText value="ACTIVO" rendered="#{var.estatus == 0}" />
+					<h:outputText value="CANCELADO" rendered="#{var.estatus == 1}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdVer" rendered="#{var.estatus == 0}"
+						image="#{msg['editar16.img']}" title="#{msg['editar.e']}"
+						action="#{festivosAction.editar}" 
+						oncomplete="#{rich:component('pnlDiaFestivo')}.show()"
+						reRender="pnlDiaFestivo">
+						<f:setPropertyActionListener target="#{festivosAction.diaFestivo}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdLanzar" rendered="#{var.estatus == 0}"
+						image="#{msg['eliminar16.img']}" title="#{msg['eliminar.e']}"
+            			oncomplete="#{rich:component('pnlEliminar')}.show()" 
+						reRender="pnlEliminar">
+						<f:setPropertyActionListener target="#{festivosAction.diaFestivo}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<f:facet name="footer">
+					<rich:datascroller for="dtDiasFestivos" page="#{festivosAction.numPagina}" renderIfSinglePage="false"
+						align="center" ajaxSingle="true" styleClass="Titulo" maxPages="10" fastStep="10" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<rich:modalPanel id="pnlDiaFestivo" autosized="true" domElementAttachment="form" top="20">
+			<f:facet name="header">
+				<h:outputText value="#{msg['diaFestivo']}" styleClass="Titulo" />
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage style="cursor:pointer;" 
+					value="#{msg['navegacion.gral.cerrar.img']}" 
+					onclick="#{rich:component('pnlDiaFestivo')}.hide()"/>
+			</f:facet>
+			
+			<a4j:form id="frmDiaFestivo">
+				<h:panelGrid columns="2" style="width:500px; height: 22px; margin:0 auto;">
+					<h:panelGroup style="width:100%;">
+						<rich:messages id="validadorDiaFestivo" ajaxreRendered="false" globalOnly="false" showDetail="false" showSummary="true">
+							<f:facet name="errorMarker"><h:graphicImage style="margin-right:1em;" value="#{msg['alert16.img']}"/></f:facet>
+						</rich:messages>
+					</h:panelGroup>
+					
+					<h:panelGroup style="width:100%;">
+						<a4j:commandButton id="cmdSalvar" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+							image="#{msg['salvar22.img']}" title="#{msg['boton.salvar.e']}"
+							action="#{festivosAction.guardar}"  
+							oncomplete="guardar(#{festivosAction.operacion}, 'pnlDiaFestivo', 'pnlMensajes', #{rich:element('validadorDiaFestivo')});" 
+							reRender="pnlMensajes,validadorDiaFestivo,dtDiasFestivos" />
+					</h:panelGroup>
+				</h:panelGrid>
+	
+				<h:panelGrid columnClasses="colTituloDom,colDato" columns="2" width="100%">
+					<h:outputText styleClass="Titulo" value="#{msg['id']}:" />
+					<h:outputText id="txtId" value="#{festivosAction.diaFestivo.id}" />
+					
+					<h:outputText styleClass="Titulo" value="#{msg['dia']}:"/>
+					<rich:calendar id="txtDia" datePattern="dd-MMM" inputSize="8" 
+						showWeekDaysBar="false" showWeeksBar="false" zindex="100"
+						value="#{festivosAction.diaFestivo.diaFestivo}"
+						required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+						requiredMessage="#{msg['dia']} #{msg['mensaje.error.requerido']}" />
+					
+					<h:outputText styleClass="Titulo" value="#{msg['descripcion']}:" />
+					<h:inputText id="txtDescripcion" maxlength="45" 
+						value="#{festivosAction.diaFestivo.descripcion}" 
+	                   	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+			           	requiredMessage="#{msg['descripcion']} #{msg['mensaje.error.requerido']}" />
+					
+					<h:outputText styleClass="Titulo" value="#{msg['factor']}:" />
+					<h:inputText id="txtFactor" maxlength="20" 
+						value="#{festivosAction.diaFestivo.factor}" 
+	                   	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+			           	requiredMessage="#{msg['factor']} #{msg['mensaje.error.requerido']}" />
+					
+					<h:outputText styleClass="Titulo" value="#{msg['frecuencia']}:" />
+					<h:inputText id="txtFrecuencia" maxlength="20" 
+						value="#{festivosAction.diaFestivo.frecuencia}" 
+	                   	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+			           	requiredMessage="#{msg['frecuencia']} #{msg['mensaje.error.requerido']}" />
+				</h:panelGrid>
+			</a4j:form>
+		</rich:modalPanel>
+		
+		<rich:modalPanel id="pnlEliminar" autosized="true" domElementAttachment="form" width="300"
+			onshow="document.getElementById('#{rich:clientId('pnlEliminarNo')}').focus();">
+			<f:facet name="header">
+				<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo" />
+			</f:facet>
+			
+			<a4j:form id="frmEliminar">
+				<h:panelGroup style="text-align:center; min-width:300px; max-width:500px; width:auto; margin:0; padding:0;">
+					<h:outputText value="#{msg['navegacion.label.deseaEliminar']}" style="display:block;" styleClass="Descripcion"/>
+					
+					<h:panelGrid columns="2" cellspacing="5" cellpadding="0" style="margin:10px auto 0; text-align:center; display:block; width:200px;">
+						<a4j:commandButton id="pnlEliminarSi" style="margin:0 auto; width:100px;"
+							value="#{msg['si']}, #{msg['boton.eliminar.e']}"
+							action="#{festivosAction.eliminar}" 
+							oncomplete="eliminar(#{festivosAction.operacion},'pnlEliminar','pnlMensajes')" 
+							reRender="dtDiasFestivos,pnlMensajes" />
+							
+						<a4j:commandButton id="pnlEliminarNo" style="margin:0 auto; width:90px;"
+							value="#{msg['no']}"
+							onclick="#{rich:component('pnlEliminar')}.hide()" />
+					</h:panelGrid>
+				</h:panelGroup>
+			</a4j:form>
+		</rich:modalPanel>
+		
+		<rich:modalPanel id="pnlMensajes" autosized="true" domElementAttachment="form" width="300"
+			onshow="document.getElementById('#{rich:clientId('pnlMensajesOk')}').focus();">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText value="#{msg['atencion']}" styleClass="Titulo" />
+				</h:panelGroup>
+			</f:facet>
+			
+			<a4j:form id="frmMensajes" style="text-align:center;">
+				<h:panelGroup style="display:block; min-width:300px; max-width:500px; float:center; text-align:center;">
+					<h:outputText rendered="#{subImpAction.tipoMensaje == -1}" value="#{festivosAction.mensaje}" escape="false" styleClass="Descripcion" />
+					<h:outputText rendered="#{subImpAction.tipoMensaje ==  0}" value="#{msg['mensaje.info.infoReg']}" styleClass="Descripcion" />
+					
+					<a4j:commandButton id="pnlMensajesOk" style="display:block; margin:10px auto 0; width:100px; cursor:pointer;"
+						value="#{msg['aceptar']}"
+						onclick="#{rich:component('pnlMensajes')}.hide()"  />
+				</h:panelGroup>
+			</a4j:form>
+		</rich:modalPanel>
+	</ui:define>
+</ui:composition>

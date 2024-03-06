@@ -1,0 +1,252 @@
+body{
+	text-align:center;
+	margin: 0;
+	padding: 0; 
+	width: 100%;
+}
+
+.tablaModulos{
+	margin: auto;
+}
+.fondoGeneral{
+	border:2px solid #9CADBA;
+	color:#6A6868; 
+	background-color:#E4EDFD; //#f1f1f1;//#BED6F8;
+	font-weight: bold;
+	padding:.2em;
+	margin:1em .5em;
+	text-align:center;
+	display:block;
+}
+
+.tile{
+	Background-Color:#E4EDFD;
+	display: block;
+	text-decoration: none;
+	margin: 5px;
+	padding: 10px 16px;
+	min-width: 175px;
+}
+
+.tile img{
+	display: block;
+	float: left;
+	width: 80px;
+	height: 80px;
+}
+
+.tile label{
+	display: block;
+	text-decoration: none;
+	text-color: #FFF;
+}
+
+.tile .titulo{
+	font-size: 18px;
+	font-weight: bold;
+	text-align: left;
+	text-decoration: none;
+}
+
+.tile .subtitulo{
+	font-size: 14px;
+	text-align: left;
+	text-decoration: none;
+}
+
+a{
+	text-decoration: none;
+	color: #525252;
+}
+
+.tile:hover{
+	outline: 1px #525252 solid;
+}
+
+.moduleContainer {
+	margin: 50px auto 0;
+}
+
+.Row1{
+	background: #FFFFFF;
+}
+.Row2{
+	background: #f1f1f1;
+}
+.Titulo{
+	font-weight: bold;
+	font-size: 12px;
+	color:#525252;
+}
+.Titulo10{
+	font-weight: bold;
+	font-size: 10px;
+	color:#525252;
+}
+.colorTitulo{
+	color:#525252;
+}
+.Descripcion{
+	font-weight: bold;
+	font-size: 12px;
+	color:#808080;
+}
+.Descripcion10{
+	font-weight: bold;
+	font-size: 10px;
+	color:#808080;
+}
+.Observacion{
+	font-weight: bold;
+	font-size: 12px;
+	color:#C0C0C0;
+}
+.Observacion10{
+	font-weight: bold;
+	font-size: 10px;
+	color:#C0C0C0;
+}
+.Alterno{
+	color: #FAE6B0;
+	font-weight: bold;
+}
+.Err{
+	text-align:right;
+	font-size: 12px;
+	color:red;
+}
+.encabezado{
+	border:2px solid #9CADBA;
+	color:#6A6868; 
+	background-color:#E4EDFD; //#f1f1f1;//#BED6F8;
+	font-weight: bold;
+	padding:.2em;
+	margin:1em .5em;
+	text-align:center;
+	display:block;
+}
+.rich-messages{
+	float:center;
+	display:block;
+	text-align:left;
+	font-weight: bold;
+	font-size: 12px;
+	color:#BB3029;
+	background-color:#E5EEFE;
+	border:2px solid #C6DEFF;
+	font-family:Arial,Verdana,sans-serif;
+	padding: 0.5em;
+	margin-right:1em;
+	margin-left:1em;
+}
+.rich-messages dt{
+	margin: .2em 0 .2em 0;
+}
+.valorBusqueda1{
+	text-align: right;
+	width: 100px;
+}
+.alignLeft{
+	text-align: left;
+}
+
+.colTitulo{
+	width: 130px;
+	text-align: right;
+}
+.colTituloDom{
+	width: 100px;
+	text-align: right;
+}
+.colDato{
+	text-align: left;
+}
+.modalTable{
+	width: 600px;
+	margin-right: 5px;
+}
+.fixedColumn{
+	font-weight: bold;
+	font-size: 12px;
+	color:#808080;
+	text-align: center; 
+	padding-left: 5px; 
+	overflow: hidden;
+	word-wrap: break-word;
+}
+.colPnlBusqIzq{
+	color		: #6A6868;
+	font-size	: 12px;
+	font-weight	: bold;
+	text-align	: right;
+	width		: 150px;
+}
+.colPnlBusqDer{
+	text-align 	: left;
+	width		: 570px;
+}
+.itemCancelado{	
+	color : red;
+}
+.itemAutorizado{	
+	color : green;
+}
+.itemUsado {
+	color:navy;
+}
+.linkColor {
+	color: blue;
+}
+
+/*------*/
+.funciones_conteiner {
+	margin: 10px auto;
+	padding: 0;
+	width: 100%;
+}
+.funciones_list {
+	background : none;
+	display: block;
+	list-style: none;
+	margin: 0 auto;
+	max-width: 800px;
+	padding: 0;
+	text-align: center;
+	width: 400px;
+}
+.funciones_item {
+	display: block;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+
+/*
+@media all and (max-height: 150px) {
+	#divContainer {
+		background : green;
+	}
+}
+
+@media all and (max-height: 300px) {
+	#divContainer {
+		background : red;
+	}
+}
+
+@media all and (max-width: 800px) {
+	.funciones_list {
+		background : none;
+		max-width: 600px;
+		text-align: left;
+	}
+}
+
+@media all and (max-width: 600px) {
+	.funciones_list {
+		background : none;
+		max-width: auto;
+		text-align: center;
+	}
+}*/

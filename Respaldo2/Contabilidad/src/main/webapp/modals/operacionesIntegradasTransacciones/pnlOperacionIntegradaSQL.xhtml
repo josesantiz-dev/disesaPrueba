@@ -1,0 +1,53 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlOperacionIntegradaSQL" autosized="true" domElementAttachment="form" 
+    	header="#{operIntTransAction.pojoOperIntegradaSQL.id == null ? msg['nueva'] : ''} #{msg['operacionesIntegradas']} #{msg['sql']}">
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" onclick="#{rich:component('pnlOperacionIntegradaSQL')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+
+		<div style="margin: 10px auto 0; min-width:500px; width:100%;">
+			<div style="display:block; width:100%; height: 22px; overflow: auto;">
+				<a4j:commandButton id="cmdOperacionIntegradaSQL" 
+					image="#{msg['salvar22.img']}" 
+					style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+					action="#{operIntTransAction.salvarOperacionIntegradaSQL}"
+					oncomplete="salvar2(#{operIntTransAction.operacion}, #{operIntTransAction.tipoMensaje}, '#{rich:clientId('pnlOperacionIntegradaSQL')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErroresOperacionIntegradaSQL')})"
+					render="dtOperIntegradaSQLConceptos, pnlMensajes, msgErroresOperacionIntegradaSQL"
+					limitRender="true">
+					<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['salvar.e']}" for="cmdOperacionIntegradaSQL"/>
+				</a4j:commandButton>
+			</div>
+		
+			<rich:messages id="msgErroresOperacionIntegradaSQL" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+				<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+			</rich:messages>
+			
+			<h:panelGroup id="bandOperIntegradaTransaccionDescripcion" styleClass="encabezado" style="min-height: 1em;">
+				<h:outputText value="#{operIntTransAction.operIntegradaTransaccionDescripcion}" /> 
+			</h:panelGroup>
+			
+			<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+				<h:outputText id="txtOperacionIntegradaSQLCampo" value="#{msg['campo']}:" />
+				<h:inputText id="txtOperacionIntegradaSQLCampoValue" styleClass="Titulo" 
+					style="text-align: left; width: 350px; margin: 5px auto;"
+					value="#{operIntTransAction.pojoOperIntegradaSQL.campo}"
+					required="#{!empty param[rich:clientId('cmdOperacionIntegradaSQL')]}" 
+					requiredMessage="#{msg['campo']} #{msg['mensaje.error.requerido']}" />
+					
+				<h:outputText id="txtOperacionIntegradaSQLConsulta" value="#{msg['sql']}:" />
+				<h:inputTextarea id="txtOperacionIntegradaSQLConsultaValue" styleClass="Titulo" 
+					style="text-align: left; width: 350px; height: 100px; margin: 5px auto; resize:none;"
+					value="#{operIntTransAction.pojoOperIntegradaSQL.sql}"
+					required="#{!empty param[rich:clientId('cmdOperacionIntegradaSQL')]}" 
+					requiredMessage="#{msg['sql']} #{msg['mensaje.error.requerido']}" />
+			</h:panelGrid>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

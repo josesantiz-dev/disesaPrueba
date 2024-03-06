@@ -1,0 +1,1999 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="CO-01" pageWidth="2577" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="2537" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f1265ff6-2711-4ef5-88ae-dbb6e5313d26">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="2385"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.2" value="pageFooter"/>
+	<parameter name="ruta_img" class="java.lang.String">
+		<defaultValueExpression><![CDATA["D:/CONDESE/JAVA/DISESA/Desarrollo/Extras/imagen/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idObra" class="java.lang.String">
+		<defaultValueExpression><![CDATA["10000009"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idSucursal" class="java.lang.String">
+		<defaultValueExpression><![CDATA["1"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idEncargado" class="java.lang.String">
+		<defaultValueExpression><![CDATA["10000001"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT o.id_obra
+    , o.nombre AS nombre_obra
+    , 0 AS principal
+    , o.id_sucursal
+    , suc.af AS sucursal
+    , o.nombre_cliente
+    , o.nombre_responsable
+    , o.monto_contratado
+    , DATE(CURRENT_DATE) AS fecha_emision
+    , obtener_iva() AS por_iva
+    , obtener_iva_valor() AS por_iva_valor
+    , COALESCE(o.monto_contratado, 0.0) AS monto_contratos
+    , COALESCE((SELECT monto
+                FROM presupuesto_detalle
+                WHERE id_presupuesto = pr.id AND id_concepto_presupuesto =  2)
+        , 0) AS costo_material
+    , COALESCE((SELECT monto
+                FROM presupuesto_detalle
+                WHERE id_presupuesto = pr.id AND id_concepto_presupuesto =  3)
+        , 0) AS costo_manoobra
+    , COALESCE((SELECT monto
+                FROM presupuesto_detalle
+                WHERE id_presupuesto = pr.id AND id_concepto_presupuesto =  4)
+        , 0) AS costo_herramienta
+    , COALESCE((SELECT monto
+                FROM presupuesto_detalle
+                WHERE id_presupuesto = pr.id AND id_concepto_presupuesto =  7)
+        , 0) AS subtotal_costo_directo
+    , COALESCE((SELECT monto
+                FROM presupuesto_detalle
+                WHERE id_presupuesto = pr.id AND id_concepto_presupuesto = 16)
+        , 0) AS gran_total
+    , COALESCE((SELECT SUM(anticipo)
+                FROM obra_cobranza
+                WHERE id_obra = o.id_obra)
+        , 0) AS anticipo
+    , COALESCE((SELECT SUM(estimacion)
+                FROM obra_cobranza
+                WHERE id_obra = o.id_obra)
+        , 0) AS estimacion
+    , COALESCE((SELECT SUM(total)
+                FROM factura
+                WHERE id_obra = o.id_obra AND estatus <> 0)
+        , 0) AS total_facturas
+    , COALESCE((SELECT SUM(p.monto)
+                FROM factura f INNER JOIN factura_pagos p ON p.id_factura = f.id
+                WHERE f.id_obra = o.id_obra AND f.estatus <> 0 AND p.estatus = 0)
+        , 0) AS total_cobrado
+    , COALESCE((
+                SELECT COALESCE(SUM(pr.precio_venta * md.cantidad), 0) AS importe
+                FROM almacen_movimientos am INNER JOIN movimientos_detalle md ON md.id_almacen_movimiento = am.id INNER JOIN producto pr ON pr.id = md.id_producto INNER JOIN orden_compra oc ON oc.id = am.id_orden_compra
+                WHERE am.tipo = 1 AND (am.id_obra IS NULL AND oc.id_obra = o.id_obra) OR (am.id_obra = o.id_obra)
+            ) + (
+                SELECT COALESCE(SUM(pd.subtotal + pd.total_impuestos - pd.total_retenciones), 0) AS total
+                FROM pagos_gastos pg INNER JOIN pagos_gastos_det pd ON pd.pagos_gastos_id = pg.pagos_gastos_id
+                WHERE pg.id_obra = o.id_obra AND pd.concepto_id = 10000789 AND pg.tipo = 'C' AND pg.estatus <> 'X' AND DATE(pg.fecha) <= DATE(CURRENT_DATE)
+            )
+        , 0) AS material
+    , COALESCE((SELECT SUM(en.monto_neto)
+                FROM obra_empleado oe INNER JOIN empleado_contrato ec ON ec.id_empleado = oe.id_empleado INNER JOIN empleado_nomina en ON en.id_empleado = oe.id_empleado
+                WHERE oe.id_obra = o.id_obra AND DATE(en.fecha) <= DATE(CURRENT_DATE) AND ec.peridiocidad_pago = 10000816)
+        , 0) AS manodeobra
+    , COALESCE((SELECT SUM((pd.subtotal + pd.total_impuestos - pd.total_retenciones))
+                FROM pagos_gastos pg INNER JOIN pagos_gastos_det pd ON pd.pagos_gastos_id = pg.pagos_gastos_id
+                WHERE pg.id_obra = o.id_obra AND pd.concepto_id = 10000038)
+        , 0) AS herramienta
+    , COALESCE((
+                SELECT COALESCE(SUM(en.monto_neto), 0) AS dato1
+                FROM obra_empleado oe INNER JOIN empleado_contrato ec ON ec.id_empleado = oe.id_empleado INNER JOIN empleado_nomina en ON en.id_empleado = oe.id_empleado
+                WHERE oe.id_obra = o.id_obra AND DATE(en.fecha) <= DATE(CURRENT_DATE) AND ec.peridiocidad_pago = 94
+            ) + (
+                SELECT COALESCE(SUM(pd.subtotal + pd.total_impuestos - pd.total_retenciones), 0) AS dato2
+                FROM pagos_gastos pg INNER JOIN pagos_gastos_det pd ON pd.pagos_gastos_id = pg.pagos_gastos_id
+                WHERE pg.id_obra = o.id_obra AND pd.concepto_id = 10000792 AND pg.tipo = 'C' AND pg.estatus <> 'X' AND DATE(pg.fecha) <= DATE(CURRENT_DATE)
+            )
+        , 0) AS gastos_indirectos_campo
+    , COALESCE((0.0), 0) AS ejecutado_autorizado
+    , COALESCE((SELECT COALESCE(det.monto, 0) * 100
+                FROM presupuesto_detalle det
+                WHERE det.id_presupuesto = pr.id AND det.id_concepto_presupuesto = 2)
+        , 0) AS material_concepto
+    , COALESCE((SELECT COALESCE(det.monto, 0) * 100
+    			FROM presupuesto_detalle det
+                WHERE det.id_presupuesto = pr.id AND det.id_concepto_presupuesto = 3)
+        , 0) AS manodeobra_concepto
+    , COALESCE((SELECT COALESCE(det.monto, 0) * 100
+                FROM presupuesto_detalle det
+                WHERE det.id_presupuesto = pr.id AND det.id_concepto_presupuesto = 4)
+        , 0) AS herramienta_concepto
+    , COALESCE((SELECT COALESCE(det.monto, 0) * 100
+                FROM presupuesto_detalle det
+                WHERE det.id_presupuesto = pr.id AND det.id_concepto_presupuesto = 8)
+        , 0) AS gastos_indirectos_campo_concepto
+    , COALESCE((SELECT COALESCE(SUM(det.monto), 0) * 100
+                FROM presupuesto_detalle det
+                WHERE det.id_presupuesto = pr.id AND det.id_concepto_presupuesto IN (9,10,11))
+        , 0) AS gastos_indirectos_oficina_concepto
+FROM obra o
+    INNER JOIN a535303dbc suc ON suc.aa = o.id_sucursal
+    LEFT  JOIN presupuesto pr ON pr.id_obra = o.id_obra
+WHERE ($P{idObra} = '' OR ($P{idObra} <> '' AND o.id_obra = (SELECT CASE WHEN COALESCE(o.id_obra_principal, 0) > 0 THEN id_obra_principal ELSE id_obra END FROM obra WHERE CAST(id_obra AS VARCHAR) = $P{idObra})))
+    AND ($P{idSucursal}  = '' OR ($P{idSucursal}  <> '' AND $P{idSucursal}  = CAST(o.id_sucursal AS VARCHAR)))
+    AND ($P{idEncargado} = '' OR ($P{idEncargado} <> '' AND $P{idEncargado} = CAST(o.id_responsable AS VARCHAR)))
+    AND COALESCE(o.id_obra_principal, 0) = 0
+UNION ALL
+SELECT o.id_obra
+    , o.nombre AS nombre_obra
+    , CAST(o.id_obra_principal AS INTEGER) AS principal
+    , o.id_sucursal
+    , suc.af AS sucursal
+    , o.nombre_cliente
+    , o.nombre_responsable
+    , o.monto_contratado
+    , DATE(CURRENT_DATE) AS fecha_emision
+    , obtener_iva() AS por_iva
+    , obtener_iva_valor() AS por_iva_valor
+    , COALESCE(o.monto_contratado, 0.0) AS monto_contratos
+    , COALESCE((SELECT monto
+                FROM presupuesto_detalle
+                WHERE id_presupuesto = pr.id AND id_concepto_presupuesto =  2)
+        , 0) AS costo_material
+    , COALESCE((SELECT monto
+                FROM presupuesto_detalle
+                WHERE id_presupuesto = pr.id AND id_concepto_presupuesto =  3)
+        , 0) AS costo_manoobra
+    , COALESCE((SELECT monto
+                FROM presupuesto_detalle
+                WHERE id_presupuesto = pr.id AND id_concepto_presupuesto =  4)
+        , 0) AS costo_herramienta
+    , COALESCE((SELECT monto
+                FROM presupuesto_detalle
+                WHERE id_presupuesto = pr.id AND id_concepto_presupuesto =  7)
+        , 0) AS subtotal_costo_directo
+    , COALESCE((SELECT monto
+                FROM presupuesto_detalle
+                WHERE id_presupuesto = pr.id AND id_concepto_presupuesto = 16)
+        , 0) AS gran_total
+    , COALESCE((SELECT SUM(anticipo)
+                FROM obra_cobranza
+                WHERE id_obra = o.id_obra)
+        , 0) AS anticipo
+    , COALESCE((SELECT SUM(estimacion)
+                FROM obra_cobranza
+                WHERE id_obra = o.id_obra)
+        , 0) AS estimacion
+    , COALESCE((SELECT SUM(total)
+                FROM factura
+                WHERE id_obra = o.id_obra AND estatus <> 0)
+        , 0) AS total_facturas
+    , COALESCE((SELECT SUM(p.monto)
+                FROM factura f INNER JOIN factura_pagos p ON p.id_factura = f.id
+                WHERE f.id_obra = o.id_obra AND f.estatus <> 0 AND p.estatus = 0)
+        , 0) AS total_cobrado
+    , COALESCE((
+                SELECT COALESCE(SUM(pr.precio_venta * md.cantidad), 0) AS dato1
+                FROM almacen_movimientos am INNER JOIN movimientos_detalle md ON md.id_almacen_movimiento = am.id INNER JOIN producto pr ON pr.id = md.id_producto INNER JOIN orden_compra oc ON oc.id = am.id_orden_compra
+                WHERE am.tipo = 1 AND (am.id_obra IS NULL AND oc.id_obra = o.id_obra) OR (am.id_obra = o.id_obra)
+            ) + (
+                SELECT COALESCE(SUM(pd.subtotal + pd.total_impuestos - pd.total_retenciones), 0) AS dato2
+                FROM pagos_gastos pg INNER JOIN pagos_gastos_det pd ON pd.pagos_gastos_id = pg.pagos_gastos_id
+                WHERE pg.id_obra = o.id_obra AND pd.concepto_id = 10000789 AND pg.tipo = 'C' AND pg.estatus <> 'X' AND DATE(pg.fecha) <= DATE(CURRENT_DATE)
+            )
+        , 0) AS material
+    , COALESCE((SELECT SUM(en.monto_neto)
+                FROM obra_empleado oe INNER JOIN empleado_contrato ec ON ec.id_empleado = oe.id_empleado INNER JOIN empleado_nomina en ON en.id_empleado = oe.id_empleado
+                WHERE oe.id_obra = o.id_obra AND DATE(en.fecha) <= DATE(CURRENT_DATE) AND ec.peridiocidad_pago = 10000816)
+        , 0) AS manodeobra
+    , COALESCE((SELECT SUM((pd.subtotal + pd.total_impuestos - pd.total_retenciones))
+                FROM pagos_gastos pg INNER JOIN pagos_gastos_det pd ON pd.pagos_gastos_id = pg.pagos_gastos_id
+                WHERE pg.id_obra = o.id_obra AND pd.concepto_id = 10000038)
+        , 0) AS herramienta
+    , COALESCE((
+                SELECT COALESCE(SUM(en.monto_neto), 0) AS dato1
+                FROM obra_empleado oe INNER JOIN empleado_contrato ec ON ec.id_empleado = oe.id_empleado INNER JOIN empleado_nomina en ON en.id_empleado = oe.id_empleado
+                WHERE oe.id_obra = o.id_obra AND DATE(en.fecha) <= DATE(CURRENT_DATE) AND ec.peridiocidad_pago = 94
+            ) + (
+                SELECT COALESCE(SUM(pd.subtotal + pd.total_impuestos - pd.total_retenciones), 0) AS dato2
+                FROM pagos_gastos pg INNER JOIN pagos_gastos_det pd ON pd.pagos_gastos_id = pg.pagos_gastos_id
+                WHERE pg.id_obra = o.id_obra AND pd.concepto_id = 10000792 AND pg.tipo = 'C' AND pg.estatus <> 'X' AND DATE(pg.fecha) <= DATE(CURRENT_DATE)
+            )
+        , 0) AS gastos_indirectos_campo
+    , COALESCE((0.0), 0) AS ejecutado_autorizado
+    , COALESCE((SELECT COALESCE(det.monto, 0) * 100
+                FROM presupuesto_detalle det
+                WHERE det.id_presupuesto = pr.id AND det.id_concepto_presupuesto = 2)
+        , 0) AS material_concepto
+    , COALESCE((SELECT COALESCE(det.monto, 0)
+                FROM presupuesto_detalle det
+                WHERE det.id_presupuesto = pr.id AND det.id_concepto_presupuesto = 3)
+        , 0) AS manodeobra_concepto
+    , COALESCE((SELECT COALESCE(det.monto, 0) * 100
+                FROM presupuesto_detalle det
+                WHERE det.id_presupuesto = pr.id AND det.id_concepto_presupuesto = 4)
+        , 0) AS herramienta_concepto
+    , COALESCE((SELECT COALESCE(det.monto, 0) * 100
+                FROM presupuesto_detalle det
+                WHERE det.id_presupuesto = pr.id AND det.id_concepto_presupuesto = 8)
+        , 0) AS gastos_indirectos_campo_concepto
+    , COALESCE((SELECT COALESCE(SUM(det.monto), 0) * 100
+                FROM presupuesto_detalle det
+                WHERE det.id_presupuesto = pr.id AND det.id_concepto_presupuesto IN (9,10,11))
+        , 0) AS gastos_indirectos_oficina_concepto
+FROM obra o
+    INNER JOIN a535303dbc suc ON suc.aa = o.id_sucursal
+    LEFT  JOIN presupuesto pr ON pr.id_obra = o.id_obra
+WHERE o.id_obra_principal IN (
+        SELECT CASE WHEN COALESCE(id_obra_principal, 0) > 0 THEN id_obra_principal ELSE id_obra END
+        FROM obra
+        WHERE ($P{idObra} = '' OR ($P{idObra} <> '' AND CAST(id_obra AS VARCHAR) = $P{idObra}))
+            AND ($P{idSucursal} = '' OR ($P{idSucursal} <> ''  AND CAST(id_sucursal AS VARCHAR) = $P{idSucursal}))
+            AND ($P{idEncargado} = '' OR ($P{idEncargado} <> '' AND CAST(id_responsable AS VARCHAR) = $P{idEncargado}))
+    )
+ORDER BY id_obra, principal;]]>
+	</queryString>
+	<field name="id_obra" class="java.math.BigDecimal"/>
+	<field name="nombre_obra" class="java.lang.String"/>
+	<field name="principal" class="java.lang.Integer"/>
+	<field name="id_sucursal" class="java.math.BigDecimal"/>
+	<field name="sucursal" class="java.lang.String"/>
+	<field name="nombre_cliente" class="java.lang.String"/>
+	<field name="nombre_responsable" class="java.lang.String"/>
+	<field name="monto_contratado" class="java.math.BigDecimal"/>
+	<field name="fecha_emision" class="java.sql.Date"/>
+	<field name="por_iva" class="java.lang.Double"/>
+	<field name="por_iva_valor" class="java.lang.Double"/>
+	<field name="monto_contratos" class="java.math.BigDecimal"/>
+	<field name="costo_material" class="java.lang.Double"/>
+	<field name="costo_manoobra" class="java.lang.Double"/>
+	<field name="costo_herramienta" class="java.lang.Double"/>
+	<field name="subtotal_costo_directo" class="java.lang.Double"/>
+	<field name="gran_total" class="java.lang.Double"/>
+	<field name="anticipo" class="java.math.BigDecimal"/>
+	<field name="estimacion" class="java.math.BigDecimal"/>
+	<field name="total_facturas" class="java.math.BigDecimal"/>
+	<field name="total_cobrado" class="java.lang.Double"/>
+	<field name="material" class="java.lang.Double"/>
+	<field name="manodeobra" class="java.math.BigDecimal"/>
+	<field name="herramienta" class="java.lang.Double"/>
+	<field name="gastos_indirectos_campo" class="java.lang.Double"/>
+	<field name="ejecutado_autorizado" class="java.math.BigDecimal"/>
+	<field name="material_concepto" class="java.lang.Double"/>
+	<field name="manodeobra_concepto" class="java.lang.Double"/>
+	<field name="herramienta_concepto" class="java.lang.Double"/>
+	<field name="gastos_indirectos_campo_concepto" class="java.lang.Double"/>
+	<field name="gastos_indirectos_oficina_concepto" class="java.lang.Double"/>
+	<variable name="subtotal_costo_directo_con_iva" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{subtotal_costo_directo} + ($F{subtotal_costo_directo} * $F{por_iva_valor})]]></variableExpression>
+	</variable>
+	<variable name="gran_total_con_iva" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{gran_total} + ($F{gran_total} * $F{por_iva_valor})]]></variableExpression>
+	</variable>
+	<variable name="anticipo_iva" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{anticipo}.doubleValue() + ($F{anticipo}.doubleValue() * $F{por_iva_valor})]]></variableExpression>
+	</variable>
+	<variable name="estimacion_iva" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{estimacion}.doubleValue() + ($F{estimacion}.doubleValue() * $F{por_iva_valor})]]></variableExpression>
+	</variable>
+	<variable name="total_cobrado_con_iva" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{total_cobrado} + ($F{total_cobrado} * $F{por_iva_valor})]]></variableExpression>
+	</variable>
+	<variable name="POR_COBRAR" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{total_facturas}.doubleValue() - $F{total_cobrado}]]></variableExpression>
+	</variable>
+	<variable name="POR_EJERCER" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{gran_total} - $F{total_cobrado}]]></variableExpression>
+	</variable>
+	<variable name="material_con_iva" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{material}.doubleValue() + ($F{material}.doubleValue() * $F{por_iva_valor})]]></variableExpression>
+	</variable>
+	<variable name="por_material_con_iva" class="java.lang.Double">
+		<variableExpression><![CDATA[(($F{material_concepto} > 0 && $V{material_con_iva} > 0) ? ($F{material_concepto} / $V{material_con_iva}) : 0.0 )]]></variableExpression>
+	</variable>
+	<variable name="menodeobra_con_iva" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{manodeobra}.doubleValue() + ($F{manodeobra}.doubleValue() * $F{por_iva_valor})]]></variableExpression>
+	</variable>
+	<variable name="por_menodeobra_con_iva" class="java.lang.Double">
+		<variableExpression><![CDATA[(($F{manodeobra_concepto} > 0 && $V{menodeobra_con_iva} > 0) ? ($F{manodeobra_concepto} / $V{menodeobra_con_iva}) : 0)]]></variableExpression>
+	</variable>
+	<variable name="herramienta_con_iva" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{herramienta} + ($F{herramienta} * $F{por_iva_valor})]]></variableExpression>
+	</variable>
+	<variable name="por_herramienta_con_iva" class="java.lang.Double">
+		<variableExpression><![CDATA[(($F{herramienta_concepto} > 0 && $V{herramienta_con_iva} > 0) ? ($F{herramienta_concepto} / $V{herramienta_con_iva}) : 0)]]></variableExpression>
+	</variable>
+	<variable name="gastos_indirectos_campo_con_iva" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{gastos_indirectos_campo}.doubleValue() + ($F{gastos_indirectos_campo}.doubleValue() * $F{por_iva_valor})]]></variableExpression>
+	</variable>
+	<variable name="por_gastos_indirectos_campo_con_iva" class="java.lang.Double">
+		<variableExpression><![CDATA[(($F{gastos_indirectos_campo_concepto} > 0 && $V{gastos_indirectos_campo_con_iva} > 0) ? ($F{gastos_indirectos_campo_concepto} / $V{gastos_indirectos_campo_con_iva}) : 0)]]></variableExpression>
+	</variable>
+	<variable name="gastos_indirectos_oficina_con_iva" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{total_cobrado}]]></variableExpression>
+	</variable>
+	<variable name="por_gastos_indirectos_oficina_con_iva" class="java.lang.Double">
+		<variableExpression><![CDATA[(($F{gastos_indirectos_oficina_concepto} > 0 && $V{gastos_indirectos_oficina_con_iva} > 0) ? ($F{gastos_indirectos_oficina_concepto} / $V{gastos_indirectos_oficina_con_iva}) : 0)]]></variableExpression>
+	</variable>
+	<variable name="total_con_iva" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{material_con_iva} +
+$V{menodeobra_con_iva} +
+$V{herramienta_con_iva} +
+$V{gastos_indirectos_campo_con_iva} +
+$V{gastos_indirectos_oficina_con_iva}]]></variableExpression>
+	</variable>
+	<variable name="por_total_con_iva" class="java.lang.Double">
+		<variableExpression><![CDATA[($V{total_con_iva} > 0 && $V{gran_total_con_iva} > 0 ? (($V{total_con_iva} * 100) / $V{gran_total_con_iva}) : 0 )]]></variableExpression>
+	</variable>
+	<variable name="utilidad" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{total_cobrado_con_iva} - $V{total_con_iva}]]></variableExpression>
+	</variable>
+	<variable name="por_utilidad" class="java.lang.Double">
+		<variableExpression><![CDATA[(($V{utilidad} > 0 && $V{total_cobrado_con_iva} > 0) ? (($V{utilidad} * 100) / $V{total_cobrado_con_iva}) : 0 )]]></variableExpression>
+	</variable>
+	<variable name="financiamiento" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{ejecutado_autorizado}.doubleValue() - $V{total_cobrado_con_iva}]]></variableExpression>
+	</variable>
+	<variable name="por_financiamiento" class="java.lang.Double">
+		<variableExpression><![CDATA[($V{financiamiento} > 0 && $V{gran_total_con_iva} > 0 ? (($V{financiamiento} * 100) / $V{gran_total_con_iva}) : 0 )]]></variableExpression>
+	</variable>
+	<variable name="ejecutado_real" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{ejecutado_autorizado}]]></variableExpression>
+	</variable>
+	<variable name="por_ejecutado_real" class="java.lang.Double">
+		<variableExpression><![CDATA[0.0]]></variableExpression>
+	</variable>
+	<variable name="costo_material_1" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{costo_material}]]></variableExpression>
+	</variable>
+	<variable name="costo_manoobra_1" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{costo_manoobra}]]></variableExpression>
+	</variable>
+	<variable name="costo_herramienta_1" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{costo_herramienta}]]></variableExpression>
+	</variable>
+	<variable name="subtotal_costo_directo_1" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$V{subtotal_costo_directo_con_iva}]]></variableExpression>
+	</variable>
+	<variable name="gran_total_1" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$V{gran_total_con_iva}]]></variableExpression>
+	</variable>
+	<variable name="anticipo_iva_1" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$V{anticipo_iva}]]></variableExpression>
+	</variable>
+	<variable name="estimacion_iva_1" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$V{estimacion_iva}]]></variableExpression>
+	</variable>
+	<variable name="total_facturas_1" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{total_facturas}]]></variableExpression>
+	</variable>
+	<variable name="total_cobrado_1" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$V{total_cobrado_con_iva}]]></variableExpression>
+	</variable>
+	<variable name="por_cobrar1" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$V{POR_COBRAR}]]></variableExpression>
+	</variable>
+	<variable name="por_ejercer1" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$V{POR_EJERCER}]]></variableExpression>
+	</variable>
+	<variable name="material_con_iva_1" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{material}.doubleValue() + ($F{material}.doubleValue() * $F{por_iva_valor})]]></variableExpression>
+	</variable>
+	<variable name="menodeobra_con_iva_1" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{manodeobra}.doubleValue() + ($F{manodeobra}.doubleValue() * $F{por_iva_valor})]]></variableExpression>
+	</variable>
+	<variable name="herramienta_con_iva_1" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{herramienta} + ($F{herramienta} * $F{por_iva_valor})]]></variableExpression>
+	</variable>
+	<variable name="gastos_indirectos_campo_con_iva_1" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{gastos_indirectos_campo}.doubleValue() + ($F{gastos_indirectos_campo}.doubleValue() * $F{por_iva_valor})]]></variableExpression>
+	</variable>
+	<variable name="gastos_indirectos_oficina_con_iva_1" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{total_cobrado}]]></variableExpression>
+	</variable>
+	<variable name="total_con_iva_1" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{material_con_iva} +
+$V{menodeobra_con_iva} +
+$V{herramienta_con_iva} +
+$V{gastos_indirectos_campo_con_iva} +
+$V{gastos_indirectos_oficina_con_iva}]]></variableExpression>
+	</variable>
+	<variable name="utilidad_1" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{total_cobrado_con_iva} - $V{total_con_iva}]]></variableExpression>
+	</variable>
+	<variable name="financiamiento_1" class="java.lang.Double"/>
+	<variable name="ejecutado_autorizado_1" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{ejecutado_autorizado}]]></variableExpression>
+	</variable>
+	<variable name="monto_contratado_1" class="java.math.BigDecimal" incrementType="Group" incrementGroup="gOBRA" calculation="Sum">
+		<variableExpression><![CDATA[$F{monto_contratado}]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<group name="gOBRA">
+		<groupExpression><![CDATA[$F{id_obra}]]></groupExpression>
+		<groupHeader>
+			<band height="8">
+				<printWhenExpression><![CDATA[false]]></printWhenExpression>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="8">
+				<printWhenExpression><![CDATA[false]]></printWhenExpression>
+			</band>
+		</groupFooter>
+	</group>
+	<title>
+		<band height="72" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="177" height="72" backcolor="#CCCCCC" uuid="38a36c19-83c9-42ed-965c-d522e2d71272"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[FORMATO CO-01]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="177" y="0" width="120" height="36" backcolor="#CCCCCC" uuid="a2f48cee-310d-49aa-8aca-0aa5569592cb"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[MONTO CONTRATOS DE REPORTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="177" y="36" width="120" height="36" backcolor="#CCCCCC" uuid="5ab755cc-247a-436d-9121-88841d032c5b"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[FECHA DE EMISION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="947" y="0" width="164" height="72" uuid="702fe85b-d43b-4d23-86a7-9f619f2cf187"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[5 de Febrero S/N L-12
+La Paz, B.C.S.
+Col. Pueblo Nuevo
+Tel/Fax. 612 124 1500
+Tel/Fax. 624 146 9610]]></text>
+			</staticText>
+			<image scaleImage="RetainShape" hAlign="Right" onErrorType="Icon">
+				<reportElement positionType="Float" x="2367" y="0" width="170" height="72" uuid="21c354f9-f17d-4526-94b9-d07a0c5a508e"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<imageExpression><![CDATA[$P{ruta_img} + "logo_disesa.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="1111" y="0" width="1256" height="72" uuid="17df4661-af13-4511-a11b-9b311ebbc34b"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField pattern="dd MMMMM yyyy" isBlankWhenNull="true">
+				<reportElement x="297" y="36" width="650" height="36" uuid="0e03ff96-931c-48b8-abe3-f2272a8f164d"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_emision}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Auto" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="297" y="0" width="650" height="36" uuid="f2d072b6-a600-4cee-9808-0fe9784e341c"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{monto_contratado_1}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="68" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="947" height="20" backcolor="#CCCCCC" uuid="3ad5a59d-bb7b-4ab1-a396-691da5bcd23f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[CONTRATO PPT-01]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="947" y="0" width="164" height="20" backcolor="#CCCCCC" uuid="d55b503f-2d19-4aa2-adc5-82c67bab0587"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1111" y="0" width="328" height="20" backcolor="#CCCCCC" uuid="6f649cae-a018-44a0-b623-09ae9d54b661"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[INGRESOS INFORMACION CONTABLE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1439" y="0" width="684" height="20" backcolor="#CCCCCC" uuid="fe359d6d-972f-4bd5-b45a-e0910ba4fb58"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[EGRESOS INFORMACION CONTABLE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="2123" y="0" width="276" height="20" backcolor="#CCCCCC" uuid="5bf6ba78-853a-4d13-8556-c5c34dca9d87"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[ANALISIS FINANCIERO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="2399" y="0" width="138" height="20" backcolor="#CCCCCC" uuid="d519647e-bd62-4a9b-98a6-a294f98d1996"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[EJECUTADO REAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="20" width="57" height="48" backcolor="#CCCCCC" uuid="f1535496-3b6b-497f-a695-7547789df97f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[ID OBRA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="57" y="20" width="120" height="48" backcolor="#CCCCCC" uuid="9a9077e3-4c82-437e-8c50-19beb1f420a0"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[OBRA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="177" y="20" width="120" height="48" backcolor="#CCCCCC" uuid="8ae56127-74f6-480d-9b7a-2e6c0313d6c6"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[SUCURSAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="297" y="20" width="120" height="48" backcolor="#CCCCCC" uuid="406f1e41-899e-4a95-9ebf-9108cbcb7294"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[INGENIERO A CARGO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="417" y="20" width="120" height="48" backcolor="#CCCCCC" uuid="5ccba848-5d4c-495a-8613-76a340870900"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[CLIENTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="537" y="20" width="82" height="48" backcolor="#CCCCCC" uuid="7f85859f-d1e4-47b5-9879-afb3cfa9b179"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[COSTO DE MATERIAL
+(SIN IVA Y SIN OCULTO)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="619" y="20" width="82" height="48" backcolor="#CCCCCC" uuid="de721058-66a3-4bf7-bad7-74b7aeec9457"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[COSTO MANO
+DE OBRA
+(SIN IVA)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="701" y="20" width="82" height="48" backcolor="#CCCCCC" uuid="b773fcab-2cc6-4d2a-9688-72770dd20509"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[COSTO
+HERRAMIENTA
+Y EQUIPO
+(SIN IVA)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="783" y="20" width="82" height="48" backcolor="#CCCCCC" uuid="48e37107-adb9-4998-bc8d-47bb3a0cadf3"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[SUBTOTAL
+COSTO DIRECTO 1
+(CON IVA)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="865" y="20" width="82" height="48" backcolor="#CCCCCC" uuid="4063e701-9c6e-4f27-b492-45a20794fd3c"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[GRAN TOTAL 2
+(CON IVA)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="947" y="20" width="82" height="48" backcolor="#CCCCCC" uuid="a45fd46d-eb40-464e-b33a-11ab32ed58d9"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[ANTICIPO
+CON IVA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1029" y="20" width="82" height="48" backcolor="#CCCCCC" uuid="763d8bc3-c6fa-432c-ac23-714e8f39893f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[ESTIMACIONES
+CON IVA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1111" y="20" width="82" height="48" backcolor="#CCCCCC" uuid="4f7db6fb-fbce-4174-a2c7-c6678eba0f4f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[TOTAL FACTURA
+CON IVA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1193" y="20" width="82" height="48" backcolor="#CCCCCC" uuid="bd1b3d10-0b4d-42fe-9b5e-6e7db7e950a5"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[TOTAL COBRADO
+CON IVA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1275" y="20" width="82" height="48" backcolor="#CCCCCC" uuid="57a095a3-1250-48cd-bba7-2cdc7fad855e"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[POR COBRAR
+CON IVA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1357" y="20" width="82" height="48" backcolor="#CCCCCC" uuid="ad71e0ba-b213-4a03-a65d-5822d4de943d"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[POR EJERCER
+CON IVA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1439" y="20" width="114" height="48" backcolor="#CCCCCC" uuid="39c1f8fd-45ea-4815-8934-eaab268c3285"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[MATERIAL
+CON IVA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1553" y="20" width="114" height="48" backcolor="#CCCCCC" uuid="615c1bac-b196-4cec-8999-78ddade7930f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[MANO DE OBRA
+CON IVA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1667" y="20" width="114" height="48" backcolor="#CCCCCC" uuid="77c05414-a355-4eca-a599-91206503ce2a"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[HERRAMIENTA
+Y EQUIPO
+CON IVA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1781" y="20" width="114" height="48" backcolor="#CCCCCC" uuid="ccc1b111-1d7d-4746-960d-581a1edcdf5f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[GASTOS
+(INDIRECTOS DE CAMPOS)
+CON IVA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1895" y="20" width="114" height="48" backcolor="#CCCCCC" uuid="74e9a78f-6975-434c-87a6-62dffb6d2f13"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[GASTOS
+(INDIRECTOS DE
+OFICINA CENTRAL)
+CON IVA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="2009" y="20" width="114" height="48" backcolor="#CCCCCC" uuid="31b086c1-bddb-4fde-b9f4-6aa27fa29735"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[TOTAL
+CON IVA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="2123" y="20" width="138" height="48" backcolor="#CCCCCC" uuid="8c332f66-fb45-4568-b296-6e1bedef38fa"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[UTILIDAD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="2261" y="20" width="138" height="48" backcolor="#CCCCCC" uuid="6aa93af5-8d31-4b33-b5de-4567c31ecfdc"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[FINANCIAMIENTO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="2399" y="20" width="138" height="48" backcolor="#CCCCCC" uuid="64bacb45-f3df-4a5e-ad01-01dff7fccf97"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[EJECUTADO
+AUTORIZADO]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="0" width="2537" height="16" backcolor="#E1E1E1" uuid="0ea6b8e4-024b-4586-827b-b3db35b391d8">
+					<printWhenExpression><![CDATA[$F{principal} == 0]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="5"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="57" height="16" uuid="ee812a3d-ca0b-44b0-aac3-8a96ce8dd934"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{id_obra}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="417" y="0" width="120" height="16" uuid="e45aaa3c-8e29-4b8c-9e6c-d473f27e47a1"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_cliente}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="57" y="0" width="120" height="16" uuid="9c4f7690-201c-4233-a640-0a70aea387a7"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_obra}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="297" y="0" width="120" height="16" uuid="5688a37a-d9ee-49b4-9aeb-e55ac34e3a99"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_responsable}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="537" y="0" width="82" height="16" isPrintWhenDetailOverflows="true" uuid="362bbe5c-fb4a-4211-9cf9-dfd0fbd8188f"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{costo_material}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="619" y="0" width="82" height="16" isPrintWhenDetailOverflows="true" uuid="f749744a-6124-4fdf-99c2-5a515bf65acd"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{costo_manoobra}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="701" y="0" width="82" height="16" isPrintWhenDetailOverflows="true" uuid="6f7b5520-804c-4058-929b-71a2f6896e70"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{costo_herramienta}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="783" y="0" width="82" height="16" isPrintWhenDetailOverflows="true" uuid="160fd55a-43fa-4e26-b819-d392cd34a7e2"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{subtotal_costo_directo_con_iva}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="865" y="0" width="82" height="16" isPrintWhenDetailOverflows="true" uuid="ec981269-1fc4-4910-ae57-1f28c49b0b78"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{gran_total_con_iva}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="947" y="0" width="82" height="16" isPrintWhenDetailOverflows="true" uuid="f7686eb3-628c-4541-8347-d387928656aa"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{anticipo_iva}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1029" y="0" width="82" height="16" isPrintWhenDetailOverflows="true" uuid="ccdbd63d-b22e-44ea-8e06-7678e5b971d7"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{estimacion_iva}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1111" y="0" width="82" height="16" isPrintWhenDetailOverflows="true" uuid="a63b0a25-28d1-49c1-b208-27c69087cd68"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_facturas}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1193" y="0" width="82" height="16" isPrintWhenDetailOverflows="true" uuid="3dbb0389-5d7f-4763-b22a-9f79a890acb0"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{total_cobrado_con_iva}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1275" y="0" width="82" height="16" isPrintWhenDetailOverflows="true" uuid="e1830103-d5e0-403e-99e1-56998d9f59ad"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{POR_COBRAR}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1357" y="0" width="82" height="16" isPrintWhenDetailOverflows="true" uuid="ee471d9a-5689-4fb6-91b2-6fdc3f74a6ab"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{POR_EJERCER}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1439" y="0" width="82" height="16" isPrintWhenDetailOverflows="true" uuid="eebb4719-bb55-4540-9806-4cc1ca768202"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{material_con_iva}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="##0.0 &apos;%&apos;" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1521" y="0" width="32" height="16" isPrintWhenDetailOverflows="true" uuid="96f3f148-6a88-460f-8385-d0f6fa89fa40"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="1" rightIndent="1"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{por_material_con_iva}.toString() + " %"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1553" y="0" width="82" height="16" isPrintWhenDetailOverflows="true" uuid="41fa6ad9-89f9-4d1c-a020-c0ed7f29da82"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{menodeobra_con_iva}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="##0.0 &apos;%&apos;" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1635" y="0" width="32" height="16" isPrintWhenDetailOverflows="true" uuid="5b8dd1ca-637d-41b1-984c-b06d4b070c83"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="1" rightIndent="1"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{por_menodeobra_con_iva}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1667" y="0" width="82" height="16" isPrintWhenDetailOverflows="true" uuid="895c2542-f63e-4c06-9abb-ce93ff2208ca"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{herramienta_con_iva}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="##0.0 &apos;%&apos;" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1749" y="0" width="32" height="16" isPrintWhenDetailOverflows="true" uuid="b66c37f3-d873-470a-83e7-d87e0eb3af54"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="1" rightIndent="1"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{por_herramienta_con_iva}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1781" y="0" width="82" height="16" isPrintWhenDetailOverflows="true" uuid="f360afdb-8f81-49af-9c18-2fd1c3cf25d1"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{gastos_indirectos_campo_con_iva}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="##0.0 &apos;%&apos;" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1863" y="0" width="32" height="16" isPrintWhenDetailOverflows="true" uuid="19886d00-0036-4a43-93d3-b117552ac680"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="1" rightIndent="1"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{por_gastos_indirectos_campo_con_iva}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1895" y="0" width="82" height="16" isPrintWhenDetailOverflows="true" uuid="4050c4c4-c857-4bf5-8667-b4a23bc08c3b"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{gastos_indirectos_oficina_con_iva}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="##0.0 &apos;%&apos;" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1977" y="0" width="32" height="16" isPrintWhenDetailOverflows="true" uuid="ea40dc02-16ef-44ef-947c-c1bb9ce695fc"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="1" rightIndent="1"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{por_gastos_indirectos_oficina_con_iva}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="2009" y="0" width="82" height="16" isPrintWhenDetailOverflows="true" uuid="173fff0e-8e93-42c4-a7d4-8a4410a6af18"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{total_con_iva}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="##0.0 &apos;%&apos;" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="2091" y="0" width="32" height="16" isPrintWhenDetailOverflows="true" uuid="c614d948-848b-4640-9867-be1afc76e25f"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="1" rightIndent="1"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{por_total_con_iva}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="2123" y="0" width="106" height="16" isPrintWhenDetailOverflows="true" uuid="7fac01c4-6b0f-4fc7-90ef-02f9bc850333"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{utilidad}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="##0.0 &apos;%&apos;" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="2229" y="0" width="32" height="16" isPrintWhenDetailOverflows="true" uuid="5c27d8de-2cdf-4c55-8d50-9ea544ff6988"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="1" rightIndent="1"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{por_utilidad}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="2261" y="0" width="106" height="16" isPrintWhenDetailOverflows="true" uuid="c5a34e59-cc0c-44f4-8b30-806f152828bc"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{financiamiento}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="##0.0 &apos;%&apos;" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="2367" y="0" width="32" height="16" isPrintWhenDetailOverflows="true" uuid="03200c10-d555-497a-9e54-dda29440f139"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="1" rightIndent="1"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{por_financiamiento}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="2399" y="0" width="106" height="16" isPrintWhenDetailOverflows="true" uuid="200f0456-78f6-4c99-846c-1aa7a581ff5c"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ejecutado_autorizado}.doubleValue()]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="##0.0 &apos;%&apos;" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="2505" y="0" width="32" height="16" isPrintWhenDetailOverflows="true" uuid="d4b18d65-580b-466e-b95a-13cedb76b918"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="1" rightIndent="1"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{por_ejecutado_real}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="177" y="0" width="120" height="16" uuid="8a1f4d3c-358d-4cd7-9868-e6d0841e4b1c"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sucursal}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="2399" y="0" width="106" height="20" uuid="bf6c613e-4fc6-45bc-aaa2-b3828042878b"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="2505" y="0" width="32" height="20" uuid="3f0c46ed-efe9-497a-a7d3-14c384bf2390"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="0" width="177" height="20" uuid="e48e090f-8e84-40de-a984-16a4010af734"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="537" height="20" backcolor="#CCCCCC" uuid="03366533-6483-45f8-b2ab-1072beb04073"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="5"/>
+				</textElement>
+				<text><![CDATA[SUMATORIAS]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="537" y="0" width="82" height="20" uuid="e427f850-b974-450c-8e77-dfb7e4b3348f"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{costo_material_1}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="619" y="0" width="82" height="20" uuid="cb4b6957-ea69-41f6-90d0-d372555cd47c"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{costo_manoobra_1}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="701" y="0" width="82" height="20" uuid="3a55fe22-31b2-4b09-837c-0d27db94cc8b"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{costo_herramienta_1}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="783" y="0" width="82" height="20" uuid="a129bbee-3d3c-41ed-9add-6cf9648081f7"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{subtotal_costo_directo_1}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="865" y="0" width="82" height="20" uuid="30f1b6e8-8f70-49af-bf40-88668293fd3e"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{gran_total_1}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="947" y="0" width="82" height="20" uuid="ed4a61fa-0d54-47aa-a91e-8a4c0f0bb15a"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{anticipo_iva_1}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1029" y="0" width="82" height="20" uuid="e08223d9-02af-4dbc-87c4-eefec0833f88"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{estimacion_iva_1}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1111" y="0" width="82" height="20" uuid="af8d4043-00dc-4f22-b985-a02152317da3"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{total_facturas_1}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1193" y="0" width="82" height="20" uuid="ecba48b5-cdde-405b-829b-f5a12318d1ee"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{total_cobrado_1}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1275" y="0" width="82" height="20" uuid="18fb0189-a09c-4121-9462-e52c568f8d1b"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{por_cobrar1}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1357" y="0" width="82" height="20" uuid="f0dac933-bb7b-4766-9c04-f1624029c3ad"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{por_ejercer1}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1439" y="0" width="82" height="20" uuid="af887bc5-fda6-4973-b9be-ac6dc8fcb26d"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{material_con_iva_1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="1521" y="0" width="32" height="20" isPrintWhenDetailOverflows="true" uuid="947148ee-24fc-43c0-9c67-04ddb9bc918d"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1553" y="0" width="82" height="20" uuid="ed47f2f2-a2b3-4f2d-afab-0121aa44d525"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{menodeobra_con_iva_1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="1635" y="0" width="32" height="20" isPrintWhenDetailOverflows="true" uuid="5a620028-8c15-4676-bf95-9aef739aba1c"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1667" y="0" width="82" height="20" uuid="1af2722f-0a74-42df-98cb-02fa24681b9d"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{herramienta_con_iva_1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="1749" y="0" width="32" height="20" isPrintWhenDetailOverflows="true" uuid="e7e89153-f0be-4ea2-a2a7-76371ab3984a"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1781" y="0" width="82" height="20" uuid="01988bdf-b84c-4b07-a69f-46ee9aba4b6d"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{gastos_indirectos_campo_con_iva_1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="1863" y="0" width="32" height="20" isPrintWhenDetailOverflows="true" uuid="3b906d2f-f502-488a-930c-3b4ada042295"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1895" y="0" width="82" height="20" uuid="f97d2153-375b-497f-882b-3fcf88827163"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{gastos_indirectos_oficina_con_iva_1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="1977" y="0" width="32" height="20" isPrintWhenDetailOverflows="true" uuid="85d1f1aa-387a-4ea8-a842-8121870fbaec"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="2009" y="0" width="82" height="20" uuid="decdb21b-a2d8-4a97-919c-84c52c6fc4cf"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{total_con_iva_1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="2091" y="0" width="32" height="20" isPrintWhenDetailOverflows="true" uuid="104e788b-4bc9-449c-b97e-e902e9336d1a"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="2123" y="0" width="106" height="20" uuid="bc639723-0898-4ec7-82eb-d4aa014d5b1b"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{utilidad_1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="2229" y="0" width="32" height="20" isPrintWhenDetailOverflows="true" uuid="d474ee4e-a266-40ee-a4bf-9981948d128a"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="2261" y="0" width="106" height="20" uuid="7bc66af2-41f6-4844-a343-2df6f17b17f2"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{financiamiento_1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="2367" y="0" width="32" height="20" isPrintWhenDetailOverflows="true" uuid="8b43ebfc-ae8d-4b4c-b45c-bb9b9f3aa3bd"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="2399" y="0" width="106" height="20" uuid="957eb224-5768-4295-9bb3-f2c299b83e0e"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{ejecutado_autorizado_1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="2505" y="0" width="32" height="20" isPrintWhenDetailOverflows="true" uuid="63bc4f71-45e4-49bf-9d09-46096a3547d2"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

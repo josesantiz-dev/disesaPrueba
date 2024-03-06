@@ -1,0 +1,35 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlConfirmar" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText styleClass="Descripcion" value="#{msg['confirmar']}" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;"
+				value="#{msg['navegacion.panel.cerrar.img']}" 
+				onclick="#{rich:component('pnlConfirmar')}.hide()" />
+		</f:facet>
+
+		<h:panelGrid columns="1" style="text-align:center; padding:0; min-witdth:300px;" cellspacing="0">
+			<h:outputText styleClass="Descripcion" value="#{msg['confirmacionAutorizacionHorasExtras']}" />
+			
+			<h:panelGroup style="margin:10 auto 0; padding:0;">
+				<a4j:commandButton value="#{msg['aceptar']}" style="min-width:100px; margin: 0 3px;"
+					action="#{extraAction.guardar}"
+					onclick="#{rich:component('pnlConfirmar')}.hide()"
+					oncomplete="salvar(#{extraAction.operacion}, '#{rich:clientId('pnlAutorizacionTiempoExtra')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrores')});"
+					render="dtResults,pnlMensajes,msgErrores" />
+					
+				<a4j:commandButton value="#{msg['cancelar']}" style="min-width:100px; margin: 0 3px;"
+					onclick="#{rich:component('pnlConfirmar')}.hide()" />
+			</h:panelGroup>
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

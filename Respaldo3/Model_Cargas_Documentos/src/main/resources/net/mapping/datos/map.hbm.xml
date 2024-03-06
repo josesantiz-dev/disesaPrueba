@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC '-//Hibernate/Hibernate Mapping DTD 3.0//EN' 'http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd'>
+<hibernate-mapping>
+	<class name="net.giro.co.beans.Correlativo" table="bbb4420d88">
+		<composite-id class="net.giro.co.beans.CorrelativoId" name="id" unsaved-value="none">
+			<key-property column="c_codemp" name="codigoEmpresa" type="long"/>
+			<key-property column="c_nomtab" name="nombreTabla" type="string"/>
+		</composite-id>
+		<property column="c_codemp" insert="false" name="cbEmpresa" update="false"/>
+		<property column="c_destab" name="descriTabla"/>
+		<property column="a_fecins" name="fechaInsercion"/>
+		<property column="a_fecmod" name="fechaModificacion"/>
+		<property column="a_ipeins" name="ipInsercion"/>
+		<property column="a_ipemod" name="ipModificacion"/>
+		<property column="n_numcor" name="numeroCorrelativo"/>
+		<property column="a_terins" name="terminalInsercion"/>
+		<property column="a_termod" name="terminalModificacion"/>
+		<property column="a_usuins" name="usuarioInsercion"/>
+		<property column="a_usumod" name="usuarioModificacion"/>
+	</class>
+
+	<class name="net.giro.cargas.documentos.beans.ComprobacionFactura" table="c66ff17ccc">
+		<id column="aa" name="id"/>
+		<property column="ai" name="estado"/>
+		<property column="ah" name="codigoEstatus"/>
+		<property column="af" name="expresionImpresa"/>
+		<property column="ag" name="facturaFecha"/>
+		<property column="factura_uuid" name="facturaFolioFiscal"/>
+		<property column="factura_serie" name="facturaSerie"/>
+		<property column="factura_folio" name="facturaFolio"/>
+		<property column="factura_tipo" name="facturaTipo"/>
+		<property column="factura_metodo" name="facturaMetodo"/>
+		<property column="factura_forma_pago" name="facturaFormaPago"/>
+		<property column="factura_emisor_rfc" name="facturaEmisorRfc" />
+		<property column="factura_razon_social" name="facturaEmisor"/>
+		<property column="factura_receptor_rfc" name="facturaReceptorRfc" />
+		<property column="factura_receptor" name="facturaReceptor" />
+		<property column="factura_moneda" name="facturaMoneda"/>
+		<property column="tipo_cambio" name="facturaTipoCambio"/>
+		<property column="factura_descuento" name="facturaDescuento"/>
+		<property column="factura_subtotal" name="facturaSubtotal"/>
+		<property column="factura_impuestos" name="facturaImpuestos"/>
+		<property column="factura_retenciones" name="facturaRetenciones"/>
+		<property column="factura_total" name="facturaTotal"/>
+		<property column="descuento" name="descuentoPesos"/>
+		<property column="subtotal" name="subtotalPesos"/>
+		<property column="impuestos" name="impuestosPesos"/>
+		<property column="retenciones" name="retencionesPesos"/>
+		<property column="total" name="totalPesos"/>
+		<property column="id_empresa" name="idEmpresa"/>
+		<property column="estatus" name="estatus"/>
+		<property column="ab" name="creadoPor"/>
+		<property column="ac" name="fechaCreacion"/>
+		<property column="ad" name="modificadoPor"/>
+		<property column="ae" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.cargas.documentos.beans.ComprobacionPago" table="comprobacion_pagos">
+		<id column="id" name="id"/>
+		<property column="estatus" name="estatus"/>
+		<property column="descripcion" name="descripcion"/>
+		<property column="expresion_impresa" name="expresionImpresa"/>
+		<property column="serie" name="serie"/>
+		<property column="folio" name="folio"/>
+		<property column="fecha" name="fecha"/>
+		<property column="fecha_timbrado" name="fechaTimbrado"/>
+		<property column="uuid" name="folioFiscal"/>
+		<!-- Emisor -->
+		<property column="emisor" name="emisor"/>
+		<property column="emisor_rfc" name="emisorRfc" />
+		<property column="emisor_regimen" name="emisorRegimen" />
+		<!-- Receptor -->
+		<property column="receptor" name="receptor" />
+		<property column="receptor_rfc" name="receptorRfc" />
+		<property column="receptor_uso_cfdi" name="receptorUsoCfdi" />
+		<!-- Pago -->
+		<property column="pago_fecha" name="pagoFecha"/>
+		<property column="pago_forma_pago" name="pagoFormaPago"/>
+		<property column="pago_moneda" name="pagoMoneda"/>
+		<property column="pago_monto" name="pagoMonto"/>
+		<property column="pago_num_operacion" name="pagoNumOperacion"/>
+		<!-- Factura -->
+		<property column="factura_uuid" name="facturaFolioFiscal"/>
+		<property column="factura_serie" name="facturaSerie"/>
+		<property column="factura_folio" name="facturaFolio"/>
+		<property column="factura_parcialidad" name="facturaParcialidad"/>
+		<property column="factura_pagado" name="facturaPagado"/>
+		<property column="factura_saldo_anterior" name="facturaSaldoAnterior"/>
+		<property column="factura_saldo_insoluto" name="facturaSaldoInsoluto"/>
+		<property column="factura_metodo_pago" name="facturaMetodoPago"/>
+		<property column="factura_moneda" name="facturaMoneda"/>
+		<!-- Auditoria -->
+		<property column="id_empresa" name="idEmpresa"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificado" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.cargas.documentos.beans.ComprobacionNomina" table="comprobacion_nomina">
+		<id column="id" name="id"/>
+		<property column="estatus" name="estatus"/>
+		<property column="descripcion" name="descripcion"/>
+		<property column="expresion_impresa" name="expresionImpresa"/>
+		<property column="serie" name="serie"/>
+		<property column="folio" name="folio"/>
+		<property column="fecha" name="fecha"/>
+		<property column="fecha_timbrado" name="fechaTimbrado"/>
+		<property column="uuid" name="folioFiscal"/>
+		<!-- Emisor -->
+		<property column="emisor" name="emisor"/>
+		<property column="emisor_rfc" name="emisorRfc" />
+		<property column="emisor_regimen" name="emisorRegimen" />
+		<!-- Receptor -->
+		<property column="receptor" name="receptor" />
+		<property column="receptor_rfc" name="receptorRfc" />
+		<property column="receptor_uso_cfdi" name="receptorUsoCfdi" />
+		<!-- Nomina -->
+		<property column="fecha_pago" name="fechaPago"/>
+		<property column="fecha_inicio" name="fechaInicio"/>
+		<property column="fecha_final" name="fechaFinal"/>
+		<property column="num_dias" name="numDias"/>
+		<property column="total_percepciones" name="totalPercepciones"/>
+		<property column="total_deducciones" name="totalDeducciones"/>
+		<property column="total_otros_pagos" name="totalOtrosPagos"/>
+		<property column="total_nomina" name="totalNomina"/>
+		<!-- Auditoria -->
+		<property column="id_empresa" name="idEmpresa"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificado" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.cargas.documentos.beans.RecursosDocumentos" table="recursos_documentos">
+		<id column="id" name="id"/>
+		<property column="tipo" name="tipo"/>
+		<property column="nombre" name="nombre"/>
+		<property column="descripcion" name="descripcion"/>
+		<property column="extension" name="extension"/>
+		<property column="filename" name="filename"/>
+		<property column="id_empresa" name="idEmpresa"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.cargas.documentos.beans.RecursosDocumentosModulos" table="recursos_documentos_modulos">
+		<id column="id" name="id"/>
+		<property column="id_recurso_documento" name="idRecursoDocumento" />
+		<property column="id_modulo" name="idModulo"/>
+		<property column="nombre_modulo" name="moduloNombre"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,40 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlEliminarContrato" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:panelGroup><h:outputText styleClass="Titulo" value="#{msg['atencion']}" /></h:panelGroup>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;"
+				onclick="#{rich:component('pnlEliminarContrato')}.hide()"
+				value="#{msg['navegacion.gral.cerrar.img']}" />
+		</f:facet>
+		
+		<h:panelGroup style="display:block; width:300px; float:center;">
+			<h:outputText style="display:block;" styleClass="Descripcion"
+				value="#{msg['confirmacionEliminar']}" />
+		</h:panelGroup>
+		
+		<h:panelGrid columns="2" width="100%">
+			<a4j:commandButton style="margin-top:10px; cursor:pointer; width: 90px;" 
+				onclick="#{rich:component('pnlEliminarContrato')}.hide()"
+				value="#{msg['si']}"
+				action="#{empleadoAction.eliminarContrato}"
+				oncomplete="eliminarContrato(#{empleadoAction.band},'#{rich:clientId('pnlEliminarContrato')}','#{rich:clientId('pnlMsgGralEmpleado')}')"
+				render="dtListaContratos,pnlMsgGralContrato"
+				limitRender="true" />
+			
+			<a4j:commandButton style="margin-top:10px; cursor:pointer; width: 90px;" 
+				onclick="#{rich:component('pnlEliminarContrato')}.hide()"
+				value="#{msg['no']}" />
+		</h:panelGrid>
+	</rich:popupPanel>
+
+</ui:composition>

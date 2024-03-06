@@ -1,0 +1,89 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlColonias"  autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20"
+    	onshow="document.getElementById('#{rich:clientId('txtBusquedaColonia')}').focus();"
+    	header="#{msg['seleccionarColonia']}">
+		<!--f:facet name="header">
+			<h:outputText style="margin-left:10px" value="#{msg['seleccionarColonia']}" styleClass="Titulo"/>
+		</f:facet-->
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;"
+				value="#{msg['navegacion.gral.cerrar.img']}"  
+				onclick="#{rich:component('pnlColonias')}.hide()"/>
+		</f:facet>
+
+		<div style="display: block; width: 450px; height: 22px;">
+			<h:panelGrid columns="1" style="position:relative; float:right; margin-right:5px;">	
+				<h:panelGroup style="padding:0 2px 0 2px; float:right;">
+					<a4j:commandButton id="cmdBuscarColonias" 
+						image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+						action="#{almacenAction.buscarColonias}" 
+						render="dtColonias" />
+				</h:panelGroup>
+			</h:panelGrid>
+		</div>
+		
+		<h:panelGroup styleClass="encabezado">
+			<h:outputText value="#{almacenAction.pojoLocalidad != null ? almacenAction.pojoLocalidad.nombre : ' '}" />
+		</h:panelGroup>
+		
+		<h:panelGroup style="display:block;">
+			<h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+			<h:inputText id="txtBusquedaColonia" value="#{almacenAction.busquedaColonia}" style="margin-left:5px;" />
+		</h:panelGroup>
+		
+		<rich:dataTable id="dtColonias" cellpadding="0" cellspacing="0"
+			rows="20" border="0" var="col" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+			value="#{almacenAction.listColonias}">
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['id']}" />
+					</rich:column>
+
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['nombre']}" />
+					</rich:column>
+
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['codigoPost']}" />
+					</rich:column>
+
+					<rich:column style="text-align:center;" styleClass="Titulo"/>
+				</rich:columnGroup>
+			</f:facet>
+
+			<rich:column width="30" styleClass="Descripcion">
+				<h:outputText value="#{col.id}" />
+			</rich:column>
+
+			<rich:column styleClass="Descripcion">
+				<h:outputText value="#{col.nombre}" />
+			</rich:column>
+
+			<rich:column styleClass="Descripcion">
+				<h:outputText value="#{col.cp}" />
+			</rich:column>
+
+			<rich:column width="20" style="text-align:center;">
+				<a4j:commandButton image="#{msg['drag16.img']}" 
+					oncomplete="#{rich:component('pnlColonias')}.hide()" 
+					render="cmdLnkColonia" ajaxSingle="true">
+					<f:setPropertyActionListener target="#{almacenAction.pojoColonia}" value="#{col}" />
+				</a4j:commandButton>
+			</rich:column>
+
+			<f:facet name="footer">
+				<rich:dataScroller for="dtColonias" page="#{almacenAction.numPaginaColonia}" renderIfSinglePage="false"
+					ajaxSingle="true" maxPages="10" fastStep="10" align="center" styleClass="Titulo" />
+			</f:facet>
+		</rich:dataTable>
+	</rich:popupPanel>
+</ui:composition>

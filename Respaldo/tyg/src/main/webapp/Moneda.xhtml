@@ -1,0 +1,216 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['moneda']}" />
+	</ui:define>
+    
+	<ui:define name="menuFrag">
+		<rich:toolBarGroup location="right">
+			<a4j:commandButton action="#{monedaAction.buscar}" id="cmdBuscar" image="#{msgTyg['navegacion.boton.buscar.img']}" onclick="#{rich:element('cmdBuscar')}.disabled = true;" oncomplete="msgRevisando(#{rich:element('msgErrorMon')},'pnlNuevoEditarMoneda','pnlMsgGralesMon',#{monedaAction.band},'buscar'); #{rich:element('cmdBuscar')}.disabled = false;" reRender="dtResults,pnlMsgGralesMon" style="cursor:pointer;" styleClass="Titulo">
+				<rich:toolTip id="ttBuscar" showDelay="300" styleClass="Descripcion" value="#{msgTyg['navegacion.boton.buscar.e']}"/>
+			</a4j:commandButton>
+		</rich:toolBarGroup>
+		
+		<rich:toolBarGroup location="right">
+			<a4j:commandButton action="#{monedaAction.nuevo}" id="cmdNuevo" image="#{msgTyg['navegacion.boton.nuevo.img']}" onclick="#{rich:element('cmdNuevo')}.disabled = true;" oncomplete="Richfaces.showModalPanel('pnlNuevoEditarMoneda'); #{rich:element('cmdNuevo')}.disabled = false;" reRender="pnlNuevoEditarMoneda" style="cursor:pointer;" styleClass="Titulo">
+				<rich:toolTip id="ttNuevo" showDelay="300" styleClass="Descripcion" value="#{msgTyg['navegacion.boton.nuevo.e']}"/>
+			</a4j:commandButton>
+		</rich:toolBarGroup>
+	</ui:define>
+
+	<ui:define name="body">
+		<a4j:loadStyle src="resource:///resources/css/tyg/monedas.css"/>
+		<a4j:loadStyle src="resource:///resources/css/tyg/tygCatMoneda.css"/>
+		<a4j:loadScript src="resource:///resources//scripts/tyg/moneda.js"/>
+
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText style="font-weight: bold; font-size: 28px; color:#525252;" value="#{msg['moneda']}"/>
+		</div>
+
+		<div class="div_pagina">
+			<a4j:region id="loadSalvarMoneda">
+				<!-- Pantalla Principal  -->
+				<div style="min-width: 700px; margin: 0 auto; text-align: center;">
+					<h:panelGrid columns="2" id="panel_busqueda" style="margin:10px auto; text-align: left; display:block;" width="700">
+						<h:outputText styleClass="Titulo" value="#{msg['tipo']}:"/>
+						<rich:comboBox enableManualInput="false" id="cmbTipoBusqueda" listStyle="text-align:left;" suggestionValues="#{monedaAction.tipoBusqueda}" value="#{monedaAction.valTipoBusqueda}"/>
+						<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.valor']}:"/>
+						<h:inputText id="txtvalor" maxlength="10" value="#{monedaAction.campoBusqueda}"/>
+					</h:panelGrid>
+				</div>
+
+				<rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtResults" rowClasses="Row1, Row2" rows="20" 
+					value="#{monedaAction.listMoneda}" var="moneda"
+					style="min-width: 700px; margin: 0 auto;">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column colspan="5" styleClass="tygCatTit">
+								<h:outputText value="#{msgTyg['navegacion.label.moneda']}"/>
+							</rich:column>
+							
+							<rich:column breakBefore="true" style="text-align:center; width: 90px;" styleClass="tygCatTit">
+								<h:outputText value="#{msgTyg['navegacion.label.clave']}"/>
+							</rich:column>
+							
+							<rich:column style="text-align:center; margin-left:10px;" styleClass="tygCatTit">
+								<h:outputText value="#{msgTyg['navegacion.label.nombre']}"/>
+							</rich:column>
+							
+							<rich:column style="text-align:center; margin-left:10px; width: 100px;" styleClass="tygCatTit">
+								<h:outputText value="#{msgTyg['navegacion.label.Abreviacion']}"/>
+							</rich:column>
+							
+							<rich:column style="text-align:center; margin-left:10px;" styleClass="tygCatTit"/>
+						</rich:columnGroup>
+					</f:facet>
+
+					<rich:column style="text-align:center; width: 90px;" styleClass="tygCatDesc" width="50">
+						<h:outputText id="txtClave" value="#{moneda.id}"/>
+					</rich:column>
+
+					<rich:column style="text-align:left;" styleClass="tygCatDesc" width="220">
+						<h:outputText id="txtNombre" value="#{moneda.nombre}"/>
+					</rich:column>
+
+					<rich:column style="text-align:center; font-weight: bold; font-size:12px; width: 100px;" styleClass="tygCatDesc" width="50">
+						<h:outputText id="txtAbreviacion" value="#{moneda.abreviacion}"/>
+					</rich:column>
+
+					<rich:column style="text-align:center; font-weight: bold; font-size:12px;" styleClass="tygCatDesc" width="20">
+						<a4j:commandButton image="#{msgTyg['navegacion.boton.editar.img']}" oncomplete="Richfaces.showModalPanel('pnlNuevoEditarMoneda')" reRender="pnlNuevoEditarMoneda" style="cursor: pointer;">
+							<f:setPropertyActionListener target="#{monedaAction.pojoMoneda}" value="#{moneda}"/>
+							<rich:toolTip showDelay="300">
+								<h:outputText styleClass="Descripcion" value="#{msgTyg['navegacion.boton.editar.e']}"/>
+							</rich:toolTip>
+						</a4j:commandButton>
+					</rich:column>
+
+					<f:facet name="footer">
+						<rich:datascroller ajaxSingle="true" align="center" for="dtResults" id="dScroll" maxPages="10" page="#{monedaAction.numPagina}" styleClass="tygCatTit"/>
+					</f:facet>
+				</rich:dataTable>
+			</a4j:region>
+		</div>
+	</ui:define>
+	<!-- Fin Pantalla Principal  -->
+
+	<ui:define name="modals">
+		<!--  Pantalla Nuevo o Editar  -->
+		<rich:modalPanel autosized="true" id="pnlNuevoEditarMoneda" width="550">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText style="margin-left:10px" styleClass="Titulo" value="#{ monedaAction.pojoMoneda.id != 0 ? monedaAction.pojoMoneda.nombre : msgTyg['navegacion.label.nuevoReg']}"/>
+				</h:panelGroup>
+			</f:facet>
+
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage id="btnCerrarNuevoMon" style="cursor: pointer;" value="#{msgTyg['navegacion.gral.cerrar.img']}"/>
+					<rich:componentControl attachTo="btnCerrarNuevoMon" event="onclick" for="pnlNuevoEditarMoneda" operation="hide"/>
+				</h:panelGroup>
+			</f:facet>
+
+			<a4j:form id="frmNuevoEditarMoneda">
+				<a4j:region id="loadNuevoEditar">
+					<div style="display: block; height: 22px;">
+						<h:panelGrid columns="2" style="float:right; margin-right:5px;">
+							<h:panelGroup style="vertical-align: middle; position:relative; ">
+								<a4j:commandButton action="#{monedaAction.guardar}" id="cmdSalvar" image="#{msgTyg['navegacion.boton.salvar.img']}" onclick="#{rich:element('cmdSalvar')}.disabled = true;" oncomplete="msgRevisando(#{rich:element('msgErrorMon')},'pnlNuevoEditarMoneda','pnlMsgGralesMon',#{monedaAction.band},'guardar'); #{rich:element('cmdSalvar')}.disabled = false;" reRender="miMenu,dtResults,LabelClave,pnlMsgGralesMon" style="vertical-align: middle; position:relative; cursor:pointer;"/>
+								<h:outputLabel for="cmdSalvar" style="cursor:pointer; font-weight: bold; font-family: Arial, Verdana, sans-serif; font-size: 11px;" styleClass="Titulo" value="#{msgTyg['navegacion.boton.salvar.e']}"/>
+							</h:panelGroup>
+
+							<h:panelGroup style="vertical-align: middle; position:relative;">
+								<a4j:status for="loadNuevoEditar">
+									<f:facet name="start">
+										<h:graphicImage style="vertical-align: middle; position:relative;" value="#{msgTyg['navegacion.loading.loading16']}"/>
+									</f:facet>
+									<f:facet name="stop">
+										<h:graphicImage style="vertical-align: middle; position:relative;" value="#{msgTyg['navegacion.loading.loading_stop16']}"/>
+									</f:facet>
+								</a4j:status>
+							</h:panelGroup>
+						</h:panelGrid>
+					</div>
+
+					<h:panelGrid cellpadding="3" columnClasses="Observacion" columns="2" id="pnlDatos1" style="display: block; width: 400px; position:relative;margin-left:10px;">
+						<h:outputText value="*"/>
+						<h:outputText value="#{ monedaAction.pojoMoneda.id != 0 ? msgTyg['navegacion.label.noeditar'] : msgTyg['navegacion.label.generaAuto']}"/>
+						<h:outputText value=""/>
+						<h:outputText value="#{ monedaAction.pojoMoneda.id != 0 ? msgTyg['navega.label.vacio'] : msgTyg['navega.label.cuandoSalve']}"/>
+					</h:panelGrid>
+
+					<h:panelGrid cellpadding="3" columnClasses="tygCatColIzq, tygCatColDer" columns="2" id="pnlDatos2" style="display: block; width: 550px; position:relative; margin-top:15px; margin-left:10px;">
+						<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.clave']}:"/>
+						<h:outputText id="LabelClave" styleClass="Titulo" value="#{monedaAction.pojoMoneda.id}"/>
+						
+						<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.nombre']}:"/>
+						<h:panelGroup>
+							<h:inputText id="txtNombreEdit" maxlength="10" required="#{!empty param[rich:clientId('cmdSalvar')]}" size="40" value="#{monedaAction.pojoMoneda.nombre}">
+								<f:validateLength minimum="1"/>
+							</h:inputText>
+
+							<rich:message for="txtNombreEdit" showDetail="false" showSummary="false" style="color:red">
+								<f:facet name="errorMarker">
+									<h:panelGroup>
+										<h:graphicImage id="errorSolicitante" value="#{msgTyg['mensajes.cancelar16.img']}"/>
+										<h:outputLabel styleClass="Err" value="#{msgTyg['mensajes.error.requerido']}"/>
+									</h:panelGroup>
+								</f:facet>
+							</rich:message>
+						</h:panelGroup>
+
+						<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.Abreviacion']}:"/>
+						<h:panelGroup>
+							<h:inputText id="txtAbreviacion" maxlength="2" required="#{!empty param[rich:clientId('cmdSalvar')]}" size="40" value="#{monedaAction.pojoMoneda.abreviacion}">
+								<f:validateLength minimum="1"/>
+							</h:inputText>
+
+							<rich:message for="txtAbreviacion" showDetail="false" showSummary="false" style="color:red">
+								<f:facet name="errorMarker">
+									<h:panelGroup>
+										<h:graphicImage value="#{msgTyg['mensajes.cancelar16.img']}"/>
+										<h:outputLabel styleClass="Err" value="#{msgTyg['mensajes.error.requerido2']}"/>
+									</h:panelGroup>
+								</f:facet>
+							</rich:message>
+						</h:panelGroup>
+						<rich:messages id="msgErrorMon" showDetail="false" showSummary="false"/>
+					</h:panelGrid>
+				</a4j:region>
+			</a4j:form>
+		</rich:modalPanel>
+		<!-- Fin Pantalla Nuevo o Editar  -->
+
+		<!-- Panel MsgGrales -->
+		<rich:modalPanel autosized="true" id="pnlMsgGralesMon">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{monedaAction.band ? msgTyg['navegacion.label.atencion'] : msgTyg['navegacion.label.informacion']}"/>
+			</f:facet>
+
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage id="imgCerrarMsgMon" style="cursor:pointer;" value="#{msgTyg['navegacion.panel.cerrar.img']}"/>
+					<rich:componentControl attachTo="imgCerrarMsgMon" event="onclick" for="pnlMsgGralesMon" operation="hide"/>
+				</h:panelGroup>
+			</f:facet>
+
+			<a4j:form id="frmMsgGralesMon">
+				<h:panelGrid cellspacing="10" columns="1" style="text-align:center;" width="200">
+					<h:outputText rendered="#{monedaAction.tipoMensaje == 0}" styleClass="Descripcion" value="#{msgTyg['mensaje.info.infoReg']}"/>
+					<h:outputText rendered="#{monedaAction.tipoMensaje == 1}" styleClass="Descripcion" value="#{msgTyg['mensaje.error.inesperado']}"/>
+					<h:outputText rendered="#{monedaAction.tipoMensaje == 2}" styleClass="Descripcion" value="#{msgTyg['mensaje.info.busquedaVacia']}"/>
+					<h:outputText rendered="#{monedaAction.tipoMensaje == 3}" styleClass="Descripcion" value="#{msgTyg['mensaje.info.abrevDuplicada']}"/>
+					<a4j:commandButton oncomplete="msgRevisando(#{rich:element('msgErrorMon')},'pnlNuevoEditarMoneda','pnlMsgGralesMon',#{monedaAction.band},'boton')" reRender="dtResults" value="#{msgTyg['navegacion.label.aceptar']}"/>
+				</h:panelGrid>
+			</a4j:form>
+		</rich:modalPanel>
+	</ui:define>
+</ui:composition>

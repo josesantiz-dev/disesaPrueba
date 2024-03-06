@@ -1,0 +1,42 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlMensajes" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['atencion']}" styleClass="Titulo" />
+		</f:facet>
+
+		<a4j:region id="regMensajes">
+			<h:panelGrid columns="1" style="text-align:center; min-width:300px; max-width:500px;" cellspacing="0" cellpadding="0">
+				<h:outputText rendered="#{facturaAction.tipoMensaje == -1}" value="#{facturaAction.resOperacion}" styleClass="Descripcion" escape="false" />
+				<h:outputText rendered="#{facturaAction.tipoMensaje ==  0}" value="#{msg['mensaje.info.infoReg']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{facturaAction.tipoMensaje ==  1}" value="#{msg['mensaje.error.inesperado']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{facturaAction.tipoMensaje ==  2}" value="#{msg['mensaje.info.busquedaVacia']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{facturaAction.tipoMensaje ==  3}" value="#{msg['facturaSinDetalles']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{facturaAction.tipoMensaje ==  4}" value="#{msg['facturaConceptoExiste']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{facturaAction.tipoMensaje ==  5}" value="#{msg['errorAlTimbrar']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{facturaAction.tipoMensaje ==  6}" value="#{msg['errorEnviarFactura']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{facturaAction.tipoMensaje ==  7}" value="#{msg['facturaEnviada']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{facturaAction.tipoMensaje ==  8}" value="#{msg['sucursalNoExiste']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{facturaAction.tipoMensaje ==  9}" value="#{msg['sucursalSinSerieFacturacion']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{facturaAction.tipoMensaje == 10}" value="#{msg['cantidadMayorACero']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{facturaAction.tipoMensaje == 11}" value="#{msg['costoMayorACero']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{facturaAction.tipoMensaje == 12}" value="#{msg['facturaSinSerieFacturacion']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{facturaAction.tipoMensaje == 13}" value="#{msg['noCorreoParaEnviar']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{facturaAction.tipoMensaje == 14}" value="#{msg['facturaCancelada']}" styleClass="Descripcion" />
+				
+				<h:outputText value="#{facturaAction.resOperacion}" styleClass="Descripcion" 
+					rendered="#{facturaAction.tipoMensaje == 5 || facturaAction.tipoMensaje == 6}" />
+				
+				<a4j:commandButton style="margin:10px auto 0; min-width:100px;"
+					value="#{msg['navegacion.label.aceptar']}"
+					oncomplete="#{rich:component('pnlMensajes')}.hide()" />
+			</h:panelGrid>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

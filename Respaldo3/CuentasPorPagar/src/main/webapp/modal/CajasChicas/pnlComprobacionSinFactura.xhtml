@@ -1,0 +1,245 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlComprobacionSinFactura" autosized="true" top="10"
+		onshow="document.getElementById('#{rich:clientId('txtEmpresaComprobacionSinFactura')}').focus();">
+		<f:facet name="header">
+			<h:outputText value="#{cajaAction.tituloComprobacion}" styleClass="Titulo" />
+	    </f:facet>
+		
+	    <f:facet name="controls">
+       		<h:graphicImage style="cursor:pointer;"
+       	  		value="#{msg['navegacion.gral.cerrar.img']}"
+       	  		onclick="#{rich:component('pnlComprobacionSinFactura')}.hide()" />
+	    </f:facet>
+		
+		<a4j:form id="frmComprobacionSinFactura" style="padding:0; width:auto; min-width:800px; max-width:1024px; min-height:22px; text-align: left;">
+			<a4j:region id="loadComprobacionSinFactura">
+				<h:panelGrid id="botoneraComprobacionSinFactura" columns="2" cellpadding="0" style="margin:0 auto; padding:0; width:100%; min-width:800px; min-height:22px; text-align:left;">
+					<h:panelGroup id="grupoBotonesIzquierdosComprobacionSinFactura" style="width:100%; vertical-align:middle; position:relative;">
+						<rich:messages id="validadorComprobacionSinFactura" showDetail="true" showSummary="false" />
+					</h:panelGroup>
+					
+					<h:panelGroup id="grupoBotonesDerechosComprobacionSinFactura" style="width:100%; vertical-align:middle; position:relative;">
+						<a4j:commandButton id="cmdSalvarComprobacionSinFactura" style="float:right; margin-left: 5px; vertical-align:top; position:relative;" 
+							image="#{msg['salvarAdd22.img']}" title="#{msg['salvar.e']}"
+							onclick="#{rich:element('cmdSalvarComprobacionSinFactura')}.disabled = true;"
+							action="#{cajaAction.guardarComprobacion}"
+							oncomplete="#{rich:element('cmdSalvarComprobacionSinFactura')}.disabled = false; salvar(#{cajaAction.operacionCancelada}, '#{rich:clientId('pnlComprobacionSinFactura')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorComprobacionSinFactura')});"
+							reRender="validadorComprobacionSinFactura,pnlMensajes,dtResultsComprobado,txtMonto"
+							limitToList="true" />
+					</h:panelGroup>
+				</h:panelGrid>
+				
+				<h:panelGroup layout="block" styleClass="encabezado" style="min-height:1em; margin:5px auto 0;">
+					<h:outputText value="Comprobacion sin Factura" />
+				</h:panelGroup>
+				
+				<table id="groupFacturaComprobacionSinFactura" style="display:block; margin:5px auto 0; width:100%;">
+					<tr>
+						<td class="tygCompGtosColIzq" valign="bottom"><h:outputText value="#{msg['razonSocial']}:" styleClass="Titulo" /></td>
+						<td class="tygCompGtosColDer" colspan="3">
+							<h:panelGrid id="pnlDatos2" columns="1" style="display:block; margin:5px 0 0; padding:0;">
+								<h:selectOneRadio id="cbTipoRazonSocial" value="#{cajaAction.tipoRazonSocial}" styleClass="Titulo">
+									<f:selectItem itemValue="P" itemLabel="#{msg['persona']}" />
+									<f:selectItem itemValue="N" itemLabel="#{msg['negocio.e']}" />
+									<a4j:support event="onchange" focus="txtEmpresaComprobacionSinFactura"
+										action="#{cajaAction.cambioRazonSocial}" 
+										reRender="txtEmpresaComprobacionSinFactura,suggRazonSocial,txtEmisorRfcComprobacionSinFactura" />
+								</h:selectOneRadio>
+								
+								<h:panelGroup>
+									<h:inputText id="txtEmpresaComprobacionSinFactura" maxlength="100" style="width:384px;" 
+										value="#{cajaAction.razonSocial}"  
+										onfocus="this.select();"
+										onkeypress="keyF9(event, #{rich:component('suggRazonSocial')})" 
+										required="#{!empty param[rich:clientId('cmdSalvarComprobacionSinFactura')]}"
+										requiredMessage="#{msg['razonSocial']} #{msg['mensaje.error.requerido']}" />
+									
+									<h:graphicImage style="margin-left:0px; vertical-align:bottom; cursor:pointer;" 
+										value="#{msg['despliega.img']}" alt="desplegar"
+										onclick="#{rich:component('suggRazonSocial')}.callSuggestion(true)" />
+									
+									<rich:suggestionbox id="suggRazonSocial" eventsQueue="suggQRepCaja" minChars="2" width="394"
+										for="txtEmpresaComprobacionSinFactura" suggestionAction="#{cajaAction.autoacompletaRazonSocial}" 
+										var="prov" fetchValue="#{prov.id} - #{prov.nombre}"
+										reRender="txtEmisorRfcComprobacionSinFactura">
+										<h:column><h:outputText value="#{prov.id}" /></h:column>
+										<h:column><h:outputText value="#{prov.nombre}" /></h:column>
+										<h:column><h:outputText value="#{prov.rfc}" /></h:column>
+										<a4j:support event="onselect" reRender="txtEmisorRfcComprobacionSinFactura" />
+									</rich:suggestionbox>
+									
+									<rich:message for="txtEmpresaComprobacionSinFactura" showSummary="false" showDetail="false" style="color:red">
+										<f:facet name="errorMarker">
+											<h:graphicImage value="#{msg['cancelar16.img']}" title="#{msg['mensaje.validacion.selectItem']}" />
+										</f:facet>
+									</rich:message>
+								</h:panelGroup>
+							</h:panelGrid>
+						</td>
+						<td class="tygCompGtosColIzq" valign="bottom"><h:outputText value="#{msg['rfc']}:" styleClass="Titulo"/></td>
+						<td class="tygCompGtosColDer" valign="bottom">
+							<h:panelGroup>
+								<h:inputText id="txtEmisorRfcComprobacionSinFactura" maxlength="20" style="width:150px;"
+									value="#{cajaAction.egresoDetalleEmisorRFC}" readonly="true"
+									required="#{!empty param[rich:clientId('cmdSalvarComprobacionSinFactura')]}"
+								    requiredMessage="#{msg['rfc']} #{msg['mensaje.error.requerido']}" /> 
+								
+								<rich:message for="txtEmisorRfcComprobacionSinFactura" showSummary="false" showDetail="false"  style="color:red">
+							    	<f:facet name="errorMarker">
+										<h:graphicImage value="#{msg['cancelar16.img']}" title="#{msg['mensaje.error.requerido']}" />
+							      	</f:facet>
+								</rich:message>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td class="tygCompGtosColIzq"><h:outputText value="#{msg['folio']}:" styleClass="Titulo" /></td>
+						<td class="tygCompGtosColDer">
+							<h:panelGroup>
+								<h:inputText id="txtFolioComprobacionSinFactura" maxlength="20" style="width:150px;"
+									value="#{cajaAction.referencia}" onfocus="this.select();"
+									required="#{!empty param[rich:clientId('cmdSalvarComprobacionSinFactura')]}"
+								    requiredMessage="#{msg['folioDocumento']} #{msg['mensaje.error.requerido']}" />
+								
+								<rich:message for="txtFolioComprobacionSinFactura" showSummary="false" showDetail="false"  style="color:red">
+							    	<f:facet name="errorMarker">
+										<h:graphicImage value="#{msg['cancelar16.img']}" title="#{msg['mensaje.error.requerido']}" />
+							      	</f:facet>
+								</rich:message>
+							</h:panelGroup>
+						</td>
+						<td class="tygCompGtosColIzq"><h:outputText value="#{msg['facturado']}:" styleClass="Titulo" rendered="#{cajaAction.perfilRequiereObra}" /></td>
+						<td class="tygCompGtosColDer">
+							<h:outputText value="NA" styleClass="Descripcion" />
+						</td>
+						<td class="tygCompGtosColIzq"><h:outputText value="#{msg['fecha']}:" styleClass="Titulo" /></td>
+						<td class="tygCompGtosColDer">
+							<h:panelGroup>
+								<rich:calendar id="txtFechaComprobacionSinFactura" datePattern="dd/MMM/yyyy" 
+									inputSize="9" boundaryDatesMode="scroll" showWeekDaysBar="false" showWeeksBar="false"
+									value="#{cajaAction.fechaComprobacion}" 
+						    		required="#{!empty param[rich:clientId('cmdSalvarComprobacionSinFactura')]}"
+								    requiredMessage="#{msg['navegacion.label.fecha']} #{msg['mensaje.error.requerido']}" />
+						    	
+						    	<rich:message for="txtFechaComprobacionSinFactura" showSummary="false" showDetail="false"  style="color:red">
+						      		<f:facet name="errorMarker">
+										<h:graphicImage value="#{msg['cancelar16.img']}" title="#{msg['mensaje.error.requerido']}" />
+						      		</f:facet>
+								</rich:message>
+							</h:panelGroup>
+						</td>
+					</tr>
+				</table>
+				
+				<h:panelGrid id="groupComprobacionSinFacturaDatos" columns="2" columnClasses="tygCompGtosColIzq,tygCompGtosColDer" style="display:block; position:relative; margin:10px auto 0;" cellpadding="0">
+					<h:outputText styleClass="Titulo" value="#{msg['egreso']}:" />
+					<h:panelGroup id="groupConceptoComprobacionSinFactura" style="font-size:12px">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtConceptoGto" value="#{cajaAction.comprobacionEgreso}" escape="false" />
+							<h:panelGroup>
+								<a4j:commandLink id="btnBusquedaConceptos2" 
+									onclick="#{rich:element('btnBusquedaConceptos2')}.disabled = true;"
+									value="#{cajaAction.comprobacionEgreso eq '' ? msg['seleccionar'] : msg['cambiar']}"
+									action="#{cajaAction.nuevaBusquedaConceptos}"
+									oncomplete="#{rich:element('btnBusquedaConceptos2')}.disabled = false; nuevaBusqueda(#{cajaAction.operacionCancelada},'pnlBusquedaConceptos','#{rich:clientId('pnlMensajes')}')"
+									reRender="pnlMensajes,pnlBusquedaConceptos" />
+									
+								<!-- Este input es solo con propósito de que se permita hacer validator al proyecto -->
+								<h:inputText id="txtConceptoGtoHidden" style="text-align:left; display:none;"
+									value="#{cajaAction.comprobacionEgreso}"
+									required="#{!empty param[rich:clientId('cmdSalvarComprobacionSinFactura')]}"
+									requiredMessage="#{msg['egreso']} #{msg['mensaje.error.requerido']}" />
+								
+								<rich:message for="txtConceptoGtoHidden" showSummary="false" showDetail="false" style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage value="#{msg['cancelar16.img']}" title="#{msg['mensaje.error.requerido']}. #{msg['mensaje.validacion.selectItem']}" />
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGroup>
+					
+					<h:outputText styleClass="Titulo" value="#{msg['subtotal']}:" />
+					<h:panelGroup>
+						<h:inputText id="txtSubtotalSinFacturaSinFactura" style="text-align:right; width:150px;" disabled="true"  
+							value="#{cajaAction.subtotal}">
+			               	<f:convertNumber pattern="###,###,##0.00" /> 
+			            </h:inputText>
+							
+						<rich:message for="txtSubtotalSinFacturaSinFactura" showSummary="false" showDetail="false" style="color:red">
+					    	<f:facet name="errorMarker">
+								<h:graphicImage value="#{msg['cancelar16.img']}" title="#{msg['mensaje.error.requerido']}" />
+					    	</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					
+					<h:outputText styleClass="Titulo" value="#{msg['impuestos']}:" />
+					<h:panelGroup>
+						<h:inputText id="txtImpuestosSinFacturas" disabled="true" style="width:150px; text-align:right;"
+							value="#{cajaAction.impuestos}">
+			               	<f:convertNumber pattern="###,###,##0.00" /> 
+			            </h:inputText>
+							
+						<rich:message for="txtImpuestosSinFacturas" showSummary="false" showDetail="false"  style="color:red">
+					    	<f:facet name="errorMarker">
+								<h:graphicImage value="#{msg['cancelar16.img']}" title="#{msg['mensaje.error.requerido']}" />
+					    	</f:facet>
+						</rich:message>
+						
+                    	<a4j:commandLink id="cmdDesgloseImptos" styleClass="tygCompGtosAtn" style="margin:0 10px;"
+                    		rendered="#{cajaAction.verDesgloce}"
+                    		value="#{msg['navegacion.label.desgloseImptos']}" 
+                    		onclick=" #{rich:element('cmdDesgloseImptos')}.disabled = true;" 
+							oncomplete="Richfaces.showModalPanel('pnlDesgloceImpuestos'); #{rich:element('cmdDesgloseImptos')}.disabled = false;" 
+                    		reRender="pnlDesgloceImpuestos,dtDesgloseImpuestos" 
+                    		limitToList="true" />
+					</h:panelGroup>	
+					
+					<h:outputText styleClass="Titulo" value="#{msg['retencion']}:" />
+					<h:panelGroup>
+						<h:inputText id="txtRetencionesSinFacturas" disabled="true" style="width:150px; text-align:right;"
+							value="#{cajaAction.retenciones}">
+			               	<f:convertNumber pattern="###,###,##0.00" /> 
+			            </h:inputText>
+							
+						<rich:message for="txtRetencionesSinFacturas" showSummary="false" showDetail="false"  style="color:red">
+					    	<f:facet name="errorMarker">
+								<h:graphicImage value="#{msg['cancelar16.img']}" title="#{msg['mensaje.error.requerido']}" />
+					    	</f:facet>
+						</rich:message>
+					</h:panelGroup>	
+					
+					<h:outputText styleClass="Titulo" value="#{msg['total']}:" />
+					<h:panelGroup>
+						<h:inputText id="txtTotalComprobacionSinFactura" maxlength="15" style="width:150px; text-align:right;"
+							value="#{cajaAction.totalComprobacion}" onfocus="this.select();"
+							required="#{!empty param[rich:clientId('cmdSalvarComprobacionSinFactura')]}"
+						    requiredMessage="#{msg['navegacion.label.monto']} #{msg['mensaje.error.requerido']}"
+							onkeypress="return soloDecimales(event, this.value, 10, 4);">
+							<f:converter converterId="javax.faces.Double" />
+			               	<f:convertNumber pattern="###,###,##0.00" /> 
+							<a4j:support event="onchange" action="#{cajaAction.desglosaImpuestos}" 
+								reRender="groupComprobacionSinFacturaDatos" limitToList="true" />
+						</h:inputText>
+							
+						<rich:message for="txtTotalComprobacionSinFactura" showSummary="false" showDetail="false"  style="color:red">
+					    	<f:facet name="errorMarker">
+								<h:graphicImage value="#{msg['cancelar16.img']}" title="#{msg['mensaje.error.requerido']}" />
+					    	</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					
+					<h:outputText styleClass="Titulo" value="#{msg['observaciones']}:" style="position:relative; top:-16px" />
+					<h:inputTextarea id="txtObservaciones" row="2" style="width:644px; resize:none;"
+						value="#{cajaAction.observaciones}" onfocus="this.select();" />
+				</h:panelGrid>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

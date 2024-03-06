@@ -1,0 +1,109 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlEmpleadoInfonavit" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+		<f:facet name="header">
+			<h:outputText value="#{empInfoAction.titulo}" styleClass="Titulo"/>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlEmpleadoInfonavit')}.hide()" />
+		</f:facet>
+		
+		<div style="display:block; margin:0 auto; padding: 0; min-width:500px; text-align: left; background-color: none;">
+			<div style="display: block; padding:0; text-align: left; background-color: none;">
+				<h:panelGroup id="botoneraInfonavit" style="display: block; width: 100%; min-height: 22px; margin-bottom: 1em;">
+					<h:panelGroup id="grupoInfonavitBotonesDerechos" style="width: 100%; vertical-align: middle; position:relative; ">
+						<a4j:commandButton id="cmdSalvar" style="float:right; margin-left: 5px; vertical-align: middle; position:relative;"
+							image="#{msg['salvar22.img']}" 
+							action="#{empInfoAction.salvar}" 
+							oncomplete="salvar(#{empInfoAction.operacion}, '#{rich:clientId('pnlEmpleadoInfonavit')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrores')});"
+							render="dtResults, msgErrores, pnlMensajes"
+							limitRender="true">
+							<rich:tooltip id="ttSalvar" showDelay="300" value="#{msg['salvar.e']}" for="cmdSalvar" />
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGroup>
+			</div>
+			
+			<rich:messages id="msgErrores" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+				<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+			</rich:messages>
+		
+			<fieldset style="margin:10px auto;">
+				<legend><h:outputText value="#{msg['empleado']}" styleClass="Titulo"/></legend>
+				
+				<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+					<h:outputText value="#{msg['empleado']}:" styleClass="Titulo" />
+					<h:panelGrid id="bandEmpleadoDatos" columns="2">
+						<h:outputText id="txtEmpleado" value="#{empInfoAction.empleado}" />
+						<h:panelGroup>
+							<a4j:commandLink id="cmdSeleccionarEmpleado" styleClass="linkColor"
+								value="#{empInfoAction.empleado == '' ? msg['seleccionar'] : msg['cambiar'] }"
+								action="#{empInfoAction.nuevaBusquedaEmpleados}"
+								oncomplete="#{rich:component('pnlBusquedaEmpleados')}.show()"
+								render="pnlBusquedaEmpleados"
+								limitRender="true" />
+								
+							<h:inputText id="txtEmpleadoHidden" style="text-align:left; display:none;"
+								value="#{empInfoAction.empleado}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['empleado']} #{msg['mensaje.error.requerido']}" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGrid>
+			</fieldset>
+					
+			<fieldset style="margin:10px auto;">
+				<legend><h:outputText value="#{msg['datosGenerales']}" styleClass="Titulo"/></legend>
+					
+				<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+					<h:outputText value="#{msg['periodo']}:" styleClass="Titulo" />
+					<h:panelGroup>
+						<h:panelGrid columns="2">
+							<h:outputText value="#{msg['desde']}:" styleClass="Titulo" />
+							<h:outputText value="#{msg['hasta']}:" styleClass="Titulo" />
+							
+							<rich:calendar id="txtDesde" enableManualInput="true" datePattern="dd/MM/yyyy" style="width:100px;"
+								value="#{empInfoAction.pojoEmpleadoInfonavit.fechaDesde}" 
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['fecha']} #{msg['desde']} #{msg['mensaje.error.requerido']}">
+								<rich:placeholder value="dd/MM/yyyy" />
+							</rich:calendar>
+							
+							<rich:calendar id="txtHasta" enableManualInput="true" datePattern="dd/MM/yyyy" style="width:100px;"
+								value="#{empInfoAction.pojoEmpleadoInfonavit.fechaHasta}" 
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['fecha']} #{msg['hasta']} #{msg['mensaje.error.requerido']}">
+								<rich:placeholder value="dd/MM/yyyy" />
+							</rich:calendar>
+						</h:panelGrid>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['monto']}:" styleClass="Titulo" />
+					<h:inputText id="txtMonto" styleClass="Titulo" style="width:200px; text-align:right"
+						value="#{empInfoAction.pojoEmpleadoInfonavit.monto}"
+						required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+						requiredMessage="#{msg['monto']} #{msg['mensaje.error.requerido']}"
+						onkeypress="return soloDecimales(event, this.value, 10, 2);"
+						onfocus="this.setSelectionRange(0, this.value.length)">
+						<f:convertNumber pattern="###,###,##0.00" />
+						<a4j:ajax event="change" execute="@this" render="txtMonto" limitRender="true" />
+					</h:inputText>
+	
+					<h:outputLabel value="#{msg['observaciones']}:" styleClass="Titulo" />
+					<h:inputTextarea id="txtDescuentoObservaciones" styleClass="Titulo" 
+						style="text-align: left; resize: none; width: 450px;"
+						value="#{empInfoAction.pojoEmpleadoInfonavit.observaciones}" /> 
+				</h:panelGrid>
+			</fieldset>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

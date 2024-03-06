@@ -1,0 +1,47 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlCancelar" autosized="true">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo"/>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="imgCerrarCancelarCheque"/>
+				<rich:componentControl for="pnlCancelar" attachTo="imgCerrarCancelarCheque" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmCancelar">
+			<a4j:region id="loadCancelar">
+				<h:panelGrid columns="1" width="300" style="text-align:center;" cellspacing="10">		     			
+					<h:outputText value="#{cajaChicaAction.msgCancelar == '' ? msg['mensaje.info.noCancelar'] : cajaChicaAction.msgCancelar}"  styleClass="Descripcion" />
+					<h:panelGroup style="margin-top:10px; text-align:center; display:block;" rendered="#{cajaChicaAction.msgCancelar != ''}">
+						<a4j:commandButton id="cmdElimCheq"
+							value="#{msg['navegacion.label.aceptar']}" 
+							onclick="#{rich:element('cmdElimCheq')}.disabled = false;" 
+							action="#{cajaChicaAction.cancelar}" 
+							oncomplete="#{rich:element('cmdElimCheq')}.disabled = false; checaCancelacion('#{cajaChicaAction.msgCancelar}', 'pnlCancelar', 'pnlMsgCancelarCheque');" 
+							reRender="pnlMsgCancelarCheque, dtResults" />
+							
+						<a4j:commandButton style="margin-left:10px;"
+							value="#{msg['cancelar.e']}" 
+							onclick="#{rich:component('pnlCancelar')}.hide()" />
+					</h:panelGroup>
+					
+					<a4j:status for="loadCancelar">
+						<f:facet name="start">
+							<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}"/>
+						</f:facet>
+					</a4j:status>
+				</h:panelGrid>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

@@ -1,0 +1,8 @@
+.rf-msgs-err {
+	text-align: left !important;
+	padding-left: 2em !important;
+}
+.rf-insp-inp[type="text"] {
+	text-align: right !important;
+	padding-right: 5px !important;
+}

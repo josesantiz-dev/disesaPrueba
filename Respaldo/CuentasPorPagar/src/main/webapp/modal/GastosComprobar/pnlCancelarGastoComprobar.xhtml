@@ -1,0 +1,38 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlCancelarGastoComprobar" autosized="true">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo"/>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor:pointer;" id="imgCerrarCancelarGastosComprobar"/>
+				<rich:componentControl for="pnlCancelarGastoComprobar" attachTo="imgCerrarCancelarGastosComprobar" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="frmCancelarGastoComprobar">
+			<a4j:region id="loadCancelarGastoComprobar">
+				<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+					<h:outputText value="#{msg['navegacion.label.deseaCancelar']}" style="display:block;"  styleClass="Descripcion"/>
+					<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+						<a4j:commandButton id="cmdCancel" onclick="#{rich:element('cmdCancel')}.disabled = true;" action="#{gastosComprobarAction.cancelar}" oncomplete="msgRevisando(#{rich:element('msgErrorGastosComprobar')},'pnlCancelarGastoComprobar','pnlMsgGralesGastosComprobar',#{gastosComprobarAction.band},'boton2','#{gastosComprobarAction.mensaje}'); #{rich:element('cmdCancel')}.disabled = false;" 
+							value="#{msg['navegacion.label.aceptar']}" reRender="pnlMsgGralesGastosComprobar,dtResults"/>
+						<a4j:commandButton onclick="#{rich:component('pnlCancelarGastoComprobar')}.hide()" value="#{msg['cancelar.e']}" style="margin-left:10px;"/>
+					</h:panelGroup>
+					<a4j:status for="loadCancelarGastoComprobar">
+						<f:facet name="start">
+							<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}"/>
+						</f:facet>
+					</a4j:status>
+				</h:panelGrid>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

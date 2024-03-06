@@ -1,0 +1,29 @@
+package net.giro.cxp.validator;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.validator.Validator;
+import javax.faces.validator.ValidatorException;
+
+public class IdValorValidator implements Validator {
+	
+	public void validate(FacesContext context, UIComponent comp, Object obj) throws ValidatorException {
+		FacesMessage message = null;
+		Matcher match = null;
+		String valor = null;
+
+		valor = (String) obj;
+		match = Pattern.compile("^\\d+\\s{1}\\-{1}\\s{1}[\\d\\s\\w]+").matcher(valor);
+		if (! match.find()) {
+			message = new FacesMessage();
+			message.setDetail("Debe seleccionar un Producto de la lista");
+			message.setSummary("Debe seleccionar un Producto de la lista");
+			message.setSeverity(FacesMessage.SEVERITY_ERROR);
+			throw new ValidatorException(message);
+		}
+	}
+}

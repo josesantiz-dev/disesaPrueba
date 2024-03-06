@@ -1,0 +1,29 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlMsgCancelarCheque" autosized="true">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Err" />
+			</h:panelGroup>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="imgCerrarMsgCanc"/>
+				<rich:componentControl for="pnlMsgCancelarCheque" attachTo="imgCerrarMsgCanc" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="frmMsgCancelChequ" style="text-align:center;" >
+			<h:panelGroup style="display:block; min-width:300px; float:center; text-align:center;">
+				<h:outputText value="#{msg['mensaje.error.inesperado']}" style="display:block;" styleClass="Descripcion"/>
+			</h:panelGroup>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

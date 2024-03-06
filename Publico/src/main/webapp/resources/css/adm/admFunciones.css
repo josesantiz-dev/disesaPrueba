@@ -1,0 +1,19 @@
+.lblBusquedaIzq{
+	text-align:right;
+	width:80px;
+}
+.lblBusquedaDer{
+	text-align:left;
+	width:400px;
+}
+.rowgral{
+	vertical-align:top;
+}
+.colModalIzq{
+	text-align:right;
+	width:80px;
+}
+.colModalCent{
+	text-align:left;
+	width:420px;
+}

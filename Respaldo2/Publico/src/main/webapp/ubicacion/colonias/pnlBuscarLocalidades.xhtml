@@ -1,0 +1,97 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:modalPanel id="pnlBuscarLocalidades" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['localidades']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlBuscarLocalidades')}.hide()"/>
+		</f:facet>
+		
+		<a4j:form id="frmModalBuscarLocalidades">
+	   		<div style = "display: block; width: 800px; height: 22px;">
+		   		<a4j:commandButton id="cmdBuscarLocalidades" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+					image="#{msg['buscar22.img']}"
+					action="#{coloniasAction.buscarLocalidades}" 
+					oncomplete="buscar('#{coloniasAction.resOperacion}', '#{rich:clientId('pnlMsgGralColonias')}');" 
+					reRender="dtBuscarLocalidades,pnlMsgGralColonias">
+					<rich:toolTip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarLocalidades"/>
+				</a4j:commandButton>   
+			</div>
+			
+			<h:panelGrid id="pnlDatosBusquedaLocalidad" columns="2" style="margin-bottom:10px; margin-top:10px; display:block;" width="740">			      
+				<h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+				<h:inputText id="txtvalor" maxlength="45" size="45"
+					value="#{coloniasAction.valorBusquedaLocalidades}" />
+			</h:panelGrid>
+			
+			<rich:dataTable id="dtBuscarLocalidades" value="#{coloniasAction.listLocalidades}" var="var" cellpadding="0" cellspacing="0"
+				rows="5" border="0" rowClasses="Row1, Row2" style="width: 800px;" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="text-align: center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align: center;" styleClas="Titulo">
+							<h:outputText value="#{msg['nombre']}"/>
+						</rich:column>
+						
+						<rich:column style="text-align: center;" styleClas="Titulo">
+							<h:outputText value="#{msg['estado']}"/>
+						</rich:column>
+						
+						<rich:column style="text-align: center;" styleClas="Titulo">
+							<h:outputText value="#{msg['municipio']}"/>
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['seleccionar']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column width="50" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+				
+				<rich:column width="50" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+					<h:outputText value="#{var.nombre}" />
+				</rich:column>
+				
+				<rich:column width="50" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+					<h:outputText value="#{var.municipio.estado.nombre}" />
+				</rich:column>
+				
+				<rich:column width="50" styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+					<h:outputText value="#{var.municipio.nombre}" />
+				</rich:column>
+				
+				<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdSeleccionarLocalidad" 
+						image="#{msg['agregar16.img']}"
+						oncomplete="#{rich:component('pnlBuscarLocalidades')}.hide()"
+						reRender="groupLocalidad,panelUbicacion">
+						<rich:toolTip showDelay="300" value="#{msg['seleccionar']}" for="cmdSeleccionarLocalidad" />
+						<f:setPropertyActionListener target="#{coloniasAction.pojoLocalidad}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<f:facet name="footer">
+					<rich:datascroller id="dScroll" align="center" for="dtBuscarLocalidades" maxPages="10"
+						ajaxSingle="true" page="#{coloniasAction.numPaginaLocalidades}" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

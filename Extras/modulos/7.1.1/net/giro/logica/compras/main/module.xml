@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="net.giro.logica.compras" xmlns="urn:jboss:module:1.1">
+	<resources>
+		<resource-root path="Logica_Compras.jar"/>
+	</resources>
+	<dependencies>
+		<module export="true" name="com.enterprisedt.edtFTPj" />
+		<module export="true" name="com.google.code.gson" />
+		<module export="true" name="javax.api" />
+		<module export="true" name="org.apache.commons.beanutils" />
+		<module export="true" name="org.apache.commons.httpclient" />
+		<module export="true" name="org.apache.log4j" />
+		<module export="true" name="org.apache.poi" />
+		<module export="true" name="org.apache.xmlbeans" />
+		<module export="true" name="org.beanshell.bsh" />
+		<module export="true" name="org.hibernate.validator" />
+		<module export="true" name="org.hibernate" />
+		<module export="true" name="net.giro.comun" />
+		<module export="true" name="net.giro.logica.clientes" />
+		<module export="true" name="net.giro.logica.gestionproyectos" />
+		<module export="true" name="net.giro.logica.inventarios" />
+		<module export="true" name="net.giro.logica.tyg" />
+		<module export="true" name="net.giro.model.clientes" />
+		<module export="true" name="net.giro.model.compras" />
+	</dependencies>
+</module>

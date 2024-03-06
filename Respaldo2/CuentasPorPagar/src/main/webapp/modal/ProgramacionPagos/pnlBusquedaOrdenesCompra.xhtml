@@ -1,0 +1,102 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlBusquedaOrdenesCompra" autosized="true">
+		<f:facet name="header">
+			<h:panelGroup>		           
+				<h:outputText style="margin:0 auto;" value="#{msg['busqueda']}" styleClass="Titulo"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="btnCajaChicaSeleccionarObra"/>
+				<rich:componentControl for="pnlBusquedaOrdenesCompra" attachTo="btnCajaChicaSeleccionarObra" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmBusquedaOrdenesCompra">
+			<a4j:region id="loadBusquedaOrdenesCompra">
+				<div style="display: block; min-width:400px; height: 22px;">
+					<h:panelGroup style="vertical-align: middle; position:relative; ">
+						<a4j:commandButton id="cmdBuscarOrdenesCompra" image="#{msg['buscar22.img']}" 
+							style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+							action="#{progPagosAction.buscarOrdenesCompras}" 
+							oncomplete="buscar(#{progPagosAction.band}, 'pnlMsgGralesProgramacionPagos')"
+							reRender="dtBusquedaOrdenesCompra, pnlMsgGralesProgramacionPagos">
+							<rich:toolTip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarOrdenesCompra"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</div>
+				
+				<h:panelGrid id="panelBusquedaPrincipalOrdenCompra" columns="2" columnClasses="tygCompGtosColIzq, tygCompGtosColDer" 
+					style="margin: 10px auto; display:block; width:100%;">
+					<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo" />
+					<rich:comboBox id="cmbCajaChicaObraTipoBusqueda" width="216"
+						listStyle="text-align:left;" enableManualInput="false" eventsQueue="suggQRepCaja" 
+						value="#{progPagosAction.campoBusquedaOrdenesCompra}" 
+						suggestionValues="#{progPagosAction.tiposBusquedaOrdenesCompra}" />
+					
+					<h:outputText value="#{msg['navegacion.label.valor']}:" styleClass="Titulo"/>
+					<h:inputText style="width: 210px;" 
+						value="#{progPagosAction.valorBusquedaOrdenesCompra}" />
+				</h:panelGrid>
+				
+				<rich:dataTable id="dtBusquedaOrdenesCompra" value="#{progPagosAction.listBusquedaOrdenesCompra}" var="var" rows="5" cellpadding="0" cellspacing="0" width="720" border="0" rowClasses="Row1, Row2" >
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column width="80" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['navegacion.label.id']}"/>
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['obra']}"/>
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['proveedor']}"/>
+							</rich:column>
+							
+							<rich:column width="30"  style="text-align:center; margin-left:10px;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['seleccionar']}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column width="80" style="text-align:center;" styleClass="tygCompGtosDesc">
+						<h:outputText value="#{var.id}" />
+					</rich:column>
+					
+					<rich:column style="text-align:left;" styleClass="tygCompGtosDesc">
+						<h:outputText value="#{var.nombreObra}" />
+					</rich:column>
+					
+					<rich:column style="text-align:left;" styleClass="tygCompGtosDesc">
+						<h:outputText value="#{var.nombreProveedor}" />
+					</rich:column>
+					
+					<rich:column width="30" style="text-align:center;" styleClass="tygCompGtosDesc">
+						<a4j:commandButton id="cmdSeleccionarOrdenCompra" image="#{msg['agregar16.img']}"
+							onclick="#{rich:component('pnlBusquedaOrdenesCompra')}.hide()"
+							action="#{progPagosAction.seleccionarOrdenCompra}" 
+							oncomplete="seleccionar(#{progPagosAction.band}, 'pnlBusquedaOrdenesCompra', 'pnlMsgGralesProgramacionPagos')"
+							reRender="pnlOrdenCompraDatos,linkBusquedaOrdenCompra,pnlMsgGralesProgramacionPagos,txtCajaChicaObra">
+							<rich:toolTip showDelay="300" value="#{msg['agregar.e']}" for="cmdSeleccionarOrdenCompra" />	
+							<f:setPropertyActionListener target="#{progPagosAction.pojoOrdenCompraSeleccionada}" value="#{var}" for="cmdSeleccionarOrdenCompra" />
+						</a4j:commandButton>
+					</rich:column>
+
+					<f:facet name="footer">
+						<rich:datascroller id="dScrollBusquedaOrdenesCompra" for="dtBusquedaOrdenesCompra" page="#{progPagosAction.paginaBusquedaOrdenesCompra}" 
+							maxPages="10" ajaxSingle="true" align="center" styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

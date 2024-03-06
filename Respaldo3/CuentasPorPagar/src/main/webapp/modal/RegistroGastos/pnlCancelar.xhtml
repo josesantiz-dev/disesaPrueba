@@ -1,0 +1,39 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:rich="http://richfaces.org/rich" 
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+	<rich:modalPanel id="pnlCancelar" autosized="true">
+		<f:facet name="header">
+			<h:outputText styleClass="Titulo" value="#{msg['navegacion.label.atencion']}"/>
+		</f:facet>
+		
+		<a4j:form id="frmCancelarRegistroGto">
+			<a4j:region id="loadCancelarRegGto">
+				<h:panelGrid columns="1" style="text-align:center; margin:0; padding:0;" width="300">
+					<h:outputText style="display:block;" styleClass="Descripcion" value="#{msg['navegacion.label.deseaCancelar']}"/>
+					
+					<h:panelGroup style="width:200px; margin:10px auto 0; text-align:center; display:block;">
+						<a4j:commandButton style="width:100px; margin:0 auto;"
+							value="#{msg['navegacion.label.aceptar']}"
+							action="#{registroGastosAction.cancelarRegistroGasto}" 
+							oncomplete="borrar(#{registroGastosAction.encontroMismoGrupo}, 'pnlCancelar', 'pnlMensajes')"
+							reRender="pnlMensajes,dtResultsGastos" />
+
+						<a4j:commandButton style="width:90px; margin:0 auto;" 
+							value="#{msg['cancelar.e']}"
+							onclick="#{rich:component('pnlCancelar')}.hide()" />
+					</h:panelGroup>
+					
+					<a4j:status for="loadCancelarRegGto">
+						<f:facet name="start">
+							<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}"/>
+						</f:facet>
+					</a4j:status>
+				</h:panelGrid>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

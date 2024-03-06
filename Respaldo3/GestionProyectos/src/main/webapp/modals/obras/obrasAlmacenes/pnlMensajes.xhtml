@@ -1,0 +1,42 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlMensajes" autosized="true"
+		onshow="document.getElementById('#{rich:clientId('pnlMensajesOk')}').focus();">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Descripcion" />
+		</f:facet>
+
+		<a4j:region>
+			<h:panelGrid columns="1" style="text-align:center; min-width:300px;" cellspacing="0" cellpadding="0">
+				<h:outputText styleClass="Descripcion" rendered="#{almObraAction.tipoMensaje == -1}" value="#{almObraAction.mensaje}" />
+				<h:outputText styleClass="Descripcion" rendered="#{almObraAction.tipoMensaje ==  0}" value="#{msg['mensaje.info.infoReg']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{almObraAction.tipoMensaje ==  1}" value="#{msg['mensaje.error.inesperado']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{almObraAction.tipoMensaje ==  2}" value="#{msg['mensaje.info.busquedaVacia']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{almObraAction.tipoMensaje ==  3}" value="#{msg['mensaje.error.requerido']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{almObraAction.tipoMensaje ==  4}" value="#{msg['almacenTipoInvalido']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{almObraAction.tipoMensaje ==  5}" value="#{msg['cargaArchivoFallida']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{almObraAction.tipoMensaje ==  6}" value="#{msg['montoDiferenteTotal']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{almObraAction.tipoMensaje ==  7}" value="#{msg['mensaje.validacion.valorCeroCien']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{almObraAction.tipoMensaje ==  8}" value="#{msg['montoMayorCero']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{almObraAction.tipoMensaje ==  9}" value="#{msg['ivaMayorCero']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{almObraAction.tipoMensaje == 10}" value="#{msg['almacenExisteObraProyecto']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{almObraAction.tipoMensaje == 11}" value="#{msg['almacenPrincipalMultiple']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{almObraAction.tipoMensaje == 12}" value="#{msg['almacenPrincipalAsignado']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{almObraAction.tipoMensaje == 13}" value="#{msg['almacenPrincipalInvalido']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{almObraAction.tipoMensaje == 14}" value="#{msg['porcentajeInvalidoOMayor100']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{almObraAction.tipoMensaje == 15}" value="#{msg['obraAlmacenPrincipalNoAsignado']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{almObraAction.tipoMensaje == 16}" value="#{msg['obraAlmacenPrincipalInvalido']} #{msg['obraAlmacenPrincipalReemplazar']}" />
+				
+				<a4j:commandButton id="pnlMensajesOk" style="margin:10px auto 0; min-width:100px;"
+					value="#{msg['navegacion.label.aceptar']}" 
+					onclick="#{rich:component('pnlMensajes')}.hide()" />
+			</h:panelGrid>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:rich="http://richfaces.org/rich" 
+	xmlns:s="http://jboss.com/products/seam/taglib" 
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	<head>
+		<meta http-equiv="Cache-Control" content="no-store" />
+		<meta http-equiv="Cache-Control" content="no-cache" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="Expires" content="-1" />
+		<title><ui:insert name="title" /></title>
+		<ui:insert name="metas" />
+		<script language="javascript">
+			A4J.AJAX.onExpired = function(loc,expiredMsg){
+				// alert(expiredMsg);
+				document.location=&quot;/cas/logout)&quot;; 
+			};
+			A4J.AJAX.onError = function(req, status, message){
+			   	// window.alert(&quot;Custom onError handler &quot;+message);
+			};
+		</script>
+	</head>
+	<a4j:loadStyle src="resource:///resources/css/general/general.css"/>
+	<a4j:loadScript src="resource:///resources/scripts/general/general.js"/>
+	<body style="text-align:left;">
+		<f:view>
+			<a4j:region id="loadGral">
+				<a4j:status for="loadGral" id="statusMensaje" onstart="#{rich:component('wait')}.show()" onstop="#{rich:component('wait')}.hide()"/>
+				<a4j:queue id="quePrincipal" ignoreDupResponses="true" name="miQueue" requestDelay="500" size="1"/>
+				<a4j:form id="frmPrincipal" ignoreDupResponses="true" style="text-align:center; float:center; width:100%;">
+					<rich:toolBar binding="#{appMediator.navegador.arbolMenu}" id="miMenu" itemSeparator="none" styleClass="div_header">
+						<ui:insert name="menuFrag"/>
+					</rich:toolBar>
+					<div id="div_footer">
+						<h:graphicImage id="txtFooterImg" styleClass="div_footer_img" value="#{msgTyg['usuario16.img']}"/>
+						<h:outputText id="txtFooterUsuario" styleClass="div_footer_txt" value="#{msg['usuario']}: #{loginManager.usuario}"/>
+						<h:outputText id="txtFooterResp" styleClass="div_footer_txt" value="#{msg['responsabilidad']}: #{loginManager.usuarioResponsabilidad.responsabilidad.responsabilidad}"/>
+						<h:outputText id="txtFooterFecha" styleClass="div_footer_txt" value="#{msg['fecha']}: #{navegador.fecha}"/>
+						<a4j:commandButton action="#{navegador.cerrarSession}" id="cmdCerrarSession" image="#{msgTyg['salir22.img']}" styleClass="div_footer_cerrar_session">
+							<rich:toolTip styleClass="DescripcionGral" value="#{msg['cerrarSession']}"/>
+						</a4j:commandButton>
+						<a4j:commandButton id="cmdCambiarResponsabilidad" image="#{msgTyg['responsabilidad22.img']}" oncomplete="Richfaces.showModalPanel('pnlSeleccionResponsabilidad');" reRender="pnlSeleccionResponsabilidad" styleClass="div_footer_cambia_responsabilidad">
+							<rich:toolTip styleClass="DescripcionGral" value="#{msg['cambiarResponsabilidad']}"/>
+						</a4j:commandButton>
+						<a4j:commandButton action="#{navegador.cambiarModulo}" id="cmdCambiarModulo" image="#{msg['ruta_img_22']}#{msg['modulo.img']}" styleClass="div_footer_cambia_responsabilidad">
+							<rich:toolTip styleClass="DescripcionGral" value="#{msg['cambiarModulo']}"/>
+						</a4j:commandButton>
+						<a4j:commandButton action="#{loginManager.resetContrasena}" id="cmdCambiarPass" image="#{msgTyg['password22.img']}" oncomplete="Richfaces.showModalPanel('pnlCambioPass');" reRender="pnlCambioPass" styleClass="div_footer_cambia_responsabilidad">
+							<a4j:actionparam assignTo="#{navegador.origenCambioPass}" name="origenCambioPass" value="admon"/>
+							<rich:toolTip styleClass="DescripcionGral" value="#{msg['cambiarContrasena']}"/>
+						</a4j:commandButton>
+					</div>
+					<div id="divContainer">
+						<ui:insert name="body"/>
+					</div>
+				</a4j:form>
+				<rich:modalPanel autosized="true" id="pnlSeleccionResponsabilidad">
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Responsabilidades"/>
+						</h:panelGroup>
+					</f:facet>
+					<f:facet name="controls">
+						<h:panelGroup>
+							<h:graphicImage id="btnCerrarSelResp" styleClass="boton" value="#{msg['navegacion.panel.cerrar.img']}">
+								<rich:componentControl event="onclick" for="pnlSeleccionResponsabilidad" operation="hide"/>
+							</h:graphicImage>
+						</h:panelGroup>
+					</f:facet>
+					<a4j:form id="frmSelResp">
+						<rich:dataTable id="dtSelResponsabilidad" rendered="#{loginManager.tieneResponsabilidades}" rowClasses="gralRow1, gralRow2" rows="10" style="width:250px" value="#{loginManager.usuarioResponsabilidades}" var="ur">
+							<rich:column style="width:250px; text-align:center;">
+								<a4j:commandLink action="#{loginManager.seleccionaResponsabilidad}" oncomplete="goUrl('#{navegador.urlHome}')" style="padding:3px auto; font-weight: bold;" value="#{ur.responsabilidad.responsabilidad}">
+									<f:setPropertyActionListener target="#{loginManager.usuarioResponsabilidad}" value="#{ur}"/>
+								</a4j:commandLink>
+							</rich:column>
+						</rich:dataTable>
+						<h:panelGroup rendered="#{!loginManager.tieneResponsabilidades}" style="display:block; width:250px; text-align:center;">
+							<h:outputText style="margin:auto;" styleClass="TituloGral" value="#{msg['mensajes.error.sinResponsabilidades']}"/>
+						</h:panelGroup>
+						<f:facet name="footer">
+							<rich:datascroller ajaxSingle="true" align="center" for="dtSelResponsabilidad" id="dScrollSelResp" maxPages="10" page="#{navegador.numPag}" renderIfSinglePage="false"/>
+						</f:facet>
+					</a4j:form>
+				</rich:modalPanel>
+				<ui:insert name="modals"/>
+				<ui:include src="/layout/modalsGenerales.xhtml"/>
+			</a4j:region>
+		</f:view>
+	</body>
+</html>

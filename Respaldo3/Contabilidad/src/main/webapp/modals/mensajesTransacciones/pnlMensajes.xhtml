@@ -1,0 +1,24 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlMensajes" autosized="true" domElementAttachment="form"
+		header="#{msg['navegacion.label.atencion']}"
+		onshow="document.getElementById('#{rich:clientId('btnMensajesOk')}').focus();">
+		<h:panelGroup layout="block" style="text-align:center; min-width:300px; max-width:500px; display:block;">
+			<h:outputText rendered="#{msgAction.tipoMensaje == -1}" value="#{msgAction.mensaje}" styleClass="Descripcion" />
+			<h:outputText rendered="#{msgAction.tipoMensaje ==  0}" value="#{msg['mensaje.info.infoReg']}" styleClass="Descripcion" />
+			<h:outputText rendered="#{msgAction.tipoMensaje ==  1}" value="#{msg['mensaje.error.inesperado']}" styleClass="Descripcion" />
+			<h:outputText rendered="#{msgAction.tipoMensaje ==  2}" value="#{msg['mensaje.info.busquedaVacia']}" styleClass="Descripcion" />
+			<h:outputText rendered="#{msgAction.tipoMensaje ==  3}" value="#{msg['mensaje.error.requerido']}" styleClass="Descripcion" />
+		
+			<a4j:commandButton id="btnMensajesOk" style="margin:10px auto 0; width:100px; display:block;"
+				value="#{msg['navegacion.label.aceptar']}" 
+				oncomplete="#{rich:component('pnlMensajes')}.hide()" />
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

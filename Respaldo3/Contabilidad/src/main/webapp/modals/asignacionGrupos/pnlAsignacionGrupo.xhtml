@@ -1,0 +1,138 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlAsignacionGrupo" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+    	<f:facet name="header">
+			<h:outputText value="#{asigGruposAction.pojoAsigGrupo.id == null ? msg['nueva'] : ''} #{msg['asignacionGrupo']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlAsignacionGrupo')}.hide()" />
+		</f:facet>
+		
+		<div style="display: block; padding:0 0 10px; min-width:400px; height: 22px; text-align: left; background-color: none;">
+			<h:panelGroup id="botoneraAsignacionGrupo" style="display: block; width: 100%; height: 22px; margin-bottom: 1em;">
+				<h:panelGroup id="grupoAsignacionGrupoBotonesDerechos" style="width: 100%; vertical-align: middle; position:relative; ">
+					<a4j:commandButton id="cmdSalvar" style="float:right; margin-left: 5px; vertical-align: middle; position:relative;"
+						image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+						action="#{asigGruposAction.guardar}" 
+						oncomplete="salvar(#{asigGruposAction.operacion}, '#{rich:clientId('pnlAsignacionGrupo')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrores')});"
+						render="dtResults, msgErrores, pnlMensajes" />
+				</h:panelGroup>
+			</h:panelGroup>
+		</div>
+		
+		<rich:messages id="msgErrores" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+			<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+		</rich:messages>
+		
+		<h:panelGroup style="display: block; margin:10px auto 0; padding:10px; text-align:left; background-color: none;">
+			<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+				<h:outputText value="#{msg['transaccion']}:" styleClass="Titulo" />
+				<h:panelGroup id="pnlTransaccionDatos">
+					<h:panelGrid columns="2">
+						<h:outputText id="txtTransaccion" value="#{asigGruposAction.pojoAsigGrupo.transaccion}" style="text-align:left; display:block;" />
+						<h:panelGroup>
+							<a4j:commandLink id="cmdBusquedaTransacciones" styleClass="linkColor" 
+								action="#{asigGruposAction.nuevaBusquedaTransacciones}" 
+								value="#{asigGruposAction.pojoAsigGrupo.idTransaccion == null ? msg['seleccionar'] : msg['cambiar'] }"
+								oncomplete="#{rich:component('pnlBusquedaTransacciones')}.show()"
+								render="pnlBusquedaTransacciones, pnlBusquedaTransaccionesPrincipal, dtBusquedaTransacciones" />
+								
+							<h:inputText id="txtTransaccionHidden" style="text-align:left; display:none;"
+								value="#{asigGruposAction.pojoAsigGrupo.transaccion}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['transaccion']} #{msg['mensaje.error.requerido']}" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+				
+				<h:outputText value="#{msg['grupo']} #{msg['debito']}:" styleClass="Titulo" />
+				<h:panelGroup id="pnlGrupoDebitoDatos">
+					<h:panelGrid columns="2">
+						<h:outputText id="txtGrupoDebito" value="#{asigGruposAction.pojoAsigGrupo.grupoDebito}" style="text-align:left; display:block;" />
+						<h:panelGroup>
+							<a4j:commandLink id="cmdBusquedaGrupoDebito" styleClass="linkColor" 
+								action="#{asigGruposAction.nuevaBusquedaGrupos}" 
+								value="#{asigGruposAction.pojoAsigGrupo.idGrupoDebito == null ? msg['seleccionar'] : msg['cambiar'] }"
+								oncomplete="#{rich:component('pnlBusquedaGrupos')}.show()"
+								render="pnlBusquedaGrupos, pnlBusquedaGruposPrincipal, dtBusquedaGrupos">
+								<f:param name="grupo" value="debito" />
+							</a4j:commandLink>
+								
+							<h:inputText id="txtGrupoDebitoHidden" style="text-align:left;  display:none;"
+								value="#{asigGruposAction.pojoAsigGrupo.grupoDebito}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['grupo']} #{msg['debito']} #{msg['mensaje.error.requerido']}" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+				
+				<h:outputText value="#{msg['grupo']} #{msg['credito']}:" styleClass="Titulo" />
+				<h:panelGroup id="pnlGrupoCreditoDatos">
+					<h:panelGrid columns="2">
+						<h:outputText id="txtGrupoCredito" value="#{asigGruposAction.pojoAsigGrupo.grupoCredito}" style="text-align:left; display:block;" />
+						<h:panelGroup>
+							<a4j:commandLink id="cmdBusquedaGrupoCredito" styleClass="linkColor" 
+								action="#{asigGruposAction.nuevaBusquedaGrupos}" 
+								value="#{asigGruposAction.pojoAsigGrupo.idGrupoCredito == null ? msg['seleccionar'] : msg['cambiar'] }"
+								oncomplete="#{rich:component('pnlBusquedaGrupos')}.show()"
+								render="pnlBusquedaGrupos, pnlBusquedaGruposPrincipal, dtBusquedaGrupos">
+								<f:param name="grupo" value="credito" />
+							</a4j:commandLink>
+								
+							<h:inputText id="txtGrupoCreditoHidden" style="text-align:left;  display:none;"
+								value="#{asigGruposAction.pojoAsigGrupo.grupoCredito}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['grupo']} #{msg['credito']} #{msg['mensaje.error.requerido']}" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+					
+				<h:outputText value="#{msg['formaPago']}:" styleClass="Titulo" />
+				<h:selectOneMenu id="cmbTipo" style="width:316px" 
+					value="#{asigGruposAction.formaPago}"
+					required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+					requiredMessage="#{msg['formaPago']} #{msg['mensaje.error.requerido']}">
+		            <f:selectItem itemLabel="#{msg['seleccione']}" />
+		            <f:selectItems value="#{asigGruposAction.listFormasPagoItems}" />
+		        </h:selectOneMenu>
+		        
+		        <h:outputText value="#{msg['concepto']}:" styleClass="Titulo" />
+				<h:panelGroup id="pnlConceptoDatos">
+					<h:panelGrid columns="2">
+						<h:outputText id="txtConcepto" value="#{asigGruposAction.pojoAsigGrupo.concepto}" style="text-align:left; display:block;" />
+						<h:panelGroup>
+							<a4j:commandLink id="cmdBusquedaConceptos" styleClass="linkColor" 
+								action="#{asigGruposAction.nuevaBusquedaConceptos}"
+								value="#{asigGruposAction.pojoAsigGrupo.idConcepto == null ? msg['seleccionar'] : msg['cambiar'] }"
+								oncomplete="#{rich:component('pnlBusquedaConceptos')}.show()"
+								render="pnlBusquedaConceptos, pnlBusquedaConceptosPrincipal, dtBusquedaConceptos" />
+								
+							<h:inputText id="txtConceptoHidden" style="text-align:left;  display:none;"
+								value="#{asigGruposAction.pojoAsigGrupo.concepto}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['concepto']} #{msg['mensaje.error.requerido']}" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+					
+				<h:outputText value="#{msg['tipoPoliza']}:" styleClass="Titulo" />
+				<h:selectOneMenu id="cmbTipoPoliza" style="width:316px" 
+					value="#{asigGruposAction.tipoPoliza}"
+					required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+					requiredMessage="#{msg['tipoPoliza']} #{msg['mensaje.error.requerido']}">
+		            <f:selectItem itemLabel="#{msg['seleccione']}" />
+		            <f:selectItems value="#{asigGruposAction.listTiposPolizasItems}" />
+		        </h:selectOneMenu>
+			</h:panelGrid>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

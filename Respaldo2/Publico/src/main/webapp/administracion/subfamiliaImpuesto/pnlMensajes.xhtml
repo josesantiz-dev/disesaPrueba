@@ -1,0 +1,35 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:rich="http://richfaces.org/rich" 
+	xmlns:s="http://jboss.com/products/seam/taglib" 
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+	<rich:modalPanel id="pnlMensajes" autosized="true" width="350">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText styleClass="Titulo" 
+					value="#{subImpAction.operacion == false ? msg['informacion'] : msg['atencion']}" />
+			</h:panelGroup>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage id="imgCerrarMensajes" styleClass="cursor:pointer;" value="#{msg['navegacion.panel.cerrar.img']}"/>
+				<rich:componentControl attachTo="imgCerrarMensajes" event="onclick" for="pnlMensajes" operation="hide"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmMensajes" style="text-align:center;">
+			<h:panelGroup style="display:block; width:300px; float:center;">
+				<h:outputText styleClass="Descripcion" 
+					value="#{subImpAction.operacion != '' ? subImpAction.mensaje : msg['mensaje.info.infoReg']}" />
+			</h:panelGroup>
+			
+			<a4j:commandButton style="margin-top:10px; cursor:pointer;" 
+				value="#{msg['aceptar']}"
+				onclick="#{rich:component('pnlMensajes')}.hide()" />
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

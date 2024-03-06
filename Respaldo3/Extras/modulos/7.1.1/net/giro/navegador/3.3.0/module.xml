@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="net.giro.navegador" slot="3.3.0" xmlns="urn:jboss:module:1.1">
+	<resources>
+		<resource-root path="Navegador.jar"/>
+	</resources>
+	<dependencies>
+		<module export="true" name="org.richfaces" slot="3.3.0"/>
+		<module export="true" name="net.giro.logica.publico" />
+		<module export="true" name="net.giro.model.publico" />
+		<module export="true" name="javaee.api" />
+	</dependencies>
+</module>

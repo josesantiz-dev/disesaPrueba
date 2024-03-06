@@ -1,0 +1,42 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlEliminar" autosized="true" domElementAttachment="form"
+		onshow="document.getElementById('#{rich:clientId('btnEliminarNo')}').focus();">
+		<f:facet name="header">
+			<h:outputText value="#{msg['atencion']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<h:panelGroup layout="block" styleClass="encabezado" style="min-height:1em; margin:0 auto 10px;">
+			<h:outputText value="#{sboAction.pojoSolicitud.idAlmacenOrigen.nombre} (#{sboAction.pojoSolicitud.idAlmacenOrigen.identificador})" escape="false" />
+		</h:panelGroup>
+		
+		<h:panelGroup layout="block" style="min-width:300px; float:center;">
+			<h:outputText value="#{msg['confirmacionEliminar']}" styleClass="Descripcion" />
+			
+			<h:panelGroup layout="block" style="margin:10px auto 0;">
+				<h:selectBooleanCheckbox id="txtAfectarAlmacen" value="#{sboAction.afectarAlmacen}" /> 
+				<h:outputLabel for="txtAfectarAlmacen" value="#{msg['afectar']} #{msg['almacen']}" title="Aumentara la cantidad del producto en Almacen" styleClass="Descripcion" />
+			</h:panelGroup> 
+			
+			<h:panelGrid columns="2" style="display:block; margin:0 auto; width:200px; cursor:pointer; text-align:center;">
+				<a4j:commandButton id="btnEliminarSi" style="margin:0 auto; width:100px; cursor:pointer;"
+					value="#{msg['si']}, #{msg['eliminar']}"
+					onclick="#{rich:component('pnlEliminar')}.hide()"
+					action="#{sboAction.quitarProducto}" 
+					oncomplete="#{rich:component('pnlMensajes')}.show();" 
+					render="dtDetalles,pnlMensajes,txtAfectarAlmacen" 
+					limitRender="true" />
+				
+				<a4j:commandButton id="btnEliminarNo" style="margin:0 auto; width:90px; cursor:pointer;"
+					value="#{msg['no']}"
+					onclick="#{rich:component('pnlEliminar')}.hide()" />
+			</h:panelGrid>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

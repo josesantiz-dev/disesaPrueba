@@ -1,0 +1,442 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlOrden" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+    	<f:facet name="header">
+			<h:outputText value="#{ordenAction.pojoOrden.id == null ? msg['nueva'] : ''} #{msg['ordenCompra']} #{ordenAction.ordenCompraTitulo}" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlOrden')}.hide()" />
+		</f:facet>
+		
+		<h:panelGrid columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+			<h:panelGroup id="grupoCotizacionBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+				<rich:messages id="msgErrores" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+				</rich:messages>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoCotizacionBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdSalvar" style="float:right; margin-left: 5px; vertical-align:top; position:relative;"
+					image="#{msg['salvar22.img']}" 
+					rendered="#{ordenAction.editarOrdenCompra}"
+					action="#{ordenAction.guardar}" 
+					oncomplete="salvarSinCerrar(#{ordenAction.operacion}, '#{rich:clientId('pnlOrden')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrores')});"
+					render="dtOrdenes, msgErrores, pnlMensajes">
+					<rich:tooltip id="ttSalvar" showDelay="300" value="#{msg['salvar.e']}" for="cmdSalvar" />
+				</a4j:commandButton>
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<h:panelGroup styleClass="encabezado" style="min-height: 1em;">
+			<h:outputText value="#{ordenAction.ordenCompraObra}" />
+		</h:panelGroup>
+		
+		<div style="display: block; margin: 1px auto; padding: 0; text-align: left; background-color: none;">
+			<rich:tabPanel id="tabOrdenCompra" switchType="client">
+				<rich:tab header="#{msg['datosGenerales']}">
+					<fieldset style="margin: 5px auto;">
+						<legend><h:outputText value="#{msg['datosGenerales']}" styleClass="Titulo" /></legend>
+						
+						<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+							<h:outputText value="#{msg['folio']}:" styleClass="Titulo" />
+							<h:outputText value=" #{ordenAction.pojoOrden.folio}" style="text-align:left; display:block;" />
+							
+							<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"/>
+							<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo"/>
+								
+							<h:outputText value="#{msg['cotizacion']}:" styleClass="Titulo" rendered="#{ordenAction.origenRequisicion == false}" />
+							<h:panelGroup id="pnlCotizacionDatos" rendered="#{ordenAction.origenRequisicion == false}">
+								<h:panelGrid columns="2">
+									<h:outputText id="txtCotizacion" style="text-align:left; display:block;" 
+										value="#{ordenAction.ordenCompraCotizacion}" />
+									<h:panelGroup>
+										<a4j:commandLink id="cmdSeleccionarCotizacion" styleClass="linkColor" 
+											rendered="#{ordenAction.editarOrdenCompra}"
+											action="#{ordenAction.nuevaBusquedaCotizaciones}" 
+											value="#{ordenAction.pojoOrden.idCotizacion == null ? msg['seleccionar'] : msg['cambiar'] }"
+											oncomplete="#{rich:component('pnlBusquedaCotizaciones')}.show()"
+											render="pnlBusquedaCotizaciones, dtCotizaciones" 
+											limitRender="true" /> <!-- , pnlBusquedaCotizacionesPrincipal, dtCotizaciones -->
+											
+										<h:inputText id="txtCotizacionHidden" style="text-align:left; display:none;"
+											value="#{ordenAction.ordenCompraCotizacion}"
+											required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+											requiredMessage="#{msg['cotizacion']} #{msg['mensaje.error.requerido']}" />
+									</h:panelGroup>
+								</h:panelGrid>
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['requisicion']}:" styleClass="Titulo" rendered="#{ordenAction.origenRequisicion == true}"/>
+							<h:panelGroup id="pnlRequisicionDatos" rendered="#{ordenAction.origenRequisicion == true}">
+								<h:panelGrid columns="2">
+									<h:outputText id="txtRequisicion" style="text-align:left; display:block;" 
+										value="#{ordenAction.ordenCompraRequisicion}" />
+									<h:panelGroup>
+										<a4j:commandLink id="cmdSeleccionarRequisicion" styleClass="linkColor" 
+											rendered="#{ordenAction.editarOrdenCompra}"
+											action="#{ordenAction.nuevaBusquedaRequisiciones}" 
+											value="#{ordenAction.pojoRequisicion == null ? msg['seleccionar'] : msg['cambiar'] }"
+											oncomplete="#{rich:component('pnlBusquedaRequisiciones')}.show()"
+											render="pnlBusquedaRequisicionnes, dtRequisiciones" 
+											limitRender="true" /> <!-- , pnlBusquedaRequisicionesPrincipal, dtRequisiciones -->
+											
+										<h:inputText id="txtRequisicionHidden" style="text-align:left; display:none;"
+											value="#{ordenAction.ordenCompraRequisicion}"
+											required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+											requiredMessage="#{msg['requisicion']} #{msg['mensaje.error.requerido']}" />
+									</h:panelGroup>
+								</h:panelGrid>
+							</h:panelGroup>
+						</h:panelGrid>
+						
+						<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+							<h:outputText value="#{msg['proveedor']}:" styleClass="Titulo" />
+							<h:panelGroup id="pnlProveedorDatos">
+								<h:panelGrid columns="2">
+									<h:outputText id="txtProveedor" style="text-align:left; display:block;" 
+										value="#{ordenAction.cotizacionProveedor}" />
+									<h:panelGroup rendered="#{ordenAction.origenRequisicion == true}">
+										<a4j:commandLink id="cmdSeleccionarProveedor" styleClass="linkColor" 
+											action="#{ordenAction.nuevaBusquedaProveedores}" 
+											value="#{ordenAction.cotizacionProveedor == '' ? msg['seleccionar'] : msg['cambiar'] }"
+											oncomplete="#{rich:component('pnlBusquedaProveedores')}.show()"
+											render="pnlBusquedaProveedores, dtProveedores"
+											limitRender="true" /> <!-- , pnlBusquedaProveedoresPrincipal, rendered="#{ordenAction.editarOrdenCompra == false}" -->
+											
+										<h:inputText id="txtProveedorHidden" style="text-align:left; display:none;"
+											value="#{ordenAction.cotizacionProveedor}"
+											required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+											requiredMessage="#{msg['proveedor']} #{msg['mensaje.error.requerido']}" />
+									</h:panelGroup>
+								</h:panelGrid>
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['contacto']}:" styleClass="Titulo" />
+							<h:outputText id="txtContacto" style="text-align:left; display:block;" 
+								value=" #{ordenAction.cotizacionContacto}" />
+						
+							<h:outputText value="#{msg['solicita']}:" styleClass="Titulo" />
+							<h:panelGroup id="pnlSolicitaDatos">
+								<h:panelGrid columns="2">
+									<h:outputText id="txtSolicita" value="#{ordenAction.ordenCompraSolicita}" style="text-align:left; display:block;" />
+									<h:panelGroup>
+										<a4j:commandLink id="cmdSeleccionarEmpleado" styleClass="linkColor"
+											rendered="#{ordenAction.editarOrdenCompra}"
+											action="#{ordenAction.nuevaBusquedaEmpleados}"
+											value="#{ordenAction.pojoOrden.idSolicita == null ? msg['seleccionar'] : msg['cambiar'] }"
+											oncomplete="#{rich:component('pnlBusquedaEmpleados')}.show()"
+											render="pnlBusquedaEmpleados, pnlBusquedaEmpleadosPrincipal, dtBusquedaEmpleados" />
+											
+										<h:inputText id="txtSolicitaHidden" style="text-align:left;  display:none;"
+											value="#{ordenAction.ordenCompraSolicita}"
+											required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+											requiredMessage="#{msg['solicita']} #{msg['mensaje.error.requerido']}" />
+									</h:panelGroup>
+								</h:panelGrid>
+							</h:panelGroup>
+						</h:panelGrid>
+					</fieldset>
+					
+					<fieldset style="margin: 5px auto;">
+						<legend><h:outputText value="#{msg['datosComplementarios']}" styleClass="Titulo" /></legend>
+						
+						<h:panelGrid columns="4" columnClasses="colTitulo, colDato, colTitulo, colDato">
+							<h:outputLabel value="#{msg['fecha']}:" styleClass="Titulo" />
+							<rich:calendar id="txtFecha" enableManualInput="true" datePattern="dd/MMM/yyyy" style="width: 90px;"
+								disabled="#{ordenAction.editarOrdenCompra == false}"
+								value="#{ordenAction.pojoOrden.fecha}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['fecha']} #{msg['mensaje.error.requerido']}">
+								<rich:placeholder value="dd/MMM/yyyy" />
+							</rich:calendar>
+							
+							<h:outputText value="#{msg['moneda']}:" styleClass="Titulo" />
+							<h:panelGroup>
+								<h:selectOneMenu id="cmbMonedas" style="width: 126px" 
+									disabled="#{ordenAction.editarOrdenCompra == false}"
+									value="#{ordenAction.pojoOrden.idMoneda}"
+									required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+									requiredMessage="#{msg['moneda']} #{msg['mensaje.error.requerido']}">
+						            <f:selectItem itemLabel="#{msg['seleccione']}" />
+						            <f:selectItems value="#{ordenAction.listMonedasItems}" />
+						            <a4j:ajax event="change" 
+						            	listener="#{ordenAction.evaluaConversion}"
+						            	render="cmdConversion"
+						            	limitRender="true" />
+						        </h:selectOneMenu>
+						        
+						        <a4j:commandButton id="cmdConversion" style="display:#{ordenAction.evaluaConversion ? 'inherit' : 'none'}; margin-left:10px; vertical-align:middle; position:relative;"
+						        	title="#{msg['realizarConversion']}"
+									image="#{msg['convertir24.img']}" 
+									rendered="#{ordenAction.editarOrdenCompra}"
+									action="#{ordenAction.conversion}" 
+					            	oncomplete="conversion(#{ordenAction.operacion}, '#{rich:clientId('pnlMensajes')}')"
+					            	render="txtTipoCambio,cmbMonedas,dtDetalles,pnlMensajes,cmdConversion"
+						            limitRender="true" />
+					        </h:panelGroup>
+							
+							<h:outputText value="#{msg['anticipo']}:" styleClass="Titulo" />
+							<h:panelGroup>
+								<h:inputText id="txtAnticipo" styleClass="Titulo" style="width: 60px; text-align: right"
+									disabled="#{ordenAction.editarOrdenCompra == false}"
+									value="#{ordenAction.pojoOrden.anticipo}"
+									required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+									requiredMessage="#{msg['anticipo']} #{msg['mensaje.error.requerido']}"
+									validatorMessage="#{msg['anticipoMenorCero']}"
+									onkeydown="return soloDecimales(event, this.value)">
+									<f:convertNumber pattern="#{ordenAction.patternNumber}" />
+									<f:validateLongRange minimum="0" />
+									<a4j:ajax event="change" render="txtAnticipo" />
+								</h:inputText>
+								<h:outputLabel value="#{msg['%']}" styleClass="Titulo" />
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['tipoCambio']}:" styleClass="Titulo" />
+							<h:inputText id="txtTipoCambio" styleClass="Titulo" style="width: 120px; text-align: right"
+								disabled="#{ordenAction.editarOrdenCompra == false}"
+								value="#{ordenAction.pojoOrden.tipoCambio}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['tipoCambio']} #{msg['mensaje.error.requerido']}"
+								validatorMessage="#{msg['tipoCambioMenorCero']}"
+								onkeydown="return soloDecimales(event, this.value, 10, 4)">
+								<f:convertNumber pattern="#{ordenAction.patternDecimal}" />
+								<f:validateLongRange minimum="0" />
+					            <a4j:ajax event="change" 
+					            	listener="#{ordenAction.evaluaTipoCambio}"
+					            	render="cmdConversion"
+					            	limitRender="true" />
+							</h:inputText>
+							
+							<h:outputText value="#{msg['plazo']}:" styleClass="Titulo" />
+							<h:panelGroup>
+								<h:inputText id="txtPlazo" styleClass="Titulo" style="text-align: center; width: 40px;"
+									disabled="#{ordenAction.editarOrdenCompra == false}"
+									value="#{ordenAction.pojoOrden.plazo}"
+									required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+									requiredMessage="#{msg['plazo']} #{msg['mensaje.error.requerido']}"
+									validatorMessage="#{msg['plazoMenorCero']}"
+									onkeydown="return soloNumeros(event)">
+									<f:convertNumber pattern="#{ordenAction.patternNumber}" />
+									<f:validateLongRange minimum="0" />
+									<a4j:ajax event="change" render="txtPlazo" />
+								</h:inputText>
+								<h:outputLabel value="#{msg['dias']}" styleClass="Titulo" />
+							</h:panelGroup>
+								
+							<h:outputLabel value="#{msg['tiempoEntrega']}:" styleClass="Titulo" /> 
+							<h:panelGroup>
+								<h:inputText id="txtTiempoEntrega" styleClass="Titulo" style="text-align: center; width: 40px;"
+									disabled="#{ordenAction.editarOrdenCompra == false}"
+									value="#{ordenAction.pojoOrden.tiempoEntrega}"
+									required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+									requiredMessage="#{msg['tiempoEntrega']} #{msg['mensaje.error.requerido']}"
+									validatorMessage="#{msg['tiempoEntregaMenorCero']}"
+									onkeydown="return soloNumeros(event)">
+									<f:convertNumber pattern="#{ordenAction.patternNumber}" />
+									<f:validateLongRange minimum="0" />
+									<a4j:ajax event="change" render="txtTiempoEntrega" />
+								</h:inputText>
+								<h:outputLabel value="#{msg['dias']}" styleClass="Titulo" />
+							</h:panelGroup>
+						</h:panelGrid>
+						
+						<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+							<h:outputLabel value="#{msg['lugarEntrega']}:" styleClass="Titulo" />
+							<h:inputTextarea id="txtLugarEntrega" styleClass="Titulo" style="text-align: left; resize: none; width: 510px;"
+								disabled="#{ordenAction.editarOrdenCompra == false}"
+								value="#{ordenAction.pojoOrden.lugarEntrega}" 
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['lugarEntrega']} #{msg['mensaje.error.requerido']}" />
+						</h:panelGrid>
+					</fieldset>
+				</rich:tab>
+				
+				<rich:tab header="#{msg['detalles']}">
+					<fieldset style="margin: 5px auto;">
+						<legend><h:outputText value="#{msg['detalles']}" styleClass="Titulo" /></legend>
+						
+						<rich:dataTable id="dtDetalles" value="#{ordenAction.listOrdenDetalles}" var="var" rows="5" 
+							cellpadding="0" cellspacing="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" style="margin-top:0px;">
+							<f:facet name="header">
+								<rich:columnGroup>
+									<rich:column colspan="8" style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['productos']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center; width:90px" styleClass="Titulo" breakRowBefore="true">
+										<h:outputText value="#{msg['clave']}" /> 
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['descripcion']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center; width:90px" styleClass="Titulo">
+										<h:outputText value="#{msg['um']}" title="#{msg['unidadMedida']}" styleClass="Titulo" />
+									</rich:column>
+							
+									<rich:column style="text-align:center; width:90px;">
+										<h:outputText value="#{msg['familia']}" styleClass="Titulo" />
+									</rich:column>
+									
+									<rich:column style="text-align:center; width:50px;" styleClass="Titulo">
+										<h:outputText value="#{msg['cantidad']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center; width:90px;" styleClass="Titulo">
+										<h:outputText value="#{msg['pu']}" title="#{msg['precioUnitario']}" styleClass="Titulo" />
+									</rich:column>
+									
+									<rich:column style="text-align:center; width:90px" styleClass="Titulo">
+										<h:outputText value="#{msg['importe']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center; width: 20px;" styleClass="Titulo">
+										<h:selectBooleanCheckbox title="#{msg['incluirTodo']}" 
+											value="#{ordenAction.seleccionarTodos}" 
+											disabled="#{ordenAction.pojoOrden.id == null || ordenAction.pojoOrden.id == 0 ? false : true}">
+											<a4j:ajax event="change" render="dtDetalles" limitRender="true" execute="@this"
+												listener="#{ordenAction.totalizarDetalles}" />
+										</h:selectBooleanCheckbox>
+									</rich:column>
+								</rich:columnGroup>
+							</f:facet>
+							
+							<rich:column style="text-align:center; padding-left: 5px; width: 90px:">
+								<h:outputText value="#{var.productoClave}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:left; padding-left: 5px;">
+								<h:outputText value="#{var.productoNombre}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding-left: 5px; width:80px:">
+								<h:outputText value="#{var.productoUnidad}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding-left: 5px; width:90px:">
+								<h:outputText value="#{var.productoFamilia}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding-left: 5px; width:90px:">
+								<a4j:region>
+									<h:inputText styleClass="Descripcion" style="text-align:center; width:40px;"
+										value="#{var.cantidad}" 
+										disabled="#{ordenAction.editarOrdenCompra == false ? true : ((ordenAction.pojoOrden.id == null || ordenAction.pojoOrden.id == 0) ? false : true)}">
+										<f:convertNumber pattern="#{ordenAction.patternDecimal}" />
+										<f:validateLongRange minimum="0" maximum="1000000" />
+										<a4j:ajax event="blur" 
+											execute="@this" 
+											listener="#{ordenAction.totalizarDetalles}"
+											render="dtDetalles" 
+											limitRender="true" />
+									</h:inputText>
+								</a4j:region>
+							</rich:column>
+							
+							<rich:column style="text-align:right; width:90px:">
+								<h:outputText styleClass="Descripcion"
+									value="#{var.precioUnitario}" 
+									rendered="#{ordenAction.origenRequisicion == false}">
+									<f:convertNumber pattern="#{ordenAction.patternDecimal}" />
+								</h:outputText>
+								<a4j:region>
+									<h:inputText styleClass="Descripcion" style="text-align:right; width:90px;"
+										value="#{var.precioUnitario}" 
+										rendered="#{ordenAction.origenRequisicion}"
+										onkeydown="return soloDecimales(event, this.value, 10, 4)">
+										<f:convertNumber pattern="#{ordenAction.patternDecimal}" />
+										<f:validateLongRange minimum="0" maximum="1000000" />
+										<a4j:ajax event="blur" 
+											execute="@this" 
+											listener="#{ordenAction.totalizarDetalles}" 
+											render="dtDetalles" 
+											limitRender="true" />
+									</h:inputText>
+								</a4j:region>
+							</rich:column>
+							
+							<rich:column style="text-align:right; padding-left: 5px; width: 90px:">
+								<h:outputText value="#{var.importe}" styleClass="Descripcion">
+									<f:convertNumber pattern="#{ordenAction.patternDecimal}" />
+								</h:outputText>
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding-left: 5px; width: 20px:">
+								<h:selectBooleanCheckbox title="#{msg['incluirEnOrdenCompra']}"
+									value="#{var.seleccionado}" 
+									disabled="#{ordenAction.pojoOrden.id == null ? false : true}">
+									<a4j:ajax event="change" 
+										execute="@this" 
+										listener="#{ordenAction.totalizarDetalles}" 
+										render="dtDetalles" 
+										limitRender="true" />
+								</h:selectBooleanCheckbox>
+							</rich:column>
+			
+							<f:facet name="footer">
+								<rich:columnGroup>
+									<rich:column colspan="6" style="text-align:right;" styleClass="Titulo">
+										<h:outputText value="#{msg['subtotal']}:" />
+									</rich:column>
+									
+									<rich:column style="text-align:right; width:90px" styleClass="Titulo">
+										<h:outputText value="#{ordenAction.subtotal}"><f:convertNumber pattern="#{ordenAction.patternDecimal}" /></h:outputText> 
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo" />
+		
+									<rich:column colspan="6" breakRowBefore="true" style="text-align:right;" styleClass="Titulo">
+										<h:outputText value="#{msg['iva']}:" />
+									</rich:column>
+									
+									<rich:column style="text-align:right; width:90px" styleClass="Titulo">
+										<h:outputText value="#{ordenAction.iva}"><f:convertNumber pattern="#{ordenAction.patternDecimal}" /></h:outputText>
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo" />
+		
+									<rich:column colspan="6" breakRowBefore="true" style="text-align:right;" styleClass="Titulo">
+										<h:outputText value="#{msg['total']}:" />
+									</rich:column>
+									
+									<rich:column style="text-align:right; width:90px" styleClass="Titulo">
+										<h:outputText value="#{ordenAction.total}"><f:convertNumber pattern="#{ordenAction.patternDecimal}" /></h:outputText>
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo" />
+									
+									<a4j:repeat id="repeatImpuestos" value="#{ordenAction.listImpuestos}" var="imp">
+										<rich:column colspan="6" breakRowBefore="true" style="text-align:right;" styleClass="Titulo">
+											<h:outputText value="#{imp.descImpuesto}:" />
+										</rich:column>
+										
+										<rich:column style="text-align:right; width:90px" styleClass="Titulo">
+											<h:outputText value="#{imp.monto}"><f:convertNumber pattern="#{ordenAction.patternDecimal}" /></h:outputText>
+										</rich:column>
+										
+										<rich:column style="text-align:center;" styleClass="Titulo" />
+									</a4j:repeat>
+		
+									<rich:column breakRowBefore="true" colspan="8" style="text-align:center;">
+										<rich:dataScroller id="dScrollDetalles" page="#{ordenAction.numPaginaDetalles}" for="dtDetalles" 
+											align="center" maxPages="10" ajaxSingle="true" styleClass="Titulo" />
+									</rich:column>
+								</rich:columnGroup>
+							</f:facet>
+						</rich:dataTable>
+					</fieldset>
+				</rich:tab>
+			</rich:tabPanel>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

@@ -1,0 +1,28 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlAuditoria" autosized="true">
+    	<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.informacion']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" title="#{msg['auditoria']}"
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlAuditoria')}.hide()" />
+		</f:facet>
+
+		<h:panelGrid columns="2" columnClasses="colTitulo,colDato" style="text-align:center;">
+			<h:outputText value="#{msg['auditoria.creadoPor']}:" styleClass="Descripcion" />
+			<h:outputText value="#{cobranzaAction.auditoriaCreado}" styleClass="Titulo" />
+			
+			<h:outputText value="#{msg['auditoria.modificadoPor']}:" styleClass="Descripcion" />
+			<h:outputText value="#{cobranzaAction.auditoriaModificado}" styleClass="Titulo" />
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

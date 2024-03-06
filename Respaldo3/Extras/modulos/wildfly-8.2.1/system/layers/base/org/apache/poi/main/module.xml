@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="org.apache.poi" xmlns="urn:jboss:module:1.1">
+	<resources>
+		<resource-root path="poi-3.9.jar"/>
+		<resource-root path="poi-ooxml-3.9.jar"/>
+		<resource-root path="poi-ooxml-schemas-3.9.jar"/>
+		<resource-root path="poi-scratchpad-3.9.jar"/>
+	</resources>
+	<dependencies>
+		<module export="true" name="org.apache.xmlbeans"/>
+		<module export="true" name="org.dom4j"/>
+		<module export="true" name="javax.api"/>
+		<module export="true" name="org.apache.log4j"/>
+	</dependencies>
+</module>

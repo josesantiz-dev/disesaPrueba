@@ -1,0 +1,276 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlNuevoEditarGastosComprobar" autosized="true" width="550" >
+			<f:facet name="header">
+				<h:panelGroup>					 
+					<h:outputText style="margin-left:10px" value="#{ gastosComprobarAction.pagosGastosId != 0 ? gastosComprobarAction.concepto : msg['navegacion.label.nuevoReg']}" styleClass="Titulo"/>
+				</h:panelGroup>
+			</f:facet>
+
+			<f:facet name="controls">
+				<h:panelGroup>
+				  	<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" id="btnCerrarNuevoMon"/>
+					<rich:componentControl for="pnlNuevoEditarGastosComprobar" attachTo="btnCerrarNuevoMon" operation="hide" event="onclick"/>
+				</h:panelGroup>
+			</f:facet>
+			
+			<a4j:form id="frmNuevoEditarGtosComp">
+				<a4j:region id="loadNuevoEditarGastosComprobar">
+					<div style = "display: block; width: 600px; height: 22px;">
+						<h:panelGrid columns="2" style="float:right; margin-right:5px;" >
+							<h:panelGroup style="vertical-align: middle; position:relative; ">
+								<a4j:commandButton id="cmdSalvar" onclick="#{rich:element('cmdSalvar')}.disabled = true;" action="#{gastosComprobarAction.guardar}" image="#{msg['salvar22.img']}" oncomplete="msgRevisando(#{rich:element('msgErrorGastosComprobar')},'pnlCancelarChequeGastosComprobar','pnlMsgGralesGastosComprobar',#{gastosComprobarAction.band},'guardar','#{gastosComprobarAction.mensaje}'); #{rich:element('cmdSalvar')}.disabled = false;" reRender="miMenu,dtResults,LabelClave,pnlCancelarChequeGastosComprobar,pnlMsgGralesGastosComprobar" style="vertical-align: middle; position:relative;">
+									<h:outputLabel for="cmdSalvar" value="#{msg['salvar.e']}" style="cursor:pointer; font-weight: bold; font-family: Arial, Verdana, sans-serif; font-size: 11px;" styleClass="Titulo"/>
+								</a4j:commandButton>			 					
+							</h:panelGroup>
+							
+							<h:panelGroup style="vertical-align: middle; position:relative;">
+								<a4j:status for="loadNuevoEditarGastosComprobar">
+									<f:facet name="start"><h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;"/></f:facet>
+									<f:facet name="stop"><h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: middle; position:relative;"/></f:facet>
+								</a4j:status>
+							</h:panelGroup>
+						</h:panelGrid>
+					</div>
+					
+					<h:panelGrid id="pnlDatos1" columns="2" cellpadding="3" columnClasses="Observacion" style="display: block; width: 400px; position:relative;margin-left:15px;">						
+						<h:outputText value="*" />
+						<h:outputText value="#{ gastosComprobarAction.pagosGastosId != 0 ? msg['navegacion.label.noeditar'] : msg['navegacion.label.generaAuto']}" />
+						<h:outputText value="" />
+						<h:outputText value="#{ gastosComprobarAction.pagosGastosId != 0 ? msg['navegacion.label.vacio'] : msg['navegacion.label.cuandoSalve']}"  />						
+					</h:panelGrid>
+					
+					<h:panelGrid id="pnlDatos2" columns="2" cellpadding="3" columnClasses="tygGtosCompColIzq, tygGtosCompColDer" style="display: block;position:relative; margin-top:18px; margin-left:10px;">
+						<h:outputText value="#{msg['navegacion.label.clave']}:" styleClass="Titulo"/>
+						<h:outputText id="LabelClave" value="#{gastosComprobarAction.pagosGastosId}" styleClass="Titulo" />
+						
+						<h:outputText value="#{msg['navegacion.label.fecha']}:" styleClass="Titulo"/>
+						<h:panelGroup>
+							<rich:calendar id="cmbFecha" value="#{gastosComprobarAction.fecha}" inputSize="18" datePattern="dd, MMM yyyy" zindex="100" showWeekDaysBar="false" showWeeksBar="false" required="#{!empty param[rich:clientId('cmdSalvar')]}">
+								<f:validateLength minimum="1"/>
+							</rich:calendar>
+							
+							<rich:message for="cmbFecha" showSummary="false" showDetail="false"  style="color:red">
+								<f:facet name="errorMarker">
+									<h:panelGroup>
+										<h:graphicImage value="#{msg['cancelar16.img']}" />
+										<h:outputLabel  styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+									</h:panelGroup>
+								</f:facet>
+							</rich:message>
+						</h:panelGroup>
+				
+						<h:outputText value="#{msg['obra']}:" styleClass="Titulo" rendered="#{gastosComprobarAction.perfilRequiereObra == 'S'}" />
+						<h:panelGrid id="pnlGastosComprobarObraDatos" columns="2" rendered="#{gastosComprobarAction.perfilRequiereObra == 'S'}">
+							<h:outputText id="labelGastosComprobarObra" value="#{gastosComprobarAction.pojoObra != null ? gastosComprobarAction.pojoObra.nombre : msg['navegacion.label.vacio']}" styleClass="Titulo" />
+								
+							<a4j:commandLink id="linkGastosComprobarSeleccionarObra" onclick="#{rich:element('linkGastosComprobarSeleccionarObra')}.disabled = true;" reRender="pnlGastosComprobarSeleccionarObra"
+								oncomplete="msgRevisando(#{rich:element('msgErrorGastosComprobar')},'pnlMsgGralesGastosComprobar','pnlGastosComprobarSeleccionarObra',#{gastosComprobarAction.band},'agregar','#{gastosComprobarAction.mensaje}'); #{rich:element('linkGastosComprobarSeleccionarObra')}.disabled = false;">
+								<h:outputText value="#{gastosComprobarAction.pojoObra == null ? msg['seleccionar'] : msg['cambiar']}" />
+								<!--rich:componentControl for="pnlGastosComprobarSeleccionarObra" attachTo="linkGastosComprobarSeleccionarObra" operation="show" event="onclick"/-->
+							</a4j:commandLink>
+						</h:panelGrid>
+				
+						<h:outputText value="#{msg['sucursal']}:" styleClass="Titulo"/>
+						<h:panelGroup >
+							<h:inputText id="txtSucursal" maxlength="20" value="#{gastosComprobarAction.sucursal}" required="#{!empty param[rich:clientId('cmdSalvar')]}" onkeypress="keyF9(event, #{rich:component('suggSucursal')})" size="36">
+								<f:validator validatorId="strClaveValor"/>
+								<a4j:support  event="onblur" action="#{gastosComprobarAction.evaluaSiCambioSucursal}" reRender="suggSegmentos,gpoSegmento,gpoSegmento1"/>
+								<rich:toolTip><span style="white-space:nowrap"><strong>Presione F9</strong></span></rich:toolTip>
+							</h:inputText>
+							
+							<h:graphicImage style="margin-left:0px;  vertical-align:bottom; cursor:pointer;" value="#{msg['despliega.img']}" onclick="#{rich:component('suggSucursal')}.callSuggestion(true)" alt=""/>
+							
+							<rich:suggestionbox height="100" width="238" eventsQueue="suggQGtoComp" suggestionAction="#{gastosComprobarAction.autoacompletaSucursal}" var="suc" minChars="2" id="suggSucursal" for="txtSucursal" fetchValue="#{suc.id} - #{suc.sucursal}">
+								<h:column><h:outputText value="#{suc.id}"/></h:column>
+								<h:column><h:outputText value="#{suc.sucursal}"/></h:column>
+							</rich:suggestionbox>
+							
+							<rich:message for="txtSucursal" showSummary="false" showDetail="false"  style="color:red">
+								<f:facet name="errorMarker">
+									<h:panelGroup>
+										<h:graphicImage value="#{msg['cancelar16.img']}" />
+										<h:outputLabel  styleClass="Err" value="#{msg['mensaje.validacion.selectItem']}"/>
+									</h:panelGroup>
+								</f:facet>
+							</rich:message>
+						</h:panelGroup>	
+						
+						<h:panelGroup id="gpoSegmento">
+							<h:outputText value="#{msg['navegacion.label.segmento']}:" styleClass="Titulo" rendered="#{gastosComprobarAction.muestraSeg == true}"/>
+						</h:panelGroup>
+						
+						<h:panelGroup id="gpoSegmento1">
+							<h:panelGroup  rendered="#{gastosComprobarAction.muestraSeg == true}">
+								<h:inputText id="txtSegmento" value="#{gastosComprobarAction.segmento}" onkeypress="keyF9(event, #{rich:component('suggSegmentos')})" size="36" maxlength="30">
+									<f:validator validatorId="strClaveValor"/>
+									<rich:toolTip><span style="white-space:nowrap"><strong>Presione F9</strong></span></rich:toolTip>
+								</h:inputText>
+								
+								<h:graphicImage style="margin-left:0px;  vertical-align:bottom; cursor:pointer;" value="#{msg['despliega.img']}" onclick="#{rich:component('suggSegmentos')}.callSuggestion(true)" alt=""/>
+								
+								<rich:suggestionbox height="100" width="225" eventsQueue="suggQRegGto" suggestionAction="#{gastosComprobarAction.autoacompletaSegmento}" var="seg" minChars="2" id="suggSegmentos" for="txtSegmento" fetchValue="#{seg.segmento} - #{seg.descripcion}">
+									<h:column><h:outputText value="#{seg.segmento}"/></h:column>
+									<h:column><h:outputText value="#{seg.descripcion}"/></h:column>
+								</rich:suggestionbox>
+								
+								<rich:message for="txtSegmento" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:panelGroup>
+											<h:graphicImage value="#{msg['cancelar16.img']}" />
+											<h:outputLabel  styleClass="Err" value="#{msg['mensaje.validacion.selectItem']}"/>
+										</h:panelGroup>
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>					
+						</h:panelGroup>				
+						
+						<h:outputText value="#{msg['navegacion.label.cuenta']}:" styleClass="Titulo"/>
+						<h:panelGroup >
+							<h:inputText id="txtCta" maxlength="20" value="#{gastosComprobarAction.cuenta}" required="#{!empty param[rich:clientId('cmdSalvar')]}" onkeypress="keyF9(event, #{rich:component('suggCuentas')})" style="margin:0px;" size="36">
+								<f:validator validatorId="valClaveValor"/>
+								<rich:toolTip><span style="white-space:nowrap"><strong>Presione F9</strong></span></rich:toolTip>
+							</h:inputText>
+							
+							<h:graphicImage style="margin-left:0px;  vertical-align:bottom; cursor:pointer;" value="#{msg['despliega.img']}" onclick="#{rich:component('suggCuentas')}.callSuggestion(true)" alt=""/>
+							
+							<rich:suggestionbox height="100" width="238" eventsQueue="suggQGtoComp" 
+								suggestionAction="#{gastosComprobarAction.autoacompletaCuenta}" var="cta" minChars="2"
+								id="suggCuentas" for="txtCta" fetchValue="#{cta.id} - #{cta.institucionBancaria.nombreCorto} - #{cta.numeroDeCuenta}">
+								<h:column><h:outputText value="#{cta.institucionBancaria.id}"/></h:column>
+								<h:column><h:outputText value="#{cta.institucionBancaria.nombreCorto}"/></h:column>
+								<h:column><h:outputText value="#{cta.numeroDeCuenta}"/></h:column>
+							</rich:suggestionbox>
+							
+							<rich:message for="txtCta" showSummary="false" showDetail="false"  style="color:red">
+								<f:facet name="errorMarker">
+									<h:panelGroup>
+										<h:graphicImage value="#{msg['cancelar16.img']}" />
+										<h:outputLabel  styleClass="Err" value="#{msg['mensaje.validacion.selectItem']}"/>
+									</h:panelGroup>
+								</f:facet>
+							</rich:message>
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['navegacion.label.operacion']}:" styleClass="Titulo"/>
+						<h:panelGroup>
+							<rich:comboBox id="optionOpera" styleClass="Titulo" 
+								defaultLabel="#{msg['seleccione']}" enableManualInput="false" selectFirstOnUpdate="false"
+								value="#{gastosComprobarAction.operacion}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" >
+								<f:selectItems value="#{gastosComprobarAction.listFormasPagoItems}"/>							
+								<a4j:support event="onselect" 
+									action="#{gastosComprobarAction.evaluaOperacion}"
+									reRender="frmNuevoEditarGtosComp"
+									limitToList="true" />		
+							</rich:comboBox>
+						</h:panelGroup>		
+									  
+						<h:outputText value="#{msg['numeroCheque']}:" styleClass="Titulo" rendered="#{gastosComprobarAction.esCheque}" />
+						<h:panelGroup rendered="#{gastosComprobarAction.esCheque}">
+							<h:inputText id="txtCheque" value="#{gastosComprobarAction.noCheque}" maxlength="10" required="#{!empty param[rich:clientId('cmdSalvar')]}" >							  		
+								<f:validator  validatorId="SoloNum"/>
+							</h:inputText>
+							
+							<rich:message for="txtCheque" showSummary="false" showDetail="false"  style="color:red">
+								<f:facet name="errorMarker">
+									<h:panelGroup>
+										<h:graphicImage value="#{msg['cancelar16.img']}"/>
+										<h:outputLabel styleClass="Err" value="#{msg['mensajes.error.reqSoloNum']}"/>
+									</h:panelGroup>
+								</f:facet>
+							</rich:message>
+						</h:panelGroup>	
+						
+						<h:outputText value="#{msg['navegacion.label.autorizacion']}:" rendered="#{gastosComprobarAction.esTransferencia}" styleClass="Titulo" />
+						<h:panelGroup rendered="#{gastosComprobarAction.esTransferencia}">
+							<h:inputText id="txtFolio" maxlength="20"
+								value="#{gastosComprobarAction.folioAutorizacion}" 
+								required="#{!empty param[rich:clientId('cmdSalvar')]}">
+								<f:validateLength minimum="1" /> 
+								<f:validator validatorId="SoloNum"/>
+							</h:inputText>
+							
+							<rich:message for="txtFolio" showSummary="false" showDetail="false"  styleClass = "Err">
+								<f:facet name="errorMarker">
+									<h:panelGroup>
+										<h:graphicImage value="#{msg['cancelar16.img']}"/>
+										<h:outputLabel styleClass="Err" value="#{msg['mensajes.error.reqSoloNum']}"/>
+									</h:panelGroup>
+								</f:facet>
+							</rich:message>
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['navegacion.label.beneficiario']}:" styleClass="Titulo"/>
+						<h:panelGroup >
+							<h:panelGroup >
+								<h:selectOneRadio value="#{gastosComprobarAction.tipoPersona}" styleClass="Titulo">
+									<f:selectItem itemLabel="#{msg['persona']}" itemValue="P"/>
+									<f:selectItem itemLabel="#{msg['negocio']}" itemValue="N"/>
+									<a4j:support event="onchange" action="#{gastosComprobarAction.cambioBeneficiario}" reRender="txtBene,suggBenes"/>								
+								</h:selectOneRadio>
+							</h:panelGroup>
+							
+							<h:panelGroup>
+								<h:inputText id="txtBene" value="#{gastosComprobarAction.beneficiario}" maxlength="20"  required="#{!empty param[rich:clientId('cmdSalvar')]}" onkeypress="keyF9(event, #{rich:component('suggBenes')})"  size="60">
+									<f:validator validatorId="valClaveValor"/>
+									<rich:toolTip><span style="white-space:nowrap"><strong>Presione F9</strong></span></rich:toolTip>
+								</h:inputText>
+								
+								<h:graphicImage style="margin-left:0px;  vertical-align:bottom; cursor:pointer;" value="#{msg['despliega.img']}" onclick="#{rich:component('suggBenes')}.callSuggestion(true)" alt=""/>
+								
+								<rich:suggestionbox id="suggBenes" suggestionAction="#{gastosComprobarAction.autoacompletaBeneficiario}" var="ben" for="txtBene" fetchValue="#{ben.id} - #{ben.nombre}" height="100" width="382" eventsQueue="suggQGtoComp" minChars="2" >
+									<h:column><h:outputText value="#{ben.id}"/></h:column>
+									<h:column><h:outputText value="#{ben.nombre}"/></h:column>
+								</rich:suggestionbox>
+								
+								<rich:message for="txtBene" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:panelGroup>
+											<h:graphicImage value="#{msg['cancelar16.img']}" />
+											<h:outputLabel  styleClass="Err" value="#{msg['mensaje.validacion.selectItem']}"/>
+										</h:panelGroup>
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>	
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['navegacion.label.monto']}:" styleClass="Titulo"/>
+						<h:panelGroup >
+							<h:inputText id="txtMonto" value="#{gastosComprobarAction.monto}" maxlength="20"  size="40" required="#{!empty param[rich:clientId('cmdSalvar')]}">
+								<f:convertNumber maxFractionDigits="2"/>												
+							</h:inputText>
+							
+							<rich:message for="txtMonto" showSummary="false" showDetail="false"  style="color:red">
+								<f:facet name="errorMarker">
+									<h:panelGroup>
+										<h:graphicImage value="#{msg['cancelar16.img']}"/>
+										<h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+									</h:panelGroup>
+								</f:facet>
+							</rich:message>
+						</h:panelGroup>	
+						
+						<h:outputText value="#{msg['navegacion.label.concepto']}:" style="position:relative;top:-22px" styleClass="Titulo"/>	
+						<h:panelGroup>
+							<h:inputTextarea id="txtConcepto" value="#{gastosComprobarAction.concepto}" style="width : 470px; height : 60px; resize: none;" required="#{!empty param[rich:clientId('cmdSalvar')]}" />
+							
+							<rich:message for="txtConcepto" showSummary="false" showDetail="false"  style="color:red">
+								<f:facet name="errorMarker">
+									<h:panelGroup>
+										<h:graphicImage value="#{msg['cancelar16.img']}"/>
+										<h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+									</h:panelGroup>
+								</f:facet>
+							</rich:message>
+						</h:panelGroup>
+					</h:panelGrid>						
+				</a4j:region>
+			</a4j:form>
+		</rich:modalPanel>
+</ui:composition>

@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:rich="http://richfaces.org/rich" 
+	xmlns:s="http://jboss.com/products/seam/taglib" 
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<meta http-equiv="Cache-Control" content="no-store" />
+		<meta http-equiv="Cache-Control" content="no-cache" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="Expires" content="-1" />
+		<title><ui:insert name="title" /></title>
+		<ui:insert name="metas" />
+		<script language="javascript">
+			A4J.AJAX.onExpired = function(loc,expiredMsg){
+				// alert(expiredMsg);
+				document.location=&quot;/cas/logout)&quot;; 
+			};
+			A4J.AJAX.onError = function(req, status, message){
+			   	// window.alert(&quot;Custom onError handler &quot;+message);
+			};
+		</script>
+	</head>
+	<a4j:loadStyle src="resource:///resources/css/general/general.css"/>
+	<a4j:loadScript src="resource:///resources/scripts/general/general.js"/>
+	<body style="text-align:left;">
+		<f:view>
+			<a4j:region id="loadGral">
+				<a4j:status for="loadGral" id="statusMensaje" onstart="#{rich:component('wait')}.show()" onstop="#{rich:component('wait')}.hide()"/>
+				<a4j:queue id="quePrincipal" ignoreDupResponses="true" name="miQueue" requestDelay="500" size="1"/>
+				<a4j:form id="frmPrincipal" ignoreDupResponses="true" style="text-align:center; float:center; width:100%;">
+					<rich:toolBar binding="#{appMediator.navegador.arbolMenu}" id="miMenu" itemSeparator="none" styleClass="div_header">
+						<ui:insert name="menuFrag"/>
+					</rich:toolBar>
+					<div id="div_footer">
+						<h:graphicImage id="txtFooterImg" value="#{msg['usuario16.img']}" styleClass="div_footer_img" />
+						<h:outputText id="txtFooterUsuario" styleClass="div_footer_txt" value="#{msg['usuario']}: #{loginManager.usuario}"/>
+						<h:outputText id="txtFooterResp" styleClass="div_footer_txt" value="#{msg['responsabilidad']}: #{loginManager.usuarioResponsabilidad.responsabilidad.responsabilidad}"/>
+						<h:outputText id="txtFooterFecha" styleClass="div_footer_txt" value="#{msg['fecha']}: #{navegador.fecha}"/>
+						<h:outputText id="txtFooterTipoCam" value="#{msg['tc']}: #{loginManager.tipoCambioActual}" title="#{msg['tipoCambio']}: #{loginManager.tipoCambioActual} | #{msg['tipoCambioPrevio']}: #{loginManager.tipoCambioPrevio}" styleClass="div_footer_txt" />
+						<h:outputText id="txtFooterEmpresa" value="#{msg['empresa']}: #{loginManager.usuarioEmpresa.empresa}" title="#{loginManager.usuarioEmpresa.rfc}" styleClass="div_footer_txt" />
+      				
+						<a4j:commandButton id="cmdCerrarSession" styleClass="div_footer_cerrar_session"
+							image="#{msgTyg['salir22.img']}" title="#{msg['cerrarSession']}"
+							action="#{navegador.cerrarSession}" />
+						
+						<a4j:commandButton id="cmdCambiarResponsabilidad" styleClass="div_footer_cambia_responsabilidad"
+							image="#{msgTyg['responsabilidad22.img']}" title="#{msg['cambiarResponsabilidad']}"
+							oncomplete="Richfaces.showModalPanel('pnlSeleccionResponsabilidad');" 
+							reRender="pnlSeleccionResponsabilidad" />
+
+						<a4j:commandButton id="cmdCambiarEmpresa" styleClass="div_footer_cambia_responsabilidad" 
+							image="#{msg['empresa22.img']}" title="#{msg['cambiarEmpresa']}" 
+							oncomplete="#{rich:component('pnlSeleccionEmpresa')}.show()" 
+							reRender="pnlSeleccionEmpresa" />
+							
+						<a4j:commandButton id="cmdCambiarModulo" styleClass="div_footer_cambia_responsabilidad"
+							image="#{msg['ruta_img_22']}#{msg['modulo.img']}" title="#{msg['cambiarModulo']}"
+							action="#{navegador.cambiarModulo}"
+      						reRender="txtFooterEmpresa" />
+					</div>
+					
+					<div id="divContainer">
+						<ui:insert name="body"/>
+					</div>
+				</a4j:form>
+				
+				<ui:insert name="modals"/>
+				
+				<ui:include src="/layout/modalsGenerales.xhtml"/>
+			</a4j:region>
+		</f:view>
+	</body>
+</html>

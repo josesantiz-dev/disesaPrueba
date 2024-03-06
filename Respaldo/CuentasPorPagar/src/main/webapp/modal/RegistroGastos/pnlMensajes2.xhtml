@@ -1,0 +1,40 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlMensajes2" autosized="true">
+		<f:facet name="header">
+			<h:outputText styleClass="Titulo" 
+				value="#{registroGastosAction.encontroMismoGrupo ? msg['navegacion.label.atencion'] : msg['navegacion.label.informacion']}" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage id="imgCerrarMsgImpuestoDuplicado" style="cursor:pointer;" value="#{msg['navegacion.panel.cerrar.img']}" />
+				<rich:componentControl for="pnlMensajes2" 
+					event="onclick" 
+					attachTo="imgCerrarMsgImpuestoDuplicado" 
+					operation="hide" />
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmMsgGralesRegistroGastos">
+			<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+				<h:outputText style="display:block;" styleClass="Descripcion"
+					value="#{msg['mensaje.info.infoReg']}" 
+					rendered="#{registroGastosAction.resOperacion == '' || registroGastosAction.resOperacion == 'T' || registroGastosAction.resOperacion == 'C'}" />
+				
+				<h:outputText style="display:block;" styleClass="Descripcion"
+					value="#{registroGastosAction.resOperacion}" 
+					rendered="#{registroGastosAction.resOperacion != '' &amp;&amp; registroGastosAction.resOperacion != 'T' &amp;&amp; registroGastosAction.resOperacion != 'C'}" />
+				
+				<a4j:commandButton style="margin-top:10px; cursor:pointer;" 
+					onclick="#{rich:component('pnlMensajes2')}.hide()" 
+					value="#{msg['navegacion.label.aceptar']}" />
+			</h:panelGrid>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

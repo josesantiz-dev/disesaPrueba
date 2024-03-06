@@ -1,0 +1,40 @@
+<!DOCTYPE composition PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:rich="http://richfaces.org/rich" 
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+	<rich:collapsiblePanel header="Administrador" style="padding:0px;" switchType="client">
+		<div class="#{sesionProc.claseOcultaProceso}">
+			<a4j:commandLink styleClass="#{sesionProc.paginaSeleccionada == -1 ? 'link-menu-select' : 'link-menu'}" 
+				value="Todos Procesos"
+				oncomplete="window.location = 'admin.faces'">
+				<f:setPropertyActionListener target="#{sesionProc.paginaSeleccionada}" value="-1"/>
+			</a4j:commandLink>
+		</div>
+
+		<a4j:commandLink styleClass="#{sesionProc.paginaSeleccionada == -1 ? 'link-menu-select' : 'link-menu'}" 
+			value="Procesos"
+			oncomplete="window.location = 'procesos.faces'">
+			<f:setPropertyActionListener target="#{sesionProc.paginaSeleccionada}" value="-1"/>
+		</a4j:commandLink>
+	</rich:collapsiblePanel>
+
+	<a4j:repeat value="#{sesionProc.opciones.grupos.entrySet().toArray()}" var="grupo">
+		<rich:collapsiblePanel header="#{grupo.key}" style="padding:0px;" switchType="client">
+			<a4j:repeat value="#{grupo.value.subgrupos.entrySet().toArray()}" var="subgrp">
+				<rich:collapsiblePanel header="#{subgrp.key}" style="margin:0px;" switchType="client">
+					<a4j:repeat value="#{subgrp.value.programas.entrySet().toArray()}" var="pro">
+						<a4j:commandLink styleClass="#{(sesionProc.paginaSeleccionada == pro.value.cPrograma.id) == true ? 'link-menu-select' : 'link-menu'}" 
+							value="#{pro.key}"
+							oncomplete="window.location = 'programa.faces'">
+							<f:setPropertyActionListener target="#{sesionProc.programa}" value="#{pro.value}"/>
+						</a4j:commandLink>
+					</a4j:repeat>
+				</rich:collapsiblePanel>
+			</a4j:repeat>
+		</rich:collapsiblePanel>
+	</a4j:repeat>
+</ui:composition>

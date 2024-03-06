@@ -1,0 +1,240 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.jsp">
+<ui:define name="menuFrag" >
+ 		<rich:toolBarGroup location="right" style="padding:0 2px 0 2px;" >
+				<a4j:commandButton id="cmdNuevo" onclick="#{rich:element('cmdNuevo')}.disabled = true;" action="#{EstatusChequesAction.nuevo}" image="#{msgTyg['navegacion.boton.nuevo.img']}" style="cursor: pointer;" oncomplete="#{rich:element('cmdNuevo')}.disabled = false; Richfaces.showModalPanel('pnlNuevoEditar')"  reRender="pnlNuevoEditar,txtResultadoEstatus"/>
+				<h:outputLabel for="cmdNuevo" value="#{msgTyg['navegacion.boton.nuevo.e']}" style="cursor:pointer;" styleClass="Titulo"/>
+			</rich:toolBarGroup> 			
+			<rich:toolBarGroup location="right" style="padding:0 2px 0 2px;" >
+ 				<a4j:commandButton id="cmdBuscar" onclick="#{rich:element('cmdBuscar')}.disabled = true;" action="#{EstatusChequesAction.buscar}" image="#{msgTyg['navegacion.boton.buscar.img']}" reRender="dtResults, txtResultadoEstatus, pnlMsgEstatusCheque"  style="vertical-align: middle; position:relative;" 
+ 								oncomplete = "checaResultado(#{rich:element('txtResultadoEstatus')}, '', 'pnlMsgEstatusCheque', 'buscar', #{rich:element('msgErroresEstatus')}); #{rich:element('cmdBuscar')}.disabled = false;"/>
+ 				<h:outputLabel for="cmdBuscar" value="#{msgTyg['navegacion.boton.buscar.e']}" style="cursor:pointer;" styleClass="Titulo"/>
+ 		</rich:toolBarGroup>
+ 		<rich:toolBarGroup location="right" style="padding:0 2px 0 2px;" >
+				<a4j:status for="loadSalvar">
+         			<f:facet name="start">
+         				<h:graphicImage value="#{msgTyg['navegacion.loading.loading16']}" style="vertical-align: middle; position:relative;"/>
+         			</f:facet>
+         			<f:facet name="stop">
+         				<h:graphicImage value="#{msgTyg['navegacion.loading.loading_stop16']}" style="vertical-align: middle; position:relative;"/>
+         			</f:facet>
+         		</a4j:status>
+       </rich:toolBarGroup>
+</ui:define>
+<ui:define name="body">
+			<a4j:loadStyle src="resource:///css/tyg.css" />
+			<a4j:loadStyle src="resource:///css/tygImpuestos.css" />
+			<a4j:loadScript src="resource:///scripts/tyg/estatusCheques.js"/>
+			<div class="div_pagina">
+			<a4j:region id="loadSalvar">
+				<h:inputHidden id="txtResultadoEstatus" value="#{EstatusChequesAction.resOperacion}" />
+			
+				
+				<!-- Pantalla Principal  -->
+				<h:panelGrid id="panel_busqueda" columns="2" style="margin-left:15px; margin-bottom:10px; display:block;" width="700">
+	  				<h:outputText value="#{msgTyg['navegacion.label.tipoBusqueda']}:" styleClass="Titulo"/>	  				
+					<rich:comboBox id="cmbTipoBusqueda" value="#{EstatusChequesAction.valTipoBusqueda}" suggestionValues="#{EstatusChequesAction.tipoBusqueda}" listStyle="text-align:left;" enableManualInput="true"  />		            	            
+		            <h:outputText value="#{msgTyg['navegacion.label.valor']}:" styleClass="Titulo"/>
+					<h:inputText id="txtvalor" value="#{EstatusChequesAction.campoBusqueda}" maxlength="20"/>
+			  	</h:panelGrid>	
+				<rich:dataTable id="dtResults" rows="20" cellpadding="0" cellspacing="0" width="740" border="0" var="estatusCheques" rowClasses="Row1, Row2"
+	               		value="#{EstatusChequesAction.listValores}" >
+	               <f:facet name="header">
+	                   <rich:columnGroup>
+	                       <rich:column colspan="6" styleClass="Titulo">
+	                           <h:outputText value="#{msgTyg['navegacion.label.estatusCheque']}"/>
+	                       </rich:column>
+	                       <rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msgTyg['navegacion.label.clave']}" />
+	                       </rich:column>
+	                       <rich:column  style="text-align:center; margin-left:10px;" styleClass="Titulo">
+	                           <h:outputText value="#{msgTyg['navegacion.label.estatus']}" />
+	                       </rich:column>
+	                        <rich:column  style="text-align:center; margin-left:10px;" styleClass="Titulo">
+	                           <h:outputText value="#{msgTyg['navegacion.label.identificador']}" />
+	                       </rich:column>
+	                        <rich:column  colspan="2" style="text-align:center; margin-left:10px;" styleClass="tygImpTit">
+	                           <h:outputText value="" />
+	                       </rich:column>  
+	                   </rich:columnGroup>
+	               </f:facet>
+	               <rich:column width="200" style="text-align:center;" styleClass="Descripcion">
+	               	  <h:outputText id="txtClave" value="#{estatusCheques.valorId}"/>                 
+	               </rich:column>
+	               <rich:column width="220" style="text-align:center;" styleClass="Descripcion">
+	                  <h:outputText id="txtEstatus" value="#{estatusCheques.descripcion}"/>
+	               </rich:column>
+	               <rich:column width="220" style="text-align:center;" styleClass="Descripcion">
+	                  <h:outputText id="txtValor" value="#{estatusCheques.valor}"/>
+	               </rich:column>
+	               <rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;" styleClass="Descripcion">
+	                   <a4j:commandButton image="#{msgTyg['navegacion.boton.editar.img']}" oncomplete="Richfaces.showModalPanel('pnlNuevoEditar')"  reRender="pnlNuevoEditar, txtResultadoEstatus">
+	                   	<f:setPropertyActionListener target="#{EstatusChequesAction.pojoValores}" value="#{estatusCheques}" />
+	                   	 <rich:toolTip value="#{msgTyg['navegacion.label.editar']}"/>		
+	                   </a4j:commandButton>
+	               </rich:column>	
+	                <rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;">
+                     <a4j:commandButton image="#{msgTyg['navegacion.boton.eliminar.img']}" oncomplete="Richfaces.showModalPanel('pnlEliminar')" reRender="txtResultadoEstatus">
+                   		<f:setPropertyActionListener target="#{EstatusChequesAction.pojoValores}" value="#{estatusCheques}" />
+                   		 <rich:toolTip value="#{msgTyg['navegacion.label.eliminar']}"/>	
+                      </a4j:commandButton>
+                   </rich:column>                             
+	               <f:facet name="footer" >
+		               	<rich:datascroller align="center" for="dtResults" maxPages="10" ajaxSingle="true"
+		            		page="#{EstatusChequesAction.numPagina}" id="dScroll" styleClass="tygImpTit"/>
+	               </f:facet>
+	           </rich:dataTable>	
+			</a4j:region>			
+		</div>
+	</ui:define>
+		<!-- Fin Pantalla Principal  -->
+	<ui:define name="modals">	
+		<!--  Pantalla Nuevo o Editar  -->	
+		<rich:modalPanel id="pnlNuevoEditar" autosized="true" >
+		   <f:facet name="header">
+	           <h:panelGroup>	             
+	               <h:outputText style="margin-left:10px" value="#{ EstatusChequesAction.valorId != 0 ? EstatusChequesAction.descripcion : msgTyg['navegacion.label.nuevoReg']}" styleClass="Titulo"/>
+	           </h:panelGroup>
+	        </f:facet>
+		    <f:facet name="controls">
+		       <h:panelGroup>
+		       	  <h:graphicImage value="#{msgTyg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" id="btnCerrarNuevoMon"/>
+		          <rich:componentControl for="pnlNuevoEditar" attachTo="btnCerrarNuevoMon" operation="hide" event="onclick"/>
+		       </h:panelGroup>
+		    </f:facet>
+			
+			<a4j:form id="frmNuevoEditarGasto">
+				<a4j:region id="loadNuevoEditar">
+				   	<div style = "display: block; width: 550px height: 22px;">
+						<h:panelGrid columns="2" style="float:right; margin-right:5px;" >
+							<h:panelGroup style="vertical-align: middle; position:relative; ">
+								<a4j:commandButton id="cmdSalvar" onclick="#{rich:element('cmdSalvar')}.disabled = true;" action="#{EstatusChequesAction.guardar}" image="#{msgTyg['navegacion.boton.salvar.img']}"  reRender="miMenu,dtResults, pnlDatos2, txtResultadoEstatus, pnlMsgEstatusCheque"  style="vertical-align: middle; position:relative;"
+													oncomplete = "checaResultado(#{rich:element('txtResultadoEstatus')}, 'pnlNuevoEditar', 'pnlMsgEstatusCheque', 'salvar', #{rich:element('msgErroresEstatus')}); #{rich:element('cmdSalvar')}.disabled = false;"/>
+				 				<h:outputLabel for="cmdSalvar" value="#{msgTyg['navegacion.boton.salvar.e']}" style="cursor:pointer;" styleClass="Titulo"/>			 					
+			 				</h:panelGroup>
+			 				<h:panelGroup style="vertical-align: middle; position:relative;">
+				 				<a4j:status for="loadNuevoEditar">
+				          			<f:facet name="start">
+				          				<h:graphicImage value="#{msgTyg['navegacion.loading.loading16']}" style="vertical-align: middle; position:relative;"/>
+				          			</f:facet>
+				          			<f:facet name="stop">
+				          				<h:graphicImage value="#{msgTyg['navegacion.loading.loading_stop16']}" style="vertical-align: middle; position:relative;"/>
+				          			</f:facet>
+				          		</a4j:status>
+			          		</h:panelGroup>
+						</h:panelGrid>
+					</div>
+										
+					<h:panelGrid id="pnlDatos1" columns="2" cellpadding="3" columnClasses="Observacion" style = "display: block; width: 400px; position:relative; margin-right:25px;">						
+							<h:outputText value="*" />
+							<h:outputText value="#{ EstatusChequesAction.valorId != 0 ? msgTyg['navegacion.label.noeditar'] : msgTyg['navegacion.label.generaAuto']}" />
+							<h:outputText value="" />
+							<h:outputText value="#{ EstatusChequesAction.valorId != 0 ? msgTyg['navega.label.vacio'] : msgTyg['navega.label.cuandoSalve']}"  />						
+					</h:panelGrid>
+																																
+					<h:panelGrid id="pnlDatos2" columns="2" cellpadding="3"  style = "display: block; width: 550px; position:relative; margin-top:15px; margin-left:10px;" >					
+						<h:outputText value="#{msgTyg['navegacion.label.clave']}:" styleClass="Titulo"/>					
+						<h:outputText id="txtClave" value="#{EstatusChequesAction.valorId}" styleClass="Titulo"/>
+						<h:outputText value="#{msgTyg['navegacion.label.estatus']}:" styleClass="Titulo"/>
+						<h:panelGroup >
+							<h:inputText id="txtDesc" value="#{EstatusChequesAction.descripcion}" size="40" required="#{!empty param[rich:clientId('cmdSalvar')]}" maxlength="100" >
+								<f:validateLength minimum="1"/>
+							</h:inputText>
+							<rich:message for="txtDesc" showSummary="false" showDetail="false"  style="color:red">
+						      <f:facet name="errorMarker">
+					      		<h:panelGroup>
+							        <h:graphicImage  value="#{msgTyg['mensajes.cancelar16.img']}"/>
+							        <h:outputLabel styleClass="Err" value="#{msgTyg['mensajes.error.requerido']}"/>
+				        		</h:panelGroup>
+						      </f:facet>
+							</rich:message>
+						</h:panelGroup>
+						<h:outputText value="#{msgTyg['navegacion.label.identificador']}:" styleClass="Titulo"/>
+						<h:panelGroup >
+							<h:inputText id="txtIdent" value="#{EstatusChequesAction.valor}" size="40" required="#{!empty param[rich:clientId('cmdSalvar')]}" maxlength="50">
+								<f:validateLength minimum="1" />
+							</h:inputText>
+							<rich:message for="txtIdent" showSummary="false" showDetail="false"  style="color:red">
+						      <f:facet name="errorMarker">
+					      		<h:panelGroup>
+							        <h:graphicImage  value="#{msgTyg['mensajes.cancelar16.img']}"/>
+							        <h:outputLabel styleClass="Err" value="#{msgTyg['mensajes.error.requerido']}"/>
+				        		</h:panelGroup>
+						      </f:facet>
+							</rich:message>
+						</h:panelGroup>
+					</h:panelGrid>
+					<!-- utilizo esta lista de mensajes de errores para conocer si debo seguir en el proceso en js -->
+					<rich:messages id="msgErroresEstatus" showDetail="false" showSummary="false">
+					</rich:messages>
+				</a4j:region>
+		     </a4j:form>
+		</rich:modalPanel>			
+		<!-- Fin Pantalla Nuevo o Editar  -->
+		
+		
+		<!-- Panel Eliminar -->		
+	    <rich:modalPanel id="pnlEliminar" autosized="true">
+		 <f:facet name="header">
+			<h:outputText value="#{msgTyg['navegacion.label.atencion']}" styleClass="Titulo"/>
+		 </f:facet>
+		 <f:facet name="controls">
+	         <h:panelGroup>
+	             <h:graphicImage value="#{msgTyg['navegacion.panel.cerrar.img']}" style="cursor:pointer;" id="imgCerrarEliminar"/>
+	             	<rich:componentControl for="pnlEliminar" attachTo="imgCerrarEliminar" operation="hide" event="onclick"/>
+	          </h:panelGroup>
+	       </f:facet>
+	       <a4j:form id="frmEliminar">
+	       	<a4j:region id="loadEliminar">
+	       		<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+	       			<h:outputText value="#{msgTyg['navegacion.label.deseaEliminar']}" style="display:block;"  styleClass="Descripcion"/>
+		       		<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+			       		<a4j:commandButton id="cmdEliminar" onclick="#{rich:element('cmdEliminar')}.disabled = true;" action="#{EstatusChequesAction.eliminar}" value="#{msgTyg['navegacion.label.aceptar']}" reRender="dtResults, txtResultadoEstatus, pnlMsgEstatusCheque"
+			       			oncomplete = "checaResultado(#{rich:element('txtResultadoEstatus')}, 'pnlEliminar', 'pnlMsgEstatusCheque', 'eliminar', #{rich:element('msgErroresEstatus')}); #{rich:element('cmdEliminar')}.disabled = false;"/>
+			       		<a4j:commandButton onclick="#{rich:component('pnlEliminar')}.hide()" value="#{msgTyg['navegacion.label.cancelar']}" style="margin-left:10px;"/>
+		       		</h:panelGroup>
+		       		<a4j:status for="loadEliminar">
+		       			<f:facet name="start">
+		       				<h:graphicImage value="#{msgTyg['navegacion.loading.loading16']}"/>
+		       			</f:facet>
+		       		</a4j:status>
+	       		</h:panelGrid>
+	       	</a4j:region>
+	       </a4j:form>
+	     </rich:modalPanel>		 
+		<!--  Fin Panel Eliminar-->
+		
+		
+		<!-- #### Panel MsgLayout #### -->		
+	    <rich:modalPanel id="pnlMsgEstatusCheque" autosized="true" width="350">
+		 <f:facet name="header">
+		 	<h:panelGroup>
+			 	<h:outputText value="#{msg['navegacion.label.atencion']}" rendered="#{EstatusChequesAction.resOperacion != ''}" styleClass="Err" />
+				<h:outputText value="#{msg['navegacion.label.informacion']}" rendered="#{EstatusChequesAction.resOperacion == ''}" styleClass="Titulo" />
+			</h:panelGroup>
+		 </f:facet>
+		 <f:facet name="controls">
+	         <h:panelGroup>
+	             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="imgCerrarMsgBanc"/>
+	             	<rich:componentControl for="pnlMsgEstatusCheque" attachTo="imgCerrarMsgBanc" operation="hide" event="onclick"/>
+	          </h:panelGroup>
+	       </f:facet>
+	       <a4j:form id="frmMsgAsig" style="text-align:center;" >
+	       		<h:panelGroup style="display:block; width:300px; float:center;">
+		       		<h:outputText value="#{msgTyg['mensaje.info.infoReg']}" rendered="#{EstatusChequesAction.resOperacion == ''}" style="display:block;" styleClass="Descripcion"/>
+		       		<h:outputText value="#{EstatusChequesAction.resOperacion}" rendered="#{EstatusChequesAction.resOperacion != ''}" style="display:block;" styleClass="Descripcion"/>
+	       		</h:panelGroup>
+	       		<a4j:commandButton value="#{msg['navegacion.label.aceptar']}" onclick="#{rich:component('pnlMsgEstatusCheque')}.hide()" style="margin-top:10px; cursor:pointer;"/>
+	       </a4j:form>
+	     </rich:modalPanel>		 
+		<!--  Fin Panel Msg-->
+	</ui:define>
+</ui:composition>

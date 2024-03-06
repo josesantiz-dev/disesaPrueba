@@ -1,0 +1,481 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlInsumo" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+    	<f:facet name="header">
+			<h:outputText value="#{insumosAction.pojoInsumo.id == null ? msg['nueva'] : ''} #{msg['explosionInsumos']}" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlInsumo')}.hide()" />
+		</f:facet>
+		
+		<div style="display: block; padding:0 0 10px; min-width:700px; height: 22px; text-align: left; background-color: none;">
+			<h:panelGroup id="botonera" style="display: block; width: 100%; height: 22px; margin-bottom: 1em;">
+				<h:panelGroup id="grupoBotonesDerechos" style="width: 100%; vertical-align: middle; position:relative; ">
+					<a4j:commandButton id="cmdSalvar" rendered="#{insumosAction.pojoInsumo == null || insumosAction.pojoInsumo.id == null ? true : false}"
+						style="float:right; margin-left: 5px; vertical-align: middle; position:relative;"
+						image="#{msg['salvar22.img']}" 
+						action="#{insumosAction.guardar}" 
+						oncomplete="salvar(#{insumosAction.band}, '#{rich:clientId('pnlInsumo')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrorInsumo')});"
+						render="dtResults, msgErrorInsumo, pnlMensajes">
+						<rich:tooltip id="ttSalvar" showDelay="300" value="#{msg['salvar.e']}" for="cmdSalvar" />
+						<!--  -->
+					</a4j:commandButton>
+				</h:panelGroup>
+			</h:panelGroup>
+		</div>
+		
+		<h:panelGroup styleClass="encabezado" style="min-height: 1em;">
+			<h:outputText value="#{insumosAction.pojoInsumo.id != null ? insumosAction.pojoInsumo.id : '0'} "/>
+			<h:outputText value="#{insumosAction.pojoInsumo.obraNombre}" />
+		</h:panelGroup>
+		
+		<rich:messages id="msgErrorInsumo" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+			<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+		</rich:messages>
+		
+		<div style="display: block; margin: 10px auto; padding: 0; text-align: left; background-color: none;">
+			<h:panelGroup id="grupoDatosGenerales">
+				<fieldset style="margin-top: 10px; margin-bottom: 10px">
+					<legend><h:outputText value="#{msg['datosGenerales']}" styleClass="Titulo" /></legend>
+					
+					<h:panelGrid columns="4" columnClasses="colTitulo, colDato, colTitulo, colDato">
+						<h:outputText value="#{msg['obra']}:" styleClass="Titulo" />
+						<h:panelGroup id="pnlObraDatos">
+							<h:panelGrid columns="2">
+								<h:outputText id="txtObra" value="#{insumosAction.pojoInsumo.obra}" style="text-align:left; display:block;" />
+								<h:panelGroup>
+									<a4j:commandLink id="cmdSeleccionarObraPrincipal" rendered="#{insumosAction.pojoInsumo.id == null}"
+										action="#{insumosAction.nuevaBusquedaObras}" immediate="true"
+										value="#{insumosAction.pojoInsumo.idObra == null ? msg['seleccionar'] : msg['cambiar'] }" 
+										oncomplete="#{rich:component('pnlBusquedaObras')}.show();"
+										render="pnlBusquedaObras, pnlBusquedaObrasPrincipal, dtObras" />
+										
+									<h:inputText id="txtObraHidden" style="text-align:left;  display:none;"
+										value="#{insumosAction.pojoInsumo.obra}"
+										required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+										requiredMessage="#{msg['obra']} #{msg['mensaje.error.requerido']}" />
+								</h:panelGroup>
+							</h:panelGrid>
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						
+						<h:outputText value="#{msg['totalMateriales']}:" styleClass="Titulo" />
+						<h:inputText id="txtTotalMateriales" styleClass="Titulo" style="width: 120px; text-align: right" readonly="true" 
+							value="#{insumosAction.pojoInsumo.montoMateriales}">
+							<f:convertNumber pattern="###,###,##0.00" />
+						</h:inputText>
+						
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						
+						<h:outputText value="#{msg['totalManoDeObra']}:" styleClass="Titulo" />
+						<h:inputText id="txtTotalManoDeObra" styleClass="Titulo" style="width: 120px; text-align: right" readonly="true" 
+							value="#{insumosAction.pojoInsumo.montoManoDeObra}">
+							<f:convertNumber pattern="###,###,##0.00" />
+						</h:inputText>
+						
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						
+						<h:outputText value="#{msg['totalHerramientas']}:" styleClass="Titulo" />
+						<h:inputText id="txtTotalHerramientas" styleClass="Titulo" style="width: 120px; text-align: right" readonly="true" 
+							value="#{insumosAction.pojoInsumo.montoHerramientas}">
+							<f:convertNumber pattern="###,###,##0.00" />
+						</h:inputText>
+						
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						
+						<h:outputText value="#{msg['totalOtros']}:" styleClass="Titulo" rendered="#{insumosAction.countOtros > 0}" />
+						<h:inputText id="txtTotalOtros" styleClass="Titulo" style="width: 120px; text-align: right" readonly="true" 
+							value="#{insumosAction.pojoInsumo.montoOtros}" rendered="#{insumosAction.countOtros > 0}">
+							<f:convertNumber pattern="###,###,##0.00" />
+						</h:inputText>
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" rendered="#{insumosAction.countOtros == 0}" />
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" rendered="#{insumosAction.countOtros == 0}" />
+						
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						
+						<h:outputText value="#{msg['total']}:" styleClass="Titulo" />
+						<h:inputText id="txtTotal" styleClass="Titulo" style="width: 120px; text-align: right" readonly="true" 
+							value="#{insumosAction.pojoInsumo.total}">
+							<f:convertNumber pattern="###,###,##0.00" />
+						</h:inputText>
+						
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						<!--h:panelGroup>
+							<a4j:commandButton id="cmdSeleccionarProducto" rendered="#{insumosAction.permiteAgregarProducto}"
+								image="#{msg['agregar22.img']}"
+								action="#{insumosAction.nuevaBusquedaProductos}" 
+								onclick="#{rich:component('pnlBusquedaProducto')}.show()"
+								render="pnlBusquedaProducto" 
+								limitRender="true" />
+							<rich:tooltip showDelay="300" value="#{msg['agregar.e']}" for="cmdSeleccionarProducto" />
+						</h:panelGroup-->
+					</h:panelGrid>
+				</fieldset>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoInsumos">
+				<fieldset style="margin-top: 10px; margin-bottom: 10px">
+					<legend><h:outputText value="#{msg['insumos']}" styleClass="Titulo" /></legend>
+					
+					<rich:tabPanel id="tabs" switchType="client" style="margin: 10px auto 0; width: 100%;">
+						<rich:tab id="tabMateriales" header="#{msg['materiales']}">
+							<rich:dataTable id="dtMateriales" cellpadding="0" cellspacing="0" rows="5" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+								var="var" value="#{insumosAction.listMateriales}" style="margin:0 auto;">
+								<f:facet name="header">
+									<rich:columnGroup>
+										<rich:column style="text-align:center;" styleClass="Titulo" colspan="8">
+											<h:outputText value="#{msg['materiales']}" /> 
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:100px" styleClass="Titulo" breakRowBefore="true">
+											<h:outputText value="#{msg['id']}" /> 
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:100px" styleClass="Titulo">
+											<h:outputText value="#{msg['clave']}" /> 
+										</rich:column>
+										
+										<rich:column style="text-align:center;" styleClass="Titulo">
+											<h:outputText value="#{msg['descripcion']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+											<h:outputText value="#{msg['unidad']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:90px;" styleClass="Titulo">
+											<h:outputText value="#{msg['cantidad']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:90px;" styleClass="Titulo">
+											<h:outputText value="#{msg['costoUnitario']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:90px;" styleClass="Titulo">
+											<h:outputText value="#{msg['importe']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:80px;" styleClass="Titulo">
+											<h:outputText value="#{msg['%']}" />
+										</rich:column>
+									</rich:columnGroup>
+								</f:facet>
+								
+								<rich:column style="text-align:center; width:100px" styleClass="Titulo">
+									<h:outputText value="#{var.idProducto.id}" /> 
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:100px" styleClass="Titulo">
+									<h:outputText value="#{var.idProducto.clave}" /> 
+								</rich:column>
+								
+								<rich:column style="text-align:left;" styleClass="Descripcion">
+									<h:outputText value="#{var.nombreProducto}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:100px;" styleClass="Descripcion">
+									<h:outputText value="#{var.unidad}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:90px;" styleClass="Descripcion">
+									<h:outputText value="#{var.cantidad}" styleClass="Descripcion" />
+								</rich:column>
+								
+								<rich:column style="text-align:right; padding-left: 5px; width:90px;">
+									<h:outputText value="#{var.precioUnitario}" styleClass="Descripcion">
+										<f:convertNumber pattern="###,###,##0.00"/>
+									</h:outputText>
+								</rich:column>
+								
+								<rich:column style="text-align:right; padding-left: 5px; width:90px;">
+									<h:outputText value="#{var.monto}" styleClass="Descripcion">
+										<f:convertNumber pattern="###,###,##0.00"/>
+									</h:outputText>
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:80px;" styleClass="Descripcion">
+									<h:outputText value="#{var.porcentaje}" />
+								</rich:column>
+
+								<f:facet name="footer">
+									<rich:dataScroller id="dScrollMateriales" page="#{insumosAction.numPaginaMateriales}" for="dtMateriales" align="center" maxPages="10" ajaxSingle="true" styleClass="Titulo" />
+								</f:facet>
+							</rich:dataTable>
+						</rich:tab>
+						
+						<rich:tab id="tabManoDeObra" header="#{msg['manoDeObra']}">
+							<rich:dataTable id="dtManoDeObra" cellpadding="0" cellspacing="0" rows="5" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+								var="var" value="#{insumosAction.listManoDeObra}" style="margin:0 auto;">
+								<f:facet name="header">
+									<rich:columnGroup>
+										<rich:column style="text-align:center;" styleClass="Titulo" colspan="8">
+											<h:outputText value="#{msg['manoDeObra']}" /> 
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:100px" styleClass="Titulo" breakRowBefore="true">
+											<h:outputText value="#{msg['id']}" /> 
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:100px" styleClass="Titulo">
+											<h:outputText value="#{msg['clave']}" /> 
+										</rich:column>
+										
+										<rich:column style="text-align:center;" styleClass="Titulo">
+											<h:outputText value="#{msg['descripcion']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:120px;" styleClass="Titulo">
+											<h:outputText value="#{msg['unidad']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+											<h:outputText value="#{msg['cantidad']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+											<h:outputText value="#{msg['costoUnitario']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+											<h:outputText value="#{msg['importe']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:80px;" styleClass="Titulo">
+											<h:outputText value="#{msg['%']}" />
+										</rich:column>
+									</rich:columnGroup>
+								</f:facet>
+								
+								<rich:column style="text-align:center; width:100px" styleClass="Titulo">
+									<h:outputText value="#{var.idProducto.id}" /> 
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:100px" styleClass="Titulo">
+									<h:outputText value="#{var.idProducto.clave}" /> 
+								</rich:column>
+								
+								<rich:column style="text-align:left;" styleClass="Descripcion">
+									<h:outputText value="#{var.nombreProducto}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:120px;" styleClass="Descripcion">
+									<h:outputText value="#{var.unidad}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:100px;" styleClass="Descripcion">
+									<h:outputText value="#{var.cantidad}" styleClass="Descripcion" />
+								</rich:column>
+								
+								<rich:column style="text-align:right; padding-left: 5px; width: 120px;">
+									<h:outputText value="#{var.precioUnitario}" styleClass="Descripcion">
+										<f:convertNumber pattern="###,###,##0.00"/>
+									</h:outputText>
+								</rich:column>
+								
+								<rich:column style="text-align:right; padding-left: 5px; width: 120px;">
+									<h:outputText value="#{var.monto}" styleClass="Descripcion">
+										<f:convertNumber pattern="###,###,##0.00"/>
+									</h:outputText>
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:80px;" styleClass="Descripcion">
+									<h:outputText value="#{var.porcentaje}" />
+								</rich:column>
+
+								<f:facet name="footer">
+									<rich:dataScroller id="dScrollManoDeObra" page="#{insumosAction.numPaginaManoDeObra}" for="dtManoDeObra" align="center" maxPages="10" ajaxSingle="true" styleClass="Titulo" />
+								</f:facet>
+							</rich:dataTable>
+						</rich:tab>
+						
+						<rich:tab id="tabHerramientas" header="#{msg['herramientas']}">
+							<rich:dataTable id="dtHerramientas" cellpadding="0" cellspacing="0" rows="5" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+								var="var" value="#{insumosAction.listHerramientas}" style="margin:0 auto;">
+								<f:facet name="header">
+									<rich:columnGroup>
+										<rich:column style="text-align:center;" styleClass="Titulo" colspan="8">
+											<h:outputText value="#{msg['herramientas']}" /> 
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:100px" styleClass="Titulo" breakRowBefore="true">
+											<h:outputText value="#{msg['id']}" /> 
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:100px" styleClass="Titulo">
+											<h:outputText value="#{msg['clave']}" /> 
+										</rich:column>
+										
+										<rich:column style="text-align:center;" styleClass="Titulo">
+											<h:outputText value="#{msg['descripcion']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:120px;" styleClass="Titulo">
+											<h:outputText value="#{msg['unidad']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+											<h:outputText value="#{msg['cantidad']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+											<h:outputText value="#{msg['costoUnitario']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+											<h:outputText value="#{msg['importe']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:80px;" styleClass="Titulo">
+											<h:outputText value="#{msg['%']}" />
+										</rich:column>
+									</rich:columnGroup>
+								</f:facet>
+								
+								<rich:column style="text-align:center; width:100px" styleClass="Titulo">
+									<h:outputText value="#{var.idProducto.id}" /> 
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:100px" styleClass="Titulo">
+									<h:outputText value="#{var.idProducto.clave}" /> 
+								</rich:column>
+								
+								<rich:column style="text-align:left;" styleClass="Descripcion">
+									<h:outputText value="#{var.nombreProducto}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:120px;" styleClass="Descripcion">
+									<h:outputText value="#{var.unidad}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:100px;" styleClass="Descripcion">
+									<h:outputText value="#{var.cantidad}" styleClass="Descripcion" />
+								</rich:column>
+								
+								<rich:column style="text-align:right; padding-left: 5px; width: 120px;">
+									<h:outputText value="#{var.precioUnitario}" styleClass="Descripcion">
+										<f:convertNumber pattern="###,###,##0.00"/>
+									</h:outputText>
+								</rich:column>
+								
+								<rich:column style="text-align:right; padding-left: 5px; width: 120px;">
+									<h:outputText value="#{var.monto}" styleClass="Descripcion">
+										<f:convertNumber pattern="###,###,##0.00"/>
+									</h:outputText>
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:80px;" styleClass="Descripcion">
+									<h:outputText value="#{var.porcentaje}" />
+								</rich:column>
+
+								<f:facet name="footer">
+									<rich:dataScroller id="dScrollHerramientas" page="#{insumosAction.numPaginaHerramientas}" for="dtHerramientas" align="center" maxPages="10" ajaxSingle="true" styleClass="Titulo" />
+								</f:facet>
+							</rich:dataTable>
+						</rich:tab>
+						
+						<rich:tab id="tabOtros" header="#{msg['otrosProductos']}" rendered="#{insumosAction.countOtros > 0}">
+							<rich:dataTable id="dtOtros" cellpadding="0" cellspacing="0" rows="5" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+								var="var" value="#{insumosAction.listOtros}" style="margin:0 auto;">
+								<f:facet name="header">
+									<rich:columnGroup>
+										<rich:column style="text-align:center;" styleClass="Titulo" colspan="8">
+											<h:outputText value="#{msg['otrosProductos']}" /> 
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:100px" styleClass="Titulo" breakRowBefore="true">
+											<h:outputText value="#{msg['id']}" /> 
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:100px" styleClass="Titulo">
+											<h:outputText value="#{msg['clave']}" /> 
+										</rich:column>
+										
+										<rich:column style="text-align:center;" styleClass="Titulo">
+											<h:outputText value="#{msg['descripcion']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:120px;" styleClass="Titulo">
+											<h:outputText value="#{msg['unidad']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+											<h:outputText value="#{msg['cantidad']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+											<h:outputText value="#{msg['costoUnitario']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+											<h:outputText value="#{msg['importe']}" />
+										</rich:column>
+										
+										<rich:column style="text-align:center; width:80px;" styleClass="Titulo">
+											<h:outputText value="#{msg['%']}" />
+										</rich:column>
+									</rich:columnGroup>
+								</f:facet>
+								
+								<rich:column style="text-align:center; width:100px" styleClass="Titulo">
+									<h:outputText value="#{var.idProducto.id}" /> 
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:100px" styleClass="Titulo">
+									<h:outputText value="#{var.idProducto.clave}" /> 
+								</rich:column>
+								
+								<rich:column style="text-align:left;" styleClass="Descripcion">
+									<h:outputText value="#{var.nombreProducto}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:120px;" styleClass="Descripcion">
+									<h:outputText value="#{var.unidad}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:100px;" styleClass="Descripcion">
+									<h:outputText value="#{var.cantidad}" styleClass="Descripcion" />
+								</rich:column>
+								
+								<rich:column style="text-align:right; padding-left: 5px; width: 120px;">
+									<h:outputText value="#{var.precioUnitario}" styleClass="Descripcion">
+										<f:convertNumber pattern="###,###,##0.00"/>
+									</h:outputText>
+								</rich:column>
+								
+								<rich:column style="text-align:right; padding-left: 5px; width: 120px;">
+									<h:outputText value="#{var.monto}" styleClass="Descripcion">
+										<f:convertNumber pattern="###,###,##0.00"/>
+									</h:outputText>
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:80px;" styleClass="Descripcion">
+									<h:outputText value="#{var.porcentaje}" />
+								</rich:column>
+
+								<f:facet name="footer">
+									<rich:dataScroller id="dScrollOtros" page="#{insumosAction.numPaginaOtros}" for="dtOtros" align="center" maxPages="10" ajaxSingle="true" styleClass="Titulo" />
+								</f:facet>
+							</rich:dataTable>
+						</rich:tab>
+					</rich:tabPanel>
+				</fieldset>
+			</h:panelGroup>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

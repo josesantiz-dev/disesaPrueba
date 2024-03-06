@@ -1,0 +1,319 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlPago" autosized="true" domElementAttachment="form" style="min-width:600px; max-width:1024px;" top="10"
+		onshow="document.getElementById('#{rich:clientId('botonera')}').focus();">
+		<f:facet name="header">
+			<h:panelGroup id="lblTitulo">
+				<h:graphicImage style="cursor:pointer; margin:0; float:left;" title="#{msg['auditoria']}"
+					rendered="#{facPagosAction.hasId}"
+					value="#{msg['navegacion.gral.info.img']}">
+					<a4j:ajax event="click" 
+						listener="#{facPagosAction.auditoria}"
+						oncomplete="editar(#{facPagosAction.band}, '#{rich:clientId('pnlAuditoria')}', '#{rich:clientId('pnlMensajes')}');" 
+						render="pnlAuditoria,pnlMensajes" limitRender="true" />
+				</h:graphicImage>
+				
+				<h:outputText value="#{facPagosAction.titulo}" styleClass="Titulo" />
+			</h:panelGroup>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlPago')}.hide()" />
+		</f:facet>
+		
+		<a4j:region id="regPago">
+			<h:panelGrid id="botonera" columns="2" style="padding:0; width:100%; min-width:800px; min-height:22px; text-align:left;">
+				<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+					<a4j:commandButton id="cmdTimbrar" style="margin:0 5px 0 0; vertical-align:top; position:relative;" styleClass="Titulo"
+						rendered="#{facPagosAction.timbrable}" 
+						image="#{msg['documentos22.img']}" title="#{msg['timbrar']} #{msg['pago']}"
+						action="#{facPagosAction.evaluaTimbrar}" 
+						oncomplete="evaluaTimbrar(#{facPagosAction.band}, '#{rich:clientId('pnlConfirmacionTimbrar')}', '#{rich:clientId('pnlMensajes')}');"
+						render="pnlConfirmacionTimbrar,pnlMensajes" limitRender="true" />
+					
+					<a4j:commandButton id="cmdPagoPDF" style="margin:0 5px 0 0; vertical-align:top; position:relative;" styleClass="Titulo"
+						rendered="#{facPagosAction.timbrado}"
+						image="#{msg['pdf22.img']}" title="#{msg['complementoPago']} #{msg['pdf']}"
+						action="#{facPagosAction.obtenerPDF}" 
+						oncomplete="reporte(#{facPagosAction.band}, '#{rich:clientId('pnlMensajes')}');"
+						render="pnlMensajes" limitRender="true" />
+					
+					<a4j:commandButton id="cmdPagoXML" style="margin:0 5px 0 0; vertical-align:top; position:relative;" styleClass="Titulo"
+						rendered="#{facPagosAction.timbrado}"
+						image="#{msg['xml22.img']}" title="#{msg['complementoPago']} #{msg['xml']}"
+						action="#{facPagosAction.obtenerXML}" 
+						oncomplete="reporte(#{facPagosAction.band}, '#{rich:clientId('pnlMensajes')}');"
+						render="pnlMensajes" limitRender="true" />
+					
+					<a4j:commandButton id="cmdPagoXMLBase" style="margin:0 10px; vertical-align:top; position:relative;" styleClass="Titulo"
+						rendered="#{facPagosAction.debugging}" 
+						image="#{msg['xmlBase22.img']}" title="#{msg['xml']} #{msg['previo']}"
+						action="#{facPagosAction.obtenerXMLBase}" 
+						oncomplete="reporte(#{facPagosAction.band}, '#{rich:clientId('pnlMensajes')}');"
+						render="pnlMensajes" limitRender="true" />
+					
+					<a4j:commandButton id="btnCancelar" style="margin:0 10px; vertical-align:top; position:relative;" styleClass="Titulo"
+						rendered="#{facPagosAction.cancelable}" 
+						image="#{msg['cancelar22.img']}" title="#{msg['cancelar']} #{msg['pago']}"
+						oncomplete="#{rich:component('pnlEliminar')}.show()"
+						render="pnlEliminar" limitRender="true">
+						<f:setPropertyActionListener target="#{facPagosAction.editando}" value="#{true}" for="btnCancelar" />
+					</a4j:commandButton>
+					
+					<rich:messages id="validadorFacturaPago" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" style="text-align:left;">
+						<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin:0 10px 0 0;" /></f:facet>
+					</rich:messages>
+						
+					<h:panelGrid columns="2" style="margin:0; text-align:left;" rendered="#{facPagosAction.timbrado}">
+						<h:outputLabel value="#{msg['complementoPago']} #{msg['uuid']}:" styleClass="Titulo" />
+						<h:outputLabel value="#{facPagosAction.pagoUuid}" styleClass="Titulo" />
+					</h:panelGrid>
+				</h:panelGroup>
+				
+				<h:panelGroup id="grupoBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+					<a4j:commandButton id="cmdSalvar" style="float:right; margin:0 0 0 5px; vertical-align:top; position:relative;" styleClass="Titulo"
+						rendered="#{not facPagosAction.timbrado}"
+						image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+						action="#{facPagosAction.guardar}" 
+						oncomplete="salvar(#{facPagosAction.band}, '#{rich:clientId('pnlPago')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorFacturaPago')});"
+						render="dtResults txtfacPagosClave validadorFacturaPago pnlMensajes" limitRender="true" />
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<h:panelGroup id="grupoDatosGenerales" style="margin:10px auto 0; text-align:left;">
+				<h:panelGrid columns="2" style="margin:0; text-align:left;" rendered="#{not facPagosAction.timbrado}">
+					<h:outputText value="#{msg['factura']}:" styleClass="Titulo" />
+					<a4j:commandButton id="cmdFacturaModal" style="margin:0 5px; vertical-align:top; position:relative;" styleClass="Titulo"
+						image="#{msg['agregar22.img']}" title="#{msg['agregar.e']} #{msg['factura']}"
+						action="#{facPagosAction.nuevaBusquedaFacturas}"
+						oncomplete="#{rich:component('pnlBusquedaFacturas')}.show();"
+						render="pnlBusquedaFacturas" limitRender="true" />
+				</h:panelGrid>
+				
+				<div class="tableParent" style="display:block; margin:5px auto 0; width:100%; padding:0; height:auto; max-height:280px; overflow-y:auto;">
+					<rich:dataTable id="dtFacturasRelacionadas" value="#{facPagosAction.listFacturasRelacionadas}" var="var" rows="50" 
+						style="margin:0 auto; width:100%;" cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+						<f:facet name="header">
+							<rich:columnGroup>
+								<rich:column style="text-align:center; width:80px;" styleClass="Titulo">
+									<h:outputText value="#{msg['factura']}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:80px;" styleClass="Titulo">
+									<h:outputText value="#{msg['fecha']}" />
+								</rich:column>
+			
+								<rich:column style="text-align:center; width:120px;" styleClass="Titulo">
+									<h:outputText value="#{msg['obra']}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:120px;" styleClass="Titulo">
+									<h:outputText value="#{msg['cliente']}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:60px;" styleClass="Titulo">
+									<h:outputText value="#{msg['moneda']}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:80px;" styleClass="Titulo">
+									<h:outputText value="#{msg['total']}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:60px;" styleClass="Titulo">
+									<h:outputText value="#{msg['parcialidad']}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:80px;" styleClass="Titulo">
+									<h:outputText value="#{msg['saldoAnterior']}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+									<h:outputText value="#{msg['pago']}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:80px;" styleClass="Titulo">
+									<h:outputText value="#{msg['saldoInsoluto']}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:20px;" styleClass="Titulo" />
+							</rich:columnGroup>
+						</f:facet>
+						
+						<rich:column style="text-align:left; width:80px;">
+							<h:outputText value="#{var.idFactura.folioFactura}" title="#{var.idFactura.id}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:80px;">
+							<h:outputText value="#{var.idFactura.fechaEmision}"><f:convertDateTime type="date" pattern="dd-MMM-yyyy"/></h:outputText>
+						</rich:column>
+						
+						<rich:column style="text-align:left; width:120px; max-height:57px;">
+							<h:outputText value="#{var.idFactura.idObra.nombre}" title="#{var.idFactura.idObra.id} - #{var.idFactura.idObra.nombre}"
+								style="display:block; width:100%; max-height:48px; overflow:hidden;" />
+						</rich:column>
+						
+						<rich:column style="text-align:left; width:120px; max-height:57px;">
+							<h:outputText value="#{var.idFactura.cliente}" title="#{var.idFactura.rfc} - #{var.idFactura.cliente}"
+								style="display:block; width:100%; max-height:48px; overflow:hidden;" />
+						</rich:column>
+						
+						<rich:column style="text-align:left; width:60px;">
+							<h:outputText value="#{var.idFactura.descripcionMoneda}" title="#{var.idFactura.idMoneda}" />
+						</rich:column>
+						
+						<rich:column style="text-align:right; width:80px;">
+							<h:outputText value="#{var.facturado}"><f:convertNumber pattern="###,###,##0.00" /></h:outputText>
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:60px;">
+							<h:outputText value="#{var.parcialidad}"><f:convertNumber pattern="#00" /></h:outputText>
+						</rich:column>
+						
+						<rich:column style="text-align:right; width:80px;">
+							<h:outputText value="#{var.saldoAnterior}"><f:convertNumber pattern="###,###,##0.00" /></h:outputText>
+						</rich:column>
+						
+						<rich:column style="text-align:right; width:100px;">
+							<h:inputText value="#{var.pago}" rendered="#{not facPagosAction.timbrado}" style="text-align:right; width:100px;">
+								<f:convertNumber pattern="###,###,##0.00" />
+								<a4j:ajax event="change" 
+									listener="#{facPagosAction.totalizarPago}" 
+									render="dtFacturasRelacionadas,groupMonto" limitRender="true" />
+							</h:inputText>
+							<h:outputText value="#{var.pago}" rendered="#{facPagosAction.timbrado}"><f:convertNumber pattern="###,###,##0.00" /></h:outputText>
+						</rich:column>
+						
+						<rich:column style="text-align:right; width:80px;">
+							<h:outputText value="#{var.saldoInsoluto}"><f:convertNumber pattern="###,###,##0.00" /></h:outputText>
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:20px;">
+							<a4j:commandButton id="cmdEliminarFacturaRelacionada" rendered="#{not facPagosAction.timbrado}"
+								image="#{msg['eliminar16.img']}" title="#{msg['quitarFactura']}"
+								oncomplete="#{rich:component('pnlEliminarFactura')}.show()"
+								render="pnlEliminarFactura" limitRender="true">
+								<f:setPropertyActionListener target="#{facPagosAction.idFacturaQuitar}" value="#{var.idFactura.id}" for="cmdEliminarFacturaRelacionada" />
+							</a4j:commandButton>
+						</rich:column>
+						
+						<f:facet name="footer">
+							<rich:dataScroller for="dtFacturasRelacionadas" page="#{facPagosAction.numPagina}" renderIfSinglePage="false"
+								fastStep="10" maxPages="10" align="center" ajaxSingle="true" styleClass="Titulo"/>
+						</f:facet>
+					</rich:dataTable>
+				</div>
+				
+				<h:panelGrid columns="2" columnClasses="colLayoutTop,colLayoutTop" style="margin:10px auto 0; width:100%; vertical-align:top" cellpadding="0" cellspacing="0">
+					<h:panelGroup>
+						<fieldset style="min-height:220px;">
+							<legend><h:outputText value="#{msg['pago']}" styleClass="Titulo"/></legend>
+							
+							<h:panelGrid id="groupPago" columns="2" columnClasses="colTitulo,colDato" style="margin: auto; width:100%;">
+								<h:outputLabel value="#{msg['fecha']}:" styleClass="Titulo" />
+								<rich:calendar id="txtFecha" enableManualInput="false" inputSize="9"
+									disabled="#{facPagosAction.timbrado}"
+									value="#{facPagosAction.fechaPago}" 
+									datePattern="dd/MMM/yyyy">
+									<a4j:ajax event="change"
+										listener="#{facPagosAction.seleccionaTipoCambio}"
+										render="txtTipoCambioPago" limitRender="true" />
+								</rich:calendar>
+								
+								<h:outputLabel value="#{msg['monto']}:" styleClass="Titulo" />
+								<h:panelGroup id="groupMonto">
+									<h:inputText id="txtPagoMonto" maxlength="30" style="width: 140px; text-align: right;"
+										disabled="#{facPagosAction.timbrado}"
+										value="#{facPagosAction.montoPago}"
+										required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+										requiredMessage="#{msg['monto']} #{msg['mensaje.error.requerido']}"
+										onkeypress="return soloDecimales(event, this.value, 12, 3);">
+										<f:convertNumber pattern="###,###,##0.00" />
+										<a4j:ajax event="change" 
+											listener="#{facPagosAction.populatePago}" 
+											render="dtFacturasRelacionadas,groupMonto" limitRender="true" />
+									</h:inputText>
+									<h:outputText value="Diferencia:" styleClass="Titulo" style="margin:0 5px;" />
+									<h:inputText value="#{facPagosAction.diferencia}" disabled="true" style="width:60px; text-align:right;"><f:convertNumber pattern="###,###,##0.00" /></h:inputText>
+								</h:panelGroup>
+								
+								<h:outputText value="#{msg['moneda']}:" styleClass="Titulo"/>
+								<h:panelGroup>
+									<h:selectOneMenu id="cbMoneda" style="width:162px;"
+										disabled="#{facPagosAction.timbrado ? true : (facPagosAction.deshabilitarMoneda)}" 
+										value="#{facPagosAction.monedaPagoId}">
+										<f:selectItems value="#{facPagosAction.listMonedasItems}" />
+										<a4j:ajax event="change"
+											listener="#{facPagosAction.seleccionaTipoCambio}" 
+											render="groupTipoCambio" limitRender="true" />
+									</h:selectOneMenu>
+									
+									<h:panelGroup id="groupTipoCambio">
+										<h:outputText value="#{msg['tCambio']}:" title="#{msg['tipoCambio']}" styleClass="Titulo" style="margin:0 5px;" />
+										<h:inputText style="width:60px; text-align:right;" disabled="#{facPagosAction.timbrado ? true : (facPagosAction.tipoCambio le 1)}"
+											value="#{facPagosAction.tipoCambio}"><f:convertNumber pattern="0.0000"/></h:inputText>
+									</h:panelGroup>
+								</h:panelGroup>
+								
+								<h:outputLabel value="#{msg['formaPago']}:" styleClass="Titulo" />
+								<h:selectOneMenu id="txtFormasPago" style="width: 300px;"
+									disabled="#{facPagosAction.timbrado}"
+									value="#{facPagosAction.idFormaPago}" 
+									required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+									requiredMessage="#{msg['formaPago']} #{msg['mensaje.error.requerido']}">
+									<f:selectItem itemLabel="#{msg['seleccione']}" />
+									<f:selectItems value="#{facPagosAction.listFormasPagoItems}" />
+								</h:selectOneMenu>
+								
+								<h:outputLabel value="#{msg['referencia']}:" styleClass="Titulo" />
+								<h:inputText id="txtFormaPagoReferencia" maxlength="30" style="width:140px; text-align:left;"
+									disabled="#{facPagosAction.timbrado}"
+									value="#{facPagosAction.referenciaPago}" />
+								
+								<h:outputLabel value="#{msg['banco']}:" styleClass="Titulo" />
+								<h:selectOneMenu id="txtBancoOrigen" style="width: 300px;"
+									disabled="#{facPagosAction.timbrado}"
+									value="#{facPagosAction.idBancoOrigen}" 
+									required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+									requiredMessage="#{msg['bancoOrigen']} #{msg['mensaje.error.requerido']}">
+									<f:selectItem itemLabel="#{msg['seleccione']}" />
+									<f:selectItems value="#{facPagosAction.listBancosItems}" />
+								</h:selectOneMenu>
+							</h:panelGrid>
+						</fieldset>
+					</h:panelGroup>
+					
+					<h:panelGroup>
+						<fieldset style="min-height:220px;">
+							<legend><h:outputText value="#{msg['cuenta']}" styleClass="Titulo"/></legend>
+							
+							<h:panelGrid id="groupCuenta" columns="2" columnClasses="colTitulo,colDato" style="margin: auto; width:100%;">
+								<h:outputLabel value="#{msg['cuentaBancaria']}:" styleClass="Titulo" />
+								<h:selectOneMenu id="txtCuentaBancaria" style="width: 300px;"
+									disabled="#{facPagosAction.timbrado}"
+									value="#{facPagosAction.idCuentaBancaria}" 
+									required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+									requiredMessage="#{msg['cuentaBancaria']} #{msg['mensaje.error.requerido']}">
+									<f:selectItem itemLabel="#{msg['seleccione']}" />
+									<f:selectItems value="#{facPagosAction.listCuentasItems}" />
+								</h:selectOneMenu>
+								
+								<h:outputLabel value="#{msg['observaciones']}:" styleClass="Titulo" />
+								<h:inputTextarea id="txtObservaciones" style="width:300px; height:60px; resize:none;"
+									disabled="#{facPagosAction.timbrado}"
+									value="#{facPagosAction.observaciones}" />
+							</h:panelGrid>
+						</fieldset>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

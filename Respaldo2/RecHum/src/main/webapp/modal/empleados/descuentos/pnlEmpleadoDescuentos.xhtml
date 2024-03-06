@@ -1,0 +1,141 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlEmpleadoDescuentos" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+		<f:facet name="header">
+			<h:outputText value="#{msg['descuentos']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlEmpleadoDescuentos')}.hide()" />
+		</f:facet>
+		
+		<a4j:region id="regDescuentos">
+			<div style="display: block; padding:0 0 10px; min-width:500px; height: 22px; text-align: left; background-color: none;">
+				<h:panelGroup id="botoneraDescuentos" style="display: block; width: 100%; height: 22px; margin-bottom: 1em;">
+					<h:panelGroup id="grupoDescuentosBotonesDerechos" style="width: 100%; vertical-align: middle; position:relative; ">
+						<a4j:commandButton id="cmdNuevoEmpDescuento" style="float:right; margin-left: 5px; vertical-align: middle; position:relative;"
+							image="#{msg['nuevo22.img']}" title="#{msg['nuevo.e']} #{msg['descuento']}"
+							action="#{empdesAction.nuevo}" 
+							oncomplete="#{rich:component('pnlEmpleadoDescuento')}.show()"
+							render="pnlEmpleadoDescuento"
+							limitRender="true" />
+					</h:panelGroup>
+				</h:panelGroup>
+			</div>
+			
+			<h:panelGroup id="divDatosEmpleado" styleClass="encabezado" style="min-height: 1em;">
+				<h:outputText value="#{empdesAction.nombreEmpleado}" />
+			</h:panelGroup>
+			
+			<div style="display: block; margin: 1px auto; padding: 0; text-align: left; background-color: none;">
+				<h:panelGrid id="pnlFiltroFecha" columns="2" columnClasses="colTitulo, colDato" style="margin: 10px 0;">
+					<h:outputLabel value="#{msg['fecha']}:" styleClass="Titulo" />
+					<h:panelGroup>
+						<rich:calendar id="txtFechaBusqueda" enableManualInput="false" 
+							value="#{empdesAction.fechaBusqueda}"
+							datePattern="dd/MMM/yyyy">
+							<a4j:ajax event="change" 
+								listener="#{empdesAction.filtrarDescuentosPorFecha}" 
+								render="dtDescuentos, pnlFiltroFecha" 
+								limitRender="true" />
+						</rich:calendar>
+						
+						<a4j:commandButton id="cmdLimpiarBusqueda" style="margin-left: 5px; vertical-align: middle; position:relative;"
+							image="#{msg['eliminar16.img']}" title="#{msg['limpiar']} #{msg['fecha']}"
+							rendered="#{empdesAction.fechaBusqueda == null ? false : true}"
+							action="#{empdesAction.limpiarFiltroFecha}" 
+							render="pnlFiltroFecha,dtDescuentos"
+							limitRender="true" />
+					</h:panelGroup> 
+				</h:panelGrid>
+				
+				<rich:dataTable id="dtDescuentos" cellpadding="0" cellspacing="0" rows="12" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+					var="var" value="#{empdesAction.listEmpDescuentos}" style="margin:0 auto;"> 
+					<f:facet name="header">
+						<rich:columnGroup> 
+							<rich:column colspan="6" style="text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['descuentos']} #{msg['empleado']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:80px" styleClass="Titulo" breakRowBefore="true">
+								<h:outputText value="#{msg['id']}" /> 
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:70px" styleClass="Titulo">
+								<h:outputText value="#{msg['fecha']}" /> 
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:100px" styleClass="Titulo">
+								<h:outputText value="#{msg['monto']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:90px" styleClass="Titulo">
+								<h:outputText value="#{msg['estatus']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width: 40px;" styleClass="Titulo" colspan="2" />
+						</rich:columnGroup>
+					</f:facet>
+	
+					<rich:column style="text-align: center; width: 80px;">
+						<h:outputText value="#{var.id}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : 'Descripcion'}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; padding-left: 5px; width: 70px;">
+						<h:outputText value="#{var.fecha}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : 'Descripcion'}">
+								<f:convertDateTime type="date" pattern="dd/MMM/yyyy"/>
+						</h:outputText>
+					</rich:column>
+					
+					<rich:column style="text-align:right; padding-left: 5px; width: 100px;">
+						<h:outputText value="#{var.monto}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : 'Descripcion'}">
+							<f:convertNumber pattern="###,###,##0.00"/>
+						</h:outputText>
+					</rich:column>
+					
+					<rich:column style="text-align:left; padding-left: 5px; width: 90px;">
+						<h:outputText value="Cancelado"  rendered="#{var.estatus == 0}" styleClass="itemCancelado" />
+						<h:outputText value="Pendiente"  rendered="#{var.estatus == 1}" styleClass="Descripcion" />
+						<h:outputText value="Descontado" rendered="#{var.estatus == 2}" styleClass="Descripcion" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+						<a4j:commandButton id="cmdVerDescuento" 
+							image="#{msg['detalles16.img']}" title="#{msg['detalles']}"
+							rendered="#{var.estatus != 0}"
+							action="#{empdesAction.editar}" 
+							oncomplete="verEditar(#{empdesAction.operacion}, '#{rich:clientId('pnlEmpleadoDescuento')}', '#{rich:clientId('pnlMensajes')}');"
+							render="pnlEmpleadoDescuento,pnlMensajes"
+							limitRender="true">
+							<f:setPropertyActionListener value="#{var}" target="#{empdesAction.pojoEmpleadoDescuento}" for="cmdVerDescuento" />
+						</a4j:commandButton>
+					</rich:column>
+					
+					<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+						<a4j:commandButton id="cmdEliminarDescuento" 
+							image="#{msg['cancelar16.img']}" title="#{msg['cancelar']}"
+							rendered="#{var.estatus != 0}"
+							oncomplete="#{rich:component('pnlEliminar')}.show()" 
+							render="pnlEliminar"
+							limitRender="true">
+							<f:setPropertyActionListener target="#{empdesAction.pojoEmpleadoDescuentoBorrar}" value="#{var}" for="cmdEliminarDescuento" />
+						</a4j:commandButton>
+					</rich:column>
+	
+					<f:facet name="footer">
+						<rich:dataScroller id="dScroll" page="#{empdesAction.numPaginaEmpDescuentos}" for="dtDescuentos" 
+							align="center" maxPages="10" fastStep="10" renderIfSinglePage="false" ajaxSingle="true" styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</div>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

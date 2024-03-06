@@ -1,0 +1,191 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlPresupuesto" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:graphicImage style="cursor:pointer; margin:0; float:left;" title="Auditoria"
+					value="#{msg['navegacion.gral.info.img']}">
+					<a4j:ajax event="click" 
+						oncomplete="#{rich:component('pnlAuditoria')}.show()" 
+						render="pnlAuditoria" />
+				</h:graphicImage>
+				
+				<h:outputText value="#{msg['ppt-01']}" styleClass="Titulo" />
+			</h:panelGroup>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlPresupuesto')}.hide()" />
+		</f:facet>
+		
+		<h:panelGrid id="botoneraPresupuesto" columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+			<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdReportePPT01" style="margin-left: 5px; vertical-align: middle; position:relative;"
+					image="#{msg['imprimir22.img']}" title="#{msg['imprimir.e']}"
+					action="#{pptoAction.reporte}" 
+					oncomplete="reporte(#{pptoAction.operacion}, '#{rich:clientId('pnlMensajes')}')"
+					render="pnlMensajes" />
+				
+				<rich:messages id="msgErrorPresupuesto" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+				</rich:messages>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdSalvarPresupuesto" style="float:right; margin-left: 5px; vertical-align: middle; position:relative;" 
+					image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+					action="#{pptoAction.guardar}"
+					oncomplete="salvar(#{pptoAction.operacion}, '#{rich:clientId('pnlPresupuesto')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrorPresupuesto')});"
+					render="dtDetallePresupuesto,msgErrorPresupuesto,pnlMensajes"
+					limitRender="true" />
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<h:panelGroup id="grupoDatosPresupuesto">
+			<fieldset style="margin: 5px auto;">
+				<legend><h:outputText value="#{msg['datosGenerales']}" styleClass="Titulo" /></legend>
+				
+				<h:panelGrid columns="2" width="700" columnClasses="colTitulo,colDato" style="text-align:left;">
+					<h:outputText value="#{msg['obra']}:" styleClass="Titulo"/>
+					<h:outputText value="#{pptoAction.obra}" styleClass="Titulo"/>
+				
+					<h:outputText value="#{msg['tema']}:" styleClass="Titulo"/>
+					<h:inputTextarea id="txtTema" rows="1" style="width:600px; resize:none;" styleClass="text_area"
+						value="#{pptoAction.pojoPresupuesto.tema}" 
+						required="#{!empty param[rich:clientId('cmdSalvarPresupuesto')]}" 
+						requiredMessage="#{msg['tema']} #{msg['mensaje.error.requerido']}" />
+				
+					<h:outputText value="#{msg['ruta']}:" styleClass="Titulo"/>
+					<h:inputTextarea id="txtRuta" rows="1" style="width:600px; resize:none;" styleClass="text_area" 
+						value="#{pptoAction.pojoPresupuesto.ruta}" 
+						required="#{!empty param[rich:clientId('cmdSalvarPresupuesto')]}" 
+						requiredMessage="#{msg['ruta']} #{msg['mensaje.error.requerido']}" />
+				</h:panelGrid>
+			</fieldset>
+		</h:panelGroup>
+		
+		<h:panelGroup id="grupoPresupuestoDetalle">
+			<fieldset style="margin: 5px auto;">
+				<legend><h:outputText value="#{msg['detalles']}" styleClass="Titulo" /></legend>
+				
+				<div style="display: block; margin: 0 auto 5px; padding:0; width:100%; text-align: right; overflow: auto; background-color: none;">
+					<a4j:commandButton id="cmdRefrescar" style="float:right; vertical-align: middle; cursor: pointer; margin: 0 5px;"
+						image="#{msg['calcular16.img']}" title="#{msg['calcular']}"
+						action="#{pptoAction.recalcularMontos}"
+						oncomplete="verificarCalculoPresupuesto(#{pptoAction.cargaInsumosValidada}, '#{rich:clientId('pnlMensajes')}' );"
+						render="dtPresupuestoDetalle,pnlMensajes"
+						limitRender="true" />
+				</div>
+				
+				<h:panelGroup id="groupPresupuesto" style="margin:10px auto 0; width:100%;  text-align:center;">
+					<div style="margin:0 auto; width:100%; height:38px; overflow:hidden;">
+						<rich:dataTable id="dtPresupuestoDetalleHeader" value="#{pptoAction.listDetalles}" var="var"
+							cellpadding="0" cellspacing="0" rows="1" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+							style="margin:0 auto; width:100%;">
+							<f:facet name="header">
+								<rich:columnGroup>
+									<rich:column style="text-align:center; width:16px;" styleClass="Titulo">
+										<h:outputText value="#" /> 
+									</rich:column>
+									
+									<rich:column style="text-align:center; width:292px;" styleClass="Titulo">
+										<h:outputText value="#{msg['descripcion']}" /> 
+									</rich:column>
+									
+									<rich:column style="text-align:center; width:92px;" styleClass="Titulo">
+										<h:outputText value="#{msg['monto']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center; width:92px;" styleClass="Titulo">
+										<h:outputText value="#{msg['porcentajeExplosionInsumos']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center; width:92px;" styleClass="Titulo">
+										<h:outputText value="#{msg['porcentajeGranTotalSinIva']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center; width:192px;" styleClass="Titulo">
+										<h:outputText value="#{msg['observaciones']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo" rendered="#{pptoAction.scrolling}" />
+								</rich:columnGroup>
+							</f:facet>
+							
+							<rich:column style="text-align:center;" colspan="#{pptoAction.scrolling ? 7 : 6}" />
+						</rich:dataTable>
+					</div>
+					
+					<div style="margin:0 auto; width:100%; height:auto; max-height:300px; overflow-y:scroll; overflow-x: hidden;">
+						<rich:dataTable id="dtPresupuestoDetalle" value="#{pptoAction.listDetalles}" var="var" style="margin:0 auto; width:100%;"
+							cellpadding="0" cellspacing="0" rows="16" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+							
+							<rich:column style="text-align:right; width:16px;">
+								<h:outputText value="#{var.conceptoPresupuesto.orden}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:left; width:292px;">
+								<h:outputText value="#{var.conceptoPresupuesto.concepto}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:#{var.montoCapturable == true ? 'center' : 'right'}; width:92px;">
+								<a4j:region>
+									<h:inputText maxlength="13" styleClass="Descripcion" style="text-align:right; width:76px;"
+										value="#{var.monto}" 
+										onkeypress="return soloDecimales(event.which, this.value, 10, 2);"
+										rendered="#{var.montoCapturable == true}">
+										<f:convertNumber pattern="###,###,##0.##" />
+										<f:validateLongRange minimum="0" />
+									</h:inputText>
+									<h:outputText styleClass="Descripcion" rendered="#{var.montoCapturable == false}"
+										value="#{var.monto}">
+										<f:convertNumber pattern="###,###,##0.##" />
+									</h:outputText>
+								</a4j:region>
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:92px;">
+								<a4j:region>
+									<h:inputText maxlength="5" styleClass="Descripcion" style="text-align:center; width:76px;"
+										value="#{var.porcentaje}" 
+										onkeypress="return soloDecimales(event, this.value, 3, 2);"
+										rendered="#{var.porcentajeCapturable == true}">
+										<f:convertNumber pattern="###,###,##0.##" />
+										<f:validateLongRange minimum="0" maximum="100" />
+									</h:inputText>
+									<h:outputText styleClass="Descripcion"
+										value="#{var.porcentaje}"
+										rendered="#{var.porcentajeCapturable == false}">
+										<f:convertNumber pattern="###,###,##0.##" />
+									</h:outputText>
+								</a4j:region>
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:92px;">
+								<h:outputText styleClass="Descripcion" value="#{var.porcentajeTotalesCapturable ? var.porcentajeTotales : ''}">
+									<f:convertNumber pattern="###,###,##0.##" />
+								</h:outputText>
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:192px;">
+								<a4j:region>
+									<h:inputText styleClass="Descripcion" style="text-align:left; width:176px;"
+										value="#{var.notas}">
+									</h:inputText>
+								</a4j:region>
+							</rich:column>
+						</rich:dataTable>
+					</div>
+				</h:panelGroup>
+			</fieldset>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

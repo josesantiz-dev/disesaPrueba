@@ -1,0 +1,23 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlInfoReg" autosized="true"
+		onshow="document.getElementById('#{rich:clientId('btnInfoReg')}').focus();"
+		header="#{msg['navegacion.label.informacion']}">
+
+		<a4j:region>
+			<h:panelGrid columns="1" style="text-align:center; margin:0 auto; min-width:300px; max-width:500px;">
+				<h:outputText value="#{msg['mensaje.info.infoReg']}" styleClass="Descripcion" /> 
+				
+				<a4j:commandButton id="btnInfoReg" style="margin:10px auto 0; min-width:100px;"
+					value="#{msg['navegacion.label.aceptar']}" 
+					oncomplete="#{rich:component('pnlInfoReg')}.hide()" />
+			</h:panelGrid>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

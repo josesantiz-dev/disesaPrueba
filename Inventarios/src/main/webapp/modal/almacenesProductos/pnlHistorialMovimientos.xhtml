@@ -1,0 +1,84 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlHistorialMovimientos" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="15">
+		<f:facet name="header">
+			<h:outputText value="#{msg['historial']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlHistorialMovimientos')}.hide()" />
+		</f:facet>
+		
+		<h:panelGroup style="width:100%; margin:0 auto; padding:0;">
+			<div class="tableParent" style="display:block; margin:10px auto 0; width:100%; padding:0; height:auto; max-height:500px; overflow-y:auto;">
+				<rich:dataTable id="dtHistorial" value="#{invAction.historial}" var="var" rows="50" iterationStatusVar="it"
+					cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" style="margin:0 auto; width:100%;">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:20px;">
+								<h:outputText value="#" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+								<h:outputText value="#{msg['fecha']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:70px;">
+								<h:outputText value="#{msg['id']}#{msg['movimiento']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; min-width:100px;">
+								<h:outputText value="#{msg['descripcion']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:100px;">
+								<h:outputText value="#{msg['referencia']}" />
+							</rich:column>
+	
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+								<h:outputText value="#{msg['cantidad']}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+						<h:outputText value="#{it.index + 1}"><f:convertNumber pattern="00"/></h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:center;">
+						<h:outputText value="#{var.fecha}"><f:convertDateTime type="date" pattern="dd-MMM-yyyy"/></h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:center;">
+						<h:outputText value="#{var.idMovimiento}" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:left;">
+						<h:outputText value="#{var.descripcion}" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:left;">
+						<h:outputText value="#{var.referencia}" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:right;">
+						<h:outputText value="#{var.cantidad}"><f:convertNumber pattern="0.00"/></h:outputText>
+					</rich:column>
+	
+					<f:facet name="footer">
+						<rich:dataScroller for="dtHistorial" page="#{invAction.paginacionHistorial}" renderIfSinglePage="false" 
+							align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</div>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

@@ -1,0 +1,95 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlBusquedaDinamica" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+		<f:facet name="header">
+			<h:outputText value="#{msg['busqueda']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.panel.cerrar.img']}" 
+				onclick="#{rich:component('pnlBusquedaDinamica')}.hide()" />
+		</f:facet>
+		
+		<rich:hotKey id="richHotKeyDinamica" enabledInInput="true" preventDefault="true" 
+			selector="#txtBusquedaDinamica" key="return" 
+			onkeydown="#{rich:element('frmPrincipal:cmdBusquedaDinamicaBuscar')}.click()" />
+		
+		<a4j:region id="regBusquedaDinamica">
+			<div class="div_pagina" style="margin:0 auto; min-width:500px; width:100%; padding: 0; text-align:center;">
+				<h:panelGrid columns="2" style="margin:0 auto 10px; text-align:left; width:98%;">
+					<h:panelGroup style="text-align:left;">
+						<h:outputText value="Busqueda:" styleClass="letra-titulo-body" />
+						<h:inputText id="txtBusquedaDinamica" maxlength="50" style="margin:0 5px; width:200px;" 
+							value="#{repAction.valorBusquedaDinamica}" />
+							
+						<a4j:commandButton id="cmdBusquedaDinamicaBuscar" style="margin:0 5px; vertical-align: middle; cursor: pointer;" 
+							image="#{msg['buscar22.img']}" title="Buscar"
+							action="#{repAction.buscar}" 
+							oncomplete="buscar(#{repAction.operacion}, '#{rich:clientId('pnlMensajes')}');" 
+							render="dtResultDinamico,dScrollDinamicoTop,pnlMensajes" limitRender="true" />
+					</h:panelGroup>
+					
+					<h:panelGroup style="float:right; text-align:left;">
+						<rich:dataScroller id="dScrollDinamicoTop" for="dtResultDinamico" page="#{repAction.numPaginaDinamica}" 
+							align="center" maxPages="5" fastStep="5" renderIfSinglePage="false" ajaxSingle="true" styleClass="Titulo" />
+					</h:panelGroup>
+				</h:panelGrid> 
+	
+				<rich:dataTable id="dtResultDinamico" value="#{repAction.listValoresDinamicos}" var="var" rows="10" 
+					cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" style="margin:0 auto; width:100%;">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column style="width: 70px; text-align:center; font-weight: bold;" styleClass="Descripcion">
+								<h:outputText value="Id" />
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="Descripcion">
+								<h:outputText value="Descripcion" />
+							</rich:column>
+
+							<rich:column style="width: 30px; text-align:center;" styleClass="Descripcion">
+								<h:outputText value="Seleccionar" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+					
+					<f:facet name="noData">
+						<rich:column style="text-align:center; font-weight: bold;" styleClass="Descripcion" colspan="3">
+							<h:outputText value="Busqueda sin resultados" style="padding:10px auto;" />
+						</rich:column>
+					</f:facet>
+					
+					<rich:column styleClass="Descripcion" style="width: 70px; text-align:center; padding-left: 5px;">
+						<h:outputText value="#{var.value}" styleClass="Descripcion" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+						<h:outputText value="#{var.label}" styleClass="Descripcion" />
+					</rich:column>
+					
+					<rich:column style="width: 30px; text-align:center;" styleClass="Descripcion">
+					   <a4j:commandButton id="cmdSeleccionarValorDinamico" 
+					   		image="#{msg['agregar16.img']}" title="Seleccionar"
+							action="#{repAction.seleccionar}" 
+							oncomplete="seleccionar(#{repAction.operacion}, '#{rich:clientId('pnlBusquedaDinamica')}', '#{rich:clientId('pnlMensajes')}');" 
+							render="pnlMensajes,pnlDinamico" limitRender="true">	
+							<f:setPropertyActionListener for="cmdSeleccionarValorDinamico" value="#{var}" target="#{repAction.pojoValorDinamico}" />
+					   </a4j:commandButton>
+					</rich:column>
+	
+					<!--f:facet name="footer">
+						<rich:dataScroller id="dScrollDinamico" for="dtResultDinamico" page="#{repAction.numPaginaDinamica}" 
+							align="center" maxPages="10" fastStep="10" renderIfSinglePage="false" ajaxSingle="true" styleClass="Titulo" />
+					</f:facet-->
+				</rich:dataTable>
+			</div>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

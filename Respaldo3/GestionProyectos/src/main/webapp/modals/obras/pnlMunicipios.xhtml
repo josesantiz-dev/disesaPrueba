@@ -1,0 +1,90 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlMunicipios" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20"
+		onshow="document.getElementById('#{rich:clientId('txtValorBusquedaMunicipio')}').focus();">
+		<f:facet name="header">
+			<h:outputText value="#{msg['seleccionarMunicipio']}" styleClass="Titulo"/>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlMunicipios')}.hide()"/>
+		</f:facet>
+		
+		<rich:hotKey id="richHotKeyBusquedaMunicipio" enabledInInput="true" preventDefault="true" 
+			selector="#txtValorBusquedaMunicipio" key="return"
+			onkeydown="#{rich:element('frmPrincipal:cmdBuscarMunicipios')}.click()" />
+		
+		<h:panelGroup styleClass="encabezado">
+			<h:outputText value="#{obrasAction.pojoEstado != null ? obrasAction.pojoEstado.nombre : ' '} "/>
+		</h:panelGroup>
+		
+		<h:panelGrid columns="2" columnClasses="colLayoutTop,colLayoutBottom" style="width:100%; margin:0 auto; padding:0; min-height:22px; text-align:left;">
+			<h:panelGroup style="width:100%; text-align:left;">
+				<h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+					<h:inputText id="txtValorBusquedaMunicipio" maxlength="50" style="width:210px;"
+						value="#{obrasAction.busquedaMunicipio}" title="#{msg['busqueda']}">
+						<rich:placeholder value="#{msg['busqueda']}" />
+					</h:inputText>
+						
+					<a4j:commandButton id="cmdBuscarMunicipios" style="margin:auto 5px; vertical-align:middle; cursor:pointer;" 
+						image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+						action="#{obrasAction.buscarMunicipios}" 
+						oncomplete="buscarObras(#{obrasAction.band}, '#{rich:clientId('pnlMensajes')}');" 
+						render="dtMunicipios,dtMunicipiosScroll,pnlMensajes" />
+				</h:panelGrid>
+			</h:panelGroup>
+			
+			<h:panelGroup style="width:100%; text-align:right;">
+			</h:panelGroup>
+		</h:panelGrid>
+
+		<div style="width:100%; margin:5px auto 0; padding:0; height:auto; max-height:500px; overflow-y:auto;">
+			<rich:dataTable id="dtMunicipios" value="#{obrasAction.listMunicipios}" var="mun" rows="50" style="margin:0 auto;" 
+				cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:80px;">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+		
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:20px;" />
+					</rich:columnGroup>
+				</f:facet>
+	
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText value="#{mun.id}" />
+				</rich:column>
+	
+				<rich:column styleClass="Descripcion" style="text-align:left;">
+					<h:outputText value="#{mun.nombre}" />
+				</rich:column>
+	
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<a4j:commandButton ajaxSingle="true"
+						image="#{msg['drag16.img']}" 
+						oncomplete="#{rich:component('pnlMunicipios')}.hide()" 
+						render="pnlPersonaGral, grpDomiDom">
+						<f:setPropertyActionListener target="#{obrasAction.pojoMunicipio}" value="#{mun}" />
+					</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller for="dtMunicipios" page="#{obrasAction.numPaginaMunicipio}" renderIfSinglePage="false" 
+						align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" style="float:right;" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

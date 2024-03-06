@@ -1,0 +1,64 @@
+.tygGtosCompCol1{
+	width:150px;
+	text-align:right;
+	font-weight: bold;
+	font-size: 12px;
+	color:#6A6868;
+}
+.tygGtosCompCol2{
+	width:450px;
+	text-align:left;
+}
+.tygGtosCompColIzq{
+	width:110px;
+	text-align:right;
+	font-weight: bold;
+	font-size: 12px;
+	color:#6A6868;
+}
+.tygGtosCompColDer{
+	width:580px;
+	text-align:left;
+}
+.tygCompGtosColIzq{
+	width:150px;
+	text-align:right;
+	font-weight:bold;
+	font-size:12px;
+	color:#6A6868;
+}
+.tygCompGtosColDer{
+	width:540px;
+	text-align:left;
+}
+.tygGtosCompMsgErr{
+	text-align:right;
+	font-size: 12px;
+}
+.tygGtosCompObservacion{
+	text-align:left;
+	font-weight: bold;
+	font-size: 12px;
+	color:#C0C0C0;
+}	
+.tygGtosCompTit{
+	font-weight: bold;
+	font-size: 12px;
+	color:#525252;
+}
+.tygGtosCompRow1{
+	background: #FFFFFF;
+}
+.tygGtosCompRow2{
+	background: #f1f1f1;
+}
+.tygGtosCompDesc{
+	font-weight: bold;
+	font-size: 12px;
+	color:#808080;
+}.tygGtosCompCancelado{	
+	color:red;
+}
+.tygGtosCompRevisado{	
+	color:green;
+}

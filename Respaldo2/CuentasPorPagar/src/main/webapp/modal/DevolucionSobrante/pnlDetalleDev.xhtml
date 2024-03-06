@@ -1,0 +1,77 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlDetalleDev" autosized="true"  >
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText style="margin-left:10px" value="#{msg['navegacion.label.devPendientes']}" styleClass="Titulo"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" id="btnCerrarDetalle"/>
+				<rich:componentControl for="pnlDetalleDev" attachTo="btnCerrarDetalle" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+				
+		<a4j:form id="frmDevSob">
+			<a4j:region id="loadDevSob">
+				<rich:dataTable id="dtResultsDevoluciones" rows="12" cellpadding="0" cellspacing="0" width="780" border="0" var="Dev" rowClasses="Row1, Row2" value="#{devSobranteAction.listMovCtas}" >
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column colspan="6" styleClass="Titulo">
+								<h:outputText value="#{msg['navegacion.label.devPendientes']}" />
+							</rich:column>
+							
+							<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['navegacion.label.clave']}"/>
+							</rich:column>
+							
+							<rich:column style="text-align:right; margin-left:10px;" styleClass="Titulo">
+								<h:outputText value="#{msg['navegacion.label.monto']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; margin-left:10px;" styleClass="Titulo">
+								<h:outputText value="#{msg['navegacion.label.beneficiario']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; margin-left:10px;"  styleClass="Titulo"/>	
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column width="100" style="text-align:center;" styleClass="Descripcion">
+						<h:outputText value="#{Dev.id}"/>
+					</rich:column>
+					
+					<rich:column width="100" style="text-align:center;" styleClass="Descripcion">
+						<h:outputText value="#{Dev.monto}"><f:convertNumber pattern="###,###,##0.00"/></h:outputText>
+					</rich:column>
+					
+					<rich:column width="320" style="text-align:center;"  styleClass="Descripcion">
+						<h:outputText value="#{Dev.idBeneficiario.nombre}"/>
+					</rich:column>
+					
+					<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;" styleClass="Descripcion">
+						<a4j:commandButton image="#{msg['devolucion16.img']}" 
+							oncomplete="Richfaces.showModalPanel('pnlNuevoDev')" 
+							reRender="pnlNuevoDev">
+							<f:setPropertyActionListener target="#{devSobranteAction.pojoMovCtas}" value="#{Dev}"/>
+							<rich:toolTip showDelay="300"><h:outputText value="#{msg['devolucion.e']}" styleClass="Descripcion" /></rich:toolTip>	
+						</a4j:commandButton>
+					</rich:column>
+					
+					<f:facet name="footer">
+						<rich:datascroller id="dScroll" align="center" styleClass="Titulo" maxPages="10" ajaxSingle="true" 
+							page="#{devSobranteAction.numPaginaSec}" for="dtResultsDevoluciones" />
+					</f:facet>
+				</rich:dataTable>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

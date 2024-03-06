@@ -1,0 +1,310 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlFactura" autosized="true" top="20">
+		<f:facet name="header">
+			<h:outputText value="#{cajaChicaAction.tituloComprobacion}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage id="btnCerrarNuevoEditar" styleClass="cursor:pointer;" 
+					value="#{msg['navegacion.gral.cerrar.img']}" />
+				<rich:componentControl event="onclick" operation="hide" 
+					for="pnlFactura" attachTo="btnCerrarNuevoEditar" />
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmNuevoEditarFactura">
+			<a4j:region id="loadNuevoEditarFactura"> 
+				<h:panelGrid id="botonera" columns="2" style="margin:0 auto; padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+					<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+						<rich:messages id="msgErrorFactura" showDetail="true" showSummary="false" />
+					</h:panelGroup>
+					
+					<h:panelGroup id="grupoBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+						<h:panelGrid columns="2" style="float:right; margin-right:5px;">
+							<h:panelGroup style="vertical-align: middle; position:relative;">
+								<a4j:status for="loadNuevoEditarFactura">
+									<f:facet name="start"><h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;" /></f:facet>
+									<f:facet name="stop"><h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: middle; position:relative;" /></f:facet>
+								</a4j:status>
+							</h:panelGroup>
+							
+							<a4j:commandButton id="cmdSalvarNuevoEditarFactura" style="margin-left: 5px; vertical-align:top; position:relative;"
+								image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+								onclick="#{rich:element('cmdSalvarNuevoEditarFactura')}.disabled = true;" 
+								action="#{cajaChicaAction.guardarFactura}"
+								oncomplete="#{rich:element('cmdSalvarNuevoEditarFactura')}.disabled = false; salvar(#{cajaChicaAction.encontroMismoGrupo}, 'pnlFactura', 'pnlMensajes', #{rich:element('msgErrorFactura')})"
+								reRender="msgErrorFactura,pnlMensajes,txtMonto,dtResultsComprobado"
+								limitToList="true" />
+						</h:panelGrid>
+					</h:panelGroup>
+				</h:panelGrid>
+				
+				<h:panelGrid columns="2" cellpadding="0" columnClasses="tygCompGtosColIzq, tygCompGtosColDer" style="position:relative; margin:0 auto 0;">
+					<h:outputText value="#{msg['id']}:" styleClass="Titulo" />
+					<h:outputText id="LabelClaveCajaChica" styleClass="Titulo" 
+						value="#{cajaChicaAction.pagosGastosDetId}" />
+
+					<h:outputText value="#{msg['navegacion.label.concepto']}:" styleClass="Titulo" />
+					<h:panelGroup id="pnlConceptoDatos">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtConceptoGto" styleClass="Titulo" 
+								value="#{cajaChicaAction.conceptoGasto}" />
+							<h:panelGroup>
+								<a4j:commandLink id="btnBusquedaConceptos" 
+									onclick="#{rich:element('btnBusquedaConceptos')}.disabled = true;"
+									value="#{cajaChicaAction.conceptoGasto == '' ? msg['seleccionar'] : msg['cambiar']}"
+									action="#{cajaChicaAction.nuevaBusquedaConceptos}"
+									oncomplete="#{rich:element('btnBusquedaConceptos')}.disabled = false; nuevaBusqueda(#{cajaChicaAction.encontroMismoGrupo},'pnlMensajes','pnlBusquedaConceptos')"
+									reRender="pnlMensajes,pnlBusquedaConceptos" />
+									
+								<!-- Este input es solo con propósito de que se permita hacer validator al proyecto -->
+								<h:inputText id="txtConceptoGtoHidden" style="text-align:left; display:none;"
+									value="#{cajaChicaAction.conceptoGasto}"
+									required="#{!empty param[rich:clientId('cmdSalvarNuevoEditarFactura')]}"
+									requiredMessage="#{msg['navegacion.label.concepto']} #{msg['mensaje.error.requerido']}" />
+								
+								<rich:message for="txtConceptoGtoHidden" showSummary="false" showDetail="false" style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage style="margin:0 5px;" 
+											value="#{msg['cancelar16.img']}" 
+											title="#{msg['mensaje.validacion.selectItem']}" />
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['navegacion.label.fecha']}:" styleClass="Titulo" />
+					<h:panelGroup>
+						<rich:calendar id="cmbFecha" inputSize="18" zindex="100" enableManualInput="true"
+							datePattern="dd/MMM/yyyy" showWeekDaysBar="false" showWeeksBar="false" 
+							value="#{cajaChicaAction.fechaCompruebaGto}"
+							required="#{!empty param[rich:clientId('cmdSalvarNuevoEditarFactura')]}"
+							requiredMessage="#{msg['navegacion.label.fecha']} #{msg['mensaje.error.requerido']}">
+							<f:validateLength minimum="1" />
+						</rich:calendar>
+
+						<rich:message for="cmbFecha" showSummary="false" showDetail="false" style="color:red">
+							<f:facet name="errorMarker">
+								<h:graphicImage style="margin:0 5px;" 
+									value="#{msg['cancelar16.img']}" 
+									title="#{msg['mensaje.error.requerido']}" />
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" /> 
+					<h:selectOneRadio styleClass="Titulo" style="margin:0; padding:0;"
+						disabled="#{cajaChicaAction.pagosGastosDetId > 0}"
+						value="#{cajaChicaAction.facturadoAux}"> 
+						<f:selectItem itemLabel="#{msg['comprobacionConFactura']}" itemValue="0" />
+						<f:selectItem itemLabel="#{msg['comprobacionSinFactura']}" itemValue="1" />
+						<a4j:support event="onchange" 
+							action="#{cajaChicaAction.desglosaImpuestos}" 
+							reRender="labelCargaFactura,gCargaFactura,txtFolioFactura,txtEmpresaFactura,txtMontoFactura,dtDesgloseImpuestos,txtTotalImpto,txtSubtotal,txtTotal,txtTotalRet" />
+					</h:selectOneRadio>
+					
+					<h:outputText id="labelCargaFactura" value="#{msg['factura']}:" style="display:#{! cajaChicaAction.facturado ? 'block' : 'none'}" styleClass="Titulo" />
+					<h:panelGroup id="gCargaFactura" style="display:#{! cajaChicaAction.facturado ? 'block' : 'none'}">
+						<h:panelGrid id="groupFacturaId" columns="2">
+							<a4j:commandButton id="cmdLoadXML" style="cursor: pointer;" 
+								image="#{msg['addXML.img']}" title="#{msg['cargarFactura']}"
+								disabled="#{cajaChicaAction.pagosGastosDetId > 0}"
+								action="#{cajaChicaAction.nuevaCarga}"
+								oncomplete="#{rich:component('pnlUploadFile')}.show()"
+								reRender="pnlUploadFile" />
+							<h:outputText styleClass="Descripcion" value="#{cajaChicaAction.facturaDescripcion}" />
+						</h:panelGrid>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['manoDeObra']}:" styleClass="Titulo" /> 
+					<h:panelGroup>
+						<h:selectBooleanCheckbox id="txtFacturaCredito" 
+							value="#{cajaChicaAction.facturaCredito}" />
+							
+						<rich:message for="txtFacturaCredito" showSummary="false" showDetail="false" style="color:red">
+							<f:facet name="errorMarker">
+								<h:graphicImage style="margin:0 5px;" 
+									value="#{msg['cancelar16.img']}" 
+									title="#{msg['mensaje.error.requerido']}" />
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['folioDocumento']}:" styleClass="Titulo" />	
+					<h:panelGroup>
+						<h:inputText id="txtFolioFactura" maxlength="20" size="36" 
+							disabled="#{cajaChicaAction.facturado ? false : (cajaChicaAction.referencia == '' ? false : true)}"
+							value="#{cajaChicaAction.referencia}" 
+							required="#{!empty param[rich:clientId('cmdSalvarNuevoEditarFactura')]}"
+							requiredMessage="#{msg['folioDocumento']} #{msg['mensaje.error.requerido']}" />
+							
+						<rich:message for="txtFolioFactura" showSummary="false" showDetail="false" style="color:red">
+							<f:facet name="errorMarker">
+								<h:graphicImage style="margin:0 5px;" 
+									value="#{msg['cancelar16.img']}" 
+									title="#{msg['mensaje.error.requerido']}" />
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['empresa']}:" styleClass="Titulo" />	
+					<h:panelGroup>
+						<h:inputText id="txtEmpresaFactura" maxlength="20" size="36" 
+							disabled="#{cajaChicaAction.facturado ? false : (cajaChicaAction.facturaEmisor == '' ? false : true)}"
+							value="#{cajaChicaAction.facturaEmisor}" 
+							required="#{!empty param[rich:clientId('cmdSalvarNuevoEditarFactura')]}"
+							requiredMessage="#{msg['empresa']} #{msg['mensaje.error.requerido']}" />
+							
+						<rich:message for="txtFolioFactura" showSummary="false" showDetail="false" style="color:red">
+							<f:facet name="errorMarker">
+								<h:graphicImage style="margin:0 5px;" 
+									value="#{msg['cancelar16.img']}" 
+									title="#{msg['mensaje.error.requerido']}" />
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['navegacion.label.monto']}:" styleClass="Titulo" title="#{msg['navegacion.label.montoConIva']}" />
+					<h:panelGroup>
+						<h:inputText id="txtMontoFactura" maxlength="15" size="36" style="text-align:right;"
+							disabled="#{! cajaChicaAction.facturado}"
+							value="#{cajaChicaAction.subtotalMasImpuestos}" 
+							required="#{!empty param[rich:clientId('cmdSalvarNuevoEditarFactura')]}"
+							requiredMessage="#{msg['navegacion.label.monto']} #{msg['mensaje.error.requerido']}">
+							<f:converter converterId="javax.faces.Double" />
+							<a4j:support event="onchange" 
+								action="#{cajaChicaAction.desglosaImpuestos}" 
+								reRender="dtDesgloseImpuestos,txtTotalImpto,txtSubtotal,txtTotal,txtTotalRet" />
+						</h:inputText>
+						
+						<rich:message for="txtMontoFactura" showSummary="false" showDetail="false" style="color:red">
+							<f:facet name="errorMarker">
+								<h:graphicImage style="margin:0 5px;" 
+									value="#{msg['cancelar16.img']}" 
+									title="#{msg['mensaje.error.requerido']}" />
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+
+					<h:outputText value="#{msg['subtotal']}:" styleClass="Titulo" />
+					<h:panelGroup>
+						<h:inputText id="txtSubtotal" size="36" style="text-align:right;" disabled="true" 
+							value="#{cajaChicaAction.totalMenosImpuestos}" />
+						<rich:message for="txtSubtotal" showSummary="false" showDetail="false" style="color:red">
+							<f:facet name="errorMarker">
+								<h:graphicImage style="margin:0 5px;" 
+									value="#{msg['cancelar16.img']}" 
+									title="#{msg['mensaje.error.requerido']}" />
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['impuestos']}:" styleClass="Titulo" />
+					<h:panelGroup>
+						<h:inputText id="txtTotalImpto" size="36" style="text-align:right;" disabled="true" 
+							value="#{cajaChicaAction.totImpuestos}" />
+						<rich:message for="txtTotalImpto" showSummary="false" showDetail="false" style="color:red">
+							<f:facet name="errorMarker">
+								<h:graphicImage style="margin:0 5px;" 
+									value="#{msg['cancelar16.img']}" 
+									title="#{msg['mensaje.error.requerido']}" />
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+
+					<h:outputText value="#{msg['retencion']}:" styleClass="Titulo" />
+					<h:panelGroup>
+						<h:inputText id="txtTotalRet" size="36" style="text-align:right;" 
+							disabled="true" 
+							value="#{cajaChicaAction.totRetenciones}" />
+						<rich:message for="txtTotalRet" showSummary="false" showDetail="false" style="color:red">
+							<f:facet name="errorMarker">
+								<h:graphicImage style="margin:0 5px;" 
+									value="#{msg['cancelar16.img']}" 
+									title="#{msg['mensaje.error.requerido']}" />
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['total']}:" styleClass="Titulo" />
+					<h:panelGroup>
+						<h:inputText id="txtTotal" size="36" style="text-align:right" 
+							disabled="true" 
+							value="#{cajaChicaAction.totPago}" />
+						
+						<rich:message for="txtTotal" showSummary="false" showDetail="false" style="color:red">
+							<f:facet name="errorMarker">
+								<h:graphicImage style="margin:0 5px;" 
+									value="#{msg['cancelar16.img']}" 
+									title="#{msg['mensaje.error.requerido']}" />
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['observaciones']}:" style="position:relative; top:-16px" styleClass="Titulo" />
+					<h:inputTextarea id="txtObservaciones" size="36" row="2" style="width:380px; resize:none;"
+						value="#{cajaChicaAction.observaciones}" />
+				</h:panelGrid>
+				
+				<!-- ############################################################################################################## -->
+				
+				<rich:dataTable id="dtDesgloseImpuestos" value="#{cajaChicaAction.listDesgloseImpuestos}" var="desglose" rows="3" 
+					cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" style="margin:10px auto 0; min-width:300px; max-width:320px;">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column colspan="3" styleClass="tygPerTit">
+								<h:outputText value="#{msg['navegacion.label.desgloseImptos']}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+
+					<rich:column style="text-align:left; min-width:100px;" styleClass="tygCompGtosDesc">
+						<h:outputText value="#{desglose.idImpuesto.descripcion}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; width:100px;" styleClass="tygCompGtosDesc">
+						<h:inputText maxlength="10" style="text-align:right; width:90px;"
+							title="#{msg['navegacion.label.editable']}"
+							value="#{desglose.valor}">
+							<!-- disabled="#{desglose.idImpuesto.atributo6 != null ? desglose.idImpuesto.atributo6 != 'S' : true}" -->
+							<f:converter converterId="javax.faces.Double" />
+							<a4j:support event="onchange" 
+								action="#{cajaChicaAction.cambioMontoImpuesto}" 
+								reRender="txtTotalImpto,txtSubtotal,txtTotal,txtTotalRet" />
+						</h:inputText>
+					</rich:column>
+					 
+					<rich:column style="text-align:center; width:20px;">
+						<a4j:commandButton title="#{msg['eliminar.e']}"
+							rendered="#{desglose.idImpuesto.atributo6 != null ? desglose.idImpuesto.atributo6 == 'S' : false}"
+							image="#{msg['eliminar22.img']}" 
+							action="#{cajaChicaAction.eliminarImpuestoDesglosado}" 
+							reRender="dtDesgloseImpuestos,txtTotalImpto,txtSubtotal">
+							<f:setPropertyActionListener target="#{cajaChicaAction.pojoDesgloImpto}" value="#{desglose}" />
+						</a4j:commandButton>
+					</rich:column>
+
+					<f:facet name="footer">
+						<rich:columnGroup rendered="#{cajaChicaAction.existeRetencion}">
+							<rich:column colspan="3" style="text-align:center;">
+								<a4j:commandLink styleClass="tygCompGtosAtn" 
+									value="#{msg['navegacion.label.capturaRetencion']}" 
+									onclick="Richfaces.showModalPanel('pnlBuscarRetenciones')" 
+									reRender="pnlDatosBusquedaRet" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+				</rich:dataTable>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

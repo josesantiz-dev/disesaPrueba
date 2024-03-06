@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Class-Path: 
+Dependencies: org.apache.log4j export, 
+ net.giro.logica.clientes export, 
+ net.giro.logica.publico export,
+ net.giro.model.clientes export, 
+ net.giro.model.publico export, 
+ net.giro.navegador:4.3.0 export

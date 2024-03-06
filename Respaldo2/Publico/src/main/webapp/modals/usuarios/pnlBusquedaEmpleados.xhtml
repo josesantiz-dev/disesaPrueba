@@ -1,0 +1,95 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:modalPanel id="pnlBusquedaEmpleados" autosized="true" top="20">
+		<f:facet name="header">
+			<h:outputText value="#{msg['responsabilidad/nivelAcceso']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage id="imgCerrarBusquedaEmpleados" style="cursor: pointer;" 
+					value="#{msg['navegacion.panel.cerrar.img']}"/>
+				<rich:componentControl event="onclick" 
+					attachTo="imgCerrarBusquedaEmpleados" 
+					for="pnlBusquedaEmpleados" 
+					operation="hide" />
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmBusquedaEmpleados">
+			<div style="display:block; min-width:500px; width: 100%; min-height: 22px;">
+				<div style="display: block; overflow: auto;">
+					<a4j:commandButton id="cmdBuscarEmpleados" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"  
+						image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+						action="#{UsuarioAction.buscarEmpleados}" 
+						oncomplete="buscar(#{UsuarioAction.operacion}, '#{rich:clientId('pnlMensajes')}');" 
+						render="dtBusquedaEmpleados, pnlMensajes"
+						limitRender="true" />
+				</div>
+			
+				<h:panelGrid id="pnlBusquedaEmpleadosPrincipal" columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin:10px 5px; display:block;">
+					<h:outputText value="#{msg['busqueda']}:" styleClass="Titulo" />
+					<h:inputText id="txtValorBusquedaEmpleados" maxlength="50" style="width: 210px;"
+						value="#{UsuarioAction.empBusquedaValor}" />
+				</h:panelGrid>
+	
+				<rich:dataTable id="dtBusquedaEmpleados" value="#{UsuarioAction.listEmpleados}" var="var" 
+					cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column style="width:90px; text-align:center; font-weight: bold;" styleClass="Titulo">
+								<h:outputText value="#{msg['id']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; width:80px;" styleClass="Titulo">
+								<h:outputText value="#{msg['clave']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['nombre']}" />
+							</rich:column>
+	
+							<rich:column style="width:30px; text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['seleccionar']}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column styleClass="Descripcion" style="width:90px; text-align:center; padding:5px;">
+						<h:outputText value="#{var.id}" styleClass="Descripcion" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="width:80px; text-align:center; padding:5px;">
+						<h:outputText value="#{var.clave}" styleClass="Descripcion" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:left; padding:5px;">
+						<h:outputText value="#{var.nombre}" styleClass="Descripcion" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="width:30px; text-align:center;" >
+					   <a4j:commandButton id="cmdAgregarEmpleado" 
+					   		image="#{msg['agregar16.img']}" title="#{msg['agregar.e']}"
+							action="#{UsuarioAction.seleccionarEmpleado}"
+							oncomplete="seleccionar(#{UsuarioAction.operacion}, '#{rich:clientId('pnlBusquedaEmpleados')}', '#{rich:clientId('pnlMensajes')}')"
+							reRender="bandEmpleadoDatos, pnlMensajes"
+							limitRender="true">
+							<f:setPropertyActionListener target="#{UsuarioAction.pojoEmpleadoInfonavit.idEmpleado}" value="#{var}" for="cmdAgregarEmpleado" />
+					   </a4j:commandButton>
+					</rich:column>
+	
+					<f:facet name="footer">
+						<rich:datascroller id="dScrollBusquedaEmpleados" page="#{UsuarioAction.empBusquedaPagina}" for="dtBusquedaEmpleados" 
+							maxPages="10" ajaxSingle="true" align="center" styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</div>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

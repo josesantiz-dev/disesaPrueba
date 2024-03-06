@@ -1,0 +1,135 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlComparativas" modal="true" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+    	<f:facet name="header">
+    		<h:outputText value="#{msg['comparativa']}" styleClass="Titulo" />
+    	</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlComparativas')}.hide()" />
+		</f:facet>
+		
+		<h:panelGrid columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+			<h:panelGroup id="grupoComparativasBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdActualizarComparativas" 
+					image="#{msg['actualizar22.img']}" 
+					action="#{comAction.ver}" 
+					oncomplete="ver(#{comAction.operacion}, '#{rich:clientId('pnlComparativas')}', '#{rich:clientId('pnlMensajes')}')"
+					render="dtComparativas, pnlMensajes"
+					limitRender="true">
+					<rich:tooltip showDelay="300" value="#{msg['actualizar']}" for="cmdActualizarComparativas" />
+				</a4j:commandButton>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoComparativasBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdNuevaComparativa" image="#{msg['nuevo22.img']}" styleClass="Titulo" 
+					style="float:right; margin-left: 5px; vertical-align: middle; position:relative; cursor:pointer;"
+					rendered="#{comAction.obraActiva}" 
+					action="#{comAction.nuevo}"
+					oncomplete="#{rich:component('pnlComparativa')}.show();"
+					render="pnlComparativa"
+					limitRender="true">
+					<rich:tooltip for="cmdNuevaComparativa" showDelay="300" value="#{msg['nueva']} #{msg['comparativa']}" />
+				</a4j:commandButton>
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<h:panelGroup styleClass="encabezado" style="min-height: 1em; margin:5px auto 10px; padding:.2em 0;">
+			<h:outputText value="#{comAction.encabezado}" />
+		</h:panelGroup>
+
+		<div style="display:block; margin:10px auto 0; padding:0; min-width:700px; width:100%; height:auto; max-height:500px; overflow-y:auto;">
+			<rich:dataTable id="dtComparativas" value="#{comAction.listComparativas}" var="var" rows="15" 
+				cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" style="margin:0 auto;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="width:90px; text-align:center; font-weight: bold;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="width:100px; text-align:center; font-weight: bold;" styleClass="Titulo">
+							<h:outputText value="#{msg['fecha']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; font-weight: bold;" styleClass="Titulo">
+							<h:outputText value="#{msg['descripcion']}" />
+						</rich:column>
+						
+						<rich:column style="width:100px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['tipo']}" />
+						</rich:column>
+						
+						<rich:column colspan="3" style="width: 60px; text-align:center;" styleClass="Titulo" />
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column style="width: 90px; text-align:center;" styleClass="#{var.estatus == 1 ? 'itemCancelado' : 'Descripcion'}">
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+				
+				<rich:column style="width:100px; text-align:center;" styleClass="#{var.estatus == 1 ? 'itemCancelado' : 'Descripcion'}">
+					<h:outputText value="#{var.fecha}">
+						<f:convertDateTime type="date" pattern="dd-MMM-yyyy"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:left;" styleClass="#{var.estatus == 1 ? 'itemCancelado' : 'Descripcion'}">
+					<h:outputText value="#{var.descripcion}" />
+				</rich:column>
+				
+				<rich:column style="width:100px; text-align:center;" styleClass="#{var.estatus == 1 ? 'itemCancelado' : 'Descripcion'}">
+					<h:outputText value="#{msg['inventarios']}" rendered="#{var.tipo == 1}" />
+					<h:outputText value="#{msg['conceptosOperacion']}" rendered="#{var.tipo == 2}" />
+				</rich:column>
+					
+				<rich:column style="text-align:center; width:20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdImprimir" rendered="#{var.estatus == 0}"
+						image="#{msg['imprimir16.img']}" 
+						action="#{comAction.reporte}" 
+						oncomplete="reporte(#{comAction.operacion}, '#{rich:clientId('pnlMensajes')}');"
+						render="pnlMensajes"
+						limitRender="true">
+						<f:setPropertyActionListener value="#{var}" target="#{comAction.pojoComparativa}" for="cmdImprimir" />
+						<rich:tooltip showDelay="300" value="#{msg['imprimir']} #{msg['comparativa']}" for="cmdImprimir" />
+					</a4j:commandButton>
+				</rich:column>
+					
+				<rich:column style="text-align:center; width:20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEditar" 
+						image="#{msg['editar16.img']}" 
+						action="#{comAction.editar}" 
+						oncomplete="#{rich:component('pnlComparativa')}.show()"
+						render="pnlComparativa"
+						limitRender="true">
+						<f:setPropertyActionListener value="#{var}" target="#{comAction.pojoComparativa}" for="cmdEditar" />
+						<rich:tooltip showDelay="300" value="#{msg['editar']} #{msg['comparativa']}" for="cmdEditar" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEliminar" rendered="#{var.estatus == 0}"
+						image="#{msg['eliminar16.img']}" 
+						oncomplete="#{rich:component('pnlEliminar')}.show()" 
+						render="pnlEliminar"
+						limitRender="true">
+						<f:setPropertyActionListener value="#{var}" target="#{comAction.pojoComparativa}" for="cmdEliminar" />
+						<rich:tooltip showDelay="300" value="#{msg['eliminar']} #{msg['comparativa']}" for="cmdEliminar" />
+					</a4j:commandButton>
+				</rich:column>
+			</rich:dataTable>
+		</div>
+
+		<div style="margin:0 auto; padding:5px 0; background-color:#ccc; width:100%;">
+			<rich:dataScroller id="dScrollComparativas" for="dtComparativas" page="#{comAction.busquedaPaginacionComparativa}" 
+				maxPages="10" ajaxSingle="true" align="center" styleClass="Titulo" />
+		</div>
+	</rich:popupPanel>
+</ui:composition>

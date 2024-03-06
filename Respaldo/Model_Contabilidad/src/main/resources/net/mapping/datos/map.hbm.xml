@@ -1,0 +1,367 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC '-//Hibernate/Hibernate Mapping DTD 3.0//EN' 'http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd'>
+<hibernate-mapping>
+	<class name="net.giro.co.beans.Correlativo" table="bbb4420d88">
+		<composite-id class="net.giro.co.beans.CorrelativoId" name="id" unsaved-value="none">
+			<key-property column="c_codemp" name="codigoEmpresa" type="long"/>
+			<key-property column="c_nomtab" name="nombreTabla" type="string"/>
+		</composite-id>
+		<property column="c_codemp" insert="false" name="cbEmpresa" update="false"/>
+		<property column="c_destab" name="descriTabla"/>
+		<property column="a_fecins" name="fechaInsercion"/>
+		<property column="a_fecmod" name="fechaModificacion"/>
+		<property column="a_ipeins" name="ipInsercion"/>
+		<property column="a_ipemod" name="ipModificacion"/>
+		<property column="n_numcor" name="numeroCorrelativo"/>
+		<property column="a_terins" name="terminalInsercion"/>
+		<property column="a_termod" name="terminalModificacion"/>
+		<property column="a_usuins" name="usuarioInsercion"/>
+		<property column="a_usumod" name="usuarioModificacion"/>
+	</class>
+	
+	<class name="net.giro.contabilidad.beans.Operaciones" table="operaciones">
+		<id column="id" name="id" />
+		<property column="operacion" name="descripcion" />
+		<property column="id_modulo" name="idModulo" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+
+	<class name="net.giro.contabilidad.beans.Transacciones" table="transacciones">
+		<id column="id" name="id" />
+		<property column="transaccion" name="descripcion" />
+		<property column="codigo" name="codigo" />
+		<many-to-one column="id_operacion" name="idOperacion" class="net.giro.contabilidad.beans.Operaciones" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="glosa" name="glosa" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+
+	<class name="net.giro.contabilidad.beans.Grupos" table="grupos">
+		<id column="id" name="id" />
+		<property column="grupo" name="descripcion" />
+		<many-to-one column="llave1"  name="llave1"  class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave2"  name="llave2"  class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave3"  name="llave3"  class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave4"  name="llave4"  class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave5"  name="llave5"  class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave6"  name="llave6"  class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave7"  name="llave7"  class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave8"  name="llave8"  class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave9"  name="llave9"  class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave10" name="llave10" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave11" name="llave11" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave12" name="llave12" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave13" name="llave13" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave14" name="llave14" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave15" name="llave15" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave16" name="llave16" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave17" name="llave17" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave18" name="llave18" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave19" name="llave19" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave20" name="llave20" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave21" name="llave21" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave22" name="llave22" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave23" name="llave23" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave24" name="llave24" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave25" name="llave25" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave26" name="llave26" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave27" name="llave27" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave28" name="llave28" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave29" name="llave29" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="llave30" name="llave30" class="net.giro.contabilidad.beans.Llaves" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+
+	<class name="net.giro.contabilidad.beans.Llaves" table="llaves">
+		<id column="id" name="id" />
+		<property column="llave" name="descripcion" />
+		<property column="campo_id" name="campoId" />
+		<property column="campo_descripcion" name="campoDescripcion" />
+		<property column="tipo" name="tipo" />
+		<property column="valor_tipo" name="valorTipo" />
+		<property column="posicion" name="posicion" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+
+	<class name="net.giro.contabilidad.beans.GruposCuentas" table="grupos_cuentas">
+		<id column="id" name="id" />
+		<many-to-one column="id_grupo" name="idGrupo" class="net.giro.contabilidad.beans.Grupos" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="id_cuenta" name="idCuenta" />
+		<property column="no_cuenta" name="noCuenta" />
+	    <property column="valor_llave1"  name="valorLlave1" />
+	    <property column="valor_llave2"  name="valorLlave2" />
+	    <property column="valor_llave3"  name="valorLlave3" />
+	    <property column="valor_llave4"  name="valorLlave4" />
+	    <property column="valor_llave5"  name="valorLlave5" />
+	    <property column="valor_llave6"  name="valorLlave6" />
+	    <property column="valor_llave7"  name="valorLlave7" />
+	    <property column="valor_llave8"  name="valorLlave8" />
+	    <property column="valor_llave9"  name="valorLlave9" />
+	    <property column="valor_llave10" name="valorLlave10" />
+	    <property column="valor_llave11" name="valorLlave11" />
+	    <property column="valor_llave12" name="valorLlave12" />
+	    <property column="valor_llave13" name="valorLlave13" />
+	    <property column="valor_llave14" name="valorLlave14" />
+	    <property column="valor_llave15" name="valorLlave15" />
+	    <property column="valor_llave16" name="valorLlave16" />
+	    <property column="valor_llave17" name="valorLlave17" />
+	    <property column="valor_llave18" name="valorLlave18" />
+	    <property column="valor_llave19" name="valorLlave19" />
+	    <property column="valor_llave20" name="valorLlave20" />
+	    <property column="valor_llave21" name="valorLlave21" />
+	    <property column="valor_llave22" name="valorLlave22" />
+	    <property column="valor_llave23" name="valorLlave23" />
+	    <property column="valor_llave24" name="valorLlave24" />
+	    <property column="valor_llave25" name="valorLlave25" />
+	    <property column="valor_llave26" name="valorLlave26" />
+	    <property column="valor_llave27" name="valorLlave27" />
+	    <property column="valor_llave28" name="valorLlave28" />
+	    <property column="valor_llave29" name="valorLlave29" />
+	    <property column="valor_llave30" name="valorLlave30" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+
+	<class name="net.giro.contabilidad.beans.AsignacionGrupos" table="asignacion_grupos">
+		<id column="id" name="id" />
+		<many-to-one column="id_transaccion"   name="idTransaccion"  class="net.giro.contabilidad.beans.Transacciones" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="id_grupo_debito"  name="idGrupoDebito"  class="net.giro.contabilidad.beans.Grupos" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="id_grupo_credito" name="idGrupoCredito" class="net.giro.contabilidad.beans.Grupos" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="id_concepto"      name="idConcepto"     class="net.giro.contabilidad.beans.Conceptos" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<!--property column="id_transaccion" name="idTransaccion" />
+		<property column="id_grupo_debito" name="idGrupoDebito" />
+		<property column="id_grupo_credito" name="idGrupoCredito" />
+		<property column="id_concepto" name="idConcepto" /-->
+		<property column="id_forma_pago" name="idFormaPago" />
+		<property column="tipo_poliza" name="tipoPoliza" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+
+	<class name="net.giro.contabilidad.beans.OperacionesIntegradas" table="operaciones_integradas">
+		<id column="id" name="id" />
+		<many-to-one column="id_operacion" name="idOperacion" class="net.giro.contabilidad.beans.Operaciones" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+
+	<class name="net.giro.contabilidad.beans.OperacionesIntegradasTransacciones" table="operaciones_integradas_transacciones">
+		<id column="id" name="id" />
+		<many-to-one column="id_operacion_integrada" name="idOperacionIntegrada" class="net.giro.contabilidad.beans.OperacionesIntegradas" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="id_transaccion" name="idTransaccion" class="net.giro.contabilidad.beans.Transacciones" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+
+	<class name="net.giro.contabilidad.beans.OperacionesIntegradasSql" table="operaciones_integradas_sql">
+		<id column="id" name="id" />
+		<many-to-one column="id_operacion_integrada_transaccion" name="idOperacionIntegradaTransaccion" class="net.giro.contabilidad.beans.OperacionesIntegradasTransacciones" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="campo" name="campo" />
+		<property column="sql" name="sql" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.contabilidad.beans.OperacionesIntegradasConceptosSql" table="operaciones_integradas_conceptos_sql">
+		<id column="id" name="id" />
+		<many-to-one column="id_operacion_integrada_transaccion" name="idOperacionIntegradaTransaccion" class="net.giro.contabilidad.beans.OperacionesIntegradasTransacciones" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="id_concepto" name="idConcepto" class="net.giro.contabilidad.beans.Conceptos" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="sql" name="sql" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.contabilidad.beans.TransaccionesData" table="transacciones_data">
+		<id column="id" name="id" />
+		<property column="codigo_transaccion" name="codigoTransaccion" />
+		<property column="id_concepto" name="idConcepto" />
+		<property column="importe" name="importe" />
+	    <property column="valor_llave1"  name="valorLlave1" />
+	    <property column="valor_llave2"  name="valorLlave2" />
+	    <property column="valor_llave3"  name="valorLlave3" />
+	    <property column="valor_llave4"  name="valorLlave4" />
+	    <property column="valor_llave5"  name="valorLlave5" />
+	    <property column="valor_llave6"  name="valorLlave6" />
+	    <property column="valor_llave7"  name="valorLlave7" />
+	    <property column="valor_llave8"  name="valorLlave8" />
+	    <property column="valor_llave9"  name="valorLlave9" />
+	    <property column="valor_llave10" name="valorLlave10" />
+	    <property column="valor_llave11" name="valorLlave11" />
+	    <property column="valor_llave12" name="valorLlave12" />
+	    <property column="valor_llave13" name="valorLlave13" />
+	    <property column="valor_llave14" name="valorLlave14" />
+	    <property column="valor_llave15" name="valorLlave15" />
+	    <property column="valor_llave16" name="valorLlave16" />
+	    <property column="valor_llave17" name="valorLlave17" />
+	    <property column="valor_llave18" name="valorLlave18" />
+	    <property column="valor_llave19" name="valorLlave19" />
+	    <property column="valor_llave20" name="valorLlave20" />
+	    <property column="valor_llave21" name="valorLlave21" />
+	    <property column="valor_llave22" name="valorLlave22" />
+	    <property column="valor_llave23" name="valorLlave23" />
+	    <property column="valor_llave24" name="valorLlave24" />
+	    <property column="valor_llave25" name="valorLlave25" />
+	    <property column="valor_llave26" name="valorLlave26" />
+	    <property column="valor_llave27" name="valorLlave27" />
+	    <property column="valor_llave28" name="valorLlave28" />
+	    <property column="valor_llave29" name="valorLlave29" />
+	    <property column="valor_llave30" name="valorLlave30" />
+		<property column="referencia1" name="referencia1" />
+		<property column="referencia2" name="referencia2" />
+		<property column="id_canal" name="idCanal" />
+		<property column="canal" name="canal" />
+		<property column="id_sucursal" name="idSucursal" />
+		<property column="sucursal" name="sucursal" />
+		<property column="id_usuario_creacion" name="idUsuarioCreacion" />
+		<property column="usuario_creacion" name="usuarioCreacion" />
+		<property column="id_moneda" name="idMoneda" />
+		<property column="moneda" name="moneda" />
+		<property column="codigo_error" name="codigoError" />
+		<property column="descripcion_error" name="descripcionError" />
+		<property column="contabilizado" name="contabilizado" />
+		<property column="id_forma_pago" name="idFormaPago" />
+		<property column="poliza" name="poliza" />
+		<property column="lote" name="lote" />
+		<property column="id_operacion" name="idOperacion" />
+		<property column="id_funcion" name="idFuncion" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+
+	<class name="net.giro.contabilidad.beans.TransaccionesDataDetalle" table="transacciones_data_detalle">
+		<id column="id" name="id" />
+		<many-to-one column="id_transaccion_data" name="idTransaccionData" class="net.giro.contabilidad.beans.TransaccionesData" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<!--property column="id_transaccion_data" name="idTransaccionData" /-->
+		<property column="centro_costo" name="centroCosto" />
+		<property column="importe" name="importe" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+
+	<class name="net.giro.contabilidad.beans.TransaccionConceptos" table="transaccion_conceptos">
+		<id column="id" name="id" />
+		<many-to-one column="id_transaccion" name="idTransaccion" class="net.giro.contabilidad.beans.Transacciones" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="id_concepto" name="idConcepto" class="net.giro.contabilidad.beans.Conceptos" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.contabilidad.beans.PolizasInterfaces" table="polizas_interfaces">
+		<id column="id" name="id" />
+		<property column="id_interfaz" name="idInterfaz" />
+		<property column="tipo_poliza" name="tipoPoliza" />
+		<property column="folio_poliza" name="folioPoliza" />
+		<property column="cuenta_contable" name="cuentaContable" />
+		<property column="cargo" name="cargo" />
+		<property column="abono" name="abono" />
+		<property column="fecha" name="fecha" />
+		<property column="segmento_negocio" name="segmentoNegocio" />
+		<property column="concepto" name="concepto" />
+		<property column="referencia" name="referencia" />
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="ejercicio" name="ejercicio" />
+		<property column="periodo" name="periodo" />
+		<property column="no_linea" name="noLinea" />
+		<property column="encabezado" name="encabezado" />
+		<property column="id_pagos_gastos" name="idOperacion" />
+		<property column="tipo" name="tipo" />
+		<property column="estatus" name="estatus" />
+		<property column="estatus_mensaje" name="estatusMensaje" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+
+	<class name="net.giro.contabilidad.beans.PolizasDetalles" table="polizas_detalles">
+		<id column="id" name="id" />
+		<property column="id_interfaz" name="idInterfaz" />
+		<property column="tipo_poliza" name="tipoPoliza" />
+		<property column="folio_poliza" name="folioPoliza" />
+		<property column="cuenta_contable" name="cuentaContable" />
+		<property column="cargo" name="cargo" />
+		<property column="abono" name="abono" />
+		<property column="estatus" name="estatus" />
+		<property column="fecha" name="fecha" />
+		<property column="segmento_negocio" name="segmentoNegocio" />
+		<property column="concepto" name="concepto" />
+		<property column="referencia" name="referencia" />
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="ejercicio" name="ejercicio" />
+		<property column="periodo" name="periodo" />
+		<property column="no_linea" name="noLinea" />
+		<property column="encabezado" name="encabezado" />
+		<property column="id_pagos_gastos" name="idPagosGastos" />
+		<property column="tipo" name="tipo" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.contabilidad.beans.Conceptos" table="conceptos">
+		<id column="id" name="id" />
+		<property column="concepto" name="descripcion" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+		<property column="estatus" name="estatus" />
+	</class>
+	
+	<class name="net.giro.contabilidad.beans.MensajeTransaccion" table="mensaje_transaccion">
+		<id column="id" name="id" />
+		<property column="id_transaccion" name="idTransaccion" />
+		<property column="id_operacion" name="idOperacion" />
+		<property column="id_moneda" name="idMoneda" />
+		<property column="descripcion_moneda" name="descripcionMoneda" />
+		<property column="importe" name="importe" />
+		<property column="id_persona_referencia" name="idPersonaReferencia" />
+		<property column="nombre_persona_referencia" name="nombrePersonaReferencia" />
+		<property column="tipo_persona" name="tipoPersona" />
+		<property column="referencia" name="referencia" />
+		<property column="id_forma_pago" name="idFormaPago" />
+		<property column="referencia_forma_pago" name="referenciaFormaPago" />
+		<property column="id_usuario_creacion_registro" name="idUsuarioCreacionRegistro" />
+		<property column="id_sucursal" name="idSucursal" />
+		<property column="poliza" name="poliza" />
+		<property column="lote" name="lote" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="anulado_por" name="anuladoPor" />
+		<property column="fecha_anulacion" name="fechaAnulacion" />
+		<property column="estatus" name="estatus" />
+		<property column="estatus_mensaje" name="estatusMensaje" />
+		<property column="fecha_registro" name="fechaRegistro" />
+		<property column="id_empresa" name="idEmpresa" />
+	</class>
+</hibernate-mapping>

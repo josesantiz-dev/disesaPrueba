@@ -1,0 +1,233 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlContrato" autosized="true" domElementAttachment="form" top="30">
+		<f:facet name="header">
+			<h:outputText value="#{msg['empleado.c']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlContrato')}.hide()" />
+		</f:facet>
+		
+		<a4j:region id="regContrato">
+			<h:panelGrid columns="2" style="margin:0 auto; padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+				<h:panelGroup id="grupoCotizacionBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+					<rich:messages id="validadorEmpContrato" ajaxRendered="true" title="Campos requeridos!" >
+						<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" /></f:facet>
+					</rich:messages>
+				</h:panelGroup>
+				
+				<h:panelGroup id="grupoCotizacionBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+					<a4j:commandButton id="cmdSalvarContrato" style="float:right; margin:0 5px; vertical-align:top; position:relative;"
+						image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+						rendered="#{empleadoAction.esContratoNuevo}"
+						action="#{empleadoAction.guardarContrato}" 
+						oncomplete="salvarContrato(#{empleadoAction.band}, '#{rich:clientId('pnlContrato')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorEmpContrato')})"
+						render="validadorEmpContrato,pnlMensajes,dtListaContratos" limitRender="true" />
+				</h:panelGroup>
+			</h:panelGrid>
+
+			<h:panelGroup id="grupoEncabezadoContrato" styleClass="encabezado">
+				<h:outputText value="#{empleadoAction.empleado}" style="text-align:center;" />
+			</h:panelGroup>		
+			
+			<h:panelGroup id="grupoDatosContrato">
+				<h:panelGroup style="text-align:left;">
+					<h:panelGrid id="pnlDatosContrato" columns="4" width="700" columnClasses="colTitulo,colDato,colTitulo,colDato" >
+						<h:outputLabel value="#{msg['tipo']} #{msg['contrato']}:" styleClass="Titulo" />
+						<h:selectOneMenu id="cbContratoTipoContrato"
+							disabled="#{! empleadoAction.esContratoNuevo}" 
+							value="#{empleadoAction.pojoContrato.determinado}"
+				            required="#{!empty param[rich:clientId('cmdSalvarContrato')]}"
+				            requiredMessage="#{msg['tipo']} #{msg['contrato']} #{msg['mensaje.error.requerido']}"> 
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+							<f:selectItem itemValue="0" itemLabel="Indeterminado" />
+							<f:selectItem itemValue="1" itemLabel="Determinado" />
+							<a4j:ajax event="change"
+								render="txtContratoFechaInicio txtContratoFechaTermino" 
+				            	limitRender="true" />
+						</h:selectOneMenu>
+						
+			            <h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+			            <h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						
+						<h:outputLabel value="#{msg['fechaInicio']}:" styleClass="Titulo" />
+			            <rich:calendar id="txtContratoFechaInicio" enableManualInput="false" datePattern="dd/MMM/yyyy"
+			            	disabled="#{! empleadoAction.esContratoNuevo}" 
+			            	value="#{empleadoAction.pojoContrato.fechaInicio}"
+				            required="#{!empty param[rich:clientId('cmdSalvarContrato')]}"
+				            requiredMessage="#{msg['fechaInicio']} #{msg['mensaje.error.requerido']}" />
+			            
+			            <h:outputLabel value="#{msg['modalidadPago']}:" styleClass="Titulo" />
+						<h:selectOneMenu id="cbContratoModalidadPago" style="width:200px;"
+							disabled="#{! empleadoAction.esContratoNuevo}" 
+							value="#{empleadoAction.pojoContrato.formaPago}" 
+				            required="#{!empty param[rich:clientId('cmdSalvarContrato')]}"
+				            requiredMessage="#{msg['modalidadPago']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+							<f:selectItems value="#{empleadoAction.listFormasPagoEmpleadosItems}" />		
+						</h:selectOneMenu>
+						
+						<h:outputLabel value="#{msg['e.fechaTermino']}:" styleClass="Titulo" />
+			            <rich:calendar id="txtContratoFechaTermino" enableManualInput="false" datePattern="dd/MMM/yyyy"
+			            	disabled="#{empleadoAction.esContratoNuevo ? (empleadoAction.pojoContrato.determinado == 1 ? false : true) : true}" 
+			            	value="#{empleadoAction.pojoContrato.fechaFin}"
+				            required="#{empleadoAction.pojoContrato.determinado == 1 ? !empty param[rich:clientId('cmdSalvarContrato')] : false}"
+				            requiredMessage="#{msg['e.fechaTermino']} #{msg['mensaje.error.requerido']}" />
+			            
+			            <h:outputLabel value="#{msg['tipoHorario']}:" styleClass="Titulo" />
+			            <h:selectOneMenu id="cbContratoTipoHorario" style="width:200px;"
+			            	disabled="#{! empleadoAction.esContratoNuevo}" 
+			            	value="#{empleadoAction.pojoContrato.tipoHorario}" 
+				            required="#{!empty param[rich:clientId('cmdSalvarContrato')]}"
+				            requiredMessage="#{msg['tipoHorario']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+							<f:selectItem itemValue="0" itemLabel="Oficina" />
+							<f:selectItem itemValue="1" itemLabel="Obra" />
+							<a4j:ajax event="change" 
+								listener="#{empleadoAction.reiniciaHorario}"
+								render="txtContratoHoraSalida dtHoraEntradaComplemento dtHoraSalidaComplemento" 
+				            	limitRender="true" />
+						</h:selectOneMenu>
+							
+						<h:outputText value="#{msg['e.centroTrabajo']}:" styleClass="Titulo" />
+						<h:panelGroup>
+							<h:inputText id="txtContratoCentroTrabajo" style="width: 200px;" 
+								disabled="#{! empleadoAction.esContratoNuevo}"
+								value="#{empleadoAction.pojoContrato.centroTrabajo}"
+					            required="#{!empty param[rich:clientId('cmdSalvarContrato')]}"
+					            requiredMessage="#{msg['e.centroTrabajo']} #{msg['mensaje.error.requerido']}" />
+				        </h:panelGroup>
+			            
+			            <h:outputLabel value="#{msg['horaEntrada']}:" styleClass="Titulo" />
+			            <h:panelGroup>
+				            <h:inputText id="txtContratoHoraEntrada" style="text-align: center; width: 50px;"
+				            	disabled="#{! empleadoAction.esContratoNuevo}"
+				            	value="#{empleadoAction.horaEntrada}"
+				            	onkeydown="return soloHora(event, this.value)"
+					            onblur="validaHora(this.id, this.value, '#{msg['formatoHoraInvalido']}')"
+					            required="#{!empty param[rich:clientId('cmdSalvarContrato')]}"
+					            requiredMessage="#{msg['horaEntrada']} #{msg['mensaje.error.requerido']}" />
+				            <h:outputLabel value="#{msg['24Hrs']}" styleClass="Titulo" />
+			            </h:panelGroup>
+			            
+			            <h:outputText value="#{msg['e.peridiocidadPago']}:" styleClass="Titulo" />
+						<h:selectOneMenu id="txtContratoPeriodicidadPago" style="width:206px;"
+							disabled="#{! empleadoAction.esContratoNuevo}" 
+							value="#{empleadoAction.pojoContrato.periodicidadPago}" 
+				            required="#{!empty param[rich:clientId('cmdSalvarContrato')]}"
+				            requiredMessage="#{msg['e.peridiocidadPago']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+							<f:selectItems value="#{empleadoAction.listaCboPeridiocidad}"/>
+				            <a4j:ajax event="change"
+				            	listener="#{empleadoAction.calcularSueldoHora}"
+				            	render="txtContratoSueldoHora"
+				            	limitRender="true" />
+						</h:selectOneMenu>
+			            
+			            <h:outputLabel value="#{msg['horaSalida']}:" styleClass="Titulo" />
+			            <h:panelGroup>
+				            <h:inputText id="txtContratoHoraSalida" style="text-align: center; width: 50px;"
+				            	disabled="#{! empleadoAction.esContratoNuevo}"
+				            	value="#{empleadoAction.horaSalida}"
+				            	onkeydown="return soloHora(event, this.value)"
+					            onblur="validaHora(this.id, this.value, '#{msg['formatoHoraInvalido']}')"
+					            required="#{!empty param[rich:clientId('cmdSalvarContrato')]}"
+					            requiredMessage="#{msg['horaSalida']} #{msg['mensaje.error.requerido']}" />
+				            <h:outputLabel value="#{msg['24Hrs']}" styleClass="Titulo" />
+			            </h:panelGroup>
+			            
+			            <h:outputText value="#{msg['e.diaDescanso']}:" styleClass="Titulo" />
+						<h:selectOneMenu id="txtContratoDiaDescanso" style="width:206px;"
+							disabled="#{! empleadoAction.esContratoNuevo}" 
+							value="#{empleadoAction.pojoContrato.diaDescanso}" 
+				            required="#{!empty param[rich:clientId('cmdSalvarContrato')]}"
+				            requiredMessage="#{msg['e.diaDescanso']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+							<f:selectItems value="#{empleadoAction.listaCboDias}" />
+						</h:selectOneMenu>
+			            
+			            <h:outputLabel value="#{msg['horaEntrada']}:" styleClass="Titulo" title="#{msg['complemento']}" />
+			            <h:panelGroup>
+				            <h:inputText id="dtHoraEntradaComplemento" style="text-align: center; width: 50px;"
+				            	disabled="#{empleadoAction.pojoContrato.tipoHorario == 1 || ! empleadoAction.esContratoNuevo}"
+				            	value="#{empleadoAction.horaEntradaComplemento}"
+				            	onkeydown="return soloHora(event, this.value)"
+					            onblur="validaHora(this.id, this.value, '#{msg['formatoHoraInvalido']}')"
+					            required="#{!empty param[rich:clientId('cmdSalvarContrato')]}"
+					            requiredMessage="#{msg['horaEntrada']} #{msg['complemento']} #{msg['mensaje.error.requerido']}" />
+				            <h:outputLabel value="#{msg['24Hrs']}" styleClass="Titulo" />
+			            </h:panelGroup>
+						
+			            <h:outputText value="#{msg['e.sueldo']}:" styleClass="Titulo" />
+						<h:inputText id="txtContratoSueldo" maxlength="20" style="width:200px; text-align:right;"
+							disabled="#{! empleadoAction.esContratoNuevo}" 
+							value="#{empleadoAction.pojoContrato.sueldo}"
+				            required="#{!empty param[rich:clientId('cmdSalvarContrato')]}"
+				            requiredMessage="#{msg['e.sueldo']} #{msg['mensaje.error.requerido']}"
+				            onkeypress="return soloDecimales(event, this.value, 12, 2);">
+							<f:convertNumber pattern="###,###,###,##0.00" />
+				            <a4j:ajax event="change"
+				            	listener="#{empleadoAction.calcularSueldoHora}"
+				            	render="txtContratoSueldoHora"
+				            	limitRender="true" />
+				        </h:inputText>
+			            
+			            <h:outputLabel value="#{msg['horaSalida']}:" styleClass="Titulo" title="#{msg['complemento']}" />
+			            <h:panelGroup>
+				            <h:inputText id="dtHoraSalidaComplemento" style="text-align: center; width: 50px;"
+				            	disabled="#{empleadoAction.pojoContrato.tipoHorario == 1 || ! empleadoAction.esContratoNuevo}"
+				            	value="#{empleadoAction.horaSalidaComplemento}"
+				            	onkeydown="return soloHora(event, this.value)"
+					            onblur="validaHora(this.id, this.value, '#{msg['formatoHoraInvalido']}')"
+					            required="#{!empty param[rich:clientId('cmdSalvarContrato')]}"
+					            requiredMessage="#{msg['horaSalida']} #{msg['complemento']} #{msg['mensaje.error.requerido']}" />
+				            <h:outputLabel value="#{msg['24Hrs']}" styleClass="Titulo" />
+			            </h:panelGroup>
+						
+			            <h:outputText value="#{msg['e.sueldoHora']}:" styleClass="Titulo" />
+						<h:inputText id="txtContratoSueldoHora" maxlength="20" style="width:200px; text-align:right;"
+							disabled="#{! empleadoAction.esContratoNuevo}" readonly="#{empleadoAction.sueldoHoraBloqueado}"
+							value="#{empleadoAction.pojoContrato.sueldoHora}"
+				            required="#{!empty param[rich:clientId('cmdSalvarContrato')]}"
+				            requiredMessage="#{msg['e.sueldoHora']} #{msg['mensaje.error.requerido']}"
+				            onkeypress="return soloDecimales(event, this.value, 12, 4);">
+							<f:convertNumber pattern="###,###,###,##0.0000" />
+						</h:inputText>
+						
+			            <h:outputText value="#{msg['e.sueldoHoraExtra']}:" styleClass="Titulo" />
+						<h:inputText id="txtContratoSueldoHoraExtra" maxlength="20" style="width:200px; text-align: right;"  
+							disabled="#{! empleadoAction.esContratoNuevo}"
+							value="#{empleadoAction.pojoContrato.sueldoHoraExtra}"
+				            required="#{!empty param[rich:clientId('cmdSalvarContrato')]}"
+				            requiredMessage="#{msg['e.sueldoHoraExtra']} #{msg['mensaje.error.requerido']}"
+				            onkeypress="return soloDecimales(event, this.value, 12, 4);">
+							<f:convertNumber pattern="###,###,###,##0.0000" />
+						</h:inputText>
+			            
+			            <h:outputText value="#{msg['e.descuentoInfonavit']}:" styleClass="Titulo" />
+						<h:inputText id="txtContratoDescuentoInfonavit" maxlength="10" style="width:100px; text-align:right;" 
+							disabled="#{! empleadoAction.esContratoNuevo}"
+							value="#{empleadoAction.pojoContrato.descuentoInfonavit}"
+				            required="#{!empty param[rich:clientId('cmdSalvarContrato')]}"
+				            requiredMessage="#{msg['e.descuentoInfonavit']} #{msg['mensaje.error.requerido']}"
+				            onkeypress="return soloDecimales(event, this.value, 12, 2);">
+							<f:convertNumber pattern="###,###,###,##0.00" />
+						</h:inputText>
+						
+			            <h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+			            <h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+					</h:panelGrid>
+				</h:panelGroup>
+			</h:panelGroup>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

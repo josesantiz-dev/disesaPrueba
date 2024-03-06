@@ -1,0 +1,93 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlGastosComprobarSeleccionarObra" autosized="true">
+		<f:facet name="header">
+			<h:panelGroup>		           
+				<h:outputText style="margin:0 auto;" value="#{gastosComprobarAction.pojoObra == null ? msg['seleccionarObra'] : msg['cambiarObra']}" styleClass="Titulo"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="btnGastosComprobarSeleccionarObra"/>
+				<rich:componentControl for="pnlGastosComprobarSeleccionarObra" attachTo="btnGastosComprobarSeleccionarObra" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmGastosComprobarSeleccionarObra">
+			<a4j:region id="loadGastosComprobarSeleccionarObra">
+				<div style="display: block; width:100%; height: 22px;">
+					<h:panelGroup style="vertical-align: middle; position:relative; ">
+						<a4j:commandButton id="cmdGastosComprobarBuscarObras" onclick="#{rich:element('cmdGastosComprobarBuscarObras')}.disabled = true;" image="#{msg['buscar22.img']}" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+							action="#{gastosComprobarAction.buscarObras}" reRender="dtResultsObras,pnlMsgGralesGastosComprobar"
+							oncomplete="msgRevisando(#{rich:element('msgErrorGastosComprobar')},'pnlGastosComprobarSeleccionarObra','pnlMsgGralesGastosComprobar',#{gastosComprobarAction.band},'buscarObras','#{gastosComprobarAction.mensaje}'); #{rich:element('cmdGastosComprobarBuscarObras')}.disabled = false" >
+							<rich:toolTip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdGastosComprobarBuscarObras"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</div>
+				
+				<h:panelGrid id="panelGastosComprobarBuscarObra" columns="2" columnClasses="tygCompGtosColIzq, tygCompGtosColDer" style="margin: 10px auto; display:block;" width="700">
+					<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>	
+					<rich:comboBox id="cmbGastosComprobarObraTipoBusqueda" value="#{gastosComprobarAction.valTipoBusquedaObra}" suggestionValues="#{gastosComprobarAction.tipoBusquedaObra}" width="180" listStyle="text-align:left;" enableManualInput="false" eventsQueue="suggQRepCaja" />
+					
+					<h:outputText value="#{msg['navegacion.label.valor']}:" styleClass="Titulo"/>
+					<h:inputText id="txtValorObra" size="50" maxlength="35" value="#{gastosComprobarAction.campoBusquedaObra}" />
+					
+					<h:outputText value="#{msg['tipo']}:" styleClass="Titulo" />
+					<h:panelGroup >
+						<h:selectOneRadio value="#{gastosComprobarAction.tipoObra}" styleClass="Titulo"> 
+							<f:selectItem itemLabel="#{msg['obra']}" itemValue="O"/>
+							<f:selectItem itemLabel="#{msg['proyecto']}" itemValue="P"/>
+							<a4j:support event="onchange" action="#{gastosComprobarAction.cambioObra}" />
+						</h:selectOneRadio> 
+					</h:panelGroup>
+				</h:panelGrid>
+				
+				<rich:dataTable id="dtResultsObras" value="#{gastosComprobarAction.listObras}" var="var" rows="5" cellpadding="0" cellspacing="0" width="780" border="0" rowClasses="Row1, Row2" >
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column width="80" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['navegacion.label.id']}"/>
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['nombre']}"/>
+							</rich:column>
+							
+							<rich:column width="30" style="text-align:center; margin-left:10px;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['seleccionar']}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column width="80" style="text-align:center;" styleClass="tygCompGtosDesc">
+						<h:outputText  value="#{var.id}" />
+					</rich:column>
+					
+					<rich:column style="text-align:left;" styleClass="tygCompGtosDesc">
+						<h:outputText  value="#{var.nombre}" />
+					</rich:column>
+					
+					<rich:column width="30" style="text-align:center;" styleClass="tygCompGtosDesc">
+						<a4j:commandButton id="cmdSeleccionarObra" action="#{gastosComprobarAction.seleccionarObra}" reRender="dtResultsObras,pnlGastosComprobarObraDatos" image="#{msg['agregar16.img']}" onclick="#{rich:component('pnlGastosComprobarSeleccionarObra')}.hide()">
+							<rich:toolTip showDelay="300" value="#{msg['agregar.e']}" for="cmdAgregar" />	
+							<f:setPropertyActionListener target="#{gastosComprobarAction.pojoObra}" value="#{var}" />
+						</a4j:commandButton>
+					</rich:column>
+
+					<f:facet name="footer">
+						<rich:datascroller align="center" for="dtResultsObras" maxPages="10"
+							ajaxSingle="true" page="#{gastosComprobarAction.numPagina}" id="dScroll"
+							styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

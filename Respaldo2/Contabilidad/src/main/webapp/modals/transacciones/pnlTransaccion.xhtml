@@ -1,0 +1,164 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlTransaccion" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+    	<f:facet name="header">
+    		<h:outputText value="#{transAction.pojoTransaccion.id == null ? msg['nueva'] : ''} #{msg['transaccion']}" styleClass="Titulo" />
+    	</f:facet>
+    	
+		<f:facet name="controls"> 
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlTransaccion')}.hide()" /> 
+		</f:facet>
+		
+		<h:panelGrid id="botonera" columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+			<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+				<rich:messages id="msgErrores" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+				</rich:messages>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdSalvar" style="float:right; margin-left: 5px; vertical-align: middle; position:relative;"
+					image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+					action="#{transAction.guardar}" 
+					oncomplete="salvar(#{transAction.operacion}, '#{rich:clientId('pnlTransaccion')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrores')});"
+					render="dtResults, msgErrores, pnlMensajes" />
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<div style="display:block; margin: 1px auto; padding: 0; text-align: left; background-color: none;">
+			<fieldset id="bandDatosGenerales" style="margin: 10px auto;">
+				<legend><h:outputText value="#{msg['datosGenerales']}" styleClass="Titulo" /></legend>
+				
+				<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+					<h:outputText value="#{msg['transaccion']}:" styleClass="Titulo" />
+					<h:inputText id="txtDescripcion" styleClass="Titulo" style="text-align: left; width: 350px;"
+						value="#{transAction.pojoTransaccion.descripcion}"
+						required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+						requiredMessage="#{msg['transaccion']} #{msg['mensaje.error.requerido']}" />
+						
+					<h:outputText value="#{msg['codigo']}:" styleClass="Titulo" />
+					<h:inputText id="txtCodigo" styleClass="Titulo" style="text-align: left; width: 180px;"
+						value="#{transAction.pojoTransaccion.codigo}"
+						required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+						requiredMessage="#{msg['codigo']} #{msg['mensaje.error.requerido']}"
+						onkeypress=" return (soloEnteros(event.which)); ">
+						<a4j:ajax event="blur" 
+							listener="#{transAction.comprobarCodigo}"
+							oncomplete="comprobarCodigo(#{transAction.operacion}, '#{rich:clientId('pnlMensajes')}');"
+							render="pnlMensajes" limitRender="true" />
+					</h:inputText>
+					
+					<h:outputText value="#{msg['operacion']}:" styleClass="Titulo" />
+					<h:panelGroup>
+						<h:panelGrid id="pnlOperacionDatos" columns="2">
+							<h:outputText id="txtOperacion" value="#{transAction.transaccionOperacion}" styleClass="Titulo" style="text-align:left; display:block;" />
+							<h:panelGroup>
+								<a4j:commandLink id="cmdBusquedaOperaciones" styleClass="linkColor" 
+									action="#{transAction.nuevaBusquedaOperaciones}" 
+									value="#{transAction.transaccionOperacion == '' ? msg['seleccionar'] : msg['cambiar']}"
+									oncomplete="#{rich:component('pnlBusquedaOperaciones')}.show()"
+									render="pnlBusquedaOperaciones"
+									limitRender="true" />
+									
+								<h:inputText id="txtOperacionHidden" style="display:none;"
+									value="#{transAction.transaccionOperacion}"
+									required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+									requiredMessage="#{msg['operacion']} #{msg['mensaje.error.requerido']}" />
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGroup>
+						
+					<h:outputText value="#{msg['glosa']}:" styleClass="Titulo" /> 
+					<h:inputTextarea id="txtGlosa" style="width: 100%; resize: none;" rows="1"
+						value="#{transAction.pojoTransaccion.glosa}"
+						required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+						requiredMessage="#{msg['glosa']} #{msg['mensaje.error.requerido']}" />
+				</h:panelGrid>
+			</fieldset>
+			
+			<fieldset id="bandDetalles" style="margin: 10px auto;">
+				<legend><h:outputText value="#{msg['conceptos']}" styleClass="Titulo" /></legend>
+				
+				<div style="display:block; min-width:500px; width:100%; min-height: 22px; overflow: auto;">
+					<a4j:commandButton id="cmdNuevoTransConcepto" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+						image="#{msg['agregar22.img']}" title="#{msg['agregar.e']}"
+						action="#{transAction.nuevoTransaccionConcepto}" 
+						oncomplete="#{rich:component('pnlBusquedaConceptos')}.show()"
+						render="pnlBusquedaConceptos"
+						limitRender="true"
+						execute="@this">
+						<rich:tooltip styleClass="Descripcion" showDelay="300" value="" for="cmdNuevoTransConcepto"/>
+					</a4j:commandButton>
+				</div>
+
+				<rich:dataTable id="dtTransaccionConceptos" value="#{transAction.listTransConceptos}" var="var" 
+					cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['id']}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['id']} #{msg['concepto']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['concepto']}" />
+							</rich:column>
+							
+							<rich:column style="min-width:20px; text-align:center;" styleClass="Titulo" colspan="#{transAction.debugging ? 2 : 1}" />
+						</rich:columnGroup>
+					</f:facet>
+						
+					<rich:column style="width: 80px; text-align: center;" styleClass="Descripcion">
+						<h:outputText value="#{var.id > 0 ? var.id : ''}" />
+					</rich:column>
+						
+					<rich:column style="width: 80px; text-align: center;" styleClass="Descripcion">
+						<h:outputText value="#{var.idConcepto.id}" />
+					</rich:column>
+					
+					<rich:column style="text-align: left;" styleClass="Descripcion">
+						<h:outputText value="#{var.idConcepto.descripcion}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; width:20px;" styleClass="Descripcion" rendered="#{transAction.debugging}">
+						<a4j:commandButton id="cmdTransaccionConceptoEditar" 
+							image="#{msg['editar16.img']}" title="#{msg['editar.e']}"
+							action="#{transAction.nuevaBusquedaConceptosEditar}" 
+							oncomplete="#{rich:component('pnlBusquedaConceptos')}.show()" 
+							render="pnlBusquedaConceptos"
+							limitRender="true">
+							<f:setPropertyActionListener value="#{var}" target="#{transAction.pojoTransConcepto}" for="cmdTransaccionConcepto" />
+						</a4j:commandButton>
+					</rich:column> 
+					
+					<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+						<a4j:commandButton id="cmdTransaccionConcepto" 
+							image="#{msg['eliminar16.img']}" 
+							oncomplete="#{rich:component('pnlEliminarTransaccionConcepto')}.show()" 
+							render="pnlEliminarTransaccionConcepto"
+							limitRender="true">
+							<f:setPropertyActionListener value="#{var}" target="#{transAction.pojoTransConceptoBorrar}" for="cmdTransaccionConcepto" />
+							<rich:tooltip showDelay="300" value="#{msg['eliminar.e']}" for="cmdTransaccionConcepto" />
+						</a4j:commandButton>
+					</rich:column> 
+	
+					<f:facet name="footer">
+						<rich:dataScroller id="dScrollTransaccionConceptos" for="dtTransaccionConceptos" page="#{transAction.numPaginaTransConceptos}" 
+							align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</fieldset>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

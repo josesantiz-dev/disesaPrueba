@@ -1,0 +1,32 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlMensajesCustom" autosized="true"
+		onshow="document.getElementById('#{rich:clientId('btnMensajesCustom')}').focus();">
+		<f:facet name="header">
+			<h:outputText value="#{msg['atencion']}" styleClass="Titulo" />
+		</f:facet>
+
+		<a4j:region id="regMensajesCustom">
+			<h:panelGrid columns="1" style="text-align:center; min-width:300px; max-width:500px;">
+				<h:outputText styleClass="Descripcion" 
+					rendered="#{facturaAction.tipoMensaje ==  0}" 
+					value="#{msg['facturaTimbrada']}" />
+				
+				<h:outputText styleClass="Descripcion" 
+					rendered="#{facturaAction.tipoMensaje == -1}" 
+					value="#{facturaAction.resOperacion}"
+					escape="false" />
+					
+				<a4j:commandButton id="btnMensajesCustom" execute="@region" style="margin:10px auto 0; width:100px;"
+					value="#{msg['navegacion.label.aceptar']}"
+					onclick="#{rich:component('pnlMensajesCustom')}.hide()" />
+			</h:panelGrid>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

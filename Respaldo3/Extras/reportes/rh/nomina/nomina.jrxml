@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="nomina" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d8075a1e-9044-4caa-9742-72e978fc70a1">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ruta_img" class="java.lang.String">
+		<defaultValueExpression><![CDATA["D:/CONDESE/JAVA/DISESA/Desarrollo/Extras/imagen/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fechaDesde" class="java.lang.String">
+		<defaultValueExpression><![CDATA["01/01/2016"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fechaHasta" class="java.lang.String">
+		<defaultValueExpression><![CDATA["06/30/2016"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT nom.id_empleado
+    , emp.nombre
+    , SUM(nom.monto_normal + nom.monto_extra) AS sueldo
+    , SUM(nom.monto_neto) AS pagar_deposito
+    , (ban.nombre_corto || ' # ' || per.bc) AS depositar
+    , COALESCE(des.observaciones, '') AS observaciones
+    , emp.id_sucursal
+    , COALESCE(suc.af, '') AS sucursal
+    , DATE($P{fechaDesde}) AS fecha_inicio
+    , DATE($P{fechaHasta}) AS fecha_fin
+FROM empleado_nomina nom
+    INNER JOIN c5f822917f emp ON emp.aa = nom.id_empleado
+    INNER JOIN c81498d458 per ON per.aa = emp.af
+    LEFT  JOIN cat_bancos ban ON ban.cat_banco_id = per.be
+    LEFT  JOIN empleado_descuento des ON des.id_empleado = nom.id_empleado AND DATE(des.fecha) = DATE(nom.fecha) AND des.estatus > 0
+    LEFT  JOIN a535303dbc suc ON suc.aa = emp.id_sucursal
+WHERE nom.fecha BETWEEN DATE($P{fechaDesde}) AND DATE($P{fechaHasta})
+GROUP BY nom.id_empleado, emp.nombre, ban.nombre_corto, per.bc, des.observaciones, emp.id_sucursal, suc.af
+ORDER BY suc.af, emp.nombre;]]>
+	</queryString>
+	<field name="id_empleado" class="java.math.BigDecimal"/>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="sueldo" class="java.math.BigDecimal"/>
+	<field name="pagar_deposito" class="java.math.BigDecimal"/>
+	<field name="depositar" class="java.lang.String"/>
+	<field name="observaciones" class="java.lang.String"/>
+	<field name="id_sucursal" class="java.math.BigDecimal"/>
+	<field name="sucursal" class="java.lang.String"/>
+	<field name="fecha_inicio" class="java.sql.Date"/>
+	<field name="fecha_fin" class="java.sql.Date"/>
+	<variable name="fecha_desde_formateada" class="java.lang.String">
+		<initialValueExpression><![CDATA[new SimpleDateFormat("dd 'de' MMMMM 'de' yyyy", Locale.forLanguageTag("es-Mx")).format($F{fecha_inicio})]]></initialValueExpression>
+	</variable>
+	<variable name="fecha_hasta_formateada" class="java.lang.String">
+		<initialValueExpression><![CDATA[new SimpleDateFormat("dd 'de' MMMMM 'de' yyyy", Locale.forLanguageTag("es-Mx")).format($F{fecha_fin})]]></initialValueExpression>
+	</variable>
+	<variable name="pagar_deposito_1" class="java.lang.Integer" resetType="Group" resetGroup="gSucursal" calculation="Sum">
+		<variableExpression><![CDATA[$F{pagar_deposito}]]></variableExpression>
+	</variable>
+	<variable name="pagar_deposito_2" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{pagar_deposito}]]></variableExpression>
+	</variable>
+	<group name="gSucursal">
+		<groupExpression><![CDATA[$F{id_sucursal}]]></groupExpression>
+		<groupHeader>
+			<band height="16">
+				<textField isBlankWhenNull="true">
+					<reportElement mode="Transparent" x="0" y="0" width="555" height="16" backcolor="#CCCCCC" uuid="9fa7fdc5-dd6a-4de6-8180-7e746287e85c"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{sucursal}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="16">
+				<staticText>
+					<reportElement stretchType="RelativeToTallestObject" mode="Transparent" x="295" y="0" width="260" height="16" backcolor="#CCCCCC" uuid="c5592001-2087-49a3-939c-ffe5b8957dcf"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement stretchType="RelativeToTallestObject" mode="Transparent" x="0" y="0" width="222" height="16" backcolor="#CCCCCC" uuid="0810214f-552a-4c3b-9973-cc2dd79a638a"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<text><![CDATA[SUBTOTAL:]]></text>
+				</staticText>
+				<textField pattern="$ #,##0.00" isBlankWhenNull="true">
+					<reportElement x="222" y="0" width="73" height="16" uuid="8e597db2-a1fa-4621-bfba-20bb3ac47456"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+						<paragraph leftIndent="2" rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{pagar_deposito_1}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<title>
+		<band height="73" splitType="Stretch">
+			<image scaleImage="RealSize" hAlign="Left" vAlign="Middle" onErrorType="Icon">
+				<reportElement x="0" y="0" width="120" height="72" uuid="86953c8e-35a2-4de6-a2da-970e8c84afe7"/>
+				<imageExpression><![CDATA[$P{ruta_img} + "logo_disesa.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="120" y="0" width="435" height="37" uuid="ea8b3f69-e752-4b31-8b6e-dc4610a72df0"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="12" isBold="true"/>
+					<paragraph leftIndent="10" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE NOMINA]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement x="120" y="37" width="435" height="16" uuid="03debecd-6e8e-4b00-ab35-8ff651e05ef3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="10" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA["DEL " + $V{fecha_desde_formateada}.toUpperCase() + " AL " + $V{fecha_hasta_formateada}.toUpperCase()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="16" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="149" height="16" backcolor="#CCCCCC" uuid="4a584b8f-cebe-4929-8686-3b53cda0fd32"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[NOMBRE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="295" y="0" width="113" height="16" backcolor="#CCCCCC" uuid="b64c8dc9-9efb-4850-9467-60323c88b954"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[DEPOSITAR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="149" y="0" width="73" height="16" backcolor="#CCCCCC" uuid="5ac33d76-e0f5-414f-8631-6f06cbeb91e6"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[SUELDO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="222" y="0" width="73" height="16" backcolor="#CCCCCC" uuid="4e9fa027-51e7-4afa-b0c2-0fe29844bdcb"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[PAGAR/DEPOSITO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="408" y="0" width="147" height="16" backcolor="#CCCCCC" uuid="2b0c48bc-1e34-45d5-b576-0341275a5971"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[OBSERVACIONES]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="149" height="16" uuid="9a539122-7a47-42bb-b379-6864b9951f91"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+			</textField>
+			<textField pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="149" y="0" width="73" height="16" uuid="81367837-34cc-416d-be02-157659457623"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sueldo}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="295" y="0" width="113" height="16" uuid="4471748b-149e-41a9-af0d-a5567ed55e42"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{depositar}]]></textFieldExpression>
+			</textField>
+			<textField pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="222" y="0" width="73" height="16" uuid="d1c6986c-3916-47db-b5e4-d4f96f98f7fb"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pagar_deposito}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="408" y="0" width="147" height="16" uuid="3237f3e6-b9ff-4d5c-8b70-c973e4307c7c"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{observaciones}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="16" splitType="Stretch">
+			<textField evaluationTime="Report">
+				<reportElement x="543" y="0" width="12" height="16" uuid="eee333bc-b6b7-4feb-b7c7-6e5f13eb11e8"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="463" y="0" width="80" height="16" uuid="e7c9d947-6bc2-4e18-9c45-db7af53a8279"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER} + "/"]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd MMMMM yyyy">
+				<reportElement x="0" y="0" width="222" height="16" uuid="1ff97bba-61f4-433e-8c10-3d8765a82f5c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd MMMMM yyyy", Locale.forLanguageTag("es-Mx")).format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="16" splitType="Stretch">
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="0" width="222" height="16" backcolor="#CCCCCC" uuid="31583b5a-dfce-4e81-a75b-21bb6953a356"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[GRAN TOTAL:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="295" y="0" width="260" height="16" backcolor="#CCCCCC" uuid="d0ed45f8-7cbc-44ae-ac3d-aeb127d87e59"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="222" y="0" width="73" height="16" uuid="63652672-115a-42b7-a2f1-9ea0fcd5d1b8"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{pagar_deposito_2}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

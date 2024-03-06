@@ -1,0 +1,166 @@
+<!DOCTYPE composition PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:rich="http://richfaces.org/rich" 
+	xmlns:s="http://jboss.com/products/seam/taglib" 
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+	<rich:modalPanel autosized="true" id="pnlSeleccionResponsabilidad">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText value="Responsabilidades"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage id="btnCerrarSelResp" styleClass="boton" value="#{msg['navegacion.panel.cerrar.img']}">
+					<rich:componentControl event="onclick" for="pnlSeleccionResponsabilidad" operation="hide"/>
+				</h:graphicImage>
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="frmSelResp">
+			<rich:dataTable id="dtSelResponsabilidad" rendered="#{loginManager.tieneResponsabilidades}" rowClasses="gralRow1, gralRow2" rows="10" style="width:250px" value="#{loginManager.usuarioResponsabilidades}" var="ur">
+				<rich:column style="width:250px; text-align:center;">
+					<a4j:commandLink style="padding:3px auto; font-weight: bold;" 
+						value="#{ur.responsabilidad.responsabilidad}"
+						action="#{loginManager.seleccionaResponsabilidad}" 
+						oncomplete="goUrl('#{navegador.urlHome}')">
+						<f:setPropertyActionListener target="#{loginManager.usuarioResponsabilidad}" value="#{ur}"/>
+					</a4j:commandLink>
+				</rich:column>
+			</rich:dataTable>
+
+			<h:panelGroup rendered="#{!loginManager.tieneResponsabilidades}" style="display:block; width:250px; text-align:center;">
+				<h:outputText style="margin:auto;" styleClass="TituloGral" value="#{msg['mensajes.error.sinResponsabilidades']}"/>
+			</h:panelGroup>
+
+			<f:facet name="footer">
+				<rich:datascroller ajaxSingle="true" align="center" for="dtSelResponsabilidad" id="dScrollSelResp" maxPages="10" page="#{navegador.numPag}" renderIfSinglePage="false"/>
+			</f:facet>
+		</a4j:form>
+	</rich:modalPanel>
+
+	<rich:modalPanel autosized="true" id="pnlSeleccionEmpresa">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText value="Empresas"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}"
+				onclick="#{rich:component('pnlSeleccionEmpresa')}.hide()" />
+		</f:facet>
+
+		<h:form id="frmSelEmpresa">
+			<rich:dataTable id="dtSelEmpresa" rendered="#{loginManager.tieneEmpresas}" rowClasses="gralRow1, gralRow2" rows="10" style="width:250px" value="#{loginManager.usuarioEmpresas}" var="em">
+				<rich:column style="width:250px; text-align:center; padding:5px 2px;">
+					<a4j:commandLink style="padding:3px auto; font-weight: bold;" 
+						value="#{em.empresa}"
+						action="#{loginManager.seleccionaEmpresa}" 
+						oncomplete="goUrl('#{navegador.urlHome}')">
+						<f:setPropertyActionListener target="#{loginManager.usuarioEmpresa}" value="#{em}"/>
+					</a4j:commandLink>
+				</rich:column>
+			</rich:dataTable>
+
+			<h:panelGroup rendered="#{!loginManager.tieneEmpresas}" style="display:block; width:250px; text-align:center;">
+				<h:outputText style="margin:auto;" styleClass="TituloGral" value="#{msg['mensajes.error.sinEmpresas']}"/>
+			</h:panelGroup>
+
+			<f:facet name="footer">
+				<rich:datascroller ajaxSingle="true" align="center" for="dtSelEmpresa" id="dScrollSelEmpresas" maxPages="10" page="#{navegador.numPagEmpresas}" renderIfSinglePage="false"/>
+			</f:facet>
+		</h:form>
+	</rich:modalPanel>
+
+	<rich:modalPanel autosized="true" id="wait" moveable="false" resizeable="false">
+		<f:facet name="header">
+			<h:outputText styleClass="TituloGral" value="Procesando"/>
+		</f:facet>
+
+		<h:panelGrid columns="1" id="pnlWait" style="text-align:center; margin-top:5px;" width="200">
+			<h:graphicImage id="imgWait" style="display:block; margin:auto;" value="#{msgTyg['navegacion.loading.loading16.img']}"/>
+			<h:outputText style="display:block;" styleClass="TituloGral" value="Espere.."/>
+			<h:graphicImage style="text-align:center; display:block; margin:10px auto auto auto;" value="#{msg['navegacion.loading.loadingGrande.img']}"/>
+		</h:panelGrid>
+	</rich:modalPanel>
+
+	<rich:modalPanel autosized="true" id="pnlCambioPass">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText styleClass="TituloGral" value="#{msg['cambiarContrasena']} #{loginManager.tituloCambioContrasena}"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage styleClass="boton" value="#{msg['navegacion.panel.cerrar.img']}">
+					<rich:componentControl event="onclick" for="pnlCambioPass" operation="hide"/>
+				</h:graphicImage>
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="frmCambioPass">
+			<rich:messages ajaxRendered="false" globalOnly="false" id="msgErrorCambioPass" showDetail="false" showSummary="true">
+				<f:facet name="errorMarker">
+					<h:graphicImage style="margin-right:1em;" value="#{msg['navegacion.boton.alert16.img']}"/>
+				</f:facet>
+			</rich:messages>
+
+			<h:panelGrid columnClasses="alignRight, alignLeft" columns="2" style="display:block; width:100%; text-align:center;">
+				<h:outputText styleClass="TituloGral" value="#{msg['contrasenaActual']}:"/>
+				<h:inputSecret maxlength="9" rendered="true" size="15" value="#{loginManager.actualPassword}">
+					<f:validator validatorId="contrasena"/>
+				</h:inputSecret>
+				<h:outputText styleClass="TituloGral" value="#{msg['contrasenaNueva']}:"/>
+				<h:inputSecret maxlength="9" rendered="true" size="15" value="#{loginManager.nuevoPassword}">
+					<f:validator validatorId="contrasena"/>
+				</h:inputSecret>
+				<h:outputText styleClass="TituloGral" value="#{msg['contrasenaRepetir']}:"/>
+				<h:inputSecret maxlength="9" rendered="true" size="15" value="#{loginManager.nuevoPassword2}">
+					<f:validator validatorId="contrasena"/>
+				</h:inputSecret>
+			</h:panelGrid>
+
+			<div style="display: block; width: 300px; height: 22px; margin-top:10px;">
+				<a4j:commandButton id="cmdCambiaPassword" style="vertical-align: middle; position:relative; float:center; margin:auto; display:block;"
+					value="#{msg['aceptar']}"
+					action="#{loginManager.cambiarContrasena}" 
+					oncomplete="cambiarPass('#{loginManager.mensaje}', 'pnlCambioPass', 'pnlMsgPass', #{rich:element('msgErrorCambioPass')}, '#{navegador.origenCambioPass}', 'panelResponsabilidades');" 
+					reRender="pnlMsgPass, msgErrorCambioPass, panelResponsabilidades" />
+			</div>
+		</a4j:form>
+	</rich:modalPanel>
+
+	<rich:modalPanel autosized="true" id="pnlMsgPass">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText styleClass="TituloGral" value="#{loginManager.mensaje == '' ? msg['informacion'] : msg['atencion']}"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage styleClass="cursor:pointer;" value="#{msg['navegacion.panel.cerrar.img']}">
+					<rich:componentControl event="onclick" for="pnlMsgPass" operation="hide"/>
+				</h:graphicImage>
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="frmMsgPass" style="text-align:center;">
+			<h:panelGroup style="display:block; width:300px; float:center;">
+				<h:outputText style="display:block;" styleClass="TituloGral" value="#{loginManager.mensaje == '' ? msg['mensaje.info.contrasenaGuardada'] : loginManager.mensaje}"/>
+			</h:panelGroup>
+
+			<a4j:commandButton style="margin-top:10px; cursor:pointer;" 
+				value="#{msg['aceptar']}" 
+				onclick="#{rich:component('pnlMsgPass')}.hide()" />
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

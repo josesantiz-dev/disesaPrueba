@@ -1,0 +1,359 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlDatos" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1536px;" top="10">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.informacion']}" styleClass="Descripcion" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlDatos')}.hide()" />
+		</f:facet>
+		
+		<h:panelGrid id="botonera" columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+			<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+				<rich:messages id="validadorMensajes" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+				</rich:messages>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdBorrar" style="float:right; margin-left: 5px; vertical-align: middle; position:relative;" 
+					rendered="#{msgAction.msgEstatus ne -1}"
+					image="#{msg['eliminar22.img']}" title="#{msg['eliminar']}"
+					action="#{msgAction.ejecutar}" 
+					oncomplete="#{rich:component('pnlEliminar')}.show()" 
+					render="pnlEliminar" limitRender="true" />
+				
+				<h:panelGroup>
+					<h:outputText value="#{msg['estatus']}:" styleClass="Titulo" />
+					<h:selectOneMenu id="cmbTiposEstatusMensaje" value="#{msgAction.estatusMensaje}" style="width:216px">
+			            <f:selectItems value="#{msgAction.tiposEstatusMensaje}" />
+			        </h:selectOneMenu>
+					<a4j:commandButton id="btnEjecutar" style="float:right; margin-left: 5px; vertical-align: middle; position:relative;" 
+						image="#{msg['autorizar22.img']}" title="#{msg['salvar.e']}/#{msg['ejecutarTransaccion']}"
+						action="#{msgAction.ejecutar}" 
+						oncomplete="salvar(#{transAction.operacion}, '#{rich:clientId('pnlTransaccion')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorMensajes')});"
+						render="dtResults,validadorMensajes,pnlMensajes" limitRender="true" />
+				</h:panelGroup>
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<h:panelGroup style="display:block; margin:10px auto 0; padding:0; min-width:400px; text-align:left;">
+			<rich:tabPanel id="tabDatos" switchType="client" activeItem="tabEvento">
+				<rich:tab id="tabEvento" header="#{msg['evento']}">
+					<h:panelGrid columns="2" columnClasses="colTitulo,colDato">
+						<h:outputText value="#{msg['id']}:" styleClass="Titulo" />
+						<h:inputText  value="#{msgAction.msgId}" styleClass="Descripcion" />
+						
+						<h:outputText value="#{msg['transaccion']}:" styleClass="Titulo" />
+						<h:inputText  value="#{msgAction.msgIdTransaccion}" styleClass="Descripcion" />
+						
+						<h:outputText value="#{msg['operacion']}:" styleClass="Titulo" />
+						<h:panelGroup>
+							<h:inputText value="#{msgAction.msgIdOperacion}" styleClass="Descripcion" />
+							<h:inputText value="#{msgAction.msgDescOperacion}" styleClass="Descripcion" />
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['moneda']}:" styleClass="Titulo" />
+						<h:panelGroup>
+							<h:inputText value="#{msgAction.msgIdMoneda}" styleClass="Descripcion" />
+							<h:inputText value="#{msgAction.msgDescripcionMoneda}" styleClass="Descripcion" />
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['importe']}:" styleClass="Titulo" />
+						<h:inputText  value="#{msgAction.msgImporte}" styleClass="Descripcion" style="text-align:right;" />
+						
+						<h:outputText value="#{msg['personaNegocio']}:" styleClass="Titulo" />
+						<h:panelGroup>
+							<h:inputText value="#{msgAction.msgIdPersonaReferencia}" styleClass="Descripcion" />
+							<h:inputText value="#{msgAction.msgNombrePersonaReferencia}" styleClass="Descripcion" />
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['formaPago']}:" styleClass="Titulo" />
+						<h:panelGroup>
+							<h:inputText value="#{msgAction.msgIdFormaPago}" styleClass="Descripcion" />
+							<h:inputText value="#{msgAction.msgDescFormaPago}" styleClass="Descripcion" />
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['sucursal']}:" styleClass="Titulo" />
+						<h:panelGroup>
+							<h:inputText value="#{msgAction.msgIdSucursal}" styleClass="Descripcion" />
+							<h:inputText value="#{msgAction.msgDescSucursal}" styleClass="Descripcion" />
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['poliza']}:" styleClass="Titulo" />
+						<h:inputText  value="#{msgAction.msgPoliza}" styleClass="Descripcion" />
+						
+						<h:outputText value="#{msg['lote']}:" styleClass="Titulo" />
+						<h:inputText  value="#{msgAction.msgLote}" styleClass="Descripcion" />
+						
+						<h:outputText value="#{msg['estatus']}:" styleClass="Titulo" />
+						<h:inputTextarea value="#{msgAction.msgEstatusMensaje}" row="5" styleClass="Descripcion" style="min-width:500px; min-height:150px;" />
+					</h:panelGrid>
+				</rich:tab>
+				
+				<rich:tab id="tabTransacciones" header="#{msg['transaccionesData']}">
+					<div class="tableParent" style="display:block; margin:0 auto; padding:0; width:100%; height:auto; max-height:450px; overflow:auto;">
+						<rich:dataTable id="dtTData" value="#{msgAction.listTData}" var="var" styleClass="tabla_pagina"
+							cellpadding="0" cellspacing="0" rows="50" border="0" rowClasses="Row1,Row2" style="margin:0 auto;">
+							<f:facet name="header">
+								<rich:columnGroup>
+									<rich:column style="text-align:center; width:80px" styleClass="Titulo">
+										<h:outputText value="#{msg['id']}" /> 
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['id']}#{msg['transaccion']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['id']}#{msg['operacion']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['id']}#{msg['concepto']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center; witdh:120px;" styleClass="Titulo">
+										<h:outputText value="#{msg['importe']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['canal']}" /> 
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['sucursal']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['moneda']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['formaPago']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['referencia']}1" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['referencia']}2" />
+									</rich:column>
+									
+									<rich:column style="text-align:center; witdh:100px;" styleClass="Titulo">
+										<h:outputText value="#{msg['valores']}#{msg['llaves']}" />
+									</rich:column>
+								</rich:columnGroup>
+							</f:facet>
+			
+							<rich:column style="text-align:center; padding:auto 2px; min-width:80px; max-width:100px; width:auto;">
+								<h:outputText value="#{var.id}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:auto 2px; width:100px;">
+								<h:outputText value="#{var.codigoTransaccion}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:auto 2px; width:100px;">
+								<h:outputText value="#{var.idOperacion}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:auto 2px; width:100px;">
+								<h:outputText value="#{var.idConcepto} - #{var.concepto}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:right; padding:auto 2px; width:120px;">
+								<h:outputText value="#{var.importe}" styleClass="Descripcion">
+									<f:convertNumber pattern="$ ###,###,##0.00" />
+								</h:outputText>
+							</rich:column>
+							
+							<rich:column style="text-align:left; padding:auto 2px;">
+								<h:outputText value="#{var.idCanal} - #{var.canal}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:left; padding:auto 2px;">
+								<h:outputText value="#{var.idSucursal} - #{var.sucursal}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:left; padding:auto 2px;">
+								<h:outputText value="#{var.idMoneda} - #{var.moneda}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:left; padding:auto 2px;">
+								<h:outputText value="#{var.idFormaPago} - #{var.formaPago}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:left; padding:auto 2px;">
+								<h:outputText value="#{var.referencia1}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:auto 2px;">
+								<h:outputText value="#{var.referencia2}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:left; padding:auto 2px; witdh:100px;">
+								<h:outputText value="#{var.llavesValores}" styleClass="Descripcion" />
+							</rich:column>
+			
+							<f:facet name="footer">
+								<rich:dataScroller page="#{msgAction.paginacionTData}" for="dtTData" renderIfSinglePage="false"
+									align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+							</f:facet>
+						</rich:dataTable>
+					</div>
+				</rich:tab>
+				
+				<rich:tab id="tabPolizas" header="#{msg['polizas']}">
+					<div class="tableParent" style="display:block; margin:0 auto; padding:0; width:100%; height:auto; max-height:450px; overflow:auto;">
+						<rich:dataTable id="dtPolizas" value="#{msgAction.listPolizas}" var="var" styleClass="tabla_pagina"
+							cellpadding="0" cellspacing="0" rows="50" border="0" rowClasses="Row1, Row2" style="margin:0 auto;">
+							<f:facet name="header">
+								<rich:columnGroup>
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['linea']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center; width:80px" styleClass="Titulo">
+										<h:outputText value="#{msg['id']}" /> 
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['interfaz']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['id']}#{msg['folio']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['cuentaContable']}" /> 
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['tipo']} #{msg['poliza']}" /> 
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['tipo']}" /> 
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['fecha']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center; witdh:200px;" styleClass="Titulo">
+										<h:outputText value="#{msg['cargo']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center; witdh:200px;" styleClass="Titulo">
+										<h:outputText value="#{msg['abono']}" /> 
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['id']}#{msg['operacion']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['concepto']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['referencia']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['ejercicio']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Titulo">
+										<h:outputText value="#{msg['periodo']}" />
+									</rich:column>
+								</rich:columnGroup>
+							</f:facet>
+							
+							<rich:column style="text-align:center; padding:5px;">
+								<h:outputText value="#{var.noLinea}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:5px; min-width:80px; max-width:100px; width:auto;">
+								<h:outputText value="#{var.id}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:5px; width:100px;">
+								<h:outputText value="#{var.idInterfaz}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:5px; width:100px;">
+								<h:outputText value="#{var.folioPoliza}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:5px; width:100px;">
+								<h:outputText value="#{var.cuentaContable}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:5px; width:100px;">
+								<h:outputText value="#{var.tipoPoliza}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:5px; width:100px;">
+								<h:outputText value="#{var.tipo == 'C' ? msg['cargo'] : msg['abono']}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:5px; width:100px;">
+								<h:outputText value="#{var.fecha}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:right; padding:5px; width:200px;">
+								<h:outputText value="#{var.cargo}" styleClass="Descripcion">
+									<f:convertNumber pattern="$ ###,###,##0.00" />
+								</h:outputText>
+							</rich:column>
+							
+							<rich:column style="text-align:right; padding:5px; width:200px;">
+								<h:outputText value="#{var.abono}" styleClass="Descripcion">
+									<f:convertNumber pattern="$ ###,###,##0.00" />
+								</h:outputText>
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:5px;">
+								<h:outputText value="#{var.idOperacion}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:left; padding:5px;">
+								<h:outputText value="#{var.concepto}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:left; padding:5px;">
+								<h:outputText value="#{var.referencia}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:5px;">
+								<h:outputText value="#{var.ejercicio}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:5px;">
+								<h:outputText value="#{var.periodo}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<f:facet name="footer">
+								<rich:dataScroller page="#{msgAction.paginacionPolizas}" for="dtPolizas" renderIfSinglePage="false"
+									align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+							</f:facet>
+						</rich:dataTable>
+					</div>
+				</rich:tab>
+			</rich:tabPanel>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Class-Path: 
+Dependencies: org.apache.commons.lang export,
+ net.giro.comun export, 
+ org.apache.log4j export, 
+ org.hibernate export 
+

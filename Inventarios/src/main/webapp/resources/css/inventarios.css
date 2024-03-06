@@ -1,0 +1,172 @@
+.Titulo{
+	font-weight: bold;
+	font-size: 12px;
+	color:#525252;
+}
+.Titulo10{
+	font-weight: bold;
+	font-size: 10px;
+	color:#525252;
+}
+.colorTitulo{
+	color:#525252;
+}
+.Descripcion{
+	font-weight: bold;
+	font-size: 12px;
+	color:#808080;
+}
+.Descripcion10{
+	font-weight: bold;
+	font-size: 10px;
+	color:#808080;
+}
+.Observacion{
+	font-weight: bold;
+	font-size: 12px;
+	color:#C0C0C0;
+}
+.Observacion10{
+	font-weight: bold;
+	font-size: 10px;
+	color:#C0C0C0;
+}
+.Alterno{
+	color: #FAE6B0;
+	font-weight: bold;
+}
+.Err{
+	text-align:right;
+	font-size: 12px;
+	color:red;
+}
+.encabezado{
+	border:2px solid #9CADBA;
+	color:#6A6868; 
+	background-color:#E4EDFD; //#f1f1f1;//#BED6F8;
+	font-weight: bold;
+	padding:.2em;
+	margin:1em .5em;
+	text-align:center;
+	display:block;
+}
+.encabezadoColLeft {
+	width: 50%;
+	text-align: left;
+}
+.encabezadoColRight {
+	width: 50%;
+	text-align: right;
+}
+.rich-messages{
+	float:center;
+	display:block;
+	text-align:left;
+	font-weight: bold;
+	font-size: 12px;
+	color:#BB3029;
+	background-color:#E5EEFE;
+	border:2px solid #C6DEFF;
+	font-family:Arial,Verdana,sans-serif;
+	padding: 0.5em;
+	margin-right:1em;
+	margin-left:1em;
+}
+.rich-messages dt{
+	margin: .2em 0 .2em 0;
+}
+.valorBusqueda1{
+	text-align: right;
+	width: 100px;
+}
+.alignLeft{
+	text-align: left;
+}
+.colTitulo{
+	width: 130px;
+	text-align: right;
+}
+
+.colTituloDom{
+	width: 100px;
+	text-align: right;
+}
+.colDato{
+	text-align: left;
+}
+.modalTable{
+	width: 600px;
+	margin-right: 5px;
+}
+.fixedColumn{
+	font-weight: bold;
+	font-size: 12px;
+	color:#808080;
+	text-align: center; 
+	padding-left: 5px; 
+	overflow: hidden;
+	word-wrap: break-word;
+}
+.colPnlBusqIzq{
+	color		: #6A6868;
+	font-size	: 12px;
+	font-weight	: bold;
+	text-align	: right;
+	width		: 150px;
+}
+.colPnlBusqDer{
+	text-align 	: left;
+	width		: 570px;
+}
+.itemCancelado{	
+	color : red;
+	disabled: disabled;
+}
+
+.textoCentrado{
+	text-align: center; 
+}
+.textoDerecha{
+	text-align:right; 
+}
+
+.colLayout, .colLayoutTop {
+	vertical-align:top;
+}
+.colLayoutMiddle {
+	vertical-align:middle;
+}
+.colLayoutBottom {
+	vertical-align:bottom;
+}
+.colLayoutBottomRight {
+	text-align:right; 
+	vertical-align:bottom;
+}
+
+.tdToLeft {
+	text-align: left;
+	vertical-align:center;
+	width:50%;
+}
+.tdToRight {
+	text-align: right;
+	vertical-align:center;
+	width:50%;
+}
+
+.tableParent .tabla_pagina thead {
+	position: -webkit-sticky;
+	position: sticky;
+	top:0;
+}
+
+hr {
+	height:1px; 
+	border:none; 
+	color:#cccccc; 
+	background-color:#cccccc;
+	width:90%; 
+	text-align:center;
+	margin:5px auto;
+}

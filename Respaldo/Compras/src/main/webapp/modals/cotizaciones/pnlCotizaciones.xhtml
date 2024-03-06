@@ -1,0 +1,179 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlCotizaciones" modal="true" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+    	<f:facet name="header">
+    		<h:outputText value="#{msg['cotizaciones']}" styleClass="Titulo"/>
+    	</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" onclick="#{rich:component('pnlCotizaciones')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+		
+		<div style="display: block; padding:0 0 10px; min-width:700px; height: 22px; text-align: left; background-color: none;">
+			<h:panelGroup id="botoneraCotizaciones" style="display: block; width: 100%; height: 22px; margin-bottom: 1em;">
+				<h:panelGroup id="grupoCotizacionesBotonesIzquierdos" style="width: 100%; vertical-align: middle; position:relative;">
+					<a4j:commandButton id="cmdActualizaCotizacion" styleClass="Titulo" style="float:left; margin:0 10px; vertical-align: middle; position:relative; cursor:pointer;"
+						rendered="#{cotizaAction.permiteModificar}"
+						image="#{msg['actualizar22.img']}" 
+						action="#{cotizaAction.ver}"
+						render="dtCotizaciones"
+						limitRender="true">
+						<rich:tooltip for="cmdActualizaCotizacion" showDelay="300" value="#{msg['actualizar']} #{msg['lista']}" />
+					</a4j:commandButton>
+					
+					<h:selectOneMenu style="width:216px" title="#{msg['filtrar']} #{msg['cotizaciones']}" 
+						value="#{cotizaAction.estatusCotizacion}"
+						rendered="#{cotizaAction.permiteModificar}">
+						<f:selectItems value="#{cotizaAction.listEstatusCotizacionItems}" />
+			            <a4j:ajax event="change" 
+				            listener="#{cotizaAction.ver}" 
+				            render="dtCotizaciones, pnlMensajes" 
+							limitRender="true"/>
+			        </h:selectOneMenu>
+				</h:panelGroup>
+				
+				<h:panelGroup id="grupoCotizacionesBotonesDerechos" style="width: 100%; vertical-align: middle; position:relative; ">
+					<a4j:commandButton id="cmdNuevaCotizacion" image="#{msg['nuevo22.img']}" styleClass="Titulo" 
+						style="float:right; margin-left: 5px; vertical-align: middle; position:relative; cursor:pointer;"
+						rendered="#{cotizaAction.permiteModificar}"
+						action="#{cotizaAction.verificaAlmacenesObra}"
+						oncomplete="evaluaNuevaCotizacion(#{cotizaAction.operacion}, #{cotizaAction.maestroAdministrativo},'#{rich:clientId('pnlConfirmaOrigen')}','#{rich:clientId('pnlBusquedaRequisiciones')}','#{rich:clientId('pnlMensajes')}');"
+						render="pnlConfirmaOrigen,pnlBusquedaRequisiciones,pnlMensajes"
+						limitRender="true">
+						<!--oncomplete="verificaAlmacenesObra(#{cotizaAction.operacion},'#{rich:clientId('pnlConfirmaOrigen')}','#{rich:clientId('pnlMensajes')}');"-->
+						<rich:tooltip id="ttNuevaCotizacion" for="cmdNuevaCotizacion" showDelay="300" value="#{msg['nuevo.e']}" />
+					</a4j:commandButton>
+				</h:panelGroup>
+			</h:panelGroup>
+		</div>
+		
+		<h:panelGroup styleClass="encabezado" style="min-height: 1em;">
+			<h:outputText value="#{cotizaAction.pojoObra != null ? cotizaAction.pojoObra.id : '0'} "/>
+			<h:outputText value="#{cotizaAction.pojoObra != null ? cotizaAction.pojoObra.nombre : ''}" />
+		</h:panelGroup>
+
+		<rich:dataTable id="dtCotizaciones" value="#{cotizaAction.listCotizaciones}" var="var" cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column colspan="10" style="width: 90px; text-align:center; font-weight: bold;" styleClass="Titulo">
+						<h:outputText value="#{msg['cotizaciones']}" /> 
+					</rich:column>
+					
+					<rich:column breakRowBefore="true" style="width: 90px; text-align:center; font-weight: bold;" styleClass="Titulo">
+						<h:outputText value="#{msg['id']}" />
+					</rich:column>
+					
+					<rich:column style="width:120px; text-align:center; font-weight: bold;" styleClass="Titulo">
+						<h:outputText value="#{msg['folio']}" />
+					</rich:column>
+						
+					<rich:column style="text-align:center; width: 90px;" styleClass="Titulo">
+						<h:outputText value="#{msg['fecha']}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['proveedor']}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['comprador']}" />
+					</rich:column>
+
+					<rich:column style="width: 100px; text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['total']}" />
+					</rich:column>
+
+					<rich:column colspan="4" style="width: 60px; text-align:center;" styleClass="Titulo" />
+				</rich:columnGroup>
+			</f:facet>
+			
+			<rich:column style="width: 90px; text-align:center;" styleClass="#{(var.estatus == 1 ? 'itemCancelado' : (var.estatus == 2 ? 'itemUsado' : 'Descripcion'))}">
+				<h:outputText value="#{var.id}" />
+			</rich:column>
+			
+			<rich:column style="width:120px; text-align:center;" styleClass="#{(var.estatus == 1 ? 'itemCancelado' : (var.estatus == 2 ? 'itemUsado' : 'Descripcion'))}">
+				<h:outputText value="#{var.folio}" />
+			</rich:column>
+				
+			<rich:column style="text-align:center; padding-left: 5px;" styleClass="#{(var.estatus == 1 ? 'itemCancelado' : (var.estatus == 2 ? 'itemUsado' : 'Descripcion'))}">
+				<h:outputText value="#{var.fecha}">
+					<f:convertDateTime type="date" pattern="dd/MMM/yyyy"/>
+				</h:outputText>
+			</rich:column>
+			
+			<rich:column style="text-align:left;" styleClass="#{(var.estatus == 1 ? 'itemCancelado' : (var.estatus == 2 ? 'itemUsado' : 'Descripcion'))}">
+				<h:outputText value="#{var.nombreProveedor}" />
+			</rich:column>
+			
+			<rich:column style="text-align:left;" styleClass="#{(var.estatus == 1 ? 'itemCancelado' : (var.estatus == 2 ? 'itemUsado' : 'Descripcion'))}">
+				<h:outputText value="#{var.nombreComprador}" />
+			</rich:column>
+
+			<rich:column style="width: 100px; text-align:right;" styleClass="#{(var.estatus == 1 ? 'itemCancelado' : (var.estatus == 2 ? 'itemUsado' : 'Descripcion'))}">
+				<h:outputText value="#{var.total}">
+					<f:convertNumber pattern="###,###,##0.00" />
+				</h:outputText>
+			</rich:column>
+				
+			<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+				<a4j:commandButton id="cmdCopiar" rendered="#{var.estatus == 0 ? (cotizaAction.permiteModificar ? true : false) : false}"
+					image="#{msg['documentosImprimir16.img']}" 
+					oncomplete="#{rich:component('pnlConfirmaCopia')}.show()" 
+					render="pnlConfirmaCopia"
+					limitRender="true">
+					<!-- documentosImprimir16.img
+					action="#{cotizaAction.copiar}" 
+					oncomplete="copiarCotizacion(#{cotizaAction.operacion},'#{rich:clientId('pnlCotizacion')}', '#{rich:clientId('pnlMensajes')}');"
+					render="pnlCotizacion, pnlMensajes" -->
+					<f:setPropertyActionListener value="#{var}" target="#{cotizaAction.pojoCotizacionMain}" for="cmdCopiar" />
+					<rich:tooltip showDelay="300" value="#{msg['copiarCotizacion']}" for="cmdCopiar" />
+				</a4j:commandButton>
+			</rich:column>
+				
+			<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+				<a4j:commandButton id="cmdEditar" rendered="#{var.estatus != 1}"
+					image="#{msg['editar16.img']}" 
+					action="#{cotizaAction.editar}" 
+					oncomplete="#{rich:component('pnlCotizacion')}.show()"
+					render="pnlCotizacion">
+					<f:setPropertyActionListener value="#{var}" target="#{cotizaAction.pojoCotizacionMain}" for="cmdEditar" />
+					<rich:tooltip showDelay="300" value="#{msg['editar']}" for="cmdEditar" />
+				</a4j:commandButton>
+			</rich:column>
+				
+			<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+				<a4j:commandButton id="cmdReporte" rendered="#{var.estatus != 1}"
+					image="#{msg['imprimir16.img']}" 
+					action="#{cotizaAction.reporte}" 
+					oncomplete="reporte(#{cotizaAction.operacion}, '#{rich:clientId('pnlMensajes')}')"
+					render="pnlMensajes"
+					limitRender="true">
+					<f:setPropertyActionListener value="#{var}" target="#{cotizaAction.pojoCotizacionMain}" for="cmdReporte" />
+					<rich:tooltip showDelay="300" value="#{msg['imprimir']}" for="cmdReporte" />
+				</a4j:commandButton>
+			</rich:column>
+			
+			<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+				<a4j:commandButton id="cmdEliminar" 
+					image="#{msg['eliminar16.img']}" 
+					rendered="#{var.estatus == 0 ? (cotizaAction.permiteModificar ? true : false) : false}"
+					oncomplete="#{rich:component('pnlEliminar')}.show()" 
+					render="pnlEliminar">
+					<f:setPropertyActionListener value="#{var}" target="#{cotizaAction.pojoCotizacionBorrar}" for="cmdEliminar" />
+					<rich:tooltip showDelay="300" value="#{msg['eliminar']}" for="cmdEliminar" />
+				</a4j:commandButton>
+			</rich:column>
+
+			<f:facet name="footer">
+				<rich:dataScroller id="dScrollCotizaciones" for="dtCotizaciones" page="#{cotizaAction.numPaginaCotizaciones}" 
+					maxPages="10" ajaxSingle="true" align="center" styleClass="Titulo" />
+			</f:facet>
+		</rich:dataTable>
+	</rich:popupPanel>
+</ui:composition>

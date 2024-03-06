@@ -1,0 +1,28 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlMensajes" autosized="true" header="#{transDataAction.operacion ? msg['navegacion.label.atencion'] : msg['navegacion.label.informacion']}">
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" onclick="#{rich:component('pnlMensajes')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+
+		<a4j:region>
+		<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+			<h:outputText value="#{transDataAction.mensaje}" styleClass="Descripcion" rendered="#{transDataAction.tipoMensaje == -1}" />
+			<h:outputText value="#{msg['mensaje.info.infoReg']}" styleClass="Descripcion" rendered="#{transDataAction.tipoMensaje == 0}" />       			
+			<h:outputText value="#{msg['mensaje.error.inesperado']}" styleClass="Descripcion" rendered="#{transDataAction.tipoMensaje == 1}" />
+			<h:outputText value="#{msg['mensaje.info.busquedaVacia']}" styleClass="Descripcion" rendered="#{transDataAction.tipoMensaje == 2}" />
+			<h:outputText value="#{msg['mensaje.error.requerido']}" styleClass="Descripcion" rendered="#{transDataAction.tipoMensaje == 3}" />
+			
+			<a4j:commandButton value="#{msg['navegacion.label.aceptar']}" 
+				oncomplete="#{rich:component('pnlMensajes')}.hide()" 
+				execute="@region" />
+		</h:panelGrid>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

@@ -1,0 +1,375 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/layout/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich">
+
+<ui:define name="menuFrag" >
+	<rich:toolbarGroup id="tbgBuscar" location="right">
+		<a4j:commandButton id="cmdBuscar" action="#{seguimientoProspectosAction.buscar}" image="#{msg['buscar22.img']}"
+			oncomplete="buscar('#{seguimientoProspectosAction.resOperacion}','#{rich:clientId('pnlMsgGralSeguimientoProspectos')}');"
+			render="dtSeguimientos,pnlMsgGralSeguimientoProspectos"  styleClass="Titulo" style="cursor:pointer;">
+ 			<rich:tooltip id="ttBuscar" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscar"/> 
+		</a4j:commandButton>
+	</rich:toolbarGroup>	
+</ui:define>
+
+<ui:define name="body">
+	<h:outputStylesheet library="css/acc" name="acc.css" />
+	<h:outputStylesheet library="css/acc" name="seguimiento.css" />
+	<h:outputScript library="scripts/acc" name="seguimiento.js"/>
+	
+	<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+		<h:outputText value="#{msg['seguimiento']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+	</div>
+	
+	<div class="div_pagina">				
+		        
+		<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin-left:10px; margin-bottom:20px; display:block;" >
+			 <h:outputText value="#{msg['tipoBusqueda']}:" styleClass="Titulo"/> 				
+			<h:selectOneMenu id="cmbTipoBusqueda" value="#{seguimientoProspectosAction.tipoBusqueda}"  style="width:130px;">	
+					<f:selectItem itemLabel="#{msg['nombre']}" itemValue="nombre"/>
+					<f:selectItem itemLabel="#{msg['rfc']}" itemValue="rfc"/>	
+					<f:selectItem itemLabel="#{msg['especialista']}" itemValue="especialista"/>														  								
+			</h:selectOneMenu>	
+						
+			<h:outputText value="#{msg['valor']}:" styleClass="Titulo"/>
+			<h:inputText id="txtvalor" maxlength="30" value="#{seguimientoProspectosAction.valorBusqueda}" size="50"  />
+			
+			<h:outputText value="#{msg['estatus']}:" styleClass="Titulo"/>
+			<h:selectOneMenu value="#{seguimientoProspectosAction.idEstatusSeguimiento}"  style="width:150px;">
+				<f:selectItems value="#{seguimientoProspectosAction.listEstatus}"/>					  		
+			</h:selectOneMenu>
+			
+			<h:outputText value="#{msg['valor']}:" styleClass="Titulo" rendered="#{seguimientoProspectosAction.puedeVerTodos}"/>
+			<h:selectOneRadio id="radiobutton" value="#{seguimientoProspectosAction.opcionBusquedaProspecto}" rendered="#{seguimientoProspectosAction.puedeVerTodos}"> 
+				<f:selectItem id="persona" itemLabel="#{msg['todos']}" itemValue="todos" /> 
+				<f:selectItem id="negocio" itemLabel="#{msg['asignados']}" itemValue="asignados" />
+			</h:selectOneRadio>
+		</h:panelGrid>
+		 		
+		<rich:dataTable id="dtSeguimientos" cellpadding="0" cellspacing="0"  rows="12" border="0" var="var" rowClasses="Row1, Row2" styleClass="tabla_pagina"	 value="#{seguimientoProspectosAction.listSeguimientos}">	           		
+		   <f:facet name="header">
+			   <rich:columnGroup>
+					<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+					   <h:outputText value="#{msg['id']}" />
+					</rich:column>
+					<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+					   <h:outputText value="#{msg['nombre']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+					   <h:outputText value="#{msg['fechaContacto']}" />
+					</rich:column>					
+					<rich:column style="text-align:center;" styleClass="Titulo">
+					   <h:outputText value="#{msg['modoContacto']}" />
+					</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+					   <h:outputText value="#{msg['estatus']}" />
+					</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+					   <h:outputText value="#{msg['especialista']}" />
+					</rich:column>
+				
+					<rich:column style="text-align:center;" styleClass="Titulo">
+					   <h:outputText value="#{msg['observaciones']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+					   <h:outputText value="#{msg['responder']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+					   <h:outputText value="#{msg['historico']}" />
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+					   <h:outputText value="#{msg['autorizar']}" />
+					   
+					</rich:column>
+							<rich:column style="text-align:center;" styleClass="Titulo">
+					   <h:outputText value="#{msg['rechazar']}" />
+					   
+					</rich:column>
+				</rich:columnGroup>
+			</f:facet>
+			<rich:column width="50" style="text-align:center;" styleClass="Descripcion">
+				<h:outputText value="#{var.id}"/>
+			</rich:column>
+			<rich:column width="50" style="text-align:center;" styleClass="Descripcion">
+				<h:outputText value="#{var.prospectoId.persona.nombreCompleto}" />	  
+			</rich:column>
+			<rich:column width="50" styleClass="Descripcion">
+				<h:outputText value="#{var.fechaContacto}" >
+					<f:convertDateTime type="date" pattern="dd-MMM-yyyy" />
+				</h:outputText>
+			</rich:column>
+			<rich:column width="50" styleClass="Descripcion"  style="text-align:left; padding-left: 5px;">
+				<h:outputText value="#{var.modoContactoId.valor}" />
+			</rich:column>
+			<rich:column width="50" styleClass="Descripcion"  style="text-align:left; padding-left: 5px;">
+				<h:outputText value="#{var.estatus.estatus}" />
+			</rich:column>
+				<rich:column width="50" styleClass="Descripcion"  style="text-align:left; padding-left: 5px;">
+				<h:outputText value="#{var.especialistaId.usuarioId.nombre}" />
+			</rich:column>
+			<rich:column width="50" styleClass="Descripcion"  style="text-align:left; padding-left: 5px;">
+				<h:outputText value="#{var.observaciones}" />
+			</rich:column>
+			<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+				<a4j:commandButton id="cmdResponder" image="#{msg['responder16.img']}"  
+					oncomplete="#{rich:component('pnlResSeguimiento')}.show()" 
+					render="pnlResSeguimiento"
+					disabled="#{var.estatus.estatus != 'Seguimiento'}">
+					<rich:tooltip showDelay="300" value="#{msg['responder']}" for="cmdResponder"/>	
+					<f:setPropertyActionListener target="#{seguimientoProspectosAction.pojoSeguimiento}" value="#{var}" />
+				</a4j:commandButton>
+			</rich:column>
+			<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+				<a4j:commandButton id="cmdHistorico" 
+									action="#{seguimientoProspectosAction.historico()}"	
+									oncomplete="javascript:window.open('#{entorno['urlapp']}/reportes/ReporteGeneric.faces', 'Documentos', 'menubar=0, toolbar=0, scrollbars=1, location=0, status=1');"
+								   image="#{msg['historico16.img']}">
+					<rich:tooltip value="Reporte Historico" styleClass="letra-titulo-body"/>
+					<f:setPropertyActionListener target="#{seguimientoProspectosAction.pojoSeguimiento}" value="#{var}" />
+				</a4j:commandButton>
+			</rich:column>
+			<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+				<h:panelGroup id="groupCmdAutorizar" rendered="#{seguimientoProspectosAction.puedeAutorizarRechazar}">
+					<a4j:commandButton id="cmdAutorizar" image="#{msg['autorizar16.img']}"
+						oncomplete="#{rich:component('pnlMsgConfAutorizar')}.show()" 				
+						render="pnlMsgConfAutorizar"
+						disabled="#{var.estatus.estatus != 'Seguimiento'}">
+						<rich:tooltip showDelay="300" value="#{msg['autorizar']}" for="cmdAutorizar"/>	
+						<f:setPropertyActionListener target="#{seguimientoProspectosAction.pojoSeguimiento}" value="#{var}" />
+					</a4j:commandButton>
+				</h:panelGroup>
+				<h:panelGroup id="groupCmdNoAutorizar" rendered="#{!seguimientoProspectosAction.puedeAutorizarRechazar}">
+					<a4j:commandButton id="cmdNoAutorizar" image="#{msg['autorizarGris16.img']}"
+										oncomplete="salvar('#{seguimientoProspectosAction.resOperacion}', '#{rich:clientId('pnlRechazar')}', '#{rich:clientId('pnlMsgGralSeguimientoProspectos')}', #{rich:element('msgErrorRechazar')});" 
+										render="dtSeguimientos, pnlRechazar, msgErrorRechazar, pnlMsgGralSeguimientoProspectos"
+										action="#{seguimientoProspectosAction.rechazar}">
+						<rich:tooltip showDelay="300" value="#{msg['botonDeshabilitado']}" for="cmdNoAutorizar"/>
+						<f:setPropertyActionListener target="#{seguimientoProspectosAction.pojoSeguimiento}" value="#{var}" />	
+					</a4j:commandButton> 
+				</h:panelGroup>
+			</rich:column>
+			<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+				<h:panelGroup id="groupCmdRechazar" rendered="#{seguimientoProspectosAction.puedeAutorizarRechazar}">
+					<a4j:commandButton id="cmdRechazar" image="#{msg['rechazar16.img']}"  
+						oncomplete="#{rich:component('pnlRechazar')}.show()" 
+						render="pnlRechazar"
+						disabled="#{var.estatus.estatus != 'Seguimiento'}">
+						<rich:tooltip showDelay="300" value="#{msg['rechazar']}" for="cmdRechazar"/>	
+						<f:setPropertyActionListener target="#{seguimientoProspectosAction.pojoSeguimiento}" value="#{var}" />
+					</a4j:commandButton>
+				</h:panelGroup>
+				<h:panelGroup id="groupCmdNoRechazar" rendered="#{!seguimientoProspectosAction.puedeAutorizarRechazar}">
+					<a4j:commandButton id="cmdNoRechazar" image="#{msg['rechazarGris16.img']}"
+										oncomplete="salvar('#{seguimientoProspectosAction.resOperacion}', '#{rich:clientId('pnlRechazar')}', '#{rich:clientId('pnlMsgGralSeguimientoProspectos')}', #{rich:element('msgErrorRechazar')});" 
+										render="dtSeguimientos, pnlRechazar, msgErrorRechazar, pnlMsgGralSeguimientoProspectos"
+										action="#{seguimientoProspectosAction.rechazar}">
+						<rich:tooltip showDelay="300" value="#{msg['botonDeshabilitado']}" for="cmdNoRechazar"/>
+						<f:setPropertyActionListener target="#{seguimientoProspectosAction.pojoSeguimiento}" value="#{var}" />	
+					</a4j:commandButton> 
+				</h:panelGroup>
+			</rich:column>
+			
+			<f:facet name="footer" >
+				<rich:dataScroller align="center" for="dtSeguimientos" maxPages="10" ajaxSingle="true"	page="#{seguimientoProspectosAction.numPagina}" id="dScroll" styleClass="Titulo"/>
+			</f:facet>
+		</rich:dataTable>
+	</div>	
+	
+	
+	
+</ui:define>
+
+<ui:define name="modals">
+
+<!-- #### MODAL MENSAJES GENERALES #### -->		
+	<rich:popupPanel id="pnlMsgGralSeguimientoProspectos" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText value="#{seguimientoProspectosAction.resOperacion == '' ? msg['informacion'] : msg['atencion']}" styleClass="Titulo" />
+			</h:panelGroup>
+		</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlMsgGralSeguimientoProspectos')}.hide()"/>
+		</f:facet>
+		<h:panelGroup style="display:block; width:300px; float:center;">
+			<h:outputText value="#{seguimientoProspectosAction.resOperacion != '' ? seguimientoProspectosAction.resOperacion : msg['mensaje.info.infoReg']}" style="display:block;" styleClass="Descripcion"/>
+		</h:panelGroup>
+		<a4j:commandButton value="#{msg['aceptar']}" onclick="#{rich:component('pnlMsgGralSeguimientoProspectos')}.hide()" style="margin-top:10px; cursor:pointer;"/>
+	</rich:popupPanel> 
+	<!--  Fin Panel MsgGenerales-->	    
+	
+	<!-- #### MODAL MENSAJE CONFIRMACION RECHAZAR#### -->		
+	<rich:popupPanel id="pnlMsgConfRechazar" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText value="#{seguimientoProspectosAction.resOperacion == '' ? msg['confirmacion'] : msg['error']}" styleClass="Titulo" />
+			</h:panelGroup>
+		</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlMsgConfRechazar')}.hide()"/>
+		</f:facet>
+		<h:panelGroup style="display:block; width:300px; float:center;">
+			<h:outputText value="#{seguimientoProspectosAction.resOperacion != '' ? seguimientoProspectosAction.resOperacion : msg['confirmacion']}" style="display:block;" styleClass="Descripcion"/>
+		</h:panelGroup>
+		<h:panelGrid columns="2" width="100%" columnClasses="colDato, colDato">
+			<a4j:commandButton value="#{msg['si']}" onclick="#{rich:component('pnlMsgConfRechazar')}.hide()" style="margin-top:10px; cursor:pointer; margin-left: 40%;"/> <!-- action="#{seguimientoProspectosAction.guardarRespuesta}" -->
+			<a4j:commandButton value="#{msg['no']}" onclick="#{rich:component('pnlMsgConfRechazar')}.hide()" style="margin-top:10px; cursor:pointer; margin-left: 40%;"/>
+		</h:panelGrid>
+	</rich:popupPanel> 
+	<!--  FIN MODAL MENSAJE CONFIRMACION RECHAZAR-->	 
+	
+	<!-- #### MODAL MENSAJE CONFIRMACION AUTORIZAR#### -->		
+	<rich:popupPanel id="pnlMsgConfAutorizar" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText value="#{msg['confirmacion']}" styleClass="Titulo" />
+			</h:panelGroup>
+		</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlMsgConfAutorizar')}.hide()"/>
+		</f:facet>
+		<h:panelGroup style="display:block; width:300px; float:center;">
+			<h:outputText value="#{msg['confirmacionAutorizar']}" style="display:block;" styleClass="Descripcion"/>
+		</h:panelGroup>
+		<h:panelGrid columns="2" width="100%" columnClasses="colDato, colDato">
+			<a4j:commandButton value="#{msg['si']}" onclick="#{rich:component('pnlMsgConfAutorizar')}.hide()" action="#{seguimientoProspectosAction.autorizar}" style="margin-top:10px; cursor:pointer; margin-left: 40%;"
+			render="dtSeguimientos"/>
+			<a4j:commandButton value="#{msg['no']}" onclick="#{rich:component('pnlMsgConfAutorizar')}.hide()" style="margin-top:10px; cursor:pointer; margin-left: 40%;"/>
+		</h:panelGrid>
+	</rich:popupPanel> 
+	<!--  FIN MODAL MENSAJE CONFIRMACION AUTORIZAR-->	 
+	
+	<!-- ####### MODAL RESPONDER  PROSPECTO  ######### -->
+	<rich:popupPanel id="pnlResSeguimiento" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText id="lblTitulo" value="#{msg['responderSeguimiento']}" styleClass="Titulo" style="margin-left:10px"/>
+		</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlResSeguimiento')}.hide()"/>
+		</f:facet>         
+		
+		<!-- INICIA MENU MODAL -->
+		<div style = "display: block; width:100%; height: 22px; margin-bottom:1em;">
+			<a4j:commandButton id="cmdSalvar" action="#{seguimientoProspectosAction.guardarRespuesta}" image="#{msg['salvar22.img']}"  style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+				oncomplete="salvar('#{seguimientoProspectosAction.resOperacion}', '#{rich:clientId('pnlResSeguimiento')}', '#{rich:clientId('pnlMsgGralSeguimientoProspectos')}', #{rich:element('msgErrorSeguimiento')});" render="dtSeguimientos, pnlMsgGralSeguimientoProspectos, msgErrorSeguimiento">
+				<rich:tooltip value="#{msg['salvar.e']}" styleClass="Descripcion"/>
+			</a4j:commandButton>
+		</div>
+		<!-- FIN MENU MODAL -->	
+		
+		<rich:messages id="msgErrorSeguimiento" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!">
+			<f:facet name="errorMarker">
+				<h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;"/>   
+			</f:facet>
+		</rich:messages>	
+		
+		<h:panelGroup styleClass="encabezado" rendered="#{seguimientoProspectosAction.pojoSeguimiento.id != null}" >
+			<h:outputText value="#{seguimientoProspectosAction.pojoSeguimiento.id != null ? seguimientoProspectosAction.pojoSeguimiento.id : ' '} - "/>
+			<h:outputText value="#{seguimientoProspectosAction.pojoSeguimiento.prospectoId.persona.nombre != null ? seguimientoProspectosAction.pojoSeguimiento.prospectoId.persona.nombre : ' '}"/>
+		</h:panelGroup>
+		
+		<fieldset style="margin-top:10px;">
+			<legend>#{msg['datosGenerales']}</legend>
+			<h:panelGrid columns="6" width="100%" columnClasses="colTitulo, colDato,colTitulo, colDato, colTitulo, colDato">
+				<h:outputText value="#{msg['fechaContacto']}:" styleClass="Titulo"/>
+				<h:outputText id="fechaContacto" value="#{seguimientoProspectosAction.pojoSeguimiento.fechaContacto != null ? seguimientoProspectosAction.pojoSeguimiento.fechaContacto : ''}">
+					<f:convertDateTime type="date" pattern="dd-MMM-yyyy"/>
+				</h:outputText>
+			
+				<h:outputText value="#{msg['modoContacto']}:" styleClass="Titulo"/>
+				<h:outputText id="personaRfc" value="#{seguimientoProspectosAction.pojoSeguimiento.modoContactoId.valor != null ? seguimientoProspectosAction.pojoSeguimiento.modoContactoId.valor : ' '}"/>
+				
+				<h:outputText value="#{msg['estatus']}:" styleClass="Titulo"/>
+				<h:outputText id="pCorreoElectronico" value="#{seguimientoProspectosAction.pojoSeguimiento.estatus.estatus != null ? seguimientoProspectosAction.pojoSeguimiento.estatus.estatus : ' '}"/>
+			</h:panelGrid>
+		</fieldset>
+		
+		<fieldset style="margin-top:10px;">
+			<legend>#{msg['seguimiento']}</legend>
+			<h:panelGrid columns="4" width="100%" columnClasses="colTitulo, colDato,colTitulo, colDato">
+				<h:outputText value="#{msg['modoContacto']}:" styleClass="Titulo"/>
+				
+				<h:selectOneMenu value="#{seguimientoProspectosAction.idModoContactoSiguiente}" style="width:150px;">
+					<f:selectItems value="#{seguimientoProspectosAction.listModoContactoSiguiente}"/>					  					
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['fechaContacto']}:" styleClass="Titulo"/>
+				<rich:calendar value="#{seguimientoProspectosAction.pojoSeguimiento.fechaContacto}" datePattern="dd MMM yyyy" style="width:150px" required="#{!empty param[rich:clientId('cmdSalvar')]}" requiredMessage="#{msg['fechaContacto']} #{msg['mensaje.error.requerido']}"/>
+			</h:panelGrid>
+			<h:panelGrid columns="2" width="100%" rendered="#{seguimientoProspectosAction.pojoSeguimiento.id > 0}" columnClasses="colTitulo, colDato">
+					<h:outputText value="#{msg['observaciones']}:" styleClass="Titulo" />
+					<h:inputTextarea value="#{seguimientoProspectosAction.pojoSeguimiento.observaciones}" cols="3" style="width:95%; margin-right:30px;" styleClass="text_area" required="#{!empty param[rich:clientId('cmdSalvar')]}" requiredMessage="#{msg['observaciones']} #{msg['mensaje.error.requerido']}"/>
+			</h:panelGrid>
+		</fieldset>
+	</rich:popupPanel>
+	
+	
+	
+	<!-- ####### INICIA MODAL RECHAZAR PROSPECTO  ######### -->
+	<rich:popupPanel id="pnlRechazar" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText id="lblTituloRechazar" value="#{msg['rechazarSeguimiento']}" styleClass="Titulo" style="margin-left:10px"/>
+		</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlRechazar')}.hide()"/>
+		</f:facet>         
+		
+		<!-- INICIA MENU MODAL -->
+		<div style = "display: block; width:100%; height: 22px; margin-bottom:1em;">
+			<a4j:commandButton id="cmdRechazar" action="#{seguimientoProspectosAction.rechazar}" image="#{msg['salvar22.img']}"  style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+				oncomplete="salvar('#{seguimientoProspectosAction.resOperacion}', '#{rich:clientId('pnlRechazar')}', '#{rich:clientId('pnlMsgGralSeguimientoProspectos')}', #{rich:element('msgErrorRechazar')});" render="dtSeguimientos, pnlMsgGralSeguimientoProspectos, msgErrorRechazar">
+				<rich:tooltip value="#{msg['salvar.e']}" styleClass="Descripcion"/>
+			</a4j:commandButton>
+		</div>
+		<!-- FIN MENU MODAL -->	
+		
+		<rich:messages id="msgErrorRechazar" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!">
+			<f:facet name="errorMarker">
+				<h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;"/>   
+			</f:facet>
+		</rich:messages>	
+		
+		<h:panelGroup styleClass="encabezado" rendered="#{seguimientoProspectosAction.pojoSeguimiento.id != null}" >
+			<h:outputText value="#{seguimientoProspectosAction.pojoSeguimiento.id != null ? seguimientoProspectosAction.pojoSeguimiento.id : ' '} - "/>
+			<h:outputText value="#{seguimientoProspectosAction.pojoSeguimiento.prospectoId.persona.nombre != null ? seguimientoProspectosAction.pojoSeguimiento.prospectoId.persona.nombre : ' '}"/>
+		</h:panelGroup>
+		
+		<fieldset style="margin-top:10px;">
+			<legend>#{msg['datosActuales']}</legend>
+			<h:panelGrid columns="6" width="100%" columnClasses="colTitulo, colDato,colTitulo, colDato, colTitulo, colDato">
+				<h:outputText value="#{msg['fechaContacto']}:" styleClass="Titulo"/>
+				<h:outputText id="fechaContactoR" value="#{seguimientoProspectosAction.pojoSeguimiento.fechaContacto != null ? seguimientoProspectosAction.pojoSeguimiento.fechaContacto : ''}">
+					<f:convertDateTime type="date" pattern="dd-MMM-yyyy"/>
+				</h:outputText>
+			
+				<h:outputText value="#{msg['modoContacto']}:" styleClass="Titulo"/>
+				<h:outputText id="modoContactoR" value="#{seguimientoProspectosAction.pojoSeguimiento.modoContactoId.valor != null ? seguimientoProspectosAction.pojoSeguimiento.modoContactoId.valor : ' '}"/>
+				
+				<h:outputText value="#{msg['estatus']}:" styleClass="Titulo"/>
+				<h:outputText id="estatusR" value="#{seguimientoProspectosAction.pojoSeguimiento.estatus.estatus != null ? seguimientoProspectosAction.pojoSeguimiento.estatus.estatus : ' '}"/>
+			</h:panelGrid>
+		</fieldset>
+		
+		<fieldset style="margin-top:10px;">
+			<legend>#{msg['motivoRechazo']}</legend>
+			<h:panelGrid columns="2" width="100%" columnClasses="colTitulo, colDato">
+				<h:outputText value="#{msg['seleccionar']}:" styleClass="Titulo"/>
+				
+				<h:selectOneMenu value="#{seguimientoProspectosAction.idRazonRechazo}" cols="3" style="width:95%; margin-right:30px;">
+					<f:selectItems value="#{seguimientoProspectosAction.listTmpMotivosRechazo}"/>					  					
+				</h:selectOneMenu>
+			</h:panelGrid>
+		</fieldset>
+		<!-- ####### FIN MODAL RECHAZAR PROSPECTO  ######### -->
+		
+	</rich:popupPanel>
+</ui:define>
+
+
+</ui:composition>

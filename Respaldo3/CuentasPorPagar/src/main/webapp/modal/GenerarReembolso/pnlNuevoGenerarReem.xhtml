@@ -1,0 +1,149 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlNuevoGenerarReem" autosized="true">
+		<f:facet name="header">
+			<h:panelGroup id="pnlMensaje">		          
+				<h:outputText value="#{msg['navegacion.label.genReembolso']}" style="margin-left:10px" styleClass="Titulo"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" styleClass="cursor:pointer;" id="btnCerrarNuevo"/>
+				<rich:componentControl for="pnlNuevoGenerarReem" attachTo="btnCerrarNuevo" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="frmNuevoReem">
+			<a4j:region id="loadNuevoReem">
+				<div style = "display: block; width: 600px; height: 22px;margin-bottom:10px">
+					<h:panelGrid  id="pnlSalvar" columns="2" style="float:right; margin-right:5px;" rendered="#{genReembolsoAction.muestraSalvar}" >
+						<h:panelGroup id="grpSalvar" style="vertical-align: middle; position:relative; " rendered="#{genReembolsoAction.muestraSalvar}">
+							<a4j:commandButton id="cmdSalvar" onclick="#{rich:element('cmdSalvar')}.disabled = true;" 
+								action="#{genReembolsoAction.guardar}" 
+								oncomplete="msgRevisando(#{rich:element('msgErrorReembolso')},'pnlCancelarChequeReembolso','pnlMsg','guardar',#{rich:element('txtMontoInvalido')}); #{rich:element('cmdSalvar')}.disabled = false;"  image="#{msg['salvar22.img']}" style="vertical-align: right; position:relative;" 
+								reRender="pnlSalvar,dtResultsGenReembolso,grpSalvar,pnlMsg,txtMontoInvalido,dtResults"/>
+							<h:outputLabel for="cmdSalvar" value="#{msg['salvar.e']}" style="cursor:pointer;" styleClass="Titulo"/>
+						</h:panelGroup>
+
+						<h:panelGroup style="vertical-align: right; position:relative;" >
+							<a4j:status for="loadNuevoReem">
+								<f:facet name="start">
+									<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: right; position:relative;"/>
+								</f:facet>
+								<f:facet name="stop">
+									<h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: right; position:relative;"/>
+								</f:facet>
+							</a4j:status>
+						</h:panelGroup>
+					</h:panelGrid>
+				</div>
+
+				<h:panelGrid columns="2" >
+				</h:panelGrid>
+
+				<h:panelGrid id="pnlReembolso" columns="2" style="margin-left:15px; margin-bottom:10px; display:block;" width="600" cellpadding="3" columnClasses="colDerGenReem,colIzqGenReem">
+					<h:outputText value="#{msg['navegacion.label.numero']}:" styleClass="Titulo" />
+					<h:outputText id="txtNum"  value="#{genReembolsoAction.pagosGastosId}" styleClass="Descripcion" />
+					
+					<h:outputText value="#{msg['navegacion.label.beneficiario']}:" styleClass="Titulo" />
+					<h:outputText id="txtBeneficiario" value="#{genReembolsoAction.pojoMovCtas.idBeneficiario.nombre}" styleClass="Descripcion"/>
+					
+					<h:outputText value=" #{msg['navegacion.label.ctaOrigen']}:" styleClass="Titulo"/>
+					<h:panelGroup  rendered="#{transBancariaAction.muestraPropiosOrigen}">
+						<h:inputText id="txtCtaBan"  value="#{genReembolsoAction.suggCtaBancaria}" onkeypress="keyF9(event, #{rich:component('suggCtaBancaria')})" style="margin:0px;" size="30" required="#{!empty param[rich:clientId('cmdSalvar')]}" >
+							<f:validator validatorId="valClaveValor"/>
+						</h:inputText>
+						
+						<h:graphicImage style="margin-left:0px;  vertical-align:bottom; cursor:pointer;" value="#{msg['despliega.img']}" onclick="#{rich:component('suggCtaBancaria')}.callSuggestion(true)" alt=""/>
+						
+						<rich:suggestionbox height="100" width="225" eventsQueue="suggQueue" 
+							suggestionAction="#{genReembolsoAction.autoacompletaCuenta}" var="CtaBan" minChars="2"
+							id="suggCtaBancaria" for="txtCtaBan" fetchValue="#{CtaBan.id} - #{CtaBan.institucionBancaria.nombreCorto}">
+							<h:column><h:outputText value="#{CtaBan.id}" /></h:column>
+							<h:column><h:outputText value="#{CtaBan.institucionBancaria.nombreCorto}" /></h:column>
+						</rich:suggestionbox>
+						
+						<rich:message for="txtCtaBan" showSummary="false" showDetail="false" styleClass="Err" style="color:red">
+							<f:facet name="errorMarker">
+								<h:panelGroup>
+									<h:graphicImage id="errorCtaBancaria" value="#{msgAcc['mensajes.cancelar16.img']}"/>
+									<h:outputLabel styleClass="Err" value="#{msg['mensaje.validacion.selectItem']}"/>
+								</h:panelGroup>
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['navegacion.label.fecha']}:" styleClass="Titulo" style="text-align:right"/>
+					<h:panelGroup>
+						<rich:calendar id="cmbFecha" inputSize="30" zindex="100" showWeeksBar="false"
+							value="#{genReembolsoAction.varFecha}" />
+							
+						<rich:message for="cmbFecha" showSummary="false" showDetail="false" styleClass="Err" style="color:red">
+							<f:facet name="errorMarker">
+								<h:panelGroup>
+									<h:graphicImage id="errorCmbFecha" value="#{msgAcc['mensajes.cancelar16.img']}"/>
+									<h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+								</h:panelGroup>
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['navegacion.label.operacion']}:" styleClass="Titulo"/>
+					<h:selectOneRadio value="#{genReembolsoAction.operacion}" styleClass="Titulo" style=" width : 250px;" >
+						<f:selectItem itemLabel="#{msg['navegacion.label.cheque']}" itemValue="C"/>
+						<f:selectItem itemLabel="#{msg['navegacion.label.terceros']}" itemValue="3"/>
+						<f:selectItem itemLabel="#{msg['navegacion.label.efectivo']}" itemValue="E"/>
+						<a4j:support event="onchange" 
+							action="#{genReembolsoAction.checaOper}" 
+							reRender="pnlReembolso"/>
+					</h:selectOneRadio>
+					
+					<h:outputText value="#{msg['navegacion.label.numCheque']}:" styleClass="Titulo" rendered="#{genReembolsoAction.esCheque}"/>
+					<h:inputText id="txtCheque" 
+						rendered="#{genReembolsoAction.esCheque}"
+						value="#{genReembolsoAction.noCheque}" />
+					
+					<h:outputText value="#{msg['navegacion.label.ctaDestino']}:" styleClass="Titulo" rendered="#{genReembolsoAction.esTerceros}"/>							
+					<h:panelGroup rendered="#{genReembolsoAction.esTerceros}">
+						<h:inputText id="txtTerceros"  value="#{genReembolsoAction.suggCtaTercero}" onkeypress="keyF9(event, #{rich:component('suggCtaTercero')})" style="margin:0px;" size="30" required="#{!empty param[rich:clientId('cmdSalvar')]}">
+							<f:validator validatorId="valClaveValor"/>
+						</h:inputText>
+						
+						<h:graphicImage style="margin-left:0px;  vertical-align:bottom; cursor:pointer;" value="#{msg['despliega.img']}" onclick="#{rich:component('suggCtaTercero')}.callSuggestion(true)" alt=""/>
+						
+						<rich:suggestionbox height="100" width="225" eventsQueue="suggQueue" suggestionAction="#{genReembolsoAction.autoacompletaTerceros}" var="CtaDestino" minChars="2"
+							id="suggCtaTercero" for="txtTerceros" fetchValue="#{CtaDestino.personaId} - #{CtaDestino.nombre} #{CtaDestino.apellidoPaterno} #{CtaDestino.apellidoMaterno} #{CtaDestino.cuentaBancaria}" >
+							<h:column><h:outputText value="#{CtaDestino.id}" /></h:column>
+							<h:column><h:outputText value="#{CtaDestino.nombre}" /></h:column>
+							<h:column><h:outputText value="#{CtaDestino.primerApellido}" /></h:column>
+							<h:column><h:outputText value="#{CtaDestino.segundoApellido}" /></h:column>
+							<h:column><h:outputText value="#{CtaDestino.numeroCuenta}" /></h:column>
+						</rich:suggestionbox>
+						
+						<rich:message for="txtTerceros" showSummary="false" showDetail="false"  styleClass="Err" rendered="#{genReembolsoAction.esTerceros}">
+							<f:facet name="errorMarker">
+								<h:panelGroup>
+									<h:graphicImage id="errorTercero" value="#{msgAcc['mensajes.cancelar16.img']}"/>
+									<h:outputLabel styleClass="Err" value="#{msg['mensaje.validacion.selectItem']}"/>
+								</h:panelGroup>
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					
+					<h:outputText  value="#{msg['navegacion.label.monto']}:" styleClass="Titulo"/>
+					<h:outputText id="txtMonto" value="#{genReembolsoAction.varMonto}" styleClass="Descripcion"/>
+				</h:panelGrid>
+				
+				<h:inputHidden id="txtMontoInvalido" value="#{genReembolsoAction.mensaje}" />
+				<rich:messages id="msgErrorReembolso" showDetail="false" showSummary="false"/>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

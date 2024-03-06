@@ -1,0 +1,23 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlAvisoCantidadCero" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['atencion']} pnlAvisoCantidadCero" styleClass="Titulo" />
+		</f:facet>
+		
+		<h:panelGroup id="grupoAvisoCantidadProductoCero" style="display:block; min-width:300px; max-width:500px; text-align:center;">
+			<h:outputText style="display:block;" styleClass="Descripcion"
+				value="#{msg['mensaje.info.avisoCantidadCero']}" />
+		</h:panelGroup>
+		
+		<a4j:commandButton style="margin:10px auto 0; width:100px; cursor:pointer;"
+			value="#{msg['aceptar']}"
+			onclick="#{rich:component('pnlAvisoCantidadCero')}.hide()" />	
+	</rich:popupPanel>
+</ui:composition>

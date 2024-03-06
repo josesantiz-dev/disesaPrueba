@@ -1,0 +1,18 @@
+.colTitulo{
+	width: 130px;
+	text-align: right;
+}
+.colTituloDom{
+	width: 100px;
+	text-align: right;
+}
+.colDato{
+	text-align: left;
+}
+.colModalIzq{
+	text-align: right;
+	width: 100px;
+}
+.colModalDer{
+	text-align: left;
+}

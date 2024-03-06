@@ -1,0 +1,31 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlMsgConfElimCategoria" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText styleClass="Titulo" value="#{msg['atencion']}" />
+		</f:facet>
+
+		<h:panelGroup style="display:block; min-width:300px; max-width:500px; float:center;">
+			<h:outputText style="display:block;" styleClass="Descripcion" 
+				value="#{categoriaAction.resOperacion != '' ? categoriaAction.resOperacion : msg['confirmacionEliminar']}" />
+		</h:panelGroup>
+		
+		<h:panelGrid columns="2" style="margin:10px auto 0; width:200px;" cellpadding="0" cellspacing="0">
+			<a4j:commandButton style="margin:0 auto; width:100px; cursor:pointer;"
+				value="#{msg['si']}"
+				onclick="#{rich:component('pnlMsgConfElimCategoria')}.hide()"
+				action="#{categoriaAction.eliminar}"
+				render="dtCategorias" />
+				
+			<a4j:commandButton style="margin:0 auto; width:90px;"
+				value="#{msg['no']}"
+				onclick="#{rich:component('pnlMsgConfElimCategoria')}.hide()" />
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

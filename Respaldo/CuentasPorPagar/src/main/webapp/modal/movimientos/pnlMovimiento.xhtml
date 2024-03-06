@@ -1,0 +1,193 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlMovimiento" autosized="true" >
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText style="margin-left:10px" styleClass="Titulo"
+					value="#{ movCuentasAction.pagosGastosId != 0 ? movCuentasAction.descripcionCuenta : msg['navegacion.label.nuevoReg']}" />
+			</h:panelGroup>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage id="btnCerrarNuevoMovCta" value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" />
+				<rich:componentControl for="pnlMovimiento" attachTo="btnCerrarNuevoMovCta" operation="hide" event="onclick" />
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="frmNuevoEditarMovCtas">
+			<a4j:region id="loadNuevoEditar">
+				<div style = "display: block; width: 500px; height: 22px;">
+					<h:panelGrid columns="2" style="float:right; margin-right:5px;" >
+						<h:panelGroup style="vertical-align: middle; position:relative; " rendered="#{movCuentasAction.muestraSalvar}">
+							<a4j:commandButton id="cmdSalvar" image="#{msg['salvar22.img']}" 
+								onclick="#{rich:element('cmdSalvar')}.disabled = true;" 
+								action="#{movCuentasAction.guardar}" 
+								oncomplete="msgRevisando(#{rich:element('msgErrorMovimientos')},'pnlMovimiento','pnlMensajes',#{movCuentasAction.band},'guardar'); #{rich:element('cmdSalvar')}.disabled = false;"
+								reRender="miMenu,dtResults,LabelClave,pnlMensajes" style="vertical-align: middle; position:relative; cursor:pointer;" />
+							<h:outputLabel for="cmdSalvar" 
+								value="#{msg['salvar.e']}" 
+								style="cursor:pointer; font-weight: bold; font-family: Arial, Verdana, sans-serif; font-size: 11px;" 
+								styleClass="Titulo" />
+						</h:panelGroup>
+
+						<h:panelGroup style="vertical-align: middle; position:relative;">
+							<a4j:status for="loadNuevoEditar" rendered="#{movCuentasAction.muestraSalvar}">
+								<f:facet name="start">
+									<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;" />
+								</f:facet>
+
+								<f:facet name="stop">
+									<h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: middle; position:relative;" />
+								</f:facet>
+							</a4j:status>
+						</h:panelGroup>
+					</h:panelGrid>
+				</div>
+
+				<h:panelGrid id="pnlDatos1" columns="2" cellpadding="3" columnClasses="Observacion" style = "display: block; width: 400px; position:relative;margin-left:10px;">
+					<h:outputText value="*" />
+					<h:outputText value="#{ movCuentasAction.pagosGastosId != 0 ? msg['navegacion.label.noeditar'] : msg['navegacion.label.generaAuto']}" />
+					
+					<h:outputText value="" />
+					<h:outputText value="#{ movCuentasAction.pagosGastosId != 0 ? msg['navegacion.label.vacio'] : msg['navegacion.label.cuandoSalve']}" />
+				</h:panelGrid>
+
+				<h:panelGrid id="pnlDatos2" columns="2" cellpadding="3" columnClasses="tygMovCtaColIzq, tygMovCtaColDer" 
+					style="display: block; position:relative; margin-top:15px; margin-left:10px;">
+					<h:outputText value="#{msg['navegacion.label.clave']}:" styleClass="Titulo" />
+					<h:outputText id="LabelClave" value="#{movCuentasAction.pagosGastosId}" styleClass="Titulo" />
+
+					<h:outputText value="#{msg['navegacion.label.cuenta']}:" styleClass="Titulo"/>
+					<h:panelGroup >
+						<h:inputText id="txtCta" maxlength="20" style="margin:0px;" size="36" 
+							value="#{movCuentasAction.cuenta}" 
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							onkeypress="keyF9(event, #{rich:component('suggCuentas')})"
+							readonly="#{movCuentasAction.habilita}">
+							<f:validator validatorId="valClaveValor" />
+							<rich:toolTip><span style="white-space:nowrap"><strong>Presione F9</strong></span></rich:toolTip>
+						</h:inputText>
+
+						<h:graphicImage style="margin-left:0px; vertical-align:bottom; cursor:pointer;" 
+							value="#{msg['despliega.img']}" 
+							onclick="#{rich:component('suggCuentas')}.callSuggestion(true)" alt="" />
+
+						<rich:suggestionbox id="suggCuentas" height="100" width="225" eventsQueue="suggQMovCtas" minChars="2"
+							for="txtCta" fetchValue="#{cta.id} - #{cta.institucionBancaria.nombreCorto} - #{cta.numeroDeCuenta}"
+							suggestionAction="#{movCuentasAction.autoacompletaCuenta}" var="cta">
+							<h:column><h:outputText value="#{cta.id}" /></h:column>
+							<h:column><h:outputText value="#{cta.institucionBancaria.nombreCorto}" /></h:column>
+							<h:column><h:outputText value="#{cta.numeroDeCuenta}" /></h:column>
+						</rich:suggestionbox>
+
+						<rich:message for="txtCta" showSummary="false" showDetail="false" style="color:red">
+							<f:facet name="errorMarker">
+								<h:panelGroup>
+									<h:graphicImage value="#{msg['cancelar16.img']}" />
+									<h:outputLabel  styleClass="Err" value="#{msg['mensaje.validacion.selectItem']}" />
+								</h:panelGroup>
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+
+					<h:outputText value="#{msg['tipoMovimiento']}:" styleClass="Titulo"/>
+					<h:panelGroup >
+						<h:inputText id="txtMov" maxlength="20" style="margin:0px;" size="36" 
+							value="#{movCuentasAction.movimiento}" 
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							onkeypress="keyF9(event, #{rich:component('suggMov')})"
+							readonly="#{movCuentasAction.habilita}">
+							<f:validator validatorId="valClaveValor" />
+							<rich:toolTip><span style="white-space:nowrap"><strong>Presione F9</strong></span></rich:toolTip>
+						</h:inputText>
+
+						<h:graphicImage style="margin-left:0px; vertical-align:bottom; cursor:pointer;" 
+							value="#{msg['despliega.img']}" 
+							onclick="#{rich:component('suggMov')}.callSuggestion(true)" alt="" />
+
+						<rich:suggestionbox id="suggMov" height="100" width="225" eventsQueue="suggQMovCtas" minChars="2"
+							for="txtMov" fetchValue="#{mov.id} - #{mov.descripcion}" var="mov"
+							suggestionAction="#{movCuentasAction.autoacompletaMovimientos}">
+							<h:column><h:outputText value="#{mov.id}" /></h:column>
+							<h:column><h:outputText value="#{mov.descripcion}" /></h:column>
+						</rich:suggestionbox>
+
+						<rich:message for="txtMov" showSummary="false" showDetail="false"  style="color:red">
+							<f:facet name="errorMarker">
+								<h:panelGroup>
+									<h:graphicImage value="#{msg['cancelar16.img']}" />
+									<h:outputLabel  styleClass="Err" value="#{msg['mensaje.validacion.selectItem']}"/>
+								</h:panelGroup>
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+
+					<h:outputText value="#{msg['navegacion.label.fecha']}:" styleClass="Titulo" />
+					<h:panelGroup>
+						<rich:calendar id="cmbFecha" zindex="100" showWeekDaysBar="false" showWeeksBar="false" inputSize="18" 
+							value="#{movCuentasAction.fecha}"
+							datePattern="dd, MMM yyyy"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							readonly="#{movCuentasAction.habilita}">
+							<f:validateLength minimum="1" />
+						</rich:calendar>
+
+						<rich:message for="cmbFecha" showSummary="false" showDetail="false"  style="color:red">
+							<f:facet name="errorMarker">
+								<h:panelGroup>
+									<h:graphicImage value="#{msg['cancelar16.img']}" />
+									<h:outputLabel  styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+								</h:panelGroup>
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+
+					<h:outputText value="#{msg['navegacion.label.monto']}:" styleClass="Titulo"/>
+					<h:panelGroup>
+						<h:inputText id="txtMonto" maxlength="15" 
+							value="#{movCuentasAction.monto}" size="40" 
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							readonly="#{movCuentasAction.habilita}">
+							<f:converter converterId="javax.faces.Double" />
+						</h:inputText>
+
+						<rich:message for="txtMonto" showSummary="false" showDetail="false"  style="color:red">
+							<f:facet name="errorMarker">
+								<h:panelGroup>
+									<h:graphicImage value="#{msg['cancelar16.img']}"/>
+									<h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+								</h:panelGroup>
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>	
+
+					<h:outputText value="#{msg['referencia']}:" styleClass="Titulo"/>
+					<h:panelGroup>
+						<h:inputText id="txtReferencia" maxlength="15" 
+							value="#{movCuentasAction.referencia}" size="40" 
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							readonly="#{movCuentasAction.habilita}" />
+
+						<rich:message for="txtReferencia" showSummary="false" showDetail="false"  style="color:red">
+							<f:facet name="errorMarker">
+								<h:panelGroup>
+									<h:graphicImage value="#{msg['cancelar16.img']}"/>
+									<h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+								</h:panelGroup>
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+
+					<rich:messages id="msgErrorMovimientos" showDetail="false" showSummary="false" />
+				</h:panelGrid>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

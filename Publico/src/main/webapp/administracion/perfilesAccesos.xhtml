@@ -1,0 +1,326 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+
+<ui:define name="menuFrag" >	
+
+	<rich:toolBarGroup id="tbgBuscar" location="right">
+		<a4j:commandButton id="cmdBuscar" image="#{msg['buscar22.img']}"
+			action="#{admPerfilAccesoAction.buscar}"
+			oncomplete="buscar('#{admPerfilAccesoAction.resOperacion}', 'pnlMsgGralPerfilAcceso');" 
+			reRender="dtPerfilAcceso,pnlMsgGralPerfilAcceso"  styleClass="Titulo" style="cursor:pointer;">
+			<rich:toolTip id="ttBuscar" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscar"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>
+	
+	<rich:toolBarGroup id="tbgNuevo" location="right">
+		<a4j:commandButton id="cmdNuevo" image="#{msg['nuevo22.img']}" 
+			action="#{admPerfilAccesoAction.nuevo}"
+			oncomplete="Richfaces.showModalPanel('pnlEditarPerfilAcceso');" 
+			reRender="pnlEditarPerfilAcceso" styleClass="Titulo" style="cursor:pointer;">
+			<rich:toolTip id="ttNuevo" showDelay="300" value="#{msg['nuevo.e']}" for="cmdNuevo"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>	
+	
+</ui:define>
+
+<ui:define name="body">
+	<a4j:keepAlive beanName="admPerfilAccesoAction" />	
+	<a4j:loadStyle src="resource:///css/adm/adm.css" />
+	<a4j:loadStyle src="resource:///css/adm/admPerfilAcceso.css" />
+	<a4j:loadScript src="resource:///scripts/adm/perfilAcceso.js"/> 	
+	
+	<div class="div_pagina">				
+		        
+		        <h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin-left:10px; margin-bottom:20px; display:block;" >
+	  				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/> 				
+		            <h:selectOneMenu id="cmbTipoBusqueda" value="#{admPerfilAccesoAction.valTipoBusqueda}"  style="width:130px;">				  					
+  							<f:selectItem itemLabel="#{msg['perfilAcceso']}" itemValue="perfilAcceso"/>
+  							<f:selectItem itemLabel="#{msg['tipoPerfilAcceso']}" itemValue="tipoPerfil"/>	
+							<f:selectItem itemLabel="#{msg['valorPerfilAcceso']}" itemValue="valorPerfil"/>																					  								
+				  	</h:selectOneMenu>	
+				  				
+		            <h:outputText value="#{msg['navegacion.label.valor']}:" styleClass="Titulo"/>
+					<h:inputText id="txtvalor" maxlength="30" value="#{admPerfilAccesoAction.campoBusqueda}" size="50"  />
+			  	</h:panelGrid>	
+		 		
+		 		<rich:dataTable id="dtPerfilAcceso" cellpadding="0" cellspacing="0"  rows="20" border="0" var="var" rowClasses="Row1, Row2" styleClass="tabla_pagina"	 value="#{admPerfilAccesoAction.listPerfilAcceso}">	           		
+	               <f:facet name="header">
+	                   <rich:columnGroup>
+	                       <rich:column colspan="7" styleClass="Titulo">
+	                           <h:outputText value="#{msg['perfilesAccesos']}"/>
+	                       </rich:column>
+	                       <rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['id']}" />
+	                       </rich:column>
+	                       <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['perfilAcceso']}" />
+	                       </rich:column>	                    
+	                       <rich:column style="text-align:center;" styleClass="Titulo" />
+	                       <rich:column style="text-align:center;" styleClass="Titulo" />
+	                   </rich:columnGroup>
+	               </f:facet>
+	               <rich:column width="30" style="text-align:center;" styleClass="Descripcion">
+	                   <h:outputText value="#{var.id}"/>
+	               </rich:column>
+	               <rich:column width="200" styleClass="Descripcion">	               		
+	                   		<h:outputText value="#{var.perfilAcceso}" />	                   
+	               </rich:column>	               
+	               <rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+	                   <a4j:commandButton id="cmdEditar" image="#{msg['editar16.img']}"  
+	                   		oncomplete="Richfaces.showModalPanel('pnlEditarPerfilAcceso')" reRender="pnlEditarPerfilAcceso">
+	                   		<rich:toolTip showDelay="300" value="#{msg['editar.e']}" for="cmdEditar"/>	
+	                   		<f:setPropertyActionListener target="#{admPerfilAccesoAction.pojoPerfilAcceso}" value="#{var}" />
+	                   </a4j:commandButton>
+	               </rich:column>
+	               <rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+	                   <a4j:commandButton id="cmdEliminar" image="#{msg['eliminar16.img']}" 
+	                   		oncomplete="Richfaces.showModalPanel('pnlEliminarPerfilAcceso')" reRender="pnlEliminarPerfilAcceso,dtPerfilAcceso">
+	                   		<rich:toolTip showDelay="300" value="#{msg['eliminar.e']}" for="cmdEliminar"/>
+	                   		<f:setPropertyActionListener target="#{admPerfilAccesoAction.pojoPerfilAcceso}" value="#{var}" />
+	                   </a4j:commandButton>
+	               </rich:column>
+	               <f:facet name="footer" >
+		               	<rich:datascroller align="center" for="dtPerfilAcceso" maxPages="10" ajaxSingle="true"	page="#{admPerfilAccesoAction.numPagina}" id="dScroll" styleClass="Titulo"/>
+	               </f:facet>
+	           </rich:dataTable>
+	</div>	          						 
+</ui:define>
+
+<ui:define name="modals">
+
+ <!-- ####### MODAL NUEVO/EDITAR  PERFIL ACCESO  ######### -->
+	 <rich:modalPanel id="pnlEditarPerfilAcceso" autosized="true">
+		<f:facet name="header">
+			<h:outputText id="lblTitulo" value="#{msg['perfilAcceso']}" styleClass="Titulo" style="margin-left:10px"/>
+		</f:facet>
+		<f:facet name="controls">
+           <h:panelGroup>
+               <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor: pointer;" id="imgCerrarEditar"/>
+               	<rich:componentControl for="pnlEditarPerfilAcceso" attachTo="imgCerrarEditar" operation="hide" event="onclick"/>
+            </h:panelGroup>
+         </f:facet>         
+         <a4j:form id="frmEditarNivelAcceso"> 
+         	 
+         	         
+	    	<!-- INICIA MENU MODAL -->	
+			<div style = "display: block; width:100%; height: 22px;">		   			  
+	   				 
+	   				  				
+	   				<!-- botones izquierda ARRIBA.........................botones derecha ABAJO -->  
+	   				<a4j:commandButton id="cmdSalvar" 
+	   					action="#{admPerfilAccesoAction.guardar}" 
+	   					image="#{msg['salvar22.img']}" 
+	   					style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 	   					         					
+	   					oncomplete="salvar('#{admPerfilAccesoAction.resOperacion}', 'pnlEditarPerfilAcceso', 'pnlMsgGralPerfilAcceso', #{rich:element('msgErrorPerfilAcceso')});"
+	   					reRender="dtPerfilAcceso,pnlMsgGralPerfilAcceso,pnlGridFormulario,frmEditarNivelAcceso">	   					
+	   					<rich:toolTip value="#{msg['salvar.e']}" />
+	   				</a4j:commandButton>          				
+			</div>				
+		
+			<!-- FIN MENU MODAL -->	
+									                 
+				<rich:messages id="msgErrorPerfilAcceso" showDetail="false" showSummary="true" title="Campos requeridos!">
+					<f:facet name="errorMarker">
+	                    <h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;"/>   
+	                </f:facet>
+			   </rich:messages>	
+			
+				<h:panelGroup styleClass="encabezado" rendered="#{admPerfilAccesoAction.pojoPerfilAcceso.id != null}">
+		        	<h:outputText value="#{admPerfilAccesoAction.pojoPerfilAcceso.id} - #{admPerfilAccesoAction.pojoPerfilAcceso.perfilAcceso}"/>
+	       		</h:panelGroup>
+	       		
+	       	    <h:panelGrid id="pnlGridFormulario" columns="3" columnClasses="colModalIzq, colModalDer">
+		            	
+		            	<h:outputText value="#{msg['perfilAcceso']}:" styleClass="Titulo" style="position:relative; top:8px;"/>
+		           		<h:panelGroup style="position:relative; top:8px;">
+				           		<h:inputText id="txtPerfilAcceso" 
+				           			value="#{admPerfilAccesoAction.pojoPerfilAcceso.perfilAcceso}" converter="upperCase"
+				           			required="true"				           			
+				           			requiredMessage="#{msg['perfilAcceso']} #{msg['mensajes.error.requerido']}"
+				           			maxlength="50"	size="79">
+				           			<f:validateLength minimum="1"/>
+				           		</h:inputText>
+						</h:panelGroup>		
+						<a4j:commandButton id="cmdAgregar" image="#{msg['agregar16.img']}" 
+	                   		oncomplete="Richfaces.showModalPanel('pnlAgregarPerfilAcceso')"  reRender="dtPerfilAccesoDetalles,pnlMsgGralPerfilAcceso,pnlAgregarPerfilAcceso" rendered="#{admPerfilAccesoAction.pojoPerfilAcceso.id != null}" >
+	                   		<rich:toolTip showDelay="300" value="#{msg['agregar.e']}" for="cmdAgregar" />	
+	                   </a4j:commandButton>	           		
+		           </h:panelGrid>	
+		           <rich:dataTable id="dtPerfilAccesoDetalles" cellpadding="0" cellspacing="0"  rows="20" border="0" var="det" rowClasses="Row1, Row2" styleClass="tabla_pagina"	 value="#{admPerfilAccesoAction.listPerfilAccesoDetalle}">	           		
+	               <f:facet name="header">
+	                   <rich:columnGroup>
+	                       <rich:column colspan="7" styleClass="Titulo">
+	                           <h:outputText value="#{msg['perfilesAccesosDetalles']}"/>
+	                       </rich:column>
+	                       <rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['tipoPerfilAcceso']}" />
+	                       </rich:column>
+	                       <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['valorPerfilAcceso']}" />
+	                       </rich:column>  
+	                       <rich:column style="text-align:center;" styleClass="Titulo" />
+	                   </rich:columnGroup>
+	               </f:facet>
+	               <rich:column width="30" style="text-align:center;" styleClass="Descripcion">
+	                   <h:outputText value="#{det.tipoPerfil}"/>
+	               </rich:column>
+	               <rich:column width="200" styleClass="Descripcion">	               		
+	                   		<h:outputText value="#{det.valorPerfil}" />	                   
+	               </rich:column>	               
+	               <rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+	                   <a4j:commandButton id="cmdEliminarDetalle" image="#{msg['eliminar16.img']}" 
+	                   		oncomplete="Richfaces.showModalPanel('pnlEliminarPerfilAccesoDet')" reRender="pnlEliminarPerfilAccesoDet">
+	                   		<rich:toolTip showDelay="300" value="#{msg['eliminar.e']}" for="cmdEliminarDetalle"/>
+	                   		<f:setPropertyActionListener target="#{admPerfilAccesoAction.pojoPerfilAccesoDetalle}" value="#{det}" />
+	                   </a4j:commandButton>
+	               </rich:column>
+	               <f:facet name="footer" >
+		               	<rich:datascroller align="center" for="dtPerfilAccesoDetalles" maxPages="10" ajaxSingle="true"	page="#{admPerfilAccesoAction.numPaginaDetalles}" id="dScroll" styleClass="Titulo"/>
+	               </f:facet>
+	           </rich:dataTable>	                     
+		  		
+		</a4j:form>
+	</rich:modalPanel>
+		
+		
+	<!-- ####### MODAL AGREGAR PERFIL ACCESO  ######### -->
+	 <rich:modalPanel id="pnlAgregarPerfilAcceso" autosized="true">
+		<f:facet name="header">
+			<h:outputText id="lblTituloAgregar" value="#{msg['perfilAccesoDetalle']}" styleClass="Titulo" style="margin-left:10px"/>
+		</f:facet>
+		<f:facet name="controls">
+           <h:panelGroup>
+               <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor: pointer;" id="imgCerrarNuevoPerfil"/>
+               	<rich:componentControl for="pnlAgregarPerfilAcceso" attachTo="imgCerrarNuevoPerfil" operation="hide" event="onclick"/>
+            </h:panelGroup>
+         </f:facet>         
+         <a4j:form id="frmNuevoNivelAcceso"> 
+         	 
+         	         
+	    	<!-- INICIA MENU MODAL -->	
+			<div style = "display: block; width:100%; height: 22px;">		   			  
+	   				 
+	   				  				
+	   				<!-- botones izquierda ARRIBA.........................botones derecha ABAJO -->  
+	   				<a4j:commandButton id="cmdAgregarPerfil" 
+	   					action="#{admPerfilAccesoAction.agregar}" 
+	   					image="#{msg['aplicar22.img']}" 
+	   					style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 	   					         					
+   						oncomplete="agregar('#{admPerfilAccesoAction.resOperacion}', 'pnlAgregarPerfilAcceso', 'pnlMsgGralPerfilAcceso', #{rich:element('msgErrorAgregarPerfilAcceso')});"  
+	   					reRender="dtPerfilAccesoDetalles,pnlMsgGralPerfilAcceso" >   					
+	   					<rich:toolTip value="#{msg['salvar.e']}" />
+	   				</a4j:commandButton>          				
+			</div>				
+		
+			<!-- FIN MENU MODAL -->	
+									                 
+				<rich:messages id="msgErrorAgregarPerfilAcceso" showDetail="false" showSummary="true" title="Campos requeridos!">
+					<f:facet name="errorMarker">
+	                    <h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;"/>   
+	                </f:facet>
+			   </rich:messages>	
+			   
+				<h:panelGroup styleClass="encabezado">
+		        	<h:outputText value="#{admPerfilAccesoAction.pojoPerfilAcceso.id} - #{admPerfilAccesoAction.pojoPerfilAcceso.perfilAcceso}"/>
+	       		</h:panelGroup>
+			
+	       		<h:panelGrid id="pnlSelect" columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin-left:10px; margin-bottom:20px; display:block;" >
+	  				<h:outputText value="#{msg['tipoPerfilAcceso']}:" styleClass="Titulo"/> 				
+		            <h:selectOneMenu id="cmbTipoPerfil" value="#{admPerfilAccesoAction.tipoPerfil}"  style="width:250px;" required="true"				           			
+				           			requiredMessage="#{msg['tipoPerfil']} #{msg['mensajes.error.requerido']}"> 
+		            		<a4j:support event="onchange" action="#{admPerfilAccesoAction.evaluaTipoPerfil}" reRender="pnlSelect"/>				  					
+  							<f:selectItem itemLabel="#{msg['fuente']}" itemValue="F"/>
+  							<f:selectItem itemLabel="#{msg['producto']}" itemValue="P"/>	
+							<f:selectItem itemLabel="#{msg['sucursal']}" itemValue="S"/>							 																				  								
+				  	</h:selectOneMenu>	
+				  	<h:outputText value="#{msg['valorPerfilAcceso']}:" styleClass="Titulo"/> 				
+		            <h:selectOneMenu id="cmbValorPerfil" value="#{admPerfilAccesoAction.valorPerfil}"  style="width:250px;" required="true"				           			
+				           			requiredMessage="#{msg['valorPerfilAcceso']} #{msg['mensajes.error.requerido']}">				  					
+  							<f:selectItems value="#{admPerfilAccesoAction.listValorPerfil}"/>
+				  	</h:selectOneMenu>				  
+			  	</h:panelGrid>	
+	       		
+	       	  
+		  		
+		</a4j:form>
+	</rich:modalPanel>
+	
+	<!-- #### MODAL MENSAJES GENERALES #### -->		
+	  <rich:modalPanel id="pnlMsgGralPerfilAcceso" autosized="true" width="350">
+		 <f:facet name="header">
+		 	<h:panelGroup>
+				<h:outputText value="#{admPerfilAccesoAction.resOperacion == '' ? msg['informacion'] : msg['navegacion.label.atencion']}" styleClass="Titulo" />
+			</h:panelGroup>
+		 </f:facet>
+		 <f:facet name="controls">
+	         <h:panelGroup>
+	             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="btnCerrarMsgGralPerfilAcceso"/>
+	             	<rich:componentControl for="pnlMsgGralPerfilAcceso" attachTo="pnlMsgGralPerfilAcceso" operation="hide" event="onclick"/>
+	          </h:panelGroup>
+	       </f:facet>
+	       <a4j:form id="frmGralPerfilAcceso" style="text-align:center;" >
+	       		<h:panelGroup style="display:block; width:300px; float:center;">
+		       		<h:outputText value="#{admPerfilAccesoAction.resOperacion != '' ? admPerfilAccesoAction.resOperacion : msg['mensaje.info.infoReg']}" style="display:block;" styleClass="Descripcion"/>
+	       		</h:panelGroup>
+	       		<a4j:commandButton value="#{msg['navegacion.label.aceptar']}" onclick="#{rich:component('pnlMsgGralPerfilAcceso')}.hide()" style="margin-top:10px; cursor:pointer;"/>
+	       </a4j:form>
+	   </rich:modalPanel>		 
+	<!--  Fin Panel MsgGenerales-->
+	
+	  <!-- -*************  MODAL ELIMINAR PERFIL ACCESO *****************-->		
+    <rich:modalPanel id="pnlEliminarPerfilAcceso" autosized="true">
+	 <f:facet name="header">
+		<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo"/>
+	 </f:facet>
+	 <f:facet name="controls">
+         <h:panelGroup>
+             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor:pointer;" id="imgCerrarEliminarPerfilAcceso"/>
+             	<rich:componentControl for="pnlEliminarPerfilAcceso" attachTo="imgCerrarEliminarPerfilAcceso" operation="hide" event="onclick"/>
+          </h:panelGroup>
+       </f:facet>
+       <a4j:form id="frmEliminarPerfilAcceso">
+       		<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+       			<h:outputText value="#{msg['navegacion.label.deseaEliminar']}" style="display:block;"  styleClass="Descripcion"/>
+	       		<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+		       		<a4j:commandButton id="cmdEliminar" action="#{admPerfilAccesoAction.eliminar}" value="#{msg['navegacion.label.aceptar']}" reRender="dtPerfilAcceso, pnlMsgGralPerfilAcceso"
+		       			oncomplete = "eliminar('#{admPerfilAccesoAction.resOperacion}', 'pnlEliminarPerfilAcceso', 'pnlMsgGralPerfilAcceso');"/>
+		       		<a4j:commandButton onclick="#{rich:component('pnlEliminarPerfilAcceso')}.hide()" value="#{msg['cancelar']}" style="margin-left:10px;"/>
+	       		</h:panelGroup>
+       		</h:panelGrid>
+       </a4j:form>
+     </rich:modalPanel>	
+     
+     	  <!-- -*************  MODAL ELIMINAR PERFIL ACCESO DETALLE*****************-->		
+    <rich:modalPanel id="pnlEliminarPerfilAccesoDet" autosized="true">
+	 <f:facet name="header">
+		<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo"/>
+	 </f:facet>
+	 <f:facet name="controls">
+         <h:panelGroup>
+             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor:pointer;" id="imgCerrarEliminarPerfilAccesoDet"/>
+             	<rich:componentControl for="pnlEliminarPerfilAccesoDet" attachTo="imgCerrarEliminarPerfilAccesoDet" operation="hide" event="onclick"/>
+          </h:panelGroup>
+       </f:facet>
+       <a4j:form id="frmEliminarPerfilAccesoDet">
+       		<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+       			<h:outputText value="#{msg['navegacion.label.deseaEliminar']}" style="display:block;"  styleClass="Descripcion"/>
+	       		<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+		       		<a4j:commandButton id="cmdEliminarDet" action="#{admPerfilAccesoAction.eliminarDetalle}" value="#{msg['navegacion.label.aceptar']}" reRender="dtPerfilAccesoDetalles, pnlMsgGralPerfilAcceso"
+		       			oncomplete = "eliminar('#{admPerfilAccesoAction.resOperacion}', 'pnlEliminarPerfilAccesoDet', 'pnlMsgGralPerfilAcceso');"/>
+		       		<a4j:commandButton onclick="#{rich:component('pnlEliminarPerfilAccesoDet')}.hide()" value="#{msg['cancelar']}" style="margin-left:10px;"/>
+	       		</h:panelGroup>
+       		</h:panelGrid>
+       </a4j:form>
+     </rich:modalPanel>	
+	
+</ui:define>
+	
+</ui:composition>

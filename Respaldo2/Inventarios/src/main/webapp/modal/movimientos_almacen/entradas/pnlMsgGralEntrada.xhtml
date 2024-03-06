@@ -1,0 +1,37 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlMsgGralEntrada" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo" />
+		</f:facet>
+
+		<a4j:region>
+			<h:panelGrid columns="1" style="text-align:center; min-width:300px; max-width:500px;" cellspacing="0" cellpadding="0">
+				<h:outputText value="#{entradasAlmacenAction.mensaje}"  styleClass="Titulo" rendered="#{entradasAlmacenAction.tipoMensaje == -1}" />
+				<h:outputText value="#{msg['mensaje.info.infoReg']}"  styleClass="Titulo" rendered="#{entradasAlmacenAction.tipoMensaje == 0}" />       			
+				<h:outputText value="#{msg['mensaje.error.inesperado']}"  styleClass="Titulo" rendered="#{entradasAlmacenAction.tipoMensaje == 1}" />
+				<h:outputText value="#{msg['mensaje.info.busquedaVacia']}"  styleClass="Titulo" rendered="#{entradasAlmacenAction.tipoMensaje == 2}" />
+				<h:outputText value="#{msg['mensaje.error.requerido']}"  styleClass="Titulo" rendered="#{entradasAlmacenAction.tipoMensaje == 3}" />
+				<h:outputText value="#{msg['seleccioneAlmacen']}"  styleClass="Titulo" rendered="#{entradasAlmacenAction.tipoMensaje == 4}" />
+				<h:outputText value="#{msg['ordenCompraSuministrada']}"  styleClass="Titulo" rendered="#{entradasAlmacenAction.tipoMensaje == 5}" />
+				<h:outputText value="#{msg['ordenCompraEliminada']}"  styleClass="Titulo" rendered="#{entradasAlmacenAction.tipoMensaje == 6}" />
+				
+				<h:outputText value="#{msg['mensaje.errorEntradas10']}" styleClass="Descripcion"  rendered="#{entradasAlmacenAction.tipoMensaje == -10}" />
+				<h:outputText value="#{msg['mensaje.errorEntradas11']}" styleClass="Descripcion"  rendered="#{entradasAlmacenAction.tipoMensaje == -11}" />
+				<h:outputText value="#{msg['mensaje.errorEntradas12']}" styleClass="Descripcion"  rendered="#{entradasAlmacenAction.tipoMensaje == -12}" />
+				<h:outputText value="#{msg['mensaje.errorEntradas13']}" styleClass="Descripcion"  rendered="#{entradasAlmacenAction.tipoMensaje == -13}" />
+				<h:outputText value="#{msg['mensaje.errorEntradas14']}" styleClass="Descripcion"  rendered="#{entradasAlmacenAction.tipoMensaje == -14}" />
+				
+				<a4j:commandButton style="margin:10px auto 0; width:100px;"
+					value="#{msg['navegacion.label.aceptar']}" 
+					onclick="#{rich:component('pnlMsgGralEntrada')}.hide()" />
+			</h:panelGrid>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

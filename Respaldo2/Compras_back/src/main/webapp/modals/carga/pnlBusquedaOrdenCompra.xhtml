@@ -1,0 +1,111 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlBusquedaOrdenCompra" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+		<f:facet name="header">
+			<h:outputText value="#{msg['buscar.e']} #{msg['ordenCompra']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlBusquedaOrdenCompra')}.hide()" />
+		</f:facet>
+		
+		<div style="display:block; min-width:500px; height: 22px;">
+			<a4j:commandButton style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+				image="#{msg['buscar22.img']}"
+				action="#{cargaOCAction.buscarOrdenesCompra}" 
+				oncomplete="buscarObras(#{cargaOCAction.operacion}, '#{rich:clientId('pnlBusquedaOrdenCompra')}');" 
+				render="dtOrdenesCompra">
+				<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarObras"/>
+			</a4j:commandButton>
+		</div>
+
+		<div style="margin: 10px auto 0;">
+			<h:panelGrid  columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin:0 auto 10px; display:block;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+				<h:selectOneMenu styleClass="Titulo" style="width: 216px;"
+					value="#{cargaOCAction.OCBusquedaCampo}">
+					<f:selectItems value="#{cargaOCAction.OCBusquedaTipos}" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText maxlength="50" style="width: 210px;" 
+					value="#{cargaOCAction.OCBusquedaValor}" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtOrdenesCompra" value="#{cargaOCAction.listOrdenesCompra}" var="var" style="margin:0 auto;"
+				cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="width: 90px; text-align:center; font-weight: bold;">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="width: 90px; text-align:center; font-weight: bold;">
+							<h:outputText value="#{msg['fecha']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; font-weight: bold;">
+							<h:outputText value="#{msg['obra']}" />
+						</rich:column>
+
+						<rich:column style="text-align:center; font-weight: bold;">
+							<h:outputText value="#{msg['proveedor']}" />
+						</rich:column>
+
+						<rich:column style="text-align:center; font-weight: bold;">
+							<h:outputText value="#{msg['solicita']}" />
+						</rich:column>
+
+						<rich:column style="width: 30px; text-align:center;" />
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="width: 60px; text-align:center;">
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding:5px;">
+					<h:outputText value="#{var.fecha}">
+						<f:convertDateTime type="date" pattern="dd MMM yyyy"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding:5px;">
+					<h:outputText value="#{var.nombreObra}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding:5px;">
+					<h:outputText value="#{var.nombreProveedor}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding:5px;">
+					<h:outputText value="#{var.nombreSolicita}" />
+				</rich:column>
+				
+				<rich:column style="width: 30px; text-align:center;">
+				   <a4j:commandButton id="cmdSeleccionarOrdenCompra" 
+				   		image="#{msg['agregar16.img']}" 
+						onclick="#{rich:component('pnlBusquedaOrdenCompra')}.hide()" 
+						action="#{cargaOCAction.seleccionarOrdenCompra}"
+						render="pnlOrdenCompraReemplazarDatos">
+						<rich:tooltip showDelay="300" value="#{msg['agregar.e']}" for="cmdSeleccionarOrdenCompra" />	
+						<f:setPropertyActionListener target="#{cargaOCAction.pojoOrdenCompraReemplazar}" value="#{var}" />
+				   </a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller id="dScrollOrdenes" page="#{cargaOCAction.OCBusquedaPagina}" for="dtOrdenesCompra" 
+						align="center" maxPages="10" fastStep="10" renderIfSinglePage="false" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

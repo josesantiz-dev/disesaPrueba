@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Class-Path: 
+Dependencies: net.giro.comun,
+ net.giro.logica.publico export,
+ net.giro.model.clientes export,
+ net.giro.model.credito export,
+ net.giro.model.publico export,
+ net.giro.model.rechum export,
+ net.giro.model.tyg export,
+ org.beanshell.bsh export,
+ org.apache.commons.httpclient export,
+ org.apache.log4j export,
+ org.hibernate export,
+ org.hibernate.validator export,
+ com.enterprisedt.edtFTPj  export,
+ com.google.code.gson  export,
+ org.apache.commons.beanutils export
+ 
+

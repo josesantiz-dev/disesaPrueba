@@ -1,0 +1,115 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlCajaChicaSeleccionarObra" autosized="true">
+		<f:facet name="header">
+			<h:panelGroup>		           
+				<h:outputText style="margin:0 auto;" value="#{cajaChicaAction.pojoObra == null ? msg['seleccionarObra'] : msg['cambiarObra']}" styleClass="Titulo"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="btnCajaChicaSeleccionarObra"/>
+				<rich:componentControl for="pnlCajaChicaSeleccionarObra" attachTo="btnCajaChicaSeleccionarObra" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmCajaChicaSeleccionarObra">
+			<a4j:region id="loadCajaChicaSeleccionarObra">
+				<div style="display: block; width:100%; height: 22px;">
+					<h:panelGroup style="vertical-align: middle; position:relative; ">
+						<a4j:commandButton id="cmdCajaChicaBuscarObras" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+							image="#{msg['buscar22.img']}" 
+							onclick="#{rich:element('cmdCajaChicaBuscarObras')}.disabled = true;" 
+							action="#{cajaChicaAction.buscarObras}" 
+							oncomplete="#{rich:element('cmdCajaChicaBuscarObras')}.disabled = false; buscar(#{cajaChicaAction.encontroMismoGrupo},'pnlMsgGralesCajaChica')"
+							reRender="dtResultsObras,pnlMsgGralesCajaChica">
+							<rich:toolTip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdCajaChicaBuscarObras"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</div>
+				
+				<h:panelGrid id="panelCajaChicaBuscarObra" columns="2" columnClasses="tygCompGtosColIzq, tygCompGtosColDer" style="margin: 10px auto; display:block;" width="700">
+					<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo" />
+					<h:selectOneMenu value="#{cajaChicaAction.campoBusquedaObra}" styleClass="Titulo" style="width: 216px;">
+						<f:selectItems value="#{cajaChicaAction.tiposBusquedaObra}" />
+					</h:selectOneMenu>
+					
+					<h:outputText value="#{msg['navegacion.label.valor']}:" styleClass="Titulo"/>
+					<h:inputText id="txtValorObra" maxlength="50" style="width: 210px;"
+						value="#{cajaChicaAction.valorBusquedaObra}" />
+					
+					<h:outputText value="#{msg['administrativa']}:" styleClass="Titulo" rendered="#{cajaChicaAction.esAdministrativo}" />
+					<h:selectBooleanCheckbox rendered="#{cajaChicaAction.esAdministrativo}"
+						value="#{cajaChicaAction.buscarAdministrativo}" />
+				</h:panelGrid>
+				
+				<rich:dataTable id="dtResultsObras" value="#{cajaChicaAction.listObras}" var="var" 
+					rows="5" cellpadding="0" cellspacing="0" width="720" border="0" rowClasses="Row1, Row2" >
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column width="80" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['navegacion.label.id']}"/>
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['nombre']}"/>
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['cliente']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['contrato']}"/>
+							</rich:column>
+							
+							<rich:column width="30" style="text-align:center; margin-left:10px;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['seleccionar']}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column width="80" style="text-align:center;" styleClass="tygCompGtosDesc">
+						<h:outputText value="#{var.id}" />
+					</rich:column>
+					
+					<rich:column style="text-align:left;" styleClass="tygCompGtosDesc">
+						<h:outputText value="#{var.nombre}" />
+					</rich:column>
+					
+					<rich:column style="text-align:left;" styleClass="tygCompGtosDesc">
+						<h:outputText value="#{var.nombreCliente}" />
+					</rich:column>
+					
+					<rich:column style="text-align:left;" styleClass="tygCompGtosDesc">
+						<h:outputText value="#{var.nombreContrato}" />
+					</rich:column>
+					
+					<rich:column width="30" style="text-align:center;" styleClass="tygCompGtosDesc">
+						<a4j:commandButton id="cmdSeleccionarObra" 
+							image="#{msg['agregar16.img']}" 
+							action="#{cajaChicaAction.seleccionarObra}" 
+							oncomplete="seleccionar(#{cajaChicaAction.encontroMismoGrupo},'pnlMsgGralesCajaChica', 'pnlCajaChicaSeleccionarObra')"
+							reRender="pnlCajaChicaObraDatos,pnlMsgGralesCajaChica">
+							<rich:toolTip showDelay="300" value="#{msg['agregar.e']}" for="cmdAgregar" />	
+							<f:setPropertyActionListener target="#{cajaChicaAction.pojoObra}" value="#{var}" />
+						</a4j:commandButton>
+					</rich:column>
+
+					<f:facet name="footer">
+						<rich:datascroller align="center" for="dtResultsObras" maxPages="10"
+							ajaxSingle="true" page="#{cajaChicaAction.numPagina}" id="dScroll"
+							styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

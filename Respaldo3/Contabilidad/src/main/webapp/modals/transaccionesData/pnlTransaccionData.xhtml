@@ -1,0 +1,101 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlTransaccionData" autosized="true" domElementAttachment="form" header="#{transDataAction.pojoTransaccionData.id == null ? msg['nueva'] : ''} #{msg['transaccionData']}">
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" onclick="#{rich:component('pnlTransaccionData')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+		
+		<div style="display: block; padding:0 0 10px; min-width:400px; height: 22px; text-align: left; background-color: none;">
+			<h:panelGroup id="botoneraTransaccion" style="display: block; width: 100%; height: 22px; margin-bottom: 1em;">
+				<h:panelGroup id="grupoTransaccionBotonesDerechos" style="width: 100%; vertical-align: middle; position:relative; ">
+					<a4j:commandButton id="cmdSalvar" style="float:right; margin-left: 5px; vertical-align: middle; position:relative;"
+						image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+						action="#{transDataAction.guardar}" 
+						oncomplete="salvar(#{transDataAction.operacion}, '#{rich:clientId('pnlTransaccionData')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrores')});"
+						render="dtResults, msgErrores, pnlMensajes" />
+				</h:panelGroup>
+			</h:panelGroup>
+		</div>
+		
+		<rich:messages id="msgErrores" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+			<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+		</rich:messages>
+		
+		<div style="display: block; margin: 1px auto; padding: 0; text-align: left; background-color: none;">
+			<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+				<h:outputText value="#{msg['transaccion']}:" styleClass="Titulo" />
+				<h:panelGroup id="pnlTransaccionDatos">
+					<h:panelGrid columns="2">
+						<h:outputText id="txtTransaccion" value="#{transDataAction.codigoTransaccion}" style="text-align:left; display:block;" />
+						<h:panelGroup>
+							<a4j:commandLink id="cmdBusquedaTransacciones" styleClass="linkColor" 
+								action="#{transDataAction.nuevaBusquedaTransacciones}" 
+								value="#{transDataAction.pojoTransaccionData.codigoTransaccion == null ? msg['seleccionar'] : msg['cambiar'] }"
+								oncomplete="#{rich:component('pnlBusquedaTransacciones')}.show()"
+								render="pnlBusquedaTransacciones, pnlBusquedaTransaccionesPrincipal, dtBusquedaTransacciones" />
+								
+							<h:inputText id="txtTransaccionHidden" style="text-align:left;  display:none;"
+								value="#{transDataAction.codigoTransaccion}" 
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['sucursal']} #{msg['mensaje.error.requerido']}" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+				
+				<h:outputText value="#{msg['importe']}:" styleClass="Titulo" />
+				<h:inputText id="txtImporte" styleClass="Titulo" style="text-align: right; width: 60%;"
+					value="#{transDataAction.pojoTransaccionData.importe}"
+					required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+					requiredMessage="#{msg['importe']} #{msg['mensaje.error.requerido']}"
+					onkeypress=" return soloDecimales(event, document.getElementById('frmPrincipal:txtImporte').value); ">
+					<f:convertNumber pattern="###,###,##0.00" />
+				</h:inputText>
+				
+				<h:outputText value="#{msg['sucursal']}:" styleClass="Titulo" />
+				<h:panelGroup id="pnlSucursalDatos">
+					<h:panelGrid columns="2">
+						<h:outputText id="txtSucursal" value="#{transDataAction.pojoTransaccionData.sucursal}" style="text-align:left; display:block;" />
+						<h:panelGroup>
+							<a4j:commandLink id="cmdBusquedaSucursales" styleClass="linkColor" 
+								action="#{transDataAction.nuevaBusquedaSucursales}" 
+								value="#{transDataAction.pojoTransaccionData.idSucursal == null ? msg['seleccionar'] : msg['cambiar'] }"
+								oncomplete="#{rich:component('pnlBusquedaSucursales')}.show()"
+								render="pnlBusquedaSucursales, pnlBusquedaSucursalesPrincipal, dtBusquedaSucursales" />
+								
+							<h:inputText id="txtSucursalHidden" style="text-align:left;  display:none;"
+								value="#{transDataAction.pojoTransaccionData.sucursal}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['sucursal']} #{msg['mensaje.error.requerido']}" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<fieldset>
+				<legend><h:outputText value="#{msg['valoresLlaves']}:" styleClass="Titulo" /></legend>
+				
+				<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+					<h:outputText value="#{msg['valorLlave']}:" styleClass="Titulo" />
+					<h:panelGroup>
+						<h:inputText id="txtValorLlave" styleClass="Titulo" style="text-align: right; width: 60%;"
+							value="#{transDataAction.valorLlave}"
+							required="#{!empty param[rich:clientId('cmdAgregarValorLlave')]}" 
+							requiredMessage="#{msg['valorLlave']} #{msg['mensaje.error.requerido']}" />
+						
+						<a4j:commandButton id="cmdAgregarValorLlave" style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['agregar22.img']}" title="#{msg['salvar.e']}"
+							action="#{transDataAction.agregarValorLlave}"
+							render="groupValoresLlaves" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</fieldset>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

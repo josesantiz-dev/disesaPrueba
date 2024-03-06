@@ -1,0 +1,96 @@
+<!DOCTYPE composition>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich"
+	template="/layout/template.xhtml">
+ 
+	<ui:define name="title">
+		<h:outputText value="#{msg['navegacion.modulo']} - Generar Reembolso"/>
+	</ui:define>
+
+	<ui:define name="menuFrag">
+			<rich:toolBarGroup location="right" style="padding:0 2px 0 2px;" >
+			<a4j:commandButton id="cmdBuscar" onclick="#{rich:element('cmdBuscar')}.disabled = true;" action="#{genReembolsoAction.buscar}" oncomplete="msgRevisando(#{rich:element('msgErrorReembolso')},'','pnlMsg','buscar',#{rich:element('txtMontoInvalido')}); #{rich:element('cmdBuscar')}.disabled = false;"   image="#{msg['buscar22.img']}" reRender="dtResults,pnlMsg,txtMontoInvalido" style="vertical-align: middle; position:relative;"/>
+			<h:outputLabel for="cmdBuscar" value="#{msg['buscar.e']}" style="cursor:pointer;" styleClass="Titulo"/>
+		</rich:toolBarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<a4j:keepAlive beanName="genReembolsoAction" />
+		<a4j:loadStyle src="resource:///resources/css/gastos/generarReembolso.css" />
+		<a4j:loadScript src="resource:///resources/scripts/gastos/generarReembolso.js"/>
+		<br/>
+		<h:panelGrid id="pnlBusqueda" cellpadding="5" columns="2" style="margin:10px auto; display:block;" width="720">
+			<h:outputText value="#{msg['navegacion.label.tipoBusqueda']}:" styleClass="Titulo"/>
+			<rich:comboBox id="cmbTipoBusqueda" listStyle="text-align:left;"
+				value="#{genReembolsoAction.valTipoBusqueda}" 
+				suggestionValues="#{genReembolsoAction.tipoBusqueda}" />
+			
+			<h:outputText value="#{msg['navegacion.label.valor']}:" styleClass="Titulo"/>
+			<h:inputText id="txtvalor" value="#{genReembolsoAction.campoBusqueda}" maxlength="20"/>
+		</h:panelGrid>
+
+		<rich:dataTable id="dtResults" rows="100" cellpadding="0" cellspacing="0" border="0" var="persona" rowClasses="Row1, Row2" 
+			value="#{genReembolsoAction.listPersonas}" style="margin:10px auto 20px; min-width:720px; width:100%;">
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column colspan="5" styleClass="tygCompGtosTit">
+						<h:outputText value="#{msg['navegacion.label.genReembolso']}"/>
+					</rich:column>
+					
+					<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['navegacion.label.clave']}" />
+					</rich:column>
+							                 
+					<rich:column style="text-align:center; margin-left:10px;" styleClass="Titulo">
+						<h:outputText value="#{genReembolsoAction.valTipoBusqueda == 'Persona' ? msg['persona'] : (genReembolsoAction.valTipoBusqueda == 'Negocio' ? msg['negocio'] : msg['persona'] )}" />
+					</rich:column>
+					 
+					<rich:column style="text-align:center; margin-left:10px;" styleClass="Titulo">
+						<h:outputText value="#{msg['rfc']}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; margin-left:10px;"  styleClass="Titulo"/>
+				</rich:columnGroup>
+			</f:facet>
+			
+			<rich:column width="150" style="text-align:center;" styleClass="Descripcion">
+				<h:outputText  value="#{persona.id}"/>                 
+			</rich:column>
+					           
+			<rich:column  width="480" style="text-align:center;"  styleClass="Descripcion">
+				<h:outputText value="#{persona.nombre} #{persona.primerApellido} #{persona.segundoApellido}"/>
+			</rich:column>
+				
+			<rich:column  width="80" style="text-align:center;"  styleClass="Descripcion">
+				<h:outputText value="#{persona.rfc}"/>
+			</rich:column>
+
+			<rich:column width="20" style="text-align:center; ">
+				<a4j:commandButton id="cmdDetalles" image="#{msg['detalles16.img']}" 
+					action="#{genReembolsoAction.detallesReembolso}" 
+					oncomplete="Richfaces.showModalPanel('pnlDetGenReembolso')" 
+					reRender="pnlDetGenReembolso">
+					<f:setPropertyActionListener target="#{genReembolsoAction.pojoPersona}" value="#{persona}" />
+					<rich:toolTip showDelay="300" value="#{msg['detalles']}" />
+				</a4j:commandButton>
+			</rich:column>
+			
+			<f:facet name="footer" >
+				<rich:datascroller align="center" for="dtResults" maxPages="10" ajaxSingle="true"
+					page="#{genReembolsoAction.numPagina}" id="dScroll" styleClass="Titulo"/>
+			</f:facet>
+		</rich:dataTable>
+		<br/>
+	</ui:define>
+
+	<ui:define name="modals">
+		<ui:include src="/modal/GenerarReembolso/pnlDetGenReembolso.xhtml" />
+		<ui:include src="/modal/GenerarReembolso/pnlNuevoGenerarReem.xhtml" />
+		<ui:include src="/modal/GenerarReembolso/pnlMsg.xhtml" />
+		<ui:include src="/modal/GenerarReembolso/pnlCancelarChequeReembolso.xhtml" />
+	</ui:define>
+</ui:composition>

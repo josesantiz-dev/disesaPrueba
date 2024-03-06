@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TarjetaDeposito" pageWidth="612" pageHeight="792" columnWidth="552" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="f720466a-1438-45bd-b0f5-44f85462f449">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<parameter name="control" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[".\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="monto" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ruta_rep" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ruta_img" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:/imagenes/"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select ce.nombre as nombre_empresa,solicitante2nombre(c.numero) as nombre_cliente,
+c.control, conv_fecha(cr.fe_des,3) as fecha_descuento, conv_fecha(d.a_final,3) as ultimo_pago,
+lower(a.domicilio) as dom, a.telefono, a.condusef,
+substr('97' || coalesce(c.referencia,'') || '0000000000000000',1,16) ||
+right('00000000' || case when strpos($P{monto},'.') =0 then $P{monto}|| '00'
+  else substr($P{monto},1,strpos($P{monto},'.')-1) || substr($P{monto}|| '00',strpos($P{monto},'.')+1,2) end,8) as ref
+from contrato c, credito cr, cat_empresas ce, datos_credito d, agente a
+where ce.clave= c.cat_empresa_id  and c.control=cr.control and d.control=c.control and
+a.clave = c.sucursal and  c.control = $P{control}]]>
+	</queryString>
+	<field name="nombre_empresa" class="java.lang.String"/>
+	<field name="nombre_cliente" class="java.lang.String"/>
+	<field name="control" class="java.lang.String"/>
+	<field name="fecha_descuento" class="java.lang.String"/>
+	<field name="ultimo_pago" class="java.lang.String"/>
+	<field name="dom" class="java.lang.String"/>
+	<field name="telefono" class="java.lang.String"/>
+	<field name="condusef" class="java.lang.String"/>
+	<field name="ref" class="java.lang.String"/>
+	<variable name="vmonto" class="java.lang.Double">
+		<variableExpression><![CDATA[new Double($P{monto})]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="154" splitType="Stretch">
+			<rectangle radius="20">
+				<reportElement uuid="ad678dbf-f6c4-4a61-aa65-b705eab9c6ee" key="rectangle-1" x="30" y="0" width="230" height="133"/>
+			</rectangle>
+			<textField isBlankWhenNull="false">
+				<reportElement uuid="10898af6-d271-4f57-b433-43114652df81" key="textField" x="84" y="5" width="157" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_empresa}]]></textFieldExpression>
+			</textField>
+			<subreport isUsingCache="true">
+				<reportElement uuid="9ab9e1bc-0185-4ec0-81a6-33356e1d7292" key="subreport-1" x="33" y="28" width="223" height="25"/>
+				<subreportParameter name="ruta_img">
+					<subreportParameterExpression><![CDATA[$P{ruta_img}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="control">
+					<subreportParameterExpression><![CDATA[$P{control}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{ruta_rep} + "TarjetaBancos.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement uuid="60708df6-21c0-410b-beea-2839203484a6" key="staticText-1" x="34" y="116" width="223" height="16"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[Al realizar su pago en el banco, es muy importante verificar que el número de referencia este correcto.]]></text>
+			</staticText>
+			<rectangle radius="20">
+				<reportElement uuid="0d0b1511-e15d-4296-9255-18dfcdf51ad4" key="rectangle-2" x="260" y="0" width="230" height="133"/>
+			</rectangle>
+			<image>
+				<reportElement uuid="43dcb64a-880f-4bfd-9d3e-2665472de5d6" key="image-1" x="273" y="5" width="55" height="41">
+					<printWhenExpression><![CDATA[Boolean.valueOf(Double.valueOf($P{monto}).doubleValue() < 9000D)]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<imageExpression><![CDATA[$P{ruta_img} + "oxxo.jpg"]]></imageExpression>
+			</image>
+			<textField isBlankWhenNull="false">
+				<reportElement uuid="890903ae-762d-4b7f-9abd-b8f0c3439a09" key="textField" x="273" y="36" width="217" height="11"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_cliente}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement uuid="03775f52-24ba-4722-87e9-28dff1377296" key="textField-1" x="273" y="46" width="216" height="11"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Control: " + $F{control}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement uuid="65758300-d03f-4f1b-b1fc-fab3d752805a" key="textField-2" x="273" y="69" width="70" height="12"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_descuento}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="bf8e5900-e6bc-492d-aff2-132f71dbae27" key="staticText-2" x="273" y="59" width="70" height="10"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Inicio del Credito]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1c579cdd-bd50-41f8-b8fa-dfc51741bf28" key="staticText-3" x="345" y="59" width="70" height="10"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Ultimo Pago]]></text>
+			</staticText>
+			<textField isBlankWhenNull="false">
+				<reportElement uuid="3b8290d7-bb6d-4d55-a854-cb096cc5713b" key="textField-3" x="345" y="69" width="70" height="12"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ultimo_pago}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="b6fe3f92-4dce-4792-9521-2f3be2739ec6" key="staticText-4" x="419" y="59" width="69" height="10"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Monto]]></text>
+			</staticText>
+			<textField pattern="$ #,##0.00" isBlankWhenNull="false">
+				<reportElement uuid="8cf066cc-b99c-4671-bec2-1b3da5e0439d" key="textField-4" x="418" y="69" width="70" height="12"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{vmonto}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="6fc19dc9-365b-45dc-8605-6ad6cb9c43f5" key="staticText-5" x="273" y="83" width="200" height="10"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[www.aspfinanciera.com]]></text>
+			</staticText>
+			<textField isBlankWhenNull="false">
+				<reportElement uuid="65732102-8803-40a2-a3d2-78bd91e8cb96" key="textField-5" x="275" y="94" width="199" height="22"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Justified">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Unidad Especializada de Atencion a Usuarios.- " + $F{dom} +
+", Teléfono " + $F{telefono} + " Horario de Lunes a Viernes De 09:00 A 14:00 hrs. "]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement uuid="3986ec59-81e6-48a9-a144-35b1647ac6e9" key="textField-6" x="275" y="118" width="198" height="19"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Justified">
+					<font size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{condusef}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement uuid="6c2c8145-3995-4070-9d60-79bb62276c5c" key="image" x="41" y="8" width="40" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<imageExpression><![CDATA[$P{ruta_img} + "asp.gif"]]></imageExpression>
+			</image>
+			<componentElement>
+				<reportElement uuid="1a6b331a-fac1-44b3-b0ec-9fcd9ef2837a" x="328" y="5" width="181" height="29">
+					<printWhenExpression><![CDATA[Boolean.valueOf(Double.valueOf($P{monto}).doubleValue() < 9000D)]]></printWhenExpression>
+				</reportElement>
+				<jr:Interleaved2Of5 xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" textPosition="none" displayChecksum="true">
+					<jr:codeExpression><![CDATA[$F{ref}]]></jr:codeExpression>
+				</jr:Interleaved2Of5>
+			</componentElement>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

@@ -1,0 +1,109 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlDomicilio" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+		<f:facet name="header">
+			<h:outputText value="#{msg['domicilio']}" styleClass="Titulo"/>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlDomicilio')}.hide()"/>
+		</f:facet>
+
+		<h:panelGroup style = "display: block; width:100%; height:22px; margin-bottom:1em;">
+			<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">	
+				<h:panelGroup style="vertical-align: middle; position:relative;">
+					<a4j:commandButton id="cmdSalvarDomicilio" style="vertical-align: middle; margin-right:5px; cursor: pointer;" 
+						image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+						action="#{obrasAction.guardarDomicilio}"
+						oncomplete="salvarDomicilio(#{obrasAction.band}, '#{rich:clientId('pnlDomicilio')}', '#{rich:clientId('pnlObrasMsgGrales')}');"
+						render="pnlObraDomicilioDatos, txtDomicilio" />
+				</h:panelGroup>
+			</h:panelGrid> 
+		</h:panelGroup>
+			
+		<h:panelGroup styleClass="encabezado">
+			<h:outputText value="#{obrasAction.pojoObra.id != null ? obrasAction.pojoObra.id : '0'} "/>
+			<h:outputText value="#{obrasAction.pojoObra.nombre}"/>
+		</h:panelGroup>
+			
+		<h:panelGroup style="display:none; width:100%;" rendered="false">
+			<h:outputLabel for="cbDomPrincipal" value="#{msg['principal']}" styleClass="Titulo" style="float:right; margin-right:15px; vertical-align:center;"/>
+			<h:selectBooleanCheckbox id="cbDomPrincipal" value="#{obrasAction.pojoDomicilio.principal}" style="float:right; margin-right:2px;"/>
+			<h:outputLabel for="cbDomActivo" value="#{msg['activo']}" styleClass="Titulo" style="float:right; margin-right:10px; vertical-align:center;" />
+			<h:selectBooleanCheckbox id="cbDomActivo" value="#{obrasAction.pojoDomicilio.estatus}" style="float:right; margin-right:2px;"/>
+		</h:panelGroup>
+			
+		<h:panelGrid id="grpDomiDom0" columns="3" width="100%" columnClasses="colTituloDom, colDato, colDato">
+			<h:outputText value="#{msg['ubicacion']}1:" styleClass="Titulo"/>
+			<h:selectOneMenu value="#{obrasAction.idDom1}" styleClass="Titulo" style="width:100%;">
+				<f:selectItems value="#{obrasAction.listCatDomicilios1}" />
+			</h:selectOneMenu>
+			<h:inputText value="#{obrasAction.pojoDomicilio.descripcionDomicilio1}" style="width:400px;"/>
+			
+			<h:outputText value="#{msg['ubicacion']}2:"  styleClass="Titulo"/>
+			<h:selectOneMenu value="#{obrasAction.idDom2}" styleClass="Titulo" style="width:100%;">
+				<f:selectItems value="#{obrasAction.listCatDomicilios1 }" />
+			</h:selectOneMenu> 
+			<h:inputText value="#{obrasAction.pojoDomicilio.descripcionDomicilio2}" style="width:400px;"/>
+			
+			<h:outputText value="#{msg['ubicacion']}3:"  styleClass="Titulo"/>
+			<h:selectOneMenu value="#{obrasAction.idDom3}" styleClass="Titulo" style="width:100%;">
+				<f:selectItems value="#{obrasAction.listCatDomicilios1}" />
+			</h:selectOneMenu>
+			<h:inputText value="#{obrasAction.pojoDomicilio.descripcionDomicilio3}" style="width:400px;"/>
+			
+			<h:outputText value="#{msg['ubicacion']}4:"  styleClass="Titulo"/>
+			<h:selectOneMenu value="#{obrasAction.idDom4}" styleClass="Titulo" style="width:100%;">
+				<f:selectItems value="#{obrasAction.listCatDomicilios2}" />
+			</h:selectOneMenu>
+			<h:inputText value="#{obrasAction.pojoDomicilio.descripcionDomicilio4}" style="width:100px;"/>
+			
+			<h:outputText value="#{msg['ubicacion']}5:"  styleClass="Titulo"/>
+			<h:selectOneMenu value="#{obrasAction.idDom5}" styleClass="Titulo" style="width:100%;">
+				<f:selectItems value="#{obrasAction.listCatDomicilios2}" />
+			</h:selectOneMenu> 
+			<h:inputText value="#{obrasAction.pojoDomicilio.descripcionDomicilio5}" style="width:100px;"/>
+		</h:panelGrid>
+		
+		<h:panelGrid id="grpDomiDom" columns="2" columnClasses="colTituloDom, colDato" width="100%">
+			<h:outputText value="#{msg['estado']}:"  styleClass="Titulo"/>
+			<h:selectOneMenu value="#{obrasAction.idEstadoDom}" styleClass="Titulo" disabled="#{!obrasAction.puedeEditar}" style="width:130px;">
+				<f:selectItems value="#{obrasAction.listEstado}"/>
+				<a4j:ajax event="change" listener="#{obrasAction.cambioEstadoDom}" render="cmdLnkMunicipioDom, cmdLnkLocalidadDom, cmdLnkColonia"/>
+			</h:selectOneMenu>
+			
+			<h:outputText value="#{msg['municipio']}:"  styleClass="Titulo"/>
+			<a4j:commandLink id="cmdLnkMunicipioDom" 
+				value="#{obrasAction.pojoMunicipio != null ? obrasAction.pojoMunicipio.nombre : 'Seleccionar'}" 
+				action="#{obrasAction.limpiaMunicipio}" oncomplete="#{rich:component('pnlMunicipios')}.show()" style="font-weight: bold;" 
+				render="pnlMunicipios">
+				<!--a4j:param name="paramMunDom" value="#{false}" assignTo="#{obrasAction.editaNacimiento}" /-->
+			</a4j:commandLink>
+			
+			<h:outputText value="#{msg['localidad']}:" styleClass="Titulo"/>
+			<a4j:commandLink id="cmdLnkLocalidadDom" 
+				value="#{obrasAction.pojoLocalidad != null ? obrasAction.pojoLocalidad.nombre : 'Seleccionar'}" 
+				action="#{obrasAction.limpiaLocalidades}" oncomplete="#{rich:component('pnlLocalidades')}.show()" style="font-weight: bold;" 
+				render="pnlLocalidades"> 
+				<!--a4j:param name="paramMunDom" value="#{false}" assignTo="#{obrasAction.editaNacimiento}" /-->
+			</a4j:commandLink>
+			
+			<h:outputText value="#{msg['colonia']}:"  styleClass="Titulo"/>
+			<a4j:commandLink id="cmdLnkColonia" 
+				value="#{obrasAction.pojoColonia != null ? obrasAction.pojoColonia.nombre : 'Seleccionar'}" 
+				action="#{obrasAction.limpiaColonias}" oncomplete="#{rich:component('pnlColonias')}.show()" style="font-weight: bold;" 
+				render="pnlColonias"/>
+			
+			<h:outputText value="#{msg['observacion']}:"  styleClass="Titulo"/>
+			<h:inputTextarea value="#{obrasAction.pojoDomicilio.observaciones}" rows="3" style="width:98%; margin-right:15px;" styleClass="text_area"/>
+		</h:panelGrid>
+	 </rich:popupPanel>
+</ui:composition>

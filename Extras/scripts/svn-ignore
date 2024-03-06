@@ -1,0 +1,157 @@
+#!/bin/bash
+# Script enviar a 'ignorados' las archivosy carpetas target, .settings, .classpath, .project, .metadata
+# Parametros:
+#  param1: <Ninguno|MODULO> 			: Modifica directorio especifico.
+#  param2: mensaje 						: Indica el mensaje a establecer para el commit. Confirma commit
+#  param3: usuario 						: Usuario SVN para commit.
+
+svn_log=
+parametro=$1
+mensaje=$2
+usuario=$3
+modulos=(
+	"Comun"
+	"Model_Cargas_Documentos"
+	"Model_Clientes"
+	"Model_Compras"
+	"Model_Contabilidad"
+	"Model_Credito"
+	"Model_CuentasPorCobrar"
+	"Model_CuentasPorPagar"
+	"Model_GestionProyectos"
+	"Model_Inventarios"
+	"Model_Publico"
+	"Model_RecHum"
+	"Model_Tesoreria"
+	"Model_TYG"
+	"FRAMEWORK"
+	"Logica_Publico"
+	"Logica_Cargas_Documentos"
+	"Logica_Clientes"
+	"Logica_TYG"
+	"Logica_RecHum"
+	"Logica_Inventarios"
+	"Logica_GestionProyectos"
+	"Logica_Compras"
+	"Logica_Contabilidad"
+	"Logica_CuentasPorCobrar"
+	"Logica_CuentasPorPagar"
+	"Navegador"
+	"Navegador4"
+	"DISESA"
+	"Clientes"
+	"Compras"
+	"Contabilidad"
+	"CuentasPorCobrar"
+	"CuentasPorPagar"
+	"GestionProyectos"
+	"Inventarios"
+	"Publico"
+	"RecHum"
+	"tyg"
+	"Mobile"
+	"PROCESOS"
+)
+
+if [ "$parametro" == "" ]; then
+	echo "Indique parametro. [ALL|<modulo>]"
+	echo "... do nothing!"
+    exit 0
+fi
+
+if [ "$parametro" != "ALL" ]; then
+	# Modulo especifico
+	if [ ! -d $parametro ]; then
+		echo "NO EXISTE DIRECTORIO"
+		exit 1
+	fi
+
+	echo "> SVN Ignore"
+	echo "--------------------------------------------------------------------------"
+	echo "TARGETS   : target, .settings, .classpath, .project, .metadata"
+	echo -n "DIRECTORY : $parametro ... "
+
+	svn propset svn:ignore "target"$'\n'".settings"$'\n'".classpath"$'\n'".project"$'\n'".metadata" $parametro > svn_log
+	commok=$?
+	if [ $commok -eq 1 ]; then
+		echo "ERROR"
+		cat commok
+		exit 1
+	else
+		rm svn_log
+		echo "OK"
+	fi
+
+#	if [ "$mensaje" != "" -a "$usuario" == "" ]; then
+#		echo -n "do commit ... "
+#		svn ci $parametro -m "$mensaje" > svn_log
+#		commok=$?
+#		if [ commok -eq 1 ]; then
+#			echo "ERROR"
+#			cat commok
+#			exit 1
+#		else
+#			echo "OK"
+#		fi
+#	elif [ "$mensaje" != "" -a "$usuario" != "" ]; then
+#		echo -n "do commit ... "
+#		svn ci $parametro -m "$mensaje" --username=$usuario >> svn_log
+#		commok=$?
+#		if [ commok -eq 1 ]; then
+#			echo "ERROR"
+#			cat commok
+#			exit 1
+#		else
+#			echo "OK"
+#		fi
+#	fi
+
+	exit 0
+fi
+
+echo "> SVN Ignore"
+echo "--------------------------------------------------------------------------"
+echo "TARGETS   : target, .settings, .classpath, .project, .metadata"
+echo "DIRECTORY : ALL "
+echo "--------------------------------------------------------------------------"
+echo "CURRENT   : "
+
+for item in ${modulos[*]}; do
+	echo -n "CURRENT   : $item ... "
+	svn propset svn:ignore "target"$'\n'".settings"$'\n'".classpath"$'\n'".project"$'\n'".metadata" $item > svn_log
+	commok=$?
+	if [ $commok -eq 1 ]; then
+		echo "ERROR"
+		cat commok
+		exit 1
+	else
+		rm svn_log
+		echo "OK"
+	fi
+
+#	if [ "$mensaje" != "" -a "$usuario" == "" ]; then
+#		echo -n "do commit ... "
+#		svn ci $item -m "$mensaje" >> svn_log
+#		commok=$?
+#		if [ commok -eq 1 ]; then
+#			echo "ERROR"
+#			cat commok
+#			exit 1
+#		else
+#			echo "OK"
+#		fi
+#	elif [ "$mensaje" != "" -a "$usuario" != "" ]; then
+#		echo -n "do commit ... "
+#		svn ci $item -m "$mensaje" --username=$usuario >> svn_log
+#		commok=$?
+#		if [ commok -eq 1 ]; then
+#			echo "ERROR"
+#			cat commok
+#			exit 1
+#		else
+#			echo "OK"
+#		fi
+#	fi
+done
+
+exit 0

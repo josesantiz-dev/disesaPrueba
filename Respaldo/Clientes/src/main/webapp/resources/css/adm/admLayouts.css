@@ -1,0 +1,39 @@
+.lblColIzqui{
+	text-align:right;
+	width:80px;
+}
+.layColIzq{
+	text-align:right;
+	width:80px;
+}
+.layColDer{
+	text-align:left;
+	width:370px;
+}
+.layColIzqPadre{
+	text-align:right;
+	width:80px;
+}
+.layColDerPadre{
+	text-align:left;
+	width:400px;
+}
+.layColIzqTitulo{
+	text-align:right;
+	width:80px;
+}
+.layColDerTitulo{
+	text-align:left;
+	width:300px;
+}
+.layColIzqDet{
+	text-align:right;
+	width:60px;
+}
+.layColDerDet{
+	text-align:right;
+	width:60px;
+}
+.layRowTop{
+	vertical-align:top;
+}

@@ -1,0 +1,86 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlBusquedaBeneficiarios" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['busqueda.buscarPersonas']}" styleClass="Titulo" style="margin-left:10px" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlBusquedaBeneficiarios')}.hide()" />
+		</f:facet>
+		
+		<a4j:region id="loadBusquedaBeneficiarios">
+			<div style="display: block; width:700px; height: 22px;">
+				<a4j:commandButton id="cmdBuscarBeneficiarios" 
+					action="#{empleadoAction.buscarPersonas}"
+					image="#{msg['buscar22.img']}"
+					style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+					oncomplete="buscarPersonas('#{empleadoAction.resOperacion}', '#{rich:clientId('pnlBusquedaBeneficiarios')}');" 
+					render="dtBeneficiarios">
+					<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarFamiliares"/>
+				</a4j:commandButton>
+			</div>
+	
+			<div class="div_pagina" style="margin-top: 10px;">
+				<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin-left:10px; margin-bottom:20px; display:block;">
+					<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+					<h:selectOneMenu value="#{empleadoAction.campoBusquedaPersonas}">
+						<f:selectItems value="#{empleadoAction.tipoBusquedaPersonas}" />
+					</h:selectOneMenu>
+		        
+					<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+					<h:inputText maxlength="50" value="#{empleadoAction.valBusquedaPersonas}" size="50" />
+				</h:panelGrid>
+	
+				<rich:dataTable id="dtBeneficiarios" cellpadding="0" cellspacing="0" rows="10" border="0" var="var"  rowClasses="Row1, Row2" styleClass="tabla_pagina" value="#{empleadoAction.listaPersonasGrid}">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column style="text-align:center; font-weight: bold;">
+								<h:outputText value="#{msg['id']}" />
+							</rich:column>
+							<rich:column style="text-align:center; font-weight: bold;">
+								<h:outputText value="#{msg['nombre']}" />
+							</rich:column>                      
+							<rich:column style="text-align:center; font-weight: bold;">
+								<h:outputText value="#{msg['seleccionar']}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column styleClass="Descripcion" style="width: 70px; text-align:center; padding-left: 5px;">
+						<h:outputText value="#{var.id}" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="width: 70px; text-align:center; padding-left: 5px;">
+						<h:outputText value="#{var.nombre}" />
+					</rich:column>
+					
+					<rich:column style="width: 60px; text-align:center;" styleClass="Descripcion">
+					   <a4j:commandButton id="cmdAgregarFamiliar" image="#{msg['agregar16.img']}" 
+							action="#{empleadoAction.seleccionarBeneficiario}"  
+							onclick="#{rich:component('pnlBusquedaBeneficiarios')}.hide();" 
+							oncomplete="seleccionar(#{empleadoAction.band},'#{rich:clientId('pnlBusquedaBeneficiarios')}','#{rich:clientId('pnlMsgGralEmpleado')}')"
+							render="pnlSeleccionarBeneficiario,pnlMsgGralEmpleado"
+							limitRender="true">
+							<rich:tooltip showDelay="300" value="#{msg['agregar.e']}" for="cmdAgregarFamiliar" />
+							<f:setPropertyActionListener target="#{empleadoAction.pojoBeneficiarioSeleccionado}" value="#{var}" />
+					   </a4j:commandButton>
+					</rich:column>
+	
+					<f:facet name="footer">
+						<rich:dataScroller align="center" for="dtBeneficiarios" maxPages="10"
+							ajaxSingle="true" page="#{empleadoAction.numPaginaBeneficiarios}" id="dScrollBeneficiarios"
+							styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</div>
+		</a4j:region>
+	</rich:popupPanel>
+    
+</ui:composition>

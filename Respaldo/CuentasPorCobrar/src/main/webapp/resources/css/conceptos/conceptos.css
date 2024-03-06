@@ -1,0 +1,158 @@
+.Row1{
+	background: #FFFFFF;
+}
+.Row2{
+	background: #f1f1f1;
+}
+.Titulo{
+	font-weight: bold;
+	font-size: 12px;
+	color:#525252;
+}
+.Titulo10{
+	font-weight: bold;
+	font-size: 10px;
+	color:#525252;
+}
+.colorTitulo{
+	color:#525252;
+}
+.Descripcion{
+	font-weight: bold;
+	font-size: 12px;
+	color:#808080;
+}
+.Descripcion10{
+	font-weight: bold;
+	font-size: 10px;
+	color:#808080;
+}
+.Observacion{
+	font-weight: bold;
+	font-size: 12px;
+	color:#C0C0C0;
+}
+.Observacion10{
+	font-weight: bold;
+	font-size: 10px;
+	color:#C0C0C0;
+}
+.Alterno{
+	color: #FAE6B0;
+	font-weight: bold;
+}
+.Err{
+	text-align:right;
+	font-size: 12px;
+	color:red;
+}
+.encabezado{
+	border:2px solid #9CADBA;
+	color:#6A6868; 
+	background-color:#E4EDFD; //#f1f1f1;//#BED6F8;
+	font-weight: bold;
+	padding:.2em;
+	margin:1em .5em;
+	text-align:center;
+	display:block;
+}
+.itemCancelado {
+	color:red;
+}
+.tygCompGtosCol1{
+	width:100px;
+	text-align:right;
+	font-weight:bold;
+	font-size:12px;
+	color:#6A6868;
+}
+.tygCompGtosCol2{
+	width:450px;
+	text-align:left;
+}
+.tygCompGtosColIzq{
+	width:150px;
+	text-align:right;
+	font-weight:bold;
+	font-size:12px;
+	color:#6A6868;
+}
+.tygCompGtosColDer{
+	width:540px;
+	text-align:left;
+}
+.tygCompGtosMsgErr{
+	text-align:right;
+	font-size:12px;
+}
+.tygCompGtosObservacion{
+	text-align:left;
+	font-weight:bold;
+	font-size:12px;
+	color:#C0C0C0;
+}	
+.tygCompGtosTit{
+	font-weight:bold;
+	font-size:12px;
+	color:#525252;
+}
+.tygCompGtosRow1{
+	background:#FFFFFF;
+}
+.tygCompGtosRow2{
+	background:#f1f1f1;
+}
+.tygCompGtosDesc{
+	font-weight:bold;
+	font-size:12px;
+	color:#808080;
+}
+.tygCompGtosDescripcion{
+	text-align:left;
+	font-weight:bold;	
+	font-size:12px;
+	color:#808080;
+}
+.tygCompGtosComprobados{	
+	color:green;
+}
+.tygCompGtosCancelado{	
+	color:red;
+}
+
+.tygCompGtosAtn{
+	color:#E5591C;
+	font-weight:bold;
+	font-size:12px;
+}
+.colPnlBusqIzq{
+	color		: #6A6868;
+	font-size	: 12px;
+	font-weight	: bold;
+	text-align	: right;
+	width		: 150px;
+}
+.colPnlBusqDer{
+	text-align 	: left;
+	width		: 570px;
+}
+
+.autocompleteInputSize {
+	padding: 2px 5px;
+	width: 260px !important;
+}
+
+.autocompletePopupSize {
+	min-height: 180px !important;
+	width: 320px !important;
+}
+
+/* autocompletePopup size */
+.rf-au-lst-scrl {
+	min-height: 180px !important;
+	width: 320px !important;
+}
+
+.rf-au-fnt {
+	padding: 0 10px;
+}

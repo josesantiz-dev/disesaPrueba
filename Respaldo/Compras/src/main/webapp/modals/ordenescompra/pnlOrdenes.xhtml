@@ -1,0 +1,171 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlOrdenes" modal="true" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+    	<f:facet name="header">
+			<h:outputText value="#{msg['ordenesCompras']}" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" onclick="#{rich:component('pnlOrdenes')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+		
+		<div style="display:block; padding:0 0 10px; min-width:700px; height:22px; text-align:left; background-color: none;">
+			<h:panelGroup id="botoneraOrdenes" style="display: block; width: 100%; height: 22px; margin-bottom: 1em;">
+				<h:panelGroup id="grupoOrdenesBotonesIzquierdos" style="width: 100%; vertical-align: middle; position:relative; ">
+					<a4j:commandButton id="cmdActualizaOrdenes" styleClass="Titulo" style="float:left; margin:0 10px; vertical-align: middle; position:relative; cursor:pointer;"
+						image="#{msg['actualizar22.img']}" 
+						action="#{ordenAction.ver}"
+						render="dtOrdenes"
+						limitRender="true">
+						<rich:tooltip for="cmdActualizaOrdenes" showDelay="300" value="#{msg['actualizar']} #{msg['lista']}" />
+					</a4j:commandButton>
+					
+					<h:selectOneMenu style="width:216px" title="#{msg['actualizar']} #{msg['cotizaciones']}" 
+						value="#{ordenAction.estatusOrdenCompra}">
+						<f:selectItems value="#{ordenAction.listEstatusOrdenCompraItems}" />
+			            <a4j:ajax event="change" 
+				            listener="#{ordenAction.ver}" 
+				            render="dtOrdenes, pnlMensajes" 
+							limitRender="true"/>
+			        </h:selectOneMenu>
+				</h:panelGroup>
+				
+				<h:panelGroup id="grupoOrdenesBotonesDerechos" style="width: 100%; vertical-align: middle; position:relative; ">
+					<a4j:commandButton id="cmdNuevaOrden" styleClass="Titulo" style="float:right; margin-left: 5px; vertical-align: middle; position:relative; cursor:pointer;" 
+						image="#{msg['nuevo22.img']}" 
+						rendered="#{ordenAction.permiteModificar}"
+						action="#{ordenAction.nuevo}"
+						onclick="#{rich:component('tabOrdenCompra')}.switchToItem('@first');"
+						oncomplete="evaluaNuevo(#{ordenAction.operacion}, #{ordenAction.maestroAdministrativo},'#{rich:clientId('pnlConfirmaOrigen')}','#{rich:clientId('pnlOrden')}','#{rich:clientId('pnlMensajes')}');"
+						render="pnlOrden,pnlMensajes"
+						limitRender="true">
+						<rich:tooltip id="ttNuevaOrden" for="cmdNuevaOrden" showDelay="300" value="#{msg['nuevo.e']}" />
+					</a4j:commandButton>
+				</h:panelGroup>
+			</h:panelGroup>
+		</div>
+		
+		<h:panelGroup styleClass="encabezado" style="min-height: 1em;">
+			<h:outputText value="#{ordenAction.pojoObra != null ? ordenAction.pojoObra.id : '0'} "/>
+			<h:outputText value="#{ordenAction.pojoObra != null ? ordenAction.pojoObra.nombre : ''}" />
+		</h:panelGroup>
+
+		<rich:dataTable id="dtOrdenes" value="#{ordenAction.listOrdenes}" var="var" 
+			cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column colspan="8" style="width: 90px; text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['ordenesCompras']}" /> 
+					</rich:column>
+					
+					<rich:column breakRowBefore="true" style="width:100px; text-align:center; font-weight: bold;" styleClass="Titulo">
+						<h:outputText value="#{msg['id']}" />
+					</rich:column>
+					
+					<rich:column style="width:100px; text-align:center; font-weight: bold;" styleClass="Titulo">
+						<h:outputText value="#{msg['folio']}" />
+					</rich:column>
+					
+					<rich:column style="width:100px; text-align:center; font-weight: bold;" styleClass="Titulo">
+						<h:outputText value="#{msg['fecha']}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['proveedor']}" />
+					</rich:column>
+
+					<rich:column style="width: 100px; text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['total']}" />
+					</rich:column>
+
+					<rich:column colspan="3" style="width: 90px; text-align:center;" styleClass="Titulo" />
+				</rich:columnGroup>
+			</f:facet>
+			
+			<rich:column style="text-align:center; width:100px;" styleClass="#{var.estatus == 1 ? 'itemCancelado': (var.estatus == 2 ? 'itemUsado' : 'Descripcion')}">
+				<h:outputText value="#{var.id}" />
+			</rich:column>
+			
+			<rich:column style="text-align:left; width:100px;" styleClass="#{var.estatus == 1 ? 'itemCancelado': (var.estatus == 2 ? 'itemUsado' : 'Descripcion')}">
+				<h:outputText value="#{var.folio}" />
+			</rich:column>
+			
+			<rich:column style="text-align:center; width:100px;" styleClass="#{var.estatus == 1 ? 'itemCancelado': (var.estatus == 2 ? 'itemUsado' : 'Descripcion')}">
+				<h:outputText value="#{var.fecha}">
+					<f:convertDateTime type="date" pattern="dd/MMM/yyyy"/>
+				</h:outputText>
+			</rich:column>
+			
+			<rich:column style="text-align:left;" styleClass="#{var.estatus == 1 ? 'itemCancelado': (var.estatus == 2 ? 'itemUsado' : 'Descripcion')}">
+				<h:outputText value="#{var.nombreProveedor}" />
+			</rich:column>
+
+			<rich:column style="text-align:right; width: 100px;" styleClass="#{var.estatus == 1 ? 'itemCancelado': (var.estatus == 2 ? 'itemUsado' : 'Descripcion')}">
+				<h:outputText value="#{var.total}">
+					<f:convertNumber pattern="#{ordenAction.patternDecimal}" />
+				</h:outputText>
+			</rich:column>
+				
+			<!--rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+				<a4j:commandButton id="cmdAutorizar" disabled="true" rendered="#{var.estatus == 0 ? (ordenAction.permiteModificar ? true : false) : false}"
+					image="#{msg['autorizar16.img']}" 
+					oncomplete="#{rich:component('pnlAutorizar')}.show()"
+					render="pnlAutorizar"
+					limitRender="true">
+					<f:setPropertyActionListener value="#{var}" target="#{ordenAction.pojoOrdenAutorizar}" for="cmdAutorizar" />
+					<rich:tooltip showDelay="300" value="#{msg['autorizar']}" for="cmdAutorizar" />
+				</a4j:commandButton>
+			</rich:column-->
+			
+			<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+				<a4j:commandButton id="cmdEditar" rendered="#{var.estatus != 1 ? (ordenAction.permiteModificar ? true : false) : false}"
+					image="#{msg['editar16.img']}"
+					action="#{ordenAction.editar}" 
+						onclick="#{rich:component('tabOrdenCompra')}.switchToItem('@first');"
+					oncomplete="#{rich:component('pnlOrden')}.show()"
+					render="pnlOrden"
+					limitRender="true">
+					<f:setPropertyActionListener value="#{var}" target="#{ordenAction.pojoOrdenMain}" for="cmdEditar" />
+					<rich:tooltip showDelay="300" value="#{msg['editar']}" for="cmdEditar" />
+				</a4j:commandButton>
+			</rich:column>
+				
+			<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+				<a4j:commandButton id="cmdReporte" rendered="#{var.estatus != 1 ? (ordenAction.permiteModificar ? true : false) : false}"
+					image="#{msg['imprimir16.img']}" 
+					action="#{ordenAction.reporte}" 
+					oncomplete="reporte(#{ordenAction.operacion}, '#{rich:clientId('pnlMensajes')}')"
+					render="pnlMensajes"
+					limitRender="true">
+					<f:setPropertyActionListener value="#{var}" target="#{ordenAction.pojoOrdenAutorizar}" for="cmdReporte" />
+					<rich:tooltip showDelay="300" value="#{msg['imprimir.e']}" for="cmdReporte" />
+					<!-- 
+					oncomplete="javascript:window.open('#{msg['urlapp']}/reportes/ReporteGeneric.faces', 'Orden de Compra', 'menubar=0, toolbar=0, scrollbars=1,location=0, status=1');"
+					-->
+				</a4j:commandButton>
+			</rich:column>
+			
+			<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+				<a4j:commandButton id="cmdEliminar" rendered="#{var.estatus == 0 ? (ordenAction.permiteModificar ? true : false) : false}"
+					image="#{msg['eliminar16.img']}" 
+					oncomplete="#{rich:component('pnlEliminar')}.show()" 
+					render="pnlEliminar"
+					limitRender="true">
+					<f:setPropertyActionListener value="#{var}" target="#{ordenAction.pojoOrdenBorrar}" for="cmdEliminar" />
+					<rich:tooltip showDelay="300" value="#{msg['eliminar']}" for="cmdEliminar" />
+				</a4j:commandButton>
+			</rich:column>
+
+			<f:facet name="footer">
+				<rich:dataScroller id="dScrollOrdenes" for="dtOrdenes" page="#{ordenAction.numPaginaOrdenes}" 
+					maxPages="10" ajaxSingle="true" align="center" styleClass="Titulo" />
+			</f:facet>
+		</rich:dataTable>
+	</rich:popupPanel>
+</ui:composition>

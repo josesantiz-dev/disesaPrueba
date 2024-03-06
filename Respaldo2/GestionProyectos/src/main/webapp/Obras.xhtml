@@ -1,0 +1,173 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['obras']} - #{msg['modulo']}" />
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}" 
+				action="#{obrasAction.buscar}" 
+				render="dtResults,pnlObrasMsgGrales"
+				oncomplete="buscar(#{obrasAction.band},'#{rich:clientId('pnlObrasMsgGrales')}');" />
+		</rich:toolbarGroup>
+		 
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['nuevo22.img']}" title="#{msg['nuevo.e']}"
+				onclick="#{rich:component('groupTabs')}.switchToItem('@first');"
+				action="#{obrasAction.nuevo}" 
+				oncomplete="#{rich:component('pnlObrasNuevoEditarObra')}.show();"
+				render="pnlObrasNuevoEditarObra, cmdSalvarDomicilio, pnlDomicilio" />
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="obras.css" />
+		<h:outputScript library="scripts" name="obras.js" />
+			
+		<div class="div_titulo" style="margin: 50px auto 0;">
+			<h:outputText value="#{msg['obras']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina" style="margin: 0 auto;">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin: 10px; display:block; width: 720px;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo" />
+				<h:selectOneMenu id="cmbTipoBusqueda" style="width: 216px"
+					value="#{obrasAction.campoBusqueda}">
+		            <f:selectItems value="#{obrasAction.tiposBusqueda}" />
+		        </h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText id="txtvalor" maxlength="50" style="width: 210px" 
+					value="#{obrasAction.valorBusqueda}" />
+				
+				<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" rendered="#{obrasAction.perfilAdministrativo}" />
+				<h:panelGroup rendered="#{obrasAction.perfilAdministrativo}">
+					<h:selectBooleanCheckbox id="txtObrasAdministrativas" 
+						value="#{obrasAction.busquedaAdministrativas}" />
+			        <h:outputLabel for="txtObrasAdministrativas" value="#{msg['obraAdministrativa']}" styleClass="Titulo" />
+				</h:panelGroup>
+			</h:panelGrid>
+
+			<rich:dataTable id="dtResults" var="var" value="#{obrasAction.listObrasGrid}" style="margin:0 auto 20px; width: 100%;" 
+				cellpadding="0" cellspacing="0" rows="100" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="text-align:center; width:80px" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" /> 
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['cliente']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['contrato']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+							<h:outputText value="#{msg['monto']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+							<h:outputText value="#{msg['tipo']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+							<h:outputText value="#{msg['jerarquia']}" />
+						</rich:column>
+						
+						<rich:column colspan="2" style="text-align:center; width: 40px;" styleClass="Titulo" />
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align: center; width: 80px;">
+					<h:outputText value="#{var.id}" styleClass="#{var.estatus == obrasAction.valObraCancelada ? 'itemCancelado' : 'Descripcion'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.nombre}" styleClass="#{var.estatus == obrasAction.valObraCancelada ? 'itemCancelado' : 'Descripcion'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.nombreCliente}" styleClass="#{var.estatus == obrasAction.valObraCancelada ? 'itemCancelado' : 'Descripcion'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.nombreContrato}" styleClass="#{var.estatus == obrasAction.valObraCancelada ? 'itemCancelado' : 'Descripcion'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:right; padding-left: 5px; width:100px;">
+					<h:outputText value="#{var.montoContratado}" styleClass="#{var.estatus == obrasAction.valObraCancelada ? 'itemCancelado' : 'Descripcion'}">
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding-left: 5px; width:100px;">
+					<h:outputText rendered="#{var.tipoObra == 1}" value="#{msg['obrasTipo.obra']}" styleClass="#{var.estatus == obrasAction.valObraCancelada ? 'itemCancelado' : 'Descripcion'}" />
+					<h:outputText rendered="#{var.tipoObra == 2}" value="#{msg['obrasTipo.proyecto']}" styleClass="#{var.estatus == obrasAction.valObraCancelada ? 'itemCancelado' : 'Descripcion'}" />
+					<h:outputText rendered="#{var.tipoObra == 3}" value="#{msg['obrasTipo.ordenTrabajo']}" styleClass="#{var.estatus == obrasAction.valObraCancelada ? 'itemCancelado' : 'Descripcion'}" />
+					<h:outputText rendered="#{var.tipoObra == 4}" value="#{msg['obrasTipo.administrativa']}" styleClass="#{var.estatus == obrasAction.valObraCancelada ? 'itemCancelado' : 'Descripcion'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding-left: 5px; width:100px;">
+					<h:outputText rendered="#{var.idObraPrincipal == 0}" value="#{msg['obrasTipo.obra']}" styleClass="#{var.estatus == obrasAction.valObraCancelada ? 'itemCancelado' : 'Descripcion'}" />
+					<h:outputText rendered="#{var.idObraPrincipal != 0}" value="#{msg['obrasTipo.subobra']}" styleClass="#{var.estatus == obrasAction.valObraCancelada ? 'itemCancelado' : 'Descripcion'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEditar" rendered="#{var.estatus == obrasAction.valObraCancelada ? false : true}" 
+						image="#{msg['editar16.img']}" title="#{msg['editar']}"
+						onclick="#{rich:component('groupTabs')}.switchToItem('@first');"
+						action="#{obrasAction.editar}" 
+						oncomplete="#{rich:component('pnlObrasNuevoEditarObra')}.show();"
+						render="pnlObrasNuevoEditarObra, cmbObraSucursal, pnlDomicilio, groupTabs">
+						<f:setPropertyActionListener target="#{obrasAction.pojoObraMain}" value="#{var}" for="cmdEditar" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEliminar" rendered="#{var.estatus == obrasAction.valObraCancelada ? false : true}" 
+						image="#{msg['cancelar16.img']}" title="#{msg['cancelar']}"
+						oncomplete="#{rich:component('pnlObrasMsgEliminarObra')}.show()" 
+						render="pnlObrasMsgEliminarObra">
+						<f:setPropertyActionListener target="#{obrasAction.pojoObraMain}" value="#{var}" for="cmdEliminar" />
+					</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller align="center" for="dtResults" maxPages="10" ajaxSingle="true" page="#{obrasAction.numPagina}" id="dScroll" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+		
+		<a4j:log rendered="#{obrasAction.debugging}" popup="false" level="ALL" style="margin:0 auto; min-width:800px; height:auto; max-height:600px;" />
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modals/obras/pnlObrasMsgEliminarObra.xhtml" /> 
+		<ui:include src="/modals/obras/pnlObrasMsgGrales.xhtml" /> 
+		<ui:include src="/modals/obras/pnlObrasNuevoEditarObra.xhtml" /> 
+		<ui:include src="/modals/obras/pnlObrasBusquedaObras.xhtml" /> 
+		<ui:include src="/modals/obras/pnlObrasBusquedaClientes.xhtml" /> 
+		<ui:include src="/modals/obras/pnlBusquedaResponsables.xhtml" /> 
+		<ui:include src="/modals/obras/pnlDomicilio.xhtml" /> 
+		<ui:include src="/modals/obras/pnlColonias.xhtml" /> 
+		<ui:include src="/modals/obras/pnlLocalidades.xhtml" /> 
+		<ui:include src="/modals/obras/pnlMunicipios.xhtml" />
+		<ui:include src="/modals/obras/pnlConfirmacionSatic.xhtml" />
+	</ui:define>
+</ui:composition>

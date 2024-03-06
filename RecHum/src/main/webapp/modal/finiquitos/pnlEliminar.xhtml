@@ -1,0 +1,30 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlEliminar" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['atencion']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<h:panelGroup style="display:block; min-width:300px; max-width:500px; float:center; text-align:center;">
+			<h:outputText value="#{msg['confirmacionCancelar']}" styleClass="Descripcion" />
+		</h:panelGroup>
+		
+		<h:panelGrid columns="2" style="margin:10px auto 0; min-width:200px; text-align:center;" cellpadding="0" cellspacing="0">
+			<a4j:commandButton style="margin:0 auto; cursor:pointer; min-width:100px;"
+				value="#{msg['si']}, #{msg['cancelar']}"
+				onclick="#{rich:component('pnlEliminar')}.hide()"
+				action="#{finiquitoAction.cancelar}"
+				render="dtFiniquitos" />
+				
+			<a4j:commandButton style="margin:0 auto; cursor:pointer; min-width:90px;"
+				value="#{msg['no']}"
+				onclick="#{rich:component('pnlEliminar')}.hide()" />
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

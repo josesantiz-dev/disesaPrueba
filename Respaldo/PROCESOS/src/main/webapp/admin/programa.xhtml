@@ -1,0 +1,209 @@
+<ui:composition template="../template/template-operaciones.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <ui:define name="content">
+		<rich:toolbar>
+			<rich:toolbarGroup location="right">
+				<a4j:commandButton id="btnOperacion" 
+					   image="/resources/image/16/GreenCheck.png" 
+					   styleClass="boton-derecha" 
+					   action="#{programa.procesar}" 
+					   oncomplete="javascript:procesar('#{programa.resOperacion}', 'si', '#{rich:clientId('pnlPopupMensajes')}', null, null, null)" 
+					   render="pnlPopupMensajes"
+					   limitRender="true">
+					   <rich:tooltip value="Ejecutar" styleClass="letra-titulo-body"/>
+				</a4j:commandButton>
+			</rich:toolbarGroup>
+		</rich:toolbar>
+			
+		<rich:collapsiblePanel header="Programacion" switchType="ajax" style="padding:0px;" value="#{programa.expandido}" expanded="#{programa.expandido}">
+			<h:panelGrid id="pnlBasico" columns="2" style="margin-top:20px;margin-left:30px;">
+				<h:outputText value="Inicia:" styleClass="letra-titulo-body"/>
+				<rich:calendar value="#{programa.fechaEmpieza}" datePattern="dd MMM yyyy HH:mm a"/>
+				
+				<h:outputText value="Repetir cada:" styleClass="letra-titulo-body"/>
+				<h:selectOneMenu value="#{programa.repetir}">
+					<f:selectItem itemValue="m" itemLabel="Minuto"/>
+					<f:selectItem itemValue="h" itemLabel="Hora"/>
+					<f:selectItem itemValue="d" itemLabel="Dia"/>
+					<f:selectItem itemValue="s" itemLabel="Semana"/>
+					<f:selectItem itemValue="M" itemLabel="Mes"/>
+				</h:selectOneMenu>
+				
+				<h:outputText value="Veces:"  styleClass="letra-titulo-body"/>
+				<rich:inputNumberSpinner value="#{programa.cada}" maxValue="999" minValue="1"/>
+				
+				<h:outputText value="Dias:" styleClass="letra-titulo-body"/>
+				<h:panelGroup>
+					<h:selectBooleanCheckbox id="cbTodos" value="#{programa.diaTodos}" label="Todos">
+						<a4j:ajax event="change" listener="#{programa.seleccionarDias}" render="grpDias"/>
+					</h:selectBooleanCheckbox>
+					<h:outputLabel value="Todos" for="cbTodos"/>
+				</h:panelGroup>
+				
+				<h:outputText value="" />
+				<h:panelGroup id="grpDias">
+					<h:selectBooleanCheckbox id="cbLunes" value="#{programa.diaLunes}" label="Lunes"/>
+					<h:outputLabel value="Lunes" for="cbLunes"/>
+					<h:selectBooleanCheckbox id="cbMartes" value="#{programa.diaMartes}" label="Martes"/>
+					<h:outputLabel value="Martes" for="cbMartes"/>
+					<h:selectBooleanCheckbox id="cbMiercoles" value="#{programa.diaMiercoles}" label="Miercoles"/>
+					<h:outputLabel value="Miercoles" for="cbMiercoles"/>
+					<h:selectBooleanCheckbox id="cbJueves" value="#{programa.diaJueves}" label="Jueves"/>
+					<h:outputLabel value="Jueves" for="cbJueves"/>
+					<h:selectBooleanCheckbox id="cbViernes" value="#{programa.diaViernes}" label="Viernes"/>
+					<h:outputLabel value="Viernes" for="cbViernes"/>
+					<h:selectBooleanCheckbox id="cbSabado" value="#{programa.diaSabado}" label="Sabado"/>
+					<h:outputLabel value="Sabado" for="cbSabado"/>
+					<h:selectBooleanCheckbox id="cbDomingo" value="#{programa.diaDomingo}" label="Domingo"/>
+					<h:outputLabel value="Domingo" for="cbDomingo"/>
+				</h:panelGroup>
+				
+				<h:outputText value="Finaliza con:" styleClass="letra-titulo-body"/>
+				<h:selectOneMenu value="#{programa.finalizaTipo}">
+					<f:selectItem itemValue="F" itemLabel="Fecha"/>
+					<f:selectItem itemValue="V" itemLabel="Numero de ejecuciones"/>
+					<a4j:ajax event="change" render="grpFinaliza"/>
+				</h:selectOneMenu>
+				
+				<h:outputText value="Valor:" styleClass="letra-titulo-body"/>
+				
+				<h:panelGroup id="grpFinaliza">
+					<rich:calendar value="#{programa.fechaFinaliza}" datePattern="dd MMM yyyy HH:mm a" rendered="#{programa.finalizaTipo == 'F'}"/>
+					<rich:inputNumberSpinner value="#{programa.valorFinaliza}" maxValue="999" minValue="1" rendered="#{programa.finalizaTipo != 'F'}"/>
+				</h:panelGroup>
+			</h:panelGrid>
+		</rich:collapsiblePanel>
+
+		<rich:collapsiblePanel header="Correo" switchType="ajax" style="padding:0px;" expanded="#{programa.correoExpandido}" value="#{programa.correoExpandido}">
+			<h:panelGrid id="pnlCorreoBasico" columns="2" style="margin-top:20px;margin-left:30px;">
+				<h:outputText value="Enviar a:" styleClass="letra-titulo-body"/>
+				<h:inputText value="#{programa.enviarA}" maxlength="50" size="50" />
+				
+				<h:outputText value="Asunto:" styleClass="letra-titulo-body"/>
+				<h:inputText value="#{programa.asunto}" maxlength="50" size="50" />
+				
+				<h:outputText value="Mensaje:" styleClass="letra-titulo-body"/>
+				<h:inputTextarea value="#{programa.cuerpo}" cols="50" rows="3" />
+			</h:panelGrid>
+		</rich:collapsiblePanel>
+		
+		<a4j:region id="regDinamica">
+		<h:panelGrid id="pnlDinamico" columns="2" styleClass="col-param-izq col-param-der" style="margin-top:20px;margin-left:30px;">
+			
+		</h:panelGrid>
+		</a4j:region>
+		
+		<a4j:log rendered="false" />
+		
+		<rich:popupPanel id="pnlPopupMensajes" autosized="true" domElementAttachment="form" width="350" modal="true" resizeable="false"
+			header="#{programa.resOperacion == '' ? msgProc['message.informacion'] : msgProc['message.atencion']}" 
+			headerClass="letra-titulo-header">
+				
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage style="cursor:pointer;" 
+						value="/resources/#{msgProc['comun.ruta.app']}#{msgProc['comun.img.cerrar']}"
+						onclick="#{rich:component('pnlPopupMensajes')}.hide();"/>
+				</h:panelGroup>
+			</f:facet>
+			
+			<div style="display:block; width: 100%; float:center;" align="center">
+				<h:panelGroup>
+					<h:outputText style="display:block;" styleClass="letra-titulo-body" 
+						value="#{msgProc['message.informacionReg']}" rendered="#{programa.resOperacion == ''}" />
+						
+			       	<h:outputText style="display:block;" styleClass="letra-titulo-body"
+			       		value="#{programa.resOperacion}" rendered="#{programa.resOperacion != ''}" />
+				</h:panelGroup>
+				
+				<a4j:commandButton style="margin-top:10px; cursor:pointer;"
+					value="#{msgProc['message.aceptar']}"
+					onclick="#{rich:component('pnlPopupMensajes')}.hide()" 
+					immediate="false" />
+			</div>
+		</rich:popupPanel>
+		
+		<rich:popupPanel id="pnlBusquedaDinamica" autosized="true" domElementAttachment="form" header="Buscar" modal="true">
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage style="cursor:pointer;" 
+						value="/resources/#{msgProc['comun.ruta.app']}#{msgProc['comun.img.cerrar']}"
+						onclick="#{rich:component('pnlBusquedaDinamica')}.hide();"/>
+				</h:panelGroup>
+			</f:facet>
+			
+			<a4j:region id="regBusquedaDinamica">
+				<div style="text-align: center; min-width: 500px;">
+					<div class="div_pagina" style="margin: 0 auto; width:100%; padding: 0;">
+						<h:panelGrid columns="2" style="margin: 0 auto 10px; width: 100%;">
+							<h:panelGroup style="text-align:left;">
+								<h:outputText value="Descripcion:" styleClass="letra-titulo-body" />
+								<h:inputText value="#{programa.valorBusquedaDinamica}" maxlength="50" style="margin-left: 5px; width: 200px;" />
+							</h:panelGroup>
+							
+							<a4j:commandButton id="cmdBusquedaDinamicaBuscar" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+								image="/resources/#{msgProc['comun.ruta._32']}#{msgProc['comun.img.search']}"
+								action="#{programa.buscar}" 
+								oncomplete="buscar(#{programa.operacionCompleta}, '#{rich:clientId('pnlPopupMensajes')}');" 
+								render="dtResultDinamico,pnlPopupMensajes"
+								limitRender="true">
+								<rich:tooltip styleClass="Descripcion" showDelay="300" value="Buscar" for="cmdBuscarPersonas"/>
+							</a4j:commandButton>
+						</h:panelGrid> 
+			
+						<rich:dataTable id="dtResultDinamico" value="#{programa.listValoresDinamicos}" var="var" rows="10" 
+							cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" style="margin: 0 auto; width: 100%;">
+							<f:facet name="header">
+								<rich:columnGroup>
+									<rich:column style="width: 70px; text-align:center; font-weight: bold;" styleClass="Descripcion">
+										<h:outputText value="Id" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="Descripcion">
+										<h:outputText value="Descripcion" />
+									</rich:column>
+		
+									<rich:column style="width: 30px; text-align:center;" styleClass="Descripcion">
+										<h:outputText value="Seleccionar" />
+									</rich:column>
+								</rich:columnGroup>
+							</f:facet>
+							
+							<rich:column styleClass="Descripcion" style="width: 70px; text-align:center; padding-left: 5px;">
+								<h:outputText value="#{var.value}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+								<h:outputText value="#{var.label}" styleClass="Descripcion" />
+							</rich:column>
+							
+							<rich:column style="width: 30px; text-align:center;" styleClass="Descripcion">
+							   <a4j:commandButton id="cmdSeleccionarValorDinamico" 
+							   		image="/resources/#{msgProc['comun.ruta._16']}#{msgProc['comun.img.symbolBlueAdd']}" 
+									action="#{programa.seleccionar}" 
+									oncomplete="seleccionar(#{programa.operacionCompleta}, '#{rich:clientId('pnlBusquedaDinamica')}', '#{rich:clientId('pnlPopupMensajes')}');" 
+									render="pnlPopupMensajes,pnlDinamico"
+									limitRender="true">
+									<rich:tooltip showDelay="300" value="Seleccionar" for="cmdSeleccionarValorDinamico" />	
+									<f:setPropertyActionListener target="#{programa.pojoValorDinamico}" value="#{var}" for="cmdSeleccionarValorDinamico" />
+							   </a4j:commandButton>
+							</rich:column>
+			
+							<f:facet name="footer">
+								<rich:dataScroller id="dScrollDinamico" align="center" for="dtResultDinamico" maxPages="10"
+									ajaxSingle="true" page="#{programa.numPaginaDinamica}" styleClass="Titulo" />
+							</f:facet>
+						</rich:dataTable>
+					</div>
+				</div>	
+			</a4j:region>
+		</rich:popupPanel>
+	</ui:define>
+    
+</ui:composition>

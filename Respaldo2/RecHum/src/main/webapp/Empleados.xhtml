@@ -1,0 +1,193 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="Empleados"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['buscar22.img']}"
+				action="#{empleadoAction.buscar}" 
+				oncomplete="buscar('#{empleadoAction.resOperacion}','#{rich:clientId('pnlMsgGralEmpleado')}');"
+				render="dtEmpleados,pnlMsgGralEmpleado">
+				<rich:tooltip id="ttBuscar" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscar" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+		
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['nuevo22.img']}"
+				action="#{empleadoAction.nuevo}" 
+				oncomplete="#{rich:component('pnlNuevoEditarEmpleado')}.show()"
+				render="pnlNuevoEditarEmpleado">
+				<rich:tooltip id="ttNuevo" showDelay="300" value="#{msg['nuevo.e']}" for="cmdNuevo" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css/acc" name="acc.css" />
+		<h:outputStylesheet library="css/acc" name="cuentasporcobrar.css" />
+		<h:outputScript library="scripts" name="rechum.js" />
+		<h:outputScript library="scripts/empleados" name="empleados.js" />
+		
+		<f:event type="preRenderView" listener="#{empleadoAction.preRenderView}" />
+ 
+		<div class="div_titulo" style="margin:50px auto 30px;">
+			<h:outputText value="#{msg['empleados']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+	
+		<div class="div_pagina" style="text-align:left; margin:0 auto; padding:0 5px;">
+			<h:panelGrid columns="4" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="display:block; width:100%; text-align:left; margin:0; padding:0;">
+				<h:outputText value="#{msg['busqueda']}:" styleClass="Titulo"/>
+				<h:inputText id="txtvalor" maxlength="50" size="30"
+					value="#{empleadoAction.valorBusqueda}" />
+			</h:panelGrid>
+		</div>
+	
+		<div class="div_pagina" style="margin:0 auto; padding:0 5px;">
+			<rich:dataTable id="dtEmpleados" value="#{empleadoAction.listaEmpleadosGrid}" var="var" rows="100" styleClass="tabla_pagina"
+				cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" style="margin:10px auto 20px; width: 100%;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="width:90px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="width:100px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['clave']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['apellidoPaterno']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['apellidoMaterno']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+						
+						<rich:column style="max-width:350px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['puesto']}" />
+						</rich:column>
+						
+						<rich:column style="max-width:350px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['correo']}" />
+						</rich:column>
+						
+						<rich:column style="max-width:350px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['sucursal']}" />
+						</rich:column>
+						
+						<rich:column style="width:100px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['fechaIngreso']}" />
+						</rich:column>
+						
+						<rich:column style="width:40px; text-align:center;" styleClass="Titulo" colspan="2">
+							<h:outputText value="" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align:center; padding:5px; width:90px;">
+					<h:outputText value="#{var.id}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+
+				<rich:column style="text-align:center; padding:5px; width:100px;">
+					<h:outputText value="#{var.clave}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding:5px;">
+					<h:outputText value="#{var.primerApellido}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding:5px;">
+					<h:outputText value="#{var.segundoApellido}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding:5px;">
+					<h:outputText value="#{var.primerNombre} #{var.segundoNombre}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding:5px; max-width:350px;">
+					<h:outputText value="#{var.puestoDescripcion}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding:5px; max-width:350px;">
+					<h:outputText value="#{var.email}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding:5px; max-width:350px;">
+					<h:outputText value="#{var.nombreSucursal}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding:5px; width:100px;">
+					<h:outputText value="#{var.fechaIngreso}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}">
+						<f:convertDateTime type="date" pattern="dd MMM yyyy"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEditar" rendered="#{var.estatus == 0}"
+						image="#{msg['editar16.img']}" 
+						action="#{empleadoAction.editar}" 
+						oncomplete="#{rich:component('pnlNuevoEditarEmpleado')}.show()" 
+						render="pnlNuevoEditarEmpleado,dtEmpleados, grupoEncabezadoFamiliar">
+						<f:setPropertyActionListener target="#{empleadoAction.pojoEmpleadoMain}" value="#{var}" />
+						<rich:tooltip showDelay="300" value="#{msg['editar']}" for="cmdEditar" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEliminar" rendered="#{var.estatus == 0}"
+						image="#{msg['cancelar16.img']}" 
+						oncomplete="#{rich:component('pnlMsgConfElimEmpleado')}.show()"
+						render="pnlMsgConfElimEmpleado">
+						<rich:tooltip showDelay="300" value="#{msg['cancelar']}" for="cmdEliminar" />
+						<f:setPropertyActionListener target="#{empleadoAction.pojoEmpleadoMain}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+ 				
+				<f:facet name="footer">
+					<rich:dataScroller align="center" for="dtEmpleados" maxPages="10" ajaxSingle="true" page="#{empleadoAction.numPagina}" id="dScroll" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modal/empleados/pnlMsgGralEmpleado.xhtml" />
+		<ui:include src="/modal/empleados/pnlMsgConfElimEmpleado.xhtml" />
+		<ui:include src="/modal/empleados/pnlBusquedaPersonas.xhtml" />
+		<ui:include src="/modal/empleados/pnlNuevoEditarEmpleado.xhtml" />
+		
+		<ui:include src="/modal/empleados/familiares/pnlFamiliares.xhtml" />
+		<ui:include src="/modal/empleados/familiares/pnlAgregarFamiliares.xhtml" />
+		<ui:include src="/modal/empleados/familiares/pnlBusquedaFamiliares.xhtml" />
+		<ui:include src="/modal/empleados/familiares/pnlMsgConfElimFamiliar.xhtml" />
+		<ui:include src="/modal/empleados/familiares/pnlErroresFamiliar.xhtml" />
+		
+		<ui:include src="/modal/empleados/beneficiarios/pnlBeneficiarios.xhtml" />
+		<ui:include src="/modal/empleados/beneficiarios/pnlAgregarBeneficiarios.xhtml" />
+		<ui:include src="/modal/empleados/beneficiarios/pnlBusquedaBeneficiarios.xhtml" />
+		<ui:include src="/modal/empleados/beneficiarios/pnlMsgConfElimBeneficiario.xhtml" />
+		<ui:include src="/modal/empleados/beneficiarios/pnlErroresBeneficiario.xhtml" />
+		
+		<ui:include src="/modal/empleados/contrato/pnlContratos.xhtml" />
+		<ui:include src="/modal/empleados/contrato/pnlNuevoEditarContrato.xhtml" />
+		<ui:include src="/modal/empleados/contrato/pnlEliminarContrato.xhtml" />
+		<ui:include src="/modal/empleados/contrato/pnlMsgGralContrato.xhtml" />
+		<ui:include src="/modal/empleados/contrato/pnlErroresContrato.xhtml" />
+	</ui:define>
+</ui:composition>

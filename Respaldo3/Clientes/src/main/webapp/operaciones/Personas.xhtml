@@ -1,0 +1,1887 @@
+<!DOCTYPE composition PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:rich="http://richfaces.org/rich" 
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	template="/layout/template.xhtml">
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" style="cursor:pointer;" 
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+				action="#{personasAction.buscar}"
+				oncomplete="buscar('#{personasAction.resOperacion}','#{rich:clientId('pnlMsgPers')}');" 
+				render="dtPersonas, pnlMsgPers" />
+		</rich:toolbarGroup>
+		
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" style="cursor:pointer;" 
+				image="#{msg['nuevo22.img']}" title="#{msg['nuevo.e']}"
+				action="#{personasAction.nuevo}" 
+				oncomplete="#{rich:component('pnlEditarPers')}.show()" 
+				render="pnlEditarPers" />
+		</rich:toolbarGroup>
+	</ui:define>
+
+	<ui:define name="body">
+		<h:outputStylesheet library="css/acc" name="acc.css"/>
+		<h:outputStylesheet library="css/acc" name="personas.css"/>
+		<h:outputScript library="scripts/acc" name="personas.js"/>
+
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText style="font-weight: bold; font-size: 28px; color:#525252;" value="#{msg['personas']}"/>
+		</div>
+
+		<div class="div_pagina">
+			<h:panelGrid columnClasses="colTitulo, colDato" columns="2" width="100%">
+				<h:outputText styleClass="Titulo" value="#{msg['buscarPor']}:"/>
+				<h:selectOneMenu style="margin-left:5px; width: 216px;" styleClass="Titulo" 
+					value="#{personasAction.tipoBusqueda}">
+					<f:selectItem itemLabel="#{msg['nombre']}" itemValue="nombre"/>
+					<f:selectItem itemLabel="#{msg['rfc']}" itemValue="rfc"/>
+				</h:selectOneMenu>
+				
+				<h:outputText style="margin-left:15px;" styleClass="Titulo" value="#{msg['valor']}:"/>
+				<h:inputText style="margin-left:5px; width: 210px;" value="#{personasAction.valorBusqueda}"/>
+				
+				<!--h:outputText styleClass="Titulo" value="#{msg['fisicaMoral']}"/>
+				<h:selectOneRadio id="radiobuttonBusqueda" value="#{personasAction.tipoPersonaBusqueda}">
+					<f:selectItem id="personaFisicaBusqueda" itemLabel="#{msg['fisica']}" itemValue="1"/>
+					<f:selectItem id="personaMoralBusqueda" itemLabel="#{msg['moral']}" itemValue="2"/>
+				</h:selectOneRadio-->
+			</h:panelGrid>
+
+			<rich:dataTable id="dtPersonas" value="#{personasAction.listPersona}" var="per" rows="100"
+				border="0" cellpadding="0" cellspacing="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="text-align:center; width: 90px;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}"/>
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}"/>
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 120px;" styleClass="Titulo">
+							<h:outputText value="#{msg['rfc']}"/>
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 20px;" styleClass="Titulo">
+							<h:outputText value="#{msg['editar']}"/>
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 20px;" styleClass="Titulo">
+							<h:outputText value="#{msg['eliminar']}"/>
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="30">
+					<h:outputText value="#{per.id}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left: 5px;" styleClass="Descripcion">
+					<h:outputText value="#{per.nombreCompleto}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="180">
+					<h:outputText value="#{per.rfc}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msg['editar16.img']}" title="#{msg['editar.e']}" 
+						action="#{personasAction.cargaDatosPersona()}"
+						oncomplete="#{rich:component('pnlEditarPers')}.show()" 
+						render="pnlEditarPers">
+						<f:setPropertyActionListener target="#{personasAction.pojoPersona}" value="#{per}"/>
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msg['eliminar16.img']}" title="#{msg['eliminar.e']}"
+						oncomplete="#{rich:component('pnlEliminarPers')}.show()" 
+						render="pnlEliminarPers">
+						<f:setPropertyActionListener target="#{personasAction.pojoPersona}" value="#{per}"/>
+					</a4j:commandButton>
+				</rich:column>
+				
+				<f:facet name="footer">
+					<rich:dataScroller for="dtPersonas" page="#{personasAction.numPagina}" renderIfSinglePage="false"  
+						ajaxSingle="true" align="center" maxPages="10" fastStep="10" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+
+	<ui:define name="modals">
+		<!-- ####### MODAL NUEVO Y EDITAR  ######### -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlEditarPers">
+			<f:facet name="header">
+				<h:outputText id="lblTitulo" style="margin-left:10px" styleClass="Titulo" value="#{msg['personas']}"/>
+			</f:facet>
+
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlEditarPers')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+
+			<!-- INICIA MENU MODAL -->
+			<div style="display: block; width:100%; height: 22px; margin-bottom:1em;">
+				<a4j:commandButton id="cmdDatosAlternos" style="float:left; margin-left:5px; vertical-align: middle; cursor: pointer;"
+					image="#{msg['editar22.img']}" title="#{msg['datosAlternos']}"
+					rendered="#{personasAction.pojoPersona.id > 0}" 
+					action="#{personasAction.cargaNombresPersona()}" 
+					oncomplete="#{rich:component('pnlNombreAlterno')}.show()" 
+					render="pnlNombreAlterno" />
+				
+				<a4j:commandButton id="cmdDomicilio" style="float:left; margin-left:5px; vertical-align: middle; cursor: pointer;"
+					image="#{msg['domicilios22.img']}" title="#{msg['domicilios.e']}"
+					rendered="#{personasAction.pojoPersona.id > 0}" 
+					action="#{personasAction.cargaDomiciliosPersona()}" 
+					oncomplete="#{rich:component('pnlDomicilio')}.show()" 
+					render="pnlDomicilio" />
+				
+				<a4j:commandButton id="cmdDirectorio" style="float:left;  margin-left:5px; vertical-align: middle; cursor: pointer;"
+					image="#{msg['telefonos22.img']}" title="#{msg['directorioTelefonico.e']}"
+					rendered="#{personasAction.pojoPersona.id > 0}" 
+					action="#{personasAction.cargaDirectorioPersona()}" 
+					oncomplete="#{rich:component('pnlDirectorio')}.show()" 
+					render="pnlDirectorio" />
+				
+				<a4j:commandButton id="cmdNegocios" style="float:left;  margin-left:5px; vertical-align: middle; cursor: pointer;"
+					image="#{msg['negocios22.img']}" title="#{msg['negocios.e']}"
+					rendered="#{personasAction.pojoPersona.id > 0}" 
+					action="#{personasAction.buscarPersonaNegocio()}" 
+					oncomplete="#{rich:component('pnlPersonaNegocio')}.show()" 
+					render="pnlPersonaNegocio" />
+				
+				<a4j:commandButton id="cmdExpediente" style="float:left;  margin-left:5px; vertical-align: middle; cursor: pointer;"
+					image="#{msg['expediente22.img']}" title="#{msg['expediente.e']}"
+					rendered="false" 
+					action="#{personasAction.cargaDoctosPersona()}" 
+					oncomplete="#{rich:component('pnlDoctosDigit')}.show()" 
+					render="pnlDoctosDigit" />
+				
+				<a4j:commandButton id="cmdIdentificaciones" style="float:left;  margin-left:5px; vertical-align: middle; cursor: pointer;"
+					image="#{msg['identificaciones22.e']}" title="#{msg['identificaciones.e']}"
+					rendered="#{personasAction.pojoPersona.id > 0}" 
+					action="#{personasAction.cargaIdentificaciones()}" 
+					oncomplete="#{rich:component('pnlIdentificacion')}.show()" 
+					render="pnlIdentificacion" />
+				
+				<a4j:commandButton id="cmdContactos" style="float:left;  margin-left:5px; vertical-align: middle; cursor: pointer;"
+					image="#{msg['referencias22.img']}" title="#{msg['contacto.e']}"
+					rendered="#{personasAction.pojoPersona.id > 0}" 
+					action="#{personasAction.cargaInfoPersonaContacto}" 
+					oncomplete="#{rich:component('pnlPersonaContacto')}.show()" 
+					render="pnlPersonaContacto" />
+				
+				<a4j:commandButton id="cmdSalvar" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+					image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+					disabled="#{!personasAction.puedeEditar}" 
+					action="#{personasAction.guardar}"
+					oncomplete="salvar('#{personasAction.resOperacion}', '#{rich:clientId('pnlEditarPers')}', '#{rich:clientId('pnlMsgPers')}', #{rich:element('msgErrorPers')});" 
+					render="dtPersonas, pnlMsgPers, msgErrorPers" />
+			</div>
+			
+			<!-- FIN MENU MODAL -->
+			<rich:messages ajaxRendered="false" globalOnly="false" id="msgErrorPers" showDetail="false" showSummary="true">
+				<f:facet name="errorMarker">
+					<h:graphicImage style="margin-right:1em;" value="#{msg['alert16.img']}"/>
+				</f:facet>
+			</rich:messages>
+
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{personasAction.pojoPersona.id != null ? personasAction.pojoPersona.id : ' '} "/>
+				<h:outputText value="#{personasAction.pojoPersona.nombreCompleto}"/>
+			</h:panelGroup>
+
+			<h:panelGroup style="display: block; width:100%;">
+				<h:outputText style="display:block;" styleClass="Titulo" value="#{personasAction.estadoMensaje}" />
+				<h:panelGroup style="display:block; width:100%;">
+					<h:inputText maxlength="13" style="float: right; margin-right:25px;"
+						disabled="#{!personasAction.puedeEditar}"  
+						value="#{personasAction.pojoPersona.rfc}" />
+					<h:outputText id="txtRFC" style="float: right; margin-right:10px;" styleClass="Titulo" value="#{msg['rfc']}:"/>
+					
+					<h:outputLabel style="float: right; margin-right:5px; vertical-align:center;" styleClass="Titulo"
+						for="cbFinado" value="#{msg['finado']}" />
+					<h:selectBooleanCheckbox id="cbFinado" style="float: right; margin-right:2px;" 
+						disabled="#{!personasAction.puedeEditar}" 
+						value="#{personasAction.pojoPersona.finado}" />
+				</h:panelGroup>
+			</h:panelGroup>
+
+			<!--h:panelGrid columnClasses="colTitulo, colDato" columns="2" width="100%">
+				<h:outputText styleClass="Titulo" value="#{msg['fisicaMoral']}"/>
+				<h:selectOneRadio id="radiobutton" value="#{personasAction.pojoPersona.tipoPersona}">
+					<f:selectItem id="personaFisica" itemLabel="#{msg['fisica']}" itemValue="1"/>
+					<f:selectItem id="personaMoral" itemLabel="#{msg['moral']}" itemValue="2"/>
+				</h:selectOneRadio>
+			</h:panelGrid-->
+
+			<h:panelGrid columnClasses="colTitulo, colDato, colTitulo, colDato, colTitulo, colDato" columns="6" style="margin-top:1em;" width="100%">
+				<h:outputText styleClass="Titulo" value="#{msg['nombrePropio1']}:"/>
+				<h:inputText id="txtPrimerNombre" size="20"
+					disabled="#{!personasAction.puedeEditar}"
+					value="#{personasAction.pojoPersona.primerNombre}" 
+					required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+					requiredMessage="#{msg['nombrePropio1']} #{msg['mensaje.error.requerido']}" />
+				
+				<h:outputText styleClass="Titulo" value="#{msg['nombrePropio2']}:" />
+				<h:inputText id="txtSegundoNombre" size="20"
+					disabled="#{!personasAction.puedeEditar}"  
+					value="#{personasAction.pojoPersona.segundoNombre}" />
+				
+				<h:outputText styleClass="Titulo" value="#{msg['nombreMas']}:"/>
+				<h:inputText id="txtNombresPropios" size="20"
+					disabled="#{!personasAction.puedeEditar}"  
+					value="#{personasAction.pojoPersona.nombresPropios}" />
+				
+				<h:outputText styleClass="Titulo" value="#{msg['apellidoPaterno']}:"/>
+				<h:inputText id="txtPrimerApellido" size="20"
+					disabled="#{!personasAction.puedeEditar}" 
+					value="#{personasAction.pojoPersona.primerApellido}" 
+					required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+					requiredMessage="#{msg['apellidoPaterno']} #{msg['mensaje.error.requerido']}" />
+				
+				<h:outputText styleClass="Titulo" value="#{msg['apellidoMaterno']}:"/>
+				<h:inputText id="txtSegundoApellido" size="20"
+					disabled="#{!personasAction.puedeEditar}" 
+					value="#{personasAction.pojoPersona.segundoApellido}" 
+					required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+					requiredMessage="#{msg['apellidoMaterno']} #{msg['mensaje.error.requerido']}" />
+			</h:panelGrid>
+
+			<h:panelGrid columnClasses="colTitulo, colDato" columns="2" id="pnlConyuge" style="margin-top:1em; margin-bottom:1em;">
+				<h:outputText styleClass="Titulo" value="#{msg['correo']}:"/>
+				<h:inputText id="txtCorreoElectronico" style="width: 300px;"
+					disabled="#{!personasAction.puedeEditar}" 
+					value="#{personasAction.pojoPersona.correo}" 
+					required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+					requiredMessage="#{msg['correo']} #{msg['mensaje.error.requerido']}" />
+				
+				<h:outputText styleClass="Titulo" value="#{msg['conyuge']}:"/>
+				<h:panelGroup style="width:100%">
+					<a4j:commandLink style="font-weight: bold;"
+						disabled="#{!personasAction.puedeEditar}"
+						value="#{personasAction.pojoPersona.conyuge == null ? msg['seleccionar'] : msg['cambiar']}" 
+						oncomplete="#{rich:component('pnlBusquedaConyuge')}.show()" />
+					<h:outputText style="margin-left:10px;" styleClass="Titulo" 
+						value="#{personasAction.pojoPersona.conyuge!=null ? personasAction.pojoPersona.conyuge.id : ''}" />
+					<h:outputText style="margin-left:10px;" styleClass="Titulo" 
+						value="#{personasAction.pojoPersona.conyuge!=null ? personasAction.pojoPersona.conyuge.nombre : ''}" />
+				</h:panelGroup>
+			</h:panelGrid>
+
+			<h:panelGrid columnClasses="colTitulo, colDato, colTitulo, colDato, colTitulo, colDato" columns="6" id="pnlPersonaGral" width="100%">
+				<h:outputText styleClass="Titulo" value="#{msg['sexo']}:"/>
+				<h:selectOneMenu disabled="#{!personasAction.puedeEditar}" style="width:130px;" styleClass="Titulo" value="#{personasAction.pojoPersona.sexo}">
+					<f:selectItem itemLabel="#{msg['femenino']}" itemValue="F"/>
+					<f:selectItem itemLabel="#{msg['masculino']}" itemValue="M"/>
+				</h:selectOneMenu>
+				
+				<h:outputText styleClass="Titulo" value="#{msg['estadoCivil']}:"/>
+				<h:selectOneMenu style="width:130px;" styleClass="Titulo" 
+					disabled="#{!personasAction.puedeEditar}" 
+					value="#{personasAction.idEdoCivil}">
+					<f:selectItems value="#{personasAction.listEdoCivil}" />
+				</h:selectOneMenu>
+				
+				<h:outputText styleClass="Titulo" value="#{msg['fechaNacimiento']}:"/>
+				<rich:calendar datePattern="dd MMM yyyy" disabled="#{!personasAction.puedeEditar}" style="width:150px" 
+					value="#{personasAction.pojoPersona.fechaNacimiento}"/>
+					
+				<h:outputText styleClass="Titulo" value="#{msg['numeroHijos']}:"/>
+				<h:inputText id="numHijos" size="10" 
+					converter="javax.faces.Integer" 
+					disabled="#{!personasAction.puedeEditar}" 
+					value="#{personasAction.pojoPersona.numeroHijos}" />
+				
+				<h:outputText styleClass="Titulo" value="#{msg['tipoSangre']}:"/>
+				<h:selectOneMenu style="width:130px;" styleClass="Titulo" 
+					disabled="#{!personasAction.puedeEditar}" 
+					value="#{personasAction.idTipoSangre}">
+					<f:selectItems value="#{personasAction.listTipoSangre}" />
+				</h:selectOneMenu>
+				
+				<h:outputText styleClass="Titulo" value="#{msg['nacionalidad']}:"/>
+				<h:selectOneMenu style="width:130px;" styleClass="Titulo" 
+					disabled="#{!personasAction.puedeEditar}" 
+					value="#{personasAction.idNacionalidad}">
+					<f:selectItems value="#{personasAction.listNacionalidad}" />
+				</h:selectOneMenu>
+				
+				<h:outputText styleClass="Titulo" value="#{msg['estadoNacimiento']}:"/>
+				<a4j:region>
+					<h:selectOneMenu style="width:130px;" styleClass="Titulo" 
+						disabled="#{!personasAction.puedeEditar}" 
+						value="#{personasAction.idEstadoNac}">
+						<f:selectItems value="#{personasAction.listEstado}" />
+						<a4j:ajax event="change" 
+							listener="#{personasAction.cambioEstadoNac}" 
+							render="cmdLnkMunicipioNac, cmdLnkLocalidadNac" />
+					</h:selectOneMenu>
+				</a4j:region>
+				
+				<h:outputText styleClass="Titulo" value="#{msg['municipio']}:"/>
+				<a4j:commandLink id="cmdLnkMunicipioNac" style="font-weight: bold;" 
+					value="#{personasAction.pojoMunicipioNac != null ? personasAction.pojoMunicipioNac.nombre : (personasAction.pojoPersona.localidad != null ? personasAction.pojoPersona.localidad.municipio.nombre : 'Seleccionar')}" 
+					action="#{personasAction.limpiaMunicipio}" 
+					oncomplete="#{rich:component('pnlMunicipios')}.show()" 
+					render="pnlMunicipios">
+					<a4j:param assignTo="#{personasAction.editaNacimiento}" name="paramMunNac" value="#{true}" />
+				</a4j:commandLink>
+				
+				<h:outputText styleClass="Titulo" value="#{msg['localidadNacimiento']}:"/>
+				<a4j:commandLink style="font-weight: bold;"
+					value="#{personasAction.pojoLocalidadNac != null ? personasAction.pojoLocalidadNac.nombre : (personasAction.pojoPersona.localidad != null ? personasAction.pojoPersona.localidad.nombre : 'Seleccionar')}" 
+					action="#{personasAction.limpiaLocalidades}" id="cmdLnkLocalidadNac" 
+					oncomplete="#{rich:component('pnlLocalidades')}.show()" 
+					render="pnlLocalidades">
+					<a4j:param assignTo="#{personasAction.editaNacimiento}" name="paramLocNac" value="#{true}"/>
+				</a4j:commandLink>
+			</h:panelGrid>
+
+			<fieldset style="margin-top:10px;">
+				<legend>#{msg['datosBancarios']}</legend>
+				<h:panelGrid columnClasses="colTitulo, colDato" columns="2" id="pnlIfoPrincipal" width="100%">
+					<h:outputText styleClass="Titulo" value="#{msg['numeroCuenta']}:"/>
+					<h:inputText size="25" style="width: 210px;"
+						disabled="#{!personasAction.puedeEditar}"  
+						value="#{personasAction.pojoPersona.numeroCuenta}" />
+					
+					<h:outputText styleClass="Titulo" value="#{msg['clabeInterbancaria']}:"/>
+					<h:inputText size="25" style="width: 210px;"
+						disabled="#{!personasAction.puedeEditar}"  
+						value="#{personasAction.pojoPersona.clabeInterbancaria}" />
+					
+					<h:outputText styleClass="Titulo" value="#{msg['banco']}:"/>
+					<h:selectOneMenu styleClas="Titulo" value="#{personasAction.pojoPersona.banco}" style="width: 216px;">
+						<f:selectItems value="#{personasAction.listTmpBancos}" />
+					</h:selectOneMenu>
+				</h:panelGrid>
+			</fieldset>
+		</rich:popupPanel>
+		
+		<!-- Panel BUSQUEDA CONYUGE -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlBusquedaConyuge">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['conyuge']}"/>
+			</f:facet>
+
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlBusquedaConyuge')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+
+			<div style="display: block; width:100%; height:22px;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton action="#{personasAction.buscarConyuge}" id="cmdBusquedaConyuge" image="#{msg['buscar22.img']}" oncomplete="buscar('#{personasAction.resOperacion}', '#{rich:clientId('pnlMsgPers')}');" render="dtConyuge" style="vertical-align: middle; margin-right:5px; cursor: pointer;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['buscar.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+
+			<h:panelGrid columnClasses="valorBusqueda1, alignLeft" columns="2" width="100%">
+				<h:outputText styleClass="Titulo" value="#{msg['buscarPor']}:"/>
+				<h:selectOneMenu style="margin-left:5px; width:100px;" styleClass="Titulo" value="#{personasAction.tipoBusquedaConyuge}">
+					<f:selectItem itemLabel="#{msg['id']}" itemValue="id"/>
+					<f:selectItem itemLabel="#{msg['nombre']}" itemValue="nombre"/>
+					<f:selectItem itemLabel="#{msg['rfc']}" itemValue="rfc"/>
+				</h:selectOneMenu>
+				<h:outputText style="margin-left:15px;" styleClass="Titulo" value="#{msg['valor']}:"/>
+				<h:inputText size="36" style="margin-left:5px;" value="#{personasAction.valorBusquedaConyuge}"/>
+			</h:panelGrid>
+
+			<rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtConyuge" rowClasses="Row1, Row2" rows="20" style="width: 900px;" styleClass="tabla_pagina" value="#{personasAction.listConyuge}" var="con">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['rfc']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['seleccionar']}"/>
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="30">
+					<h:outputText value="#{con.id}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{con.nombreCompleto}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{con.rfc}"/>
+				</rich:column>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msg['agregar16.img']}" oncomplete="#{rich:component('pnlBusquedaConyuge')}.hide()" render="pnlConyuge">
+						<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['seleccionar']}"/>
+						<f:setPropertyActionListener target="#{personasAction.pojoPersona.conyuge}" value="#{con}"/>
+					</a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer">
+					<rich:dataScroller ajaxSingle="true" align="center" for="dtDomicilios" id="dScrollDomi" maxPages="10" page="#{personasAction.numPaginaDomicilio}" renderIfSinglePage="false" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>			
+		</rich:popupPanel>
+
+		<!-- Panel DIRECTORIO LIST -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlNombreAlterno">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['nombresAlternos']}"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlNombreAlterno')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<div style="display: block; width:100%; height:22px;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton action="#{personasAction.nuevoNombreAlterno()}" id="cmdNuevoDirectorioA" image="#{msg['nuevo22.img']}" oncomplete="#{rich:component('pnlNombreAlternoNew')}.show()" render="pnlNombreAlternoNew" style="vertical-align: middle; margin-right:5px; cursor: pointer;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['nuevo.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{personasAction.pojoPersona.id != null ? personasAction.pojoPersona.id : ' '} "/>
+				<h:outputText value="#{personasAction.pojoPersona.nombreCompleto}"/>
+			</h:panelGroup>
+			<rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtNombreAlterno" rowClasses="Row1, Row2" rows="5" styleClass="tabla_pagina" value="#{personasAction.listNombreAlterno}" var="nombreAlterno">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['apellido1']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['apellido2']}"/>
+						</rich:column>
+						<rich:column colspan="2"/>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="30">
+					<h:outputText value="#{nombreAlterno.id}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{nombreAlterno.nombre}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{nombreAlterno.primerApellido}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{nombreAlterno.segundoApellido}"/>
+				</rich:column>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msg['editar16.img']}" oncomplete="#{rich:component('pnlNombreAlternoNew')}.show()" render="pnlNombreAlternoNew">
+						<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['editar']}"/>
+						<f:setPropertyActionListener target="#{personasAction.pojoNombreAlterno}" value="#{nombreAlterno}"/>
+					</a4j:commandButton>
+				</rich:column>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msg['eliminar16.img']}" oncomplete="#{rich:component('pnlEliminarNombreAlterno')}.show()">
+						<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['eliminar.e']}"/>
+						<f:setPropertyActionListener target="#{personasAction.pojoNombreAlterno}" value="#{nombreAlterno}"/>
+					</a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer">
+					<rich:dataScroller ajaxSingle="true" align="center" for="dtNombreAlterno" id="dScrollNomAlt" maxPages="10" page="#{personasAction.numPaginaNomAlt}" renderIfSinglePage="false" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+		
+		<!-- Panel Nombres Alternos  NEW -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlNombreAlternoNew">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['nombreAlterno']}"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlNombreAlternoNew')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<h:panelGroup style="display: block; width:100%; height:22px; margin-bottom:1em;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton action="#{personasAction.guardarNombreAlterno()}" id="cmdSalvarNomAlt" image="#{msg['salvar22.img']}" oncomplete="salvar('#{personasAction.resOperacion}', '#{rich:clientId('pnlNombreAlternoNew')}', '#{rich:clientId('pnlMsgPers')}', #{rich:element('msgErrorNomAlt')});" render="dtNombreAlterno, pnlMsgPers, msgErrorNomAlt" style="vertical-align: middle; margin-right:5px; cursor: pointer;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['salvar.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+			<rich:messages ajaxRendered="false" globalOnly="false" id="msgErrorNomAlt" showDetail="false" showSummary="true">
+				<f:facet name="errorMarker">
+					<h:graphicImage style="margin-right:1em;" value="#{msg['alert16.img']}"/>
+				</f:facet>
+			</rich:messages>
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{personasAction.pojoPersona.id != null ? personasAction.pojoPersona.id : ' '} "/>
+				<h:outputText value="#{personasAction.pojoPersona.nombreCompleto}"/>
+			</h:panelGroup>
+			<h:panelGrid columnClasses="colTituloDom, colDato" columns="2" width="100%">
+				<h:outputText styleClass="Titulo" value="#{msg['nombre']}:"/>
+				<h:inputText maxlength="40" required="#{!empty param[rich:clientId('cmdSalvarNomAlt')]}" requiredMessage="#{msg['mensaje.error.requerido']} #{msg['mensaje.error.requerido']}" size="40" value="#{personasAction.pojoNombreAlterno.nombre}"/>
+				<h:outputText styleClass="Titulo" value="#{msg['apellido1']}:"/>
+				<h:inputText maxlength="40" required="#{!empty param[rich:clientId('cmdSalvarNomAlt')]}" requiredMessage="#{msg['mensaje.error.requerido']} #{msg['mensaje.error.requerido']}" size="40" value="#{personasAction.pojoNombreAlterno.primerApellido}"/>
+				<h:outputText styleClass="Titulo" value="#{msg['apellido2']}:"/>
+				<h:inputText maxlength="40" size="40" value="#{personasAction.pojoNombreAlterno.segundoApellido}"/>
+			</h:panelGrid>
+		</rich:popupPanel>
+		
+		<!-- Panel DOMICILIO LIST -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlDomicilio">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['domicilios']}"/>
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlDomicilio')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			
+			<div style="display: block; width:100%; height:22px;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton action="#{personasAction.nuevoDomicilio}" id="cmdNuevoDomicilio" image="#{msg['nuevo22.img']}" oncomplete="#{rich:component('pnlDomicilioNew')}.show()" render="pnlDomicilioNew" style="vertical-align: middle; margin-right:5px; cursor: pointer;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['nuevo.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{personasAction.pojoPersona.id != null ? personasAction.pojoPersona.id : ' '} "/>
+				<h:outputText value="#{personasAction.pojoPersona.nombreCompleto}"/>
+			</h:panelGroup>
+			
+			<rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtDomicilios" rowClasses="Row1, Row2" rows="5" styleClass="tabla_pagina" value="#{personasAction.listDomiciliosExt}" var="dom">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['domicilio']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['colonia']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['estatus']}"/>
+						</rich:column>
+						<rich:column style="text-align:left; margin-left:10px" styleClass="Titulo">
+							<h:outputText value="#{msg['principal']}"/>
+						</rich:column>
+						<rich:column style="text-align:left; margin-left:10px" styleClass="Titulo">
+							<h:outputText value="#{msg['editar']}"/>
+						</rich:column>
+						<rich:column style="text-align:left; margin-left:10px" styleClass="Titulo">
+							<h:outputText value="#{msg['eliminar']}"/>
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="30">
+					<h:outputText value="#{dom.id}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{dom.domicilio}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{dom.colonia != null ? dom.nombreColonia : ''}"/>
+				</rich:column>
+				<rich:column style="text-align:center;" styleClass="Descripcion">
+					<h:outputText value="#{dom.estatus ? msg['activo'] : msg['inactivo']}"/>
+				</rich:column>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="50">
+					<h:selectBooleanCheckbox disabled="true" value="#{dom.principal}"/>
+				</rich:column>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton action="#{personasAction.cargaInfoDomicilio}" image="#{msg['editar16.img']}" oncomplete="#{rich:component('pnlDomicilioNew')}.show()" render="pnlDomicilioNew">
+						<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['editar']}"/>
+						<f:setPropertyActionListener target="#{personasAction.pojoDomicilioExt}" value="#{dom}"/>
+					</a4j:commandButton>
+				</rich:column>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton action="#{personasAction.deshabilitaDom}" image="#{dom.estatus ?  msg['eliminar16.img'] : msg['aplicar16.img']}" render="dtDomicilios">
+						<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{dom.estatus ? msg['habilitar'] : msg['deshabilitar']}"/>
+						<f:setPropertyActionListener target="#{personasAction.pojoDomicilioExt}" value="#{dom}"/>
+					</a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer">
+					<rich:dataScroller ajaxSingle="true" align="center" for="dtDomicilios" id="dScrollDomi" maxPages="10" page="#{personasAction.numPaginaDomicilio}" renderIfSinglePage="false" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+		
+		<!-- Panel DOMICILIO NEW -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlDomicilioNew">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['domicilio']}"/>
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlDomicilioNew')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			
+			<h:panelGroup style="display: block; width:100%; height:22px; margin-bottom:1em;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton action="#{personasAction.guardarDomicilio}" id="cmdSalvarDomicilio" image="#{msg['salvar22.img']}" oncomplete="salvarGral('#{personasAction.resOperacion}', '#{rich:clientId('pnlDomicilioNew')}', '#{rich:clientId('pnlMsgPers')}');" render="dtDomicilios, pnlMsgPers, pnlIfoPrincipal" style="vertical-align: middle; margin-right:5px; cursor: pointer;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['salvar.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+			
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{personasAction.pojoPersona.id != null ? personasAction.pojoPersona.id : ' '} "/>
+				<h:outputText value="#{personasAction.pojoPersona.nombreCompleto}"/>
+			</h:panelGroup>
+			
+			<h:panelGroup style="display:block; width:100%;">
+				<h:outputLabel for="cbDomPrincipal" style="float:right; margin-right:15px; vertical-align:center;" styleClass="Titulo" value="#{msg['principal']}"/>
+				<h:selectBooleanCheckbox id="cbDomPrincipal" style="float:right; margin-right:2px;" value="#{personasAction.pojoDomicilio.principal}"/>
+				<h:outputLabel for="cbDomActivo" style="float:right; margin-right:10px; vertical-align:center;" styleClass="Titulo" value="#{msg['activo']}"/>
+				<h:selectBooleanCheckbox id="cbDomActivo" style="float:right; margin-right:2px;" value="#{personasAction.pojoDomicilio.estatus}"/>
+			</h:panelGroup>
+			
+			<h:panelGrid columnClasses="colTituloDom, colDato, colDato" columns="3" width="100%">
+				<h:outputText styleClass="Titulo" value="#{msg['ubicacion']}1:"/>
+				<h:selectOneMenu style="width:100%;" styleClass="Titulo" value="#{personasAction.idDom1 }">
+					<f:selectItems value="#{personasAction.listCatDomicilios1 }"/>
+				</h:selectOneMenu>
+				<h:inputText style="width:400px;" value="#{personasAction.pojoDomicilio.descripcionDomicilio1}"/>
+				<h:outputText styleClass="Titulo" value="#{msg['ubicacion']}2:"/>
+				<h:selectOneMenu style="width:100%;" styleClass="Titulo" value="#{personasAction.idDom2 }">
+					<f:selectItems value="#{personasAction.listCatDomicilios1 }"/>
+				</h:selectOneMenu>
+				<h:inputText style="width:400px;" value="#{personasAction.pojoDomicilio.descripcionDomicilio2}"/>
+				<h:outputText styleClass="Titulo" value="#{msg['ubicacion']}3:"/>
+				<h:selectOneMenu style="width:100%;" styleClass="Titulo" value="#{personasAction.idDom3 }">
+					<f:selectItems value="#{personasAction.listCatDomicilios1 }"/>
+				</h:selectOneMenu>
+				<h:inputText style="width:400px;" value="#{personasAction.pojoDomicilio.descripcionDomicilio3}"/>
+				<h:outputText styleClass="Titulo" value="#{msg['ubicacion']}4:"/>
+				<h:selectOneMenu style="width:100%;" styleClass="Titulo" value="#{personasAction.idDom4 }">
+					<f:selectItems value="#{personasAction.listCatDomicilios2 }"/>
+				</h:selectOneMenu>
+				<h:inputText style="width:100px;" value="#{personasAction.pojoDomicilio.descripcionDomicilio4}"/>
+				<h:outputText styleClass="Titulo" value="#{msg['ubicacion']}5:"/>
+				<h:selectOneMenu style="width:100%;" styleClass="Titulo" value="#{personasAction.idDom5 }">
+					<f:selectItems value="#{personasAction.listCatDomicilios2 }"/>
+				</h:selectOneMenu>
+				<h:inputText style="width:100px;" value="#{personasAction.pojoDomicilio.descripcionDomicilio5}"/>
+			</h:panelGrid>
+			<h:panelGrid columnClasses="colTituloDom, colDato" columns="2" id="grpDomiDom" width="100%">
+				<h:outputText styleClass="Titulo" value="#{msg['estado']}:"/>
+				<a4j:region>
+					<h:selectOneMenu disabled="#{!personasAction.puedeEditar}" style="width:130px;" styleClass="Titulo" value="#{personasAction.idEstadoDom}">
+						<a4j:ajax event="change" listener="#{personasAction.cambioEstadoDom}" render="cmdLnkMunicipioDom, cmdLnkLocalidadDom, cmdLnkColonia"/>
+						<f:selectItems value="#{personasAction.listEstado}"/>
+					</h:selectOneMenu>
+				</a4j:region>
+				<h:outputText styleClass="Titulo" value="#{msg['municipio']}:"/>
+				<a4j:commandLink action="#{personasAction.limpiaMunicipio}" id="cmdLnkMunicipioDom" oncomplete="#{rich:component('pnlMunicipios')}.show()" render="pnlMunicipios" style="font-weight: bold;" value="#{personasAction.pojoMunicipioDom != null ? personasAction.pojoMunicipioDom.nombre : 'Seleccionar'}">
+					<a4j:param assignTo="#{personasAction.editaNacimiento}" name="paramMunDom" value="#{false}"/>
+				</a4j:commandLink>
+				<h:outputText styleClass="Titulo" value="#{msg['localidad']}:"/>
+				<a4j:commandLink action="#{personasAction.limpiaLocalidades}" id="cmdLnkLocalidadDom" oncomplete="#{rich:component('pnlLocalidades')}.show()" render="pnlLocalidades" style="font-weight: bold;" value="#{personasAction.pojoLocalidadDom != null ? personasAction.pojoLocalidadDom.nombre : 'Seleccionar'}">
+					<a4j:param assignTo="#{personasAction.editaNacimiento}" name="paramMunDom" value="#{false}"/>
+				</a4j:commandLink>
+				<h:outputText styleClass="Titulo" value="#{msg['colonia']}:"/>
+				<a4j:commandLink action="#{personasAction.limpiaColonias}" id="cmdLnkColonia" oncomplete="#{rich:component('pnlColonias')}.show()" render="pnlColonias" style="font-weight: bold;" value="#{personasAction.pojoColonia != null ? personasAction.pojoColonia.nombre : 'Seleccionar'}"/>
+				<h:outputText styleClass="Titulo" value="#{msg['observacion']}:"/>
+				<h:inputTextarea rows="3" style="width:98%; margin-right:15px;" styleClass="text_area" value="#{personasAction.pojoDomicilio.observaciones}"/>
+			</h:panelGrid>
+		</rich:popupPanel>
+		
+		<!-- BUSCAR MUNICIPIOS -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlMunicipios">
+			<f:facet name="header">
+				<h:outputText style="margin-left:10px" styleClass="Titulo" value="#{msg['seleccionarMunicipio']}"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlMunicipios')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<div style="display: block; width: 450px; height: 22px;">
+				<h:panelGrid columns="1" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="padding:0 2px 0 2px; float:right;">
+						<a4j:commandButton action="#{personasAction.buscarMunicipios}" id="cmdBuscarMunicipios" image="#{msg['buscar22.img']}" render="dtMunicipios">
+							<rich:tooltip style="cursor:pointer;" styleClass="Descripcion" value="#{msg['buscar.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{personasAction.pojoEstado != null ? personasAction.pojoEstado.nombre : ' '} "/>
+			</h:panelGroup>
+			<h:panelGroup style="display:block;">
+				<h:outputText styleClass="Titulo" value="#{msg['nombre']}:"/>
+				<h:inputText style="margin-left:5px;" value="#{personasAction.busquedaMunicipio}"/>
+			</h:panelGroup>
+			<rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtMunicipios" rowClasses="Row1, Row2" rows="5" styleClass="tabla_pagina" value="#{personasAction.listMunicipios}" var="mun">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}"/>
+						</rich:column>
+						<rich:column colspan="2" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}"/>
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column styleClass="Descripcion" width="30">
+					<h:outputText value="#{mun.id}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{mun.nombre}"/>
+				</rich:column>
+				<rich:column style="text-align:center;" width="20">
+					<a4j:commandButton ajaxSingle="true" image="#{msg['drag16.img']}" oncomplete="#{rich:component('pnlMunicipios')}.hide()" render="pnlPersonaGral, grpDomiDom">
+						<f:setPropertyActionListener target="#{personasAction.pojoMunicipio}" value="#{mun}"/>
+					</a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer">
+					<rich:dataScroller ajaxSingle="true" align="center" for="dtMunicipios" id="dScrollMunicipios" maxPages="10" page="#{personasAction.numPaginaMunicipio}" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+		
+		<!-- BUSCAR LOCALIDADES -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlLocalidades">
+			<f:facet name="header">
+				<h:outputText style="margin-left:10px" styleClass="Titulo" value="#{msg['seleccionarLocalidad']}"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlLocalidades')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<div style="display: block; width: 450px; height: 22px;">
+				<h:panelGrid columns="1" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="padding:0 2px 0 2px; float:right;">
+						<a4j:commandButton action="#{personasAction.buscarLocalidades}" id="cmdBuscarLocalidades" image="#{msg['buscar22.img']}" render="dtLocalidades">
+							<rich:tooltip style="cursor:pointer;" styleClass="Descripcion" value="#{msg['buscar.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{personasAction.pojoMunicipio != null ? personasAction.pojoMunicipio.nombre : ' '} "/>
+			</h:panelGroup>
+			<h:panelGroup style="display:block;">
+				<h:outputText styleClass="Titulo" value="#{msg['nombre']}:"/>
+				<h:inputText style="margin-left:5px;" value="#{personasAction.busquedaLocalidad}"/>
+			</h:panelGroup>
+			<rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtLocalidades" rowClasses="Row1, Row2" rows="5" styleClass="tabla_pagina" value="#{personasAction.listLocalidades}" var="loc">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}"/>
+						</rich:column>
+						<rich:column colspan="2" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}"/>
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column styleClass="Descripcion" width="30">
+					<h:outputText value="#{loc.id}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{loc.nombre}"/>
+				</rich:column>
+				<rich:column style="text-align:center;" width="20">
+					<a4j:commandButton ajaxSingle="true" image="#{msg['drag16.img']}" oncomplete="#{rich:component('pnlLocalidades')}.hide()" render="pnlPersonaGral, grpDomiDom">
+						<f:setPropertyActionListener target="#{personasAction.pojoLocalidad}" value="#{loc}"/>
+					</a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer">
+					<rich:dataScroller ajaxSingle="true" align="center" for="dtLocalidades" id="dScrollLocalidades" maxPages="10" page="#{personasAction.numPaginaLocalidad}" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+				
+		<!-- BUSCAR COLONIAS -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlColonias">
+			<f:facet name="header">
+				<h:outputText style="margin-left:10px" styleClass="Titulo" value="#{msg['seleccionarColonia']}"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlColonias')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<div style="display: block; width: 450px; height: 22px;">
+				<h:panelGrid columns="1" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="padding:0 2px 0 2px; float:right;">
+						<a4j:commandButton action="#{personasAction.buscarColonias}" id="cmdBuscarColonias" image="#{msg['buscar22.img']}" render="dtColonias">
+							<rich:tooltip style="cursor:pointer;" styleClass="Descripcion" value="#{msg['buscar.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{personasAction.pojoLocalidad != null ? personasAction.pojoLocalidad.nombre : ' '} "/>
+			</h:panelGroup>
+			<h:panelGroup style="display:block;">
+				<h:outputText styleClass="Titulo" value="#{msg['nombre']}:"/>
+				<h:inputText style="margin-left:5px;" value="#{personasAction.busquedaColonia}"/>
+			</h:panelGroup>
+			<rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtColonias" rowClasses="Row1, Row2" rows="5" styleClass="tabla_pagina" value="#{personasAction.listColonias}" var="col">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['codigoPost']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo"/>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column styleClass="Descripcion" width="30">
+					<h:outputText value="#{col.id}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{col.nombre}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{col.cp}"/>
+				</rich:column>
+				<rich:column style="text-align:center;" width="20">
+					<a4j:commandButton ajaxSingle="true" image="#{msg['drag16.img']}" oncomplete="#{rich:component('pnlColonias')}.hide()" render="cmdLnkColonia">
+						<f:setPropertyActionListener target="#{personasAction.pojoColonia}" value="#{col}"/>
+					</a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer">
+					<rich:dataScroller ajaxSingle="true" align="center" for="dtColonias" id="dScrollColonias" maxPages="10" page="#{personasAction.numPaginaColonia}" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+				
+		<!-- Panel DIRECTORIO LIST -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlDirectorio">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['directorioTelefonico']}"/>
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlDirectorio')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			
+			<div style="display: block; width:100%; height:22px;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton action="#{personasAction.nuevoDirectorio}" id="cmdNuevoDirectorio" image="#{msg['nuevo22.img']}" oncomplete="#{rich:component('pnlDirectorioNew')}.show()" render="pnlDirectorioNew" style="vertical-align: middle; margin-right:5px; cursor: pointer;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['nuevo.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{personasAction.pojoPersona.id != null ? personasAction.pojoPersona.id : ' '} "/>
+				<h:outputText value="#{personasAction.pojoPersona.nombreCompleto}"/>
+			</h:panelGroup>
+			
+			<rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtDirectorio" rowClasses="Row1, Row2" rows="5" styleClass="tabla_pagina" value="#{personasAction.listDirectorio}" var="dir">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['tipo']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['lada']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['numero']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['ext_abr']}"/>
+						</rich:column>
+						<rich:column style="text-align:left; margin-left:10px" styleClass="Titulo">
+							<h:outputText value="#{msg['principal']}"/>
+						</rich:column>
+						<rich:column style="text-align:left; margin-left:10px" styleClass="Titulo">
+							<h:outputText value="#{msg['editar']}"/>
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="30">
+					<h:outputText value="#{dir.id}"/>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{dir.tipoTelefono != null ? dir.tipoTelefonoDesc : ''}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:40px;" styleClass="Descripcion">
+					<h:outputText value="#{dir.lada}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion">
+					<h:outputText value="#{dir.numeroTelefono}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion">
+					<h:outputText value="#{dir.extension}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="50">
+					<h:selectBooleanCheckbox disabled="true" value="#{dir.principal}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msg['editar16.img']}"
+						action="#{personasAction.cargaInfoDirectorio}"  
+						oncomplete="#{rich:component('pnlDirectorioNew')}.show()" 
+						render="pnlDirectorioNew">
+						<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['editar']}"/>
+						<f:setPropertyActionListener target="#{personasAction.pojoDirectorio}" value="#{dir}"/>
+					</a4j:commandButton>
+				</rich:column>
+				
+				<f:facet name="footer">
+					<rich:dataScroller ajaxSingle="true" align="center" for="dtDirectorio" id="dScrollDir" maxPages="10" page="#{personasAction.numPaginaDirectorio}" renderIfSinglePage="false" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+				
+		<!-- Panel DOMICILIO NEW -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlDirectorioNew">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['telefono']}"/>
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlDirectorioNew')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			
+			<h:panelGroup style="display: block; width:100%; height:22px; margin-bottom:1em;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton id="cmdSalvarDirectorio" style="vertical-align: middle; margin-right:5px; cursor: pointer;" 
+							image="#{msg['salvar22.img']}" 
+							action="#{personasAction.guardarDirectorio}" 
+							oncomplete="salvar('#{personasAction.resOperacion}', '#{rich:clientId('pnlDirectorioNew')}', '#{rich:clientId('pnlMsgPers')}', #{rich:element('msgErrorDir')});" 
+							render="dtDirectorio, pnlMsgPers, pnlIfoPrincipal, msgErrorDir">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['salvar.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+			
+			<rich:messages ajaxRendered="false" globalOnly="false" id="msgErrorDir" showDetail="false" showSummary="true">
+				<f:facet name="errorMarker">
+					<h:graphicImage style="margin-right:1em;" value="#{msg['alert16.img']}"/>
+				</f:facet>
+			</rich:messages>
+			
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{personasAction.pojoPersona.id != null ? personasAction.pojoPersona.id : ' '} "/>
+				<h:outputText value="#{personasAction.pojoPersona.nombreCompleto}"/>
+			</h:panelGroup>
+			
+			<h:panelGroup style="display:block; width:100%;">
+				<h:outputLabel for="cbDirPrincipal" style="float:right; margin-right:15px; vertical-align;" styleClass="Titulo" value="#{msg['principal']}"/>
+				<h:selectBooleanCheckbox id="cbDirPrincipal" style="float:right; margin-right:2px;" value="#{personasAction.pojoDirectorio.principal}"/>
+			</h:panelGroup>
+			
+			<h:panelGrid columnClasses="colTituloDom, colDato" columns="2" width="100%">
+				<h:outputText styleClass="Titulo" value="#{msg['tipo']}:"/>
+				<h:panelGroup style="width:100%;">
+					<h:selectOneMenu style="float:left; width:150px;" styleClass="Titulo" 
+						value="#{personasAction.idTipoTel}">
+						<f:selectItems value="#{personasAction.listTiposTelefono }"/>
+					</h:selectOneMenu>
+					
+					<h:selectOneMenu style="float:right; margin-tight:15px; width:150px;" styleClass="Titulo" 
+						value="#{personasAction.idCompaniaTel}">
+						<f:selectItems value="#{personasAction.listCompaniaTel}"/>
+					</h:selectOneMenu>
+					<h:outputText style="float:right; margin:0 5px;" styleClass="Titulo" value="#{msg['compania']}:"/>
+				</h:panelGroup>
+				
+				<h:outputText styleClass="Titulo" value="#{msg['numero']}:"/>
+				<h:panelGroup style="width:100%">
+					<h:inputText style="margin-left:0;" 
+						value="#{personasAction.pojoDirectorio.lada}"
+						size="4" maxlength="4"
+						converter="javax.faces.Integer" 
+						title="#{msg['lada']}">
+						<f:validateLongRange minimum="0" maximum="9999" />
+					</h:inputText>
+					
+					<h:inputText style="margin-left:5px;" 
+						value="#{personasAction.pojoDirectorio.numeroTelefono}"
+						size="10" maxlength="10"
+						converter="javax.faces.Integer" 
+						required="#{!empty param[rich:clientId('cmdSalvarDirectorio')]}" 
+						requiredMessage="#{msg['numero']} #{msg['mensaje.error.requerido']}" >
+						<f:validateLongRange minimum="0" maximum="9999999999" />
+					</h:inputText>
+					
+					<h:outputText styleClass="Titulo" value="#{msg['ext_abr']}:" style="margin:0 5px;" />
+					<h:inputText style="margin-left:5px;" 
+						value="#{personasAction.pojoDirectorio.extension}"
+						size="5" maxlength="5"
+						converter="javax.faces.Integer" 
+						title="#{msg['extension']}">
+						<f:validateLongRange minimum="0" maximum="99999" />
+					</h:inputText>
+				</h:panelGroup>
+				
+				<h:outputText styleClass="Titulo" value="#{msg['observacion']}:"/>
+				<h:inputTextarea rows="3" style="width:90%; margin-right:15px;" styleClass="text_area" 
+					value="#{personasAction.pojoDirectorio.observaciones}"/>
+			</h:panelGrid>
+		</rich:popupPanel>
+				
+		<!-- Panel DIRECTORIO ESTUDIO -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlEstudio">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['estudios']}"/>
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlEstudio')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			
+			<div style="display: block; width:100%; height:22px;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton action="#{personasAction.nuevoEstudio}" id="cmdNuevoEstudio" image="#{msg['nuevo22.img']}" oncomplete="#{rich:component('pnlEstudioNew')}.show()" render="pnlEstudioNew" style="vertical-align: middle; margin-right:5px; cursor: pointer;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['nuevo.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{personasAction.pojoPersona.id != null ? personasAction.pojoPersona.id : ' '} "/>
+				<h:outputText value="#{personasAction.pojoPersona.nombreCompleto}"/>
+			</h:panelGroup>
+			
+			<rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtEstudio" rowClasses="Row1, Row2" rows="5" styleClass="tabla_pagina" value="#{personasAction.listEstudiosExt}" var="est">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}"/>
+						</rich:column>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['escuela']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['anio']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['terminoEstudio']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['editar']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['eliminar']}"/>
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="30">
+					<h:outputText value="#{est.id}"/>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{est.escuela}"/>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{est.aniosEstudio}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:40px;" styleClass="Descripcion">
+					<h:selectBooleanCheckbox disabled="true" value="#{est.terminoEstudio}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msg['editar16.img']}" 
+						action="#{personasAction.cargaInfoEstudios}" 
+						oncomplete="#{rich:component('pnlEstudioNew')}.show()" 
+						render="pnlEstudioNew">
+						<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['editar']}"/>
+						<f:setPropertyActionListener target="#{personasAction.pojoEstudio}" value="#{est}"/>
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msg['eliminar16.img']}" 
+						oncomplete="#{rich:component('pnlEstudioDel')}.show()">
+						<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['eliminar.e']}"/>
+						<f:setPropertyActionListener target="#{personasAction.pojoEstudio}" value="#{est}"/>
+					</a4j:commandButton>
+				</rich:column>
+				
+				<f:facet name="footer">
+					<rich:dataScroller ajaxSingle="true" align="center" for="dtEstudio" id="dScrollEst" maxPages="10" page="#{personasAction.numPaginaEstudio}" renderIfSinglePage="false" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+				
+		<!-- Panel DOMICILIO NEW -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlEstudioNew">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['estudio']}"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlEstudioNew')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<h:panelGroup style="display: block; width:100%; height:22px; margin-bottom:1em;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton action="#{personasAction.guardarEstudio}" id="cmdSalvarEstudio" image="#{msg['salvar22.img']}" oncomplete="salvarGral('#{personasAction.resOperacion}', '#{rich:clientId('pnlEstudioNew')}', '#{rich:clientId('pnlMsgPers')}');" render="dtEstudio, pnlMsgPers" style="vertical-align: middle; margin-right:15px; cursor: pointer;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['salvar.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{personasAction.pojoPersona.id != null ? personasAction.pojoPersona.id : ' '} "/>
+				<h:outputText value="#{personasAction.pojoPersona.nombreCompleto}"/>
+			</h:panelGroup>
+			<h:panelGroup style="display:block; width:100%;">
+				<h:outputLabel for="cbTermEstudio" style="float:right; margin-right:30px;" styleClass="Titulo" value="#{msg['terminoEstudio']}"/>
+				<h:selectBooleanCheckbox id="cbTermEstudio" style="float:right; margin-right:2px;" value="#{personasAction.pojoEstudio.terminoEstudio}"/>
+			</h:panelGroup>
+			<h:panelGrid columnClasses="colTituloDom, colDato" columns="2" width="100%">
+				<h:outputText styleClass="Titulo" value="#{msg['fechaIngreso']}:"/>
+				<h:panelGroup style="width:100%;">
+					<h:inputText maxlength="100" style="width:150px; float:right; margin-right:15px;" value="#{personasAction.pojoEstudio.escuela}"/>
+					<h:outputText style="float:right; margin-right:5px;" styleClass="Titulo" value="#{msg['escuela']}:"/>
+					<rich:calendar datePattern="dd MMM yyyy" value="#{personasAction.pojoEstudio.fechaIngreso}"/>
+				</h:panelGroup>
+				<h:outputText styleClass="Titulo" value="#{msg['fechaEgreso']}:"/>
+				<h:panelGroup style="width:100%;">
+					<h:selectOneMenu style="float:right; width:150px; margin-right:15px;" styleClass="Titulo" value="#{personasAction.idCarrera}">
+						<f:selectItems value="#{personasAction.listCarrera}"/>
+					</h:selectOneMenu>
+					<h:outputText style="float:right; margin-right:5px;" styleClass="Titulo" value="#{msg['carrera']}:"/>
+					<rich:calendar datePattern="dd MMM yyyy" value="#{personasAction.pojoEstudio.fechaEgreso}"/>
+				</h:panelGroup>
+				<h:outputText styleClass="Titulo" value="#{msg['aniosEstudio']}:"/>
+				<h:panelGroup style="width:100%;">
+					<h:selectOneMenu style="float:right; width:150px; margin-right:15px;" styleClass="Titulo" value="#{personasAction.idEstudio}">
+						<f:selectItems value="#{personasAction.listNivelEstudios}"/>
+					</h:selectOneMenu>
+					<h:outputText style="float:right; margin-right:5px;" styleClass="Titulo" value="#{msg['estudios']}:"/>
+					<h:inputText converter="javax.faces.Integer" maxlength="2" requiredMessage="#{msg['mensaje.validacion.soloNumeros']}" size="5" value="#{personasAction.pojoEstudio.aniosEstudio}"/>
+				</h:panelGroup>
+			</h:panelGrid>
+		</rich:popupPanel>
+				
+		<!-- Panel Eliminar ESTUDIOS-->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlEstudioDel">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['atencion']}"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<f:facet name="controls">
+						<h:graphicImage onclick="#{rich:component('pnlEstudioDel')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+					</f:facet>
+				</h:panelGroup>
+			</f:facet>
+			<h:panelGrid cellspacing="10" columns="1" style="text-align:center;" width="200">
+				<h:outputText style="display:block;" styleClass="Descripcion" value="#{msg['deseaEliminar']}"/>
+				<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+					<a4j:commandButton action="#{personasAction.eliminarEstudio}" id="cmdEliminarEstudio" oncomplete="eliminar('#{personasAction.resOperacion}', '#{rich:clientId('pnlEstudioDel')}', '#{rich:clientId('pnlMsgPers')}');" render="dtEstudio, pnlMsgPers" value="#{msg['aceptar']}"/>
+					<a4j:commandButton onclick="#{rich:component('pnlEstudioDel')}.hide()" style="margin-left:10px;" value="#{msg['cancelar']}"/>
+				</h:panelGroup>
+			</h:panelGrid>
+		</rich:popupPanel>
+				
+		<!-- Panel IDENTIFICACION -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlIdentificacion">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['identificaciones']}"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlIdentificacion')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<div style="display: block; width:100%; height:22px;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton action="#{personasAction.nuevoIdentificacion}" id="cmdNuevoIdentificacion" image="#{msg['nuevo22.img']}" oncomplete="#{rich:component('pnlIdentificacionNew')}.show()" render="pnlIdentificacionNew" style="vertical-align: middle; margin-right:5px; cursor: pointer;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['nuevo.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{personasAction.pojoPersona.id != null ? personasAction.pojoPersona.id : ' '} "/>
+				<h:outputText value="#{personasAction.pojoPersona.nombresPropios} #{personasAction.pojoPersona.primerApellido} #{personasAction.pojoPersona.segundoApellido}"/>
+			</h:panelGroup>
+			<rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtIdentificacion" rowClasses="Row1, Row2" rows="5" styleClass="tabla_pagina" value="#{personasAction.listIdentificaciones}" var="ide">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['tipo']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['numero']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['editar']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['eliminar']}"/>
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="30">
+					<h:outputText value="#{ide.id}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{ide.identificacion != null ? ide.identificacionDesc : ''}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{ide.numeroIdentificacion}"/>
+				</rich:column>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton action="#{personasAction.cargaInfoIdentificaciones}" image="#{msg['editar16.img']}" oncomplete="#{rich:component('pnlIdentificacionNew')}.show()" render="pnlIdentificacionNew">
+						<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['editar']}"/>
+						<f:setPropertyActionListener target="#{personasAction.pojoIdentificacion}" value="#{ide}"/>
+					</a4j:commandButton>
+				</rich:column>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msg['eliminar16.img']}" oncomplete="#{rich:component('pnlIdentificacionDel')}.show()">
+						<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['eliminar.e']}"/>
+						<f:setPropertyActionListener target="#{personasAction.pojoIdentificacion}" value="#{ide}"/>
+					</a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer">
+					<rich:dataScroller ajaxSingle="true" align="center" for="dtIdentificacion" id="dScrollIde" maxPages="10" page="#{personasAction.numPaginaIdentificacion}" renderIfSinglePage="false" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+				
+		<!-- Panel IDENTIFICACION NEW -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlIdentificacionNew">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['identificacion']}"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlIdentificacionNew')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<h:panelGroup style="display: block; width:100%; height:22px; margin-bottom:1em;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton action="#{personasAction.guardarIdentificacion}" id="cmdSalvarIdentificacion" image="#{msg['salvar22.img']}" oncomplete="salvar('#{personasAction.resOperacion}', '#{rich:clientId('pnlIdentificacionNew')}', '#{rich:clientId('pnlMsgPers')}', #{rich:element('msgErrorIde')});" render="dtIdentificacion, pnlMsgPers, msgErrorIde" style="vertical-align: middle; margin-right:15px; cursor: pointer;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['salvar.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+			<rich:messages ajaxRendered="false" globalOnly="false" id="msgErrorIde" showDetail="false" showSummary="true">
+				<f:facet name="errorMarker">
+					<h:graphicImage style="margin-right:1em;" value="#{msg['alert16.img']}"/>
+				</f:facet>
+			</rich:messages>
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{personasAction.pojoPersona.id != null ? personasAction.pojoPersona.id : ' '} "/>
+				<h:outputText value="#{personasAction.pojoPersona.nombreCompleto}"/>
+			</h:panelGroup>
+			<h:panelGrid columnClasses="colTituloDom, colDato" columns="2" width="100%">
+				<h:outputText styleClass="Titulo" value="#{msg['tipo']}:"/>
+				<h:selectOneMenu style="width:200px;" styleClass="Titulo" value="#{personasAction.idTipoIdentificacion}">
+					<f:selectItems value="#{personasAction.listTipoIdentificacion}"/>
+				</h:selectOneMenu>
+				<h:outputText styleClass="Titulo" value="#{msg['numero']}:"/>
+				<h:inputText maxlength="50" requiredMessage="#{msg['mensaje.error.requerido']} #{msg['mensaje.error.requerido']}" size="40" value="#{personasAction.pojoIdentificacion.numeroIdentificacion}">
+					<!--<f:validateLength  minimum="1" />-->
+				</h:inputText>
+			</h:panelGrid>
+		</rich:popupPanel>
+				
+		<!-- Panel PERSONA NEGOCIO -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlPersonaNegocio">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['negocio']}"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlPersonaNegocio')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<div style="display: block; width:100%; height:22px;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton action="#{personasAction.nuevoPersonaNegocio}" id="cmdNuevoPersonaNegocio" image="#{msg['nuevo22.img']}" oncomplete="#{rich:component('pnlPersonaNegocioNew')}.show()" render="pnlPersonaNegocioNew" style="vertical-align: middle; margin-right:5px; cursor: pointer;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['nuevo.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{personasAction.pojoPersona.id != null ? personasAction.pojoPersona.id : ' '} "/>
+				<h:outputText value="#{personasAction.pojoPersona.nombresPropios} #{personasAction.pojoPersona.primerApellido} #{personasAction.pojoPersona.segundoApellido}"/>
+			</h:panelGroup>
+			<rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtPersonaNegocio" rowClasses="Row1, Row2" rows="5" styleClass="tabla_pagina" value="#{personasAction.listPersonaNegocio}" var="personaNeg">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['negocio']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['participacion']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['puesto']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['apoderado']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['editar']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['eliminar']}"/>
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="30">
+					<h:outputText value="#{personaNeg.id}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{personaNeg.negocio.nombre}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{personaNeg.participacion}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{personaNeg.puesto}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{personaNeg.apoderadoId.nombre}"/>
+				</rich:column>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton action="#{personasAction.cargaInfoPersonaNegocio}" image="#{msg['editar16.img']}" oncomplete="#{rich:component('pnlPersonaNegocioNew')}.show()" render="pnlPersonaNegocioNew">
+						<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['editar']}"/>
+						<f:setPropertyActionListener target="#{personasAction.pojoPersonaNagocio}" value="#{personaNeg}"/>
+					</a4j:commandButton>
+				</rich:column>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msg['eliminar16.img']}" oncomplete="#{rich:component('pnlEliminarNegocio')}.show()" render="pnlEliminarNegocio">
+						<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['eliminar.e']}"/>
+						<f:setPropertyActionListener target="#{personasAction.pojoPersonaNagocio}" value="#{personaNeg}"/>
+					</a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer">
+					<rich:dataScroller ajaxSingle="true" align="center" for="dtPersonaNegocio" id="dScrollPerNeg" maxPages="10" page="#{personasAction.numPaginaPersonaNegocio}" renderIfSinglePage="false" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+				
+		<!-- Panel PERSONA CONTACTO -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlPersonaContacto">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['contacto']}"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlPersonaContacto')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<div style="display: block; width:100%; height:22px;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton action="#{personasAction.nuevoPersonaContacto}" id="cmdNuevoPersonaContacto" image="#{msg['nuevo22.img']}" oncomplete="#{rich:component('pnlPersonaContactoNew')}.show()" render="pnlPersonaContactoNew" style="vertical-align: middle; margin-right:5px; cursor: pointer;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['nuevo.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{personasAction.pojoPersona.id != null ? personasAction.pojoPersona.id : ' '} "/>
+				<h:outputText value="#{personasAction.pojoPersona.nombreCompleto}"/>
+			</h:panelGroup>
+			<rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtPersonaContacto" rowClasses="Row1, Row2" rows="5" styleClass="tabla_pagina" value="#{personasAction.listPersonaContacto}" var="personaContacto">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['contacto']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['telefono']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['correo']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['domicilio']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['editar']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['eliminar']}"/>
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="30">
+					<h:outputText value="#{personaContacto.id}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{personaContacto.idPersonaContacto.nombreCompleto}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{personaContacto.idPersonaContacto.telefono}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{personaContacto.idPersonaContacto.correo}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{personaContacto.idPersonaContacto.domicilio}"/>
+				</rich:column>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msg['editar16.img']}" oncomplete="#{rich:component('pnlPersonaContactoNew')}.show()" render="pnlPersonaContactoNew">
+						<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['editar']}"/>
+						<f:setPropertyActionListener target="#{personasAction.pojoPersonaContacto}" value="#{personaContacto}"/>
+					</a4j:commandButton>
+				</rich:column>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msg['eliminar16.img']}" oncomplete="#{rich:component('pnlEliminarPersonaContacto')}.show()" render="pnlEliminarPersonaContacto">
+						<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['eliminar.e']}"/>
+						<f:setPropertyActionListener target="#{personasAction.pojoPersonaContacto}" value="#{personaContacto}"/>
+					</a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer">
+					<rich:dataScroller ajaxSingle="true" align="center" for="dtPersonaContacto" id="dScrollPerNeg" maxPages="10" page="#{personasAction.numPaginaPersonaNegocio}" renderIfSinglePage="false" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+				
+		<!-- Panel PERSONA CONTACTO NEW -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlPersonaContactoNew">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['contacto']}"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlPersonaContactoNew')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<h:panelGroup style="display: block; width:100%; height:22px; margin-bottom:1em;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton action="#{personasAction.guardarPersonaContacto}" id="cmdSalvarPersonaContacto" image="#{msg['salvar22.img']}" oncomplete="salvar('#{personasAction.resOperacion}', '#{rich:clientId('pnlPersonaContactoNew')}', '#{rich:clientId('pnlMsgPers')}', #{rich:element('msgErrorContacto')});" render="dtPersonaContacto,pnlMsgPers" style="vertical-align: middle; margin-right:15px; cursor: pointer;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['salvar.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+			<rich:messages ajaxRendered="false" globalOnly="false" id="msgErrorContacto" showDetail="false" showSummary="true">
+				<f:facet name="errorMarker">
+					<h:graphicImage style="margin-right:1em;" value="#{msg['alert16.img']}"/>
+				</f:facet>
+			</rich:messages>
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{personasAction.pojoPersona.id != null ? personasAction.pojoPersona.id : ' '} "/>
+				<h:outputText value="#{personasAction.pojoPersona.nombreCompleto}"/>
+			</h:panelGroup>
+			<h:panelGrid columnClasses="colTitulo, colDato" columns="2" id="pnlContacto" style="margin-top:1em; margin-bottom:1em;">
+				<h:outputText styleClass="Titulo" value="#{msg['contacto']}:"/>
+				<h:panelGroup style="width:100%">
+					<a4j:commandLink disabled="#{!personasAction.puedeEditar}" id="cmdBuscarContacto" oncomplete="#{rich:component('pnlBusquedaPersonaContacto')}.show()" style="font-weight: bold;" value="#{personasAction.pojoPersonaContacto == null ? msg['seleccionar'] : (personasAction.pojoPersonaContacto.id > 0 ? msg['cambiar'] : msg['seleccionar'])}"/>
+					<h:outputText id="idContacto" style="margin-left:10px;" styleClass="Titulo" value="#{personasAction.pojoPersonaContacto.idPersonaContacto != null ? (personasAction.pojoPersonaContacto.idPersonaContacto.id > 0 ? personasAction.pojoPersonaContacto.idPersonaContacto.id : '') : ''}"/>
+					<h:outputText id="nombreContacto" style="margin-left:10px;" styleClass="Titulo" value="#{personasAction.pojoPersonaContacto.idPersonaContacto != null ? (personasAction.pojoPersonaContacto.idPersonaContacto.id > 0 ? personasAction.pojoPersonaContacto.idPersonaContacto.nombreCompleto : '') : ''}"/>
+				</h:panelGroup>
+			</h:panelGrid>
+			<h:panelGrid columnClasses="colTitulo, colDato" columns="2" id="pnlPNPrincipalContacto" width="100%">
+				<h:outputText style="float:right; margin-right:5px;" styleClass="Titulo" value="#{msg['puesto']}:"/>
+				<h:inputText disabled="#{!personasAction.puedeEditar}" size="20" style="float:right; margin-right:30px;" value="#{personasAction.pojoPersonaContacto.puesto}"/>
+			</h:panelGrid>
+		</rich:popupPanel>
+				
+		<!-- Panel BUSQUEDA APODERADO -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlBusquedaPersonaContacto">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['contacto']}"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlBusquedaPersonaContacto')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<div style="display: block; min-width: 400px; width:100%; height:22px;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton action="#{personasAction.buscarContacto}" id="cmdBusquedaContacto" image="#{msg['buscar22.img']}" oncomplete="buscar('#{personasAction.resOperacion}', '#{rich:clientId('pnlMsgPers')}');" render="dtContacto" style="vertical-align: middle; margin-right:5px; cursor: pointer;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['buscar.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			<h:panelGrid columnClasses="valorBusqueda1, alignLeft" columns="2" width="100%">
+				<h:outputText styleClass="Titulo" value="#{msg['buscarPor']}:"/>
+				<h:selectOneMenu style="margin-left:5px;  width:156px;" styleClass="Titulo" value="#{personasAction.tipoBusquedaContacto}">
+					<f:selectItem itemLabel="#{msg['nombre']}" itemValue="nombre"/>
+					<f:selectItem itemLabel="#{msg['rfc']}" itemValue="rfc"/>
+				</h:selectOneMenu>
+				<h:outputText style="margin-left:15px;" styleClass="Titulo" value="#{msg['valor']}:"/>
+				<h:inputText size="36" style="margin-left:5px;  width:150px;" value="#{personasAction.valorBusquedaContacto}"/>
+			</h:panelGrid>
+			<rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtContacto" rowClasses="Row1, Row2" rows="5" styleClass="tabla_pagina" value="#{personasAction.listBusquedaPersonaContacto}" var="con">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['rfc']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['seleccionar']}"/>
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="30">
+					<h:outputText value="#{con.id}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion" style="text-align:left;">
+					<h:outputText value="#{con.nombreCompleto}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{con.rfc}"/>
+				</rich:column>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msg['agregar16.img']}" oncomplete="#{rich:component('pnlBusquedaPersonaContacto')}.hide()" render="cmdContacto,idContacto,nombreContacto">
+						<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['seleccionar']}"/>
+						<f:setPropertyActionListener target="#{personasAction.pojoPersonaContacto.idPersonaContacto}" value="#{con}"/>
+					</a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer">
+					<rich:dataScroller ajaxSingle="true" align="center" for="dtContacto" id="dScrollBusquedaContacto" maxPages="10" page="#{personasAction.numPaginaBusquedaContacto}" renderIfSinglePage="false" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+				
+		<!-- Panel PERSONA NEGOCIO NEW -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlPersonaNegocioNew">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['negocio']}"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlPersonaNegocioNew')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<h:panelGroup style="display: block; width:100%; height:22px; margin-bottom:1em;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton action="#{personasAction.guardarPersonaNegocio}" id="cmdSalvarPersonaNegocio" image="#{msg['salvar22.img']}" oncomplete="salvar('#{personasAction.resOperacion}', '#{rich:clientId('pnlPersonaNegocioNew')}', '#{rich:clientId('pnlMsgPers')}', #{rich:element('msgErrorNegocio')});" render="dtPersonaNegocio" style="vertical-align: middle; margin-right:15px; cursor: pointer;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['salvar.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+			<rich:messages ajaxRendered="false" globalOnly="false" id="msgErrorNegocio" showDetail="false" showSummary="true">
+				<f:facet name="errorMarker">
+					<h:graphicImage style="margin-right:1em;" value="#{msg['alert16.img']}"/>
+				</f:facet>
+			</rich:messages>
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{personasAction.pojoPersona.id != null ? personasAction.pojoPersona.id : ' '} "/>
+				<h:outputText value="#{personasAction.pojoPersona.nombreCompleto}"/>
+			</h:panelGroup>
+			<h:panelGrid columnClasses="colTitulo, colDato" columns="2" id="pnlNegocio" style="margin-top:1em; margin-bottom:1em;">
+				<h:outputText styleClass="Titulo" value="#{msg['negocio']}:"/>
+				<h:panelGroup style="width:100%">
+					<a4j:commandLink disabled="#{!personasAction.puedeEditar}" id="cmdBuscarNegocio" oncomplete="#{rich:component('pnlBusquedaNegocio')}.show()" style="font-weight: bold;" value="#{personasAction.pojoPersonaNagocio.negocio == null ? msg['seleccionar'] : (personasAction.pojoPersonaNagocio.negocio.id > 0 ? msg['cambiar'] : msg['seleccionar'])}"/>
+					<h:outputText id="idNegocio" style="margin-left:10px;" styleClass="Titulo" value="#{personasAction.pojoPersonaNagocio.negocio != null ? (personasAction.pojoPersonaNagocio.negocio.id > 0 ? personasAction.pojoPersonaNagocio.negocio.id : '') : ''}"/>
+					<h:outputText id="nombreNegcio" style="margin-left:10px;" styleClass="Titulo" value="#{personasAction.pojoPersonaNagocio.negocio != null ? (personasAction.pojoPersonaNagocio.negocio.id > 0 ? personasAction.pojoPersonaNagocio.negocio.nombre : '') : ''}"/>
+				</h:panelGroup>
+			</h:panelGrid>
+			<h:panelGrid columnClasses="colTitulo, colDato" columns="2" id="pnlPNPrincipal" width="100%">
+				<h:outputText styleClass="Titulo" value="#{msg['participacion']}:"/>
+				<h:panelGroup>
+					<h:inputText disabled="#{!personasAction.puedeEditar}" id="txtPaticipacion" size="25" value="#{personasAction.pojoPersonaNagocio.participacion}"/>
+					<h:inputText disabled="#{!personasAction.puedeEditar}" size="20" style="float:right; margin-right:30px;" value="#{personasAction.pojoPersonaNagocio.puesto}"/>
+					<h:outputText style="float:right; margin-right:5px;" styleClass="Titulo" value="#{msg['puesto']}:"/>
+				</h:panelGroup>
+				<h:outputText styleClass="Titulo" value="#{msg['personalidad']}:"/>
+				<h:inputTextarea cols="3" disabled="#{!personasAction.puedeEditar}" style="width: 95%; margin-right:30px;" styleClass="text_area" value="#{personasAction.pojoPersonaNagocio.personalidadJuridica}"/>
+			</h:panelGrid>
+			<h:panelGrid columnClasses="colTitulo, colDato" columns="2" id="pnlApoderado" style="margin-top:1em; margin-bottom:1em;">
+				<h:outputText styleClass="Titulo" value="#{msg['apoderado']}:"/>
+				<h:panelGroup style="width:100%">
+					<a4j:commandLink disabled="#{!personasAction.puedeEditar}" id="cmdApoderado" oncomplete="#{rich:component('pnlBusquedaApoderado')}.show()" style="font-weight: bold;" value="#{personasAction.pojoPersonaNagocio.apoderadoId == null ? msg['seleccionar'] : (personasAction.pojoPersonaNagocio.apoderadoId.id > 0 ?  msg['cambiar'] : msg['seleccionar'])}"/>
+					<h:outputText id="idApoderado" style="margin-left:10px;" styleClass="Titulo" value="#{personasAction.pojoPersonaNagocio.apoderadoId != null ? (personasAction.pojoPersonaNagocio.apoderadoId.id > 0 ? personasAction.pojoPersonaNagocio.apoderadoId.id : '') : ''}"/>
+					<h:outputText id="nombreApoderado" style="margin-left:10px;" styleClass="Titulo" value="#{personasAction.pojoPersonaNagocio.apoderadoId != null ? (personasAction.pojoPersonaNagocio.apoderadoId.id > 0 ? personasAction.pojoPersonaNagocio.apoderadoId.nombreCompleto : '') : ''}"/>
+				</h:panelGroup>
+			</h:panelGrid>
+		</rich:popupPanel>
+				
+		<!-- Panel BUSQUEDA NEGOCIO -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlBusquedaNegocio">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['negocio']}"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlBusquedaNegocio')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<div style="display: block; width:100%; height:22px;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton action="#{personasAction.buscarNegocios()}" id="cmdBusquedaNegocio" image="#{msg['buscar22.img']}" oncomplete="buscar('#{personasAction.resOperacion}', '#{rich:clientId('pnlMsgPers')}');" render="dtNegocio" style="vertical-align: middle; margin-right:5px; cursor: pointer;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['buscar.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			<h:panelGrid columnClasses="valorBusqueda1, alignLeft" columns="2" width="100%">
+				<h:outputText styleClass="Titulo" value="#{msg['buscarPor']}:"/>
+				<h:selectOneMenu style="margin-left:5px; width:100px;" styleClass="Titulo" value="#{personasAction.tipoBusquedaNegocio}">
+					<f:selectItem itemLabel="#{msg['nombre']}" itemValue="nombre"/>
+					<f:selectItem itemLabel="#{msg['referencia']}" itemValue="referencia"/>
+					<f:selectItem itemLabel="#{msg['rfc']}" itemValue="rfc"/>
+				</h:selectOneMenu>
+				<h:outputText style="margin-left:15px;" styleClass="Titulo" value="#{msg['valor']}:"/>
+				<h:inputText size="36" style="margin-left:5px;" value="#{personasAction.valorBusquedaNegocio}"/>
+			</h:panelGrid>
+			<rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtNegocio" rowClasses="Row1, Row2" rows="5" styleClass="tabla_pagina" value="#{personasAction.listNegocio}" var="perNeg">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['rfc']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['seleccionar']}"/>
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="30">
+					<h:outputText value="#{perNeg.id}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{perNeg.nombre}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{perNeg.rfc}"/>
+				</rich:column>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msg['agregar16.img']}" oncomplete="#{rich:component('pnlBusquedaNegocio')}.hide()" render="cmdBuscarNegocio,idNegocio,nombreNegcio">
+						<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['seleccionar']}"/>
+						<f:setPropertyActionListener target="#{personasAction.pojoPersonaNagocio.negocio}" value="#{perNeg}"/>
+					</a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer">
+					<rich:dataScroller ajaxSingle="true" align="center" for="dtNegocio" id="dScrollNegocios" maxPages="10" page="#{personasAction.numPaginaNegocio}" renderIfSinglePage="false" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+				
+		<!-- Panel BUSQUEDA APODERADO -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlBusquedaApoderado">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msg['apoderado']}"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlBusquedaApoderado')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<div style="display: block; min-width: 400px; width:100%; height:22px;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton action="#{personasAction.buscarApoderado}" id="cmdBusquedaApoderado" image="#{msg['buscar22.img']}" oncomplete="buscar('#{personasAction.resOperacion}', '#{rich:clientId('pnlMsgPers')}');" render="dtApoderado" style="vertical-align: middle; margin-right:5px; cursor: pointer;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['buscar.e']}"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			<h:panelGrid columnClasses="valorBusqueda1, alignLeft" columns="2" width="100%">
+				<h:outputText styleClass="Titulo" value="#{msg['buscarPor']}:"/>
+				<h:selectOneMenu style="margin-left:5px; width:156px;" styleClass="Titulo" value="#{personasAction.tipoBusquedaApoderado}">
+					<f:selectItem itemLabel="#{msg['nombre']}" itemValue="nombre"/>
+					<f:selectItem itemLabel="#{msg['rfc']}" itemValue="rfc"/>
+				</h:selectOneMenu>
+				<h:outputText style="margin-left:15px;" styleClass="Titulo" value="#{msg['valor']}:"/>
+				<h:inputText size="36" style="margin-left:5px; width:150px;" value="#{personasAction.valorBusquedaApoderado}"/>
+			</h:panelGrid>
+			<rich:dataTable border="0" cellpadding="0" cellspacing="0" id="dtApoderado" rowClasses="Row1, Row2" rows="5" styleClass="tabla_pagina" value="#{personasAction.listPersonaApoderadoNegocioExt}" var="con">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['rfc']}"/>
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['seleccionar']}"/>
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="30">
+					<h:outputText value="#{con.id}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion" style="text-align:left;">
+					<h:outputText value="#{con.nombreCompleto}"/>
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{con.rfc}"/>
+				</rich:column>
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msg['agregar16.img']}" oncomplete="#{rich:component('pnlBusquedaApoderado')}.hide()" render="cmdApoderado,idApoderado,nombreApoderado">
+						<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['seleccionar']}"/>
+						<f:setPropertyActionListener target="#{personasAction.pojoPersonaNagocio.apoderadoId}" value="#{con}"/>
+					</a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer">
+					<rich:dataScroller ajaxSingle="true" align="center" for="dtApoderado" id="dScrollApoderado" maxPages="10" page="#{personasAction.numPaginaApoderado}" renderIfSinglePage="false" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+				
+		<!-- #### MODAL ELIMINAR PERSONA #### -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlEliminarPers">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText styleClass="Titulo" value="#{msg['atencion']}"/>
+				</h:panelGroup>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlEliminarPers')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<h:panelGroup style="display:block; width:300px; float:center;">
+				<h:outputText style="display:block;" styleClass="Descripcion" value="#{msg['deseaEliminarPersona']}?"/>
+			</h:panelGroup>
+			<h:panelGrid columnClasses="colTitulo,colDato,colTitulo,colDato" columns="4" width="100%">
+				<a4j:commandButton action="#{personasAction.eliminar()}" oncomplete="eliminar('#{personassAction.resOperacion}','#{rich:clientId('pnlEliminarPers')}', '#{rich:clientId('pnlMsgPers')}');" render="dtPersonas" style="margin-top:10px; cursor:pointer;" value="#{msg['aceptar']}"/>
+				<a4j:commandButton onclick="#{rich:component('pnlEliminarPers')}.hide()" style="margin-top:10px; cursor:pointer;" value="#{msg['cancelar']}"/>
+			</h:panelGrid>
+		</rich:popupPanel>
+				
+		<!-- #### MODAL ELIMINAR PERSONA #### -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlIdentificacionDel">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText styleClass="Titulo" value="#{msg['atencion']}"/>
+				</h:panelGroup>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlIdentificacionDel')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<h:panelGroup style="display:block; width:300px; float:center;">
+				<h:outputText style="display:block;" styleClass="Descripcion" value="#{msg['deseaEliminarIdentificacion']}?"/>
+			</h:panelGroup>
+			<h:panelGrid columnClasses="colTitulo,colDato,colTitulo,colDato" columns="4" width="100%">
+				<a4j:commandButton action="#{personasAction.eliminarIdentificacion()}" oncomplete="eliminar('#{personassAction.resOperacion}','#{rich:clientId('pnlIdentificacionDel')}', '#{rich:clientId('pnlMsgPers')}');" render="dtIdentificacion" style="margin-top:10px; cursor:pointer;" value="#{msg['aceptar']}"/>
+				<a4j:commandButton onclick="#{rich:component('pnlIdentificacionDel')}.hide()" style="margin-top:10px; cursor:pointer;" value="#{msg['cancelar']}"/>
+			</h:panelGrid>
+		</rich:popupPanel>
+				
+		<!-- #### MODAL ELIMINAR NOMBRE ALTERNO #### -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlEliminarNombreAlterno">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText styleClass="Titulo" value="#{msg['atencion']}"/>
+				</h:panelGroup>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlEliminarNombreAlterno')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<h:panelGroup style="display:block; width:300px; float:center;">
+				<h:outputText style="display:block;" styleClass="Descripcion" value="#{msg['deseaEliminar']}"/>
+			</h:panelGroup>
+			<h:panelGrid columnClasses="colTitulo,colDato,colTitulo,colDato" columns="4" width="100%">
+				<a4j:commandButton action="#{personasAction.eliminarNombreAlt()}" oncomplete="eliminar('#{personassAction.resOperacion}','#{rich:clientId('pnlEliminarNombreAlterno')}', '#{rich:clientId('pnlMsgPers')}');" render="dtNombreAlterno" style="margin-top:10px; cursor:pointer;" value="#{msg['aceptar']}"/>
+				<a4j:commandButton onclick="#{rich:component('pnlEliminarNombreAlterno')}.hide()" style="margin-top:10px; cursor:pointer;" value="#{msg['cancelar']}"/>
+			</h:panelGrid>
+		</rich:popupPanel>
+				
+		<!-- #### MODAL ELIMINAR NEGOCIO #### -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlEliminarNegocio">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText styleClass="Titulo" value="#{msg['atencion']}"/>
+				</h:panelGroup>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlEliminarNegocio')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<h:panelGroup style="display:block; width:300px; float:center;">
+				<h:outputText style="display:block;" styleClass="Descripcion" value="#{msg['deseaEliminar']}"/>
+			</h:panelGroup>
+			<h:panelGrid columnClasses="colTitulo,colDato,colTitulo,colDato" columns="4" width="100%">
+				<a4j:commandButton action="#{personasAction.eliminarPersonaNegocio()}" oncomplete="eliminar('#{personassAction.resOperacion}','#{rich:clientId('pnlEliminarNegocio')}', '#{rich:clientId('pnlMsgPers')}');" render="dtPersonaNegocio" style="margin-top:10px; cursor:pointer;" value="#{msg['aceptar']}"/>
+				<a4j:commandButton onclick="#{rich:component('pnlEliminarNegocio')}.hide()" style="margin-top:10px; cursor:pointer;" value="#{msg['cancelar']}"/>
+			</h:panelGrid>
+		</rich:popupPanel>
+				
+		<!-- #### MODAL ELIMINAR CONTACTO #### -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlEliminarPersonaContacto">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText styleClass="Titulo" value="#{msg['atencion']}"/>
+				</h:panelGroup>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage onclick="#{rich:component('pnlEliminarPersonaContacto')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+			</f:facet>
+			<h:panelGroup style="display:block; width:300px; float:center;">
+				<h:outputText style="display:block;" styleClass="Descripcion" value="#{msg['deseaEliminar']}"/>
+			</h:panelGroup>
+			<h:panelGrid columnClasses="colTitulo,colDato,colTitulo,colDato" columns="4" width="100%">
+				<a4j:commandButton action="#{personasAction.eliminarPersonaContacto()}" oncomplete="eliminar('#{personassAction.resOperacion}','#{rich:clientId('pnlEliminarPersonaContacto')}', '#{rich:clientId('pnlMsgPers')}');" render="dtPersonaContacto" style="margin-top:10px; cursor:pointer;" value="#{msg['aceptar']}"/>
+				<a4j:commandButton onclick="#{rich:component('pnlEliminarPersonaContacto')}.hide()" style="margin-top:10px; cursor:pointer;" value="#{msg['cancelar']}"/>
+			</h:panelGrid>
+		</rich:popupPanel>
+				
+		<!-- #### Panel MsgLayout #### -->
+		<rich:popupPanel autosized="true" domElementAttachment="form" id="pnlMsgPers">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText styleClass="Titulo" value="#{personasAction.resOperacion == '' ? msg['informacion'] : msg['atencion']}"/>
+				</h:panelGroup>
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:panelGroup>
+					<f:facet name="controls">
+						<h:graphicImage onclick="#{rich:component('imgCerrarMsgFunc')}.hide()" style="cursor:pointer;" value="#{msg['navegacion.gral.cerrar.img']}"/>
+					</f:facet>
+				</h:panelGroup>
+			</f:facet>
+			
+			<h:panelGroup style="display:block; width:300px; float:center;">
+				<h:outputText style="display:block;" styleClass="Descripcion" value="#{personasAction.resOperacion != '' ? personasAction.resOperacion : msg['mensaje.info.infoReg']}"/>
+			</h:panelGroup>
+			
+			<a4j:commandButton onclick="#{rich:component('pnlMsgPers')}.hide()" style="margin-top:10px; cursor:pointer;" value="#{msg['aceptar']}"/>
+		</rich:popupPanel>				
+		<!--  Fin Panel Msg-->
+	</ui:define>
+</ui:composition>

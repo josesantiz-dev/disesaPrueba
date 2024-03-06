@@ -1,0 +1,62 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlAgregarFamiliares" autosized="true" domElementAttachment="form" top="30">
+		<f:facet name="header">
+			<h:outputText id="lblTituloConceptos" value="#{msg['familiares']}" styleClass="Titulo" style="margin-left:10px" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlAgregarFamiliares')}.hide()" />
+		</f:facet>
+		
+		<div style = "display: block; height: 22px; margin-bottom:10px;">
+			<a4j:commandButton id="cmdGuardarFamiliar" image="#{msg['salvar22.img']}" style="align:right; position:relative; float:right;"
+				action="#{empleadoAction.guardarFamiliar}" 
+				onclick="" 
+				oncomplete="validarDatosFamiliar(#{empleadoAction.band}, '#{empleadoAction.resOperacion}', '#{rich:clientId('pnlAgregarFamiliares')}', '#{rich:clientId('pnlMensajes')}', '#{rich:clientId('pnlMensajes')}' )"
+				render="dtListaFamiliares, txtMensajeErrorFamiliar">
+				<rich:tooltip showDelay="300" value="#{msg['agregar.e']}" for="cmdGuardarFamiliar" />
+		   	</a4j:commandButton>				       				
+		</div>
+		
+		<h:panelGroup id="grupoEncabezadoFamiliar" styleClass="encabezado">
+			<h:panelGrid width="100%">
+				<h:panelGroup>
+					<h:outputText
+						value="#{empleadoAction.pojoEmpleado.persona.id == null ? '' : empleadoAction.pojoEmpleado.persona.nombre }" 
+						style="text-align: center;" />
+				</h:panelGroup>
+			</h:panelGrid>
+		</h:panelGroup>
+		
+		<h:panelGroup id="grupoFamiliar" style="text-align:left;">
+			<h:panelGrid id="pnlSeleccionarFamiliar" columns="2" width="400" columnClasses="colTitulo,colDato" >
+				<h:outputText value="#{msg['id']}:" styleClass="Titulo" style="text-align:left;" />
+				<h:outputText id="txtIdFamiliarSeleccionado" styleClass="Titulo"  style="text-align:left;"
+					value="#{empleadoAction.pojoFamElimSeleccionado.persona.id}" />
+				
+				<h:outputText value="#{msg['persona']}:" styleClass="Titulo"  style="text-align:left;"/>
+				<a4j:commandLink id="cmdSeleccionarFamiliar"  style="text-align:left;"
+					onclick="#{rich:component('pnlBusquedaFamiliares')}.show();"
+					value="#{empleadoAction.pojoFamElimSeleccionado.persona.id == null ? msg['seleccionar'] : empleadoAction.pojoFamElimSeleccionado.persona.nombre }"
+					action="#{empleadoAction.nuevaBusquedaPersona}"
+					oncomplete="#{rich:component('pnlBusquedaFamiliares')}.show();"  
+					rendered="#{true}">
+					<a4j:ajax execute="@form" render="pnlSeleccionarFamiliar" />
+				</a4j:commandLink>
+				
+				<!-- Seleccionar Relacion -->
+				<h:outputText value="#{msg['relacion']}:" style="margin-left: 10px; margin-right: 10px" styleClass="Titulo"/>
+				<h:selectOneMenu id="cboRelacionFamiliar" value="#{empleadoAction.idRelacion}" style="width:200px;">
+					<f:selectItems value="#{empleadoAction.listaCboRelaciones}"/>	  					
+				</h:selectOneMenu>
+			</h:panelGrid>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

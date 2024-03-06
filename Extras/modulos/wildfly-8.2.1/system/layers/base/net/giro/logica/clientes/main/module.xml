@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:jboss:module:1.1" name="net.giro.logica.clientes">
+	<resources>
+		<resource-root path="Logica_Clientes.jar" />
+	</resources>
+	<dependencies>
+		<module name="net.giro.comun"  export="true" />
+		<module name="net.giro.logica.publico"  export="true" />
+		<module name="net.giro.model.clientes"  export="true" />
+		<module name="net.giro.model.credito"  export="true" />
+		<module name="net.giro.model.publico"  export="true" />
+		<module name="net.giro.model.rechum"  export="true" />
+		<module name="net.giro.model.tyg"  export="true" />
+		<module name="com.enterprisedt.edtFTPj"  export="true" />
+		<module name="com.google.code.gson"  export="true"/>
+		<module name="org.beanshell.bsh"  export="true"/>
+		<module name="org.apache.commons.beanutils"  export="true"/>
+		<module name="commons-httpclient"  export="true"/>
+	</dependencies>
+</module>

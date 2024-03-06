@@ -1,0 +1,35 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlMsgGralEntrada" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{entradasAlmacenAction.band ? msg['navegacion.label.atencion'] : msg['navegacion.label.informacion']}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlMsgGralEntrada')}.hide()" />
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:region>
+			<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+				<h:outputText value="#{entradasAlmacenAction.mensaje}"  styleClass="Descripcion" rendered="#{entradasAlmacenAction.tipoMensaje == -1}" />
+				<h:outputText value="#{msg['mensaje.info.infoReg']}"  styleClass="Descripcion" rendered="#{entradasAlmacenAction.tipoMensaje == 0}" />       			
+				<h:outputText value="#{msg['mensaje.error.inesperado']}"  styleClass="Descripcion" rendered="#{entradasAlmacenAction.tipoMensaje == 1}" />
+				<h:outputText value="#{msg['mensaje.info.busquedaVacia']}"  styleClass="Descripcion" rendered="#{entradasAlmacenAction.tipoMensaje == 2}" />
+				<h:outputText value="#{msg['mensaje.error.requerido']}"  styleClass="Descripcion" rendered="#{entradasAlmacenAction.tipoMensaje == 3}" />
+				<h:outputText value="#{msg['seleccioneAlmacen']}"  styleClass="Descripcion" rendered="#{entradasAlmacenAction.tipoMensaje == 4}" />
+				
+				<a4j:commandButton value="#{msg['navegacion.label.aceptar']}" 
+					onclick="#{rich:component('pnlMsgGralEntrada')}.hide()" />
+					
+			</h:panelGrid>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

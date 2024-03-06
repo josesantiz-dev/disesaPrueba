@@ -1,0 +1,39 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlMensajes" modal="true" autosized="true">
+		<f:facet name="header">
+    		<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo"/>
+    	</f:facet>
+
+		<a4j:region>
+			<h:panelGrid columns="1" style="text-align:center; min-width:300px; max-width:500px;" cellspacing="0" cellpadding="0">
+				<h:outputText styleClass="Descripcion" rendered="#{cotizaAction.tipoMensaje == -1}" value="#{cotizaAction.mensaje}" />
+				<h:outputText styleClass="Descripcion" rendered="#{cotizaAction.tipoMensaje ==  0}" value="#{msg['mensaje.info.infoReg']}" /> 
+				<h:outputText styleClass="Descripcion" rendered="#{cotizaAction.tipoMensaje ==  1}" value="#{msg['mensaje.error.inesperado']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{cotizaAction.tipoMensaje ==  2}" value="#{msg['mensaje.info.busquedaVacia']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{cotizaAction.tipoMensaje ==  3}" value="#{msg['mensaje.error.requerido']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{cotizaAction.tipoMensaje ==  4}" value="#{msg['listaProductosVacia']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{cotizaAction.tipoMensaje ==  5}" value="#{msg['ningunProductoSeleccionado']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{cotizaAction.tipoMensaje ==  6}" value="#{msg['tiempoEntregaMenorCero']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{cotizaAction.tipoMensaje ==  7}" value="#{msg['fleteMenorCero']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{cotizaAction.tipoMensaje ==  8}" value="#{msg['sinCorreo']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{cotizaAction.tipoMensaje ==  9}" value="#{msg['emailEnviado']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{cotizaAction.tipoMensaje == 10}" value="#{msg['obraSinAlmacenPrincipal']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{cotizaAction.tipoMensaje == 11}" value="#{msg['obraSinAlmacenesGenerales']}" />
+				<h:outputText styleClass="Descripcion" rendered="#{cotizaAction.tipoMensaje == 12}" value="#{msg['cotizacionSinProveedor']}" />
+				
+				<a4j:commandButton style="margin:10px auto 0; min-width:100px;"
+					value="#{msg['navegacion.label.aceptar']}" 
+					onclick="#{rich:component('pnlMensajes')}.hide()"
+					oncomplete="mensaje(#{cotizaAction.operacion}, '#{rich:clientId('pnlCotizacion')}', '#{rich:clientId('pnlMensajes')}');" 
+					execute="@region" />
+			</h:panelGrid>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

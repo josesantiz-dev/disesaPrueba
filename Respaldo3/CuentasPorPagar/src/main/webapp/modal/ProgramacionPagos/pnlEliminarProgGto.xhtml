@@ -1,0 +1,38 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlEliminarProgGto" autosized="true">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo"/>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="imgCerrarEliminar"/>
+				<rich:componentControl for="pnlEliminarProgGto" attachTo="imgCerrarEliminar" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmEliminarProgGto">
+			<a4j:region id="loadEliminarProgGto">
+				<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+					<h:outputText value="#{msg['navegacion.label.deseaEliminar']}" style="display:block;"  styleClass="Descripcion"/>
+					<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+						<a4j:commandButton action="#{progPagosAction.eliminar}" oncomplete="#{rich:component('pnlEliminarProgGto')}.hide()" value="#{msg['navegacion.label.aceptar']}" reRender="dtResults"/>
+						<a4j:commandButton onclick="#{rich:component('pnlEliminarProgGto')}.hide()" value="#{msg['cancelar']}" style="margin-left:10px;"/>
+					</h:panelGroup>
+					<a4j:status for="loadEliminarProgGto">
+						<f:facet name="start">
+							<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}"/>
+						</f:facet>
+					</a4j:status>
+				</h:panelGrid>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

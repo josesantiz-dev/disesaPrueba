@@ -1,0 +1,109 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlObrasAlmacenes" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+    	<f:facet name="header">
+			<h:outputText value="#{msg['obra']} #{msg['almacenes']}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlObrasAlmacenes')}.hide()" />
+		</f:facet>
+		
+		<div style = "display: block; width:100%; height: 22px;">
+			<a4j:commandButton id="cmdNuevoObraAlmacen" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+				image="#{msg['agregar22.img']}" title="#{msg['agregar.e']}"
+				rendered="#{almObraAction.permiteModificar}"
+				action="#{almObraAction.nuevo}"
+				oncomplete="#{rich:component('pnlObrasAlmacen')}.show()"
+				render="pnlObrasAlmacen" />
+		</div> 
+
+		<div style="margin: 10px auto 0;">
+			<h:panelGroup styleClass="encabezado" style="min-height: 1em;">
+				<h:outputText value="#{almObraAction.pojoObra.id != null ? almObraAction.pojoObra.id : '0'} "/>
+				<h:outputText value="#{almObraAction.pojoObra.nombre}" />
+			</h:panelGroup>
+
+			<rich:dataTable id="dtObraAlmacenes" value="#{almObraAction.listObraAlmacenes}" var="var" cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column colspan="6" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['obra']} #{msg['almacenes']}" />
+						</rich:column>
+						
+						<rich:column breakRowBefore="true" style="width: 90px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['descripcion']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['tipo']} #{msg['almacen']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['almacen']} #{msg['principal']}" />
+						</rich:column>
+
+						<rich:column colspan="2" style="width:40px; text-align:center;" styleClass="Titulo" />
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="width: 60px; text-align:center;">
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.nombreAlmacen}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText rendered="#{var.tipo == 1 || var.tipo == 3}" value="#{msg['general']}" />
+					<h:outputText rendered="#{var.tipo == 2 || var.tipo == 4}" value="#{msg['obra']}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
+					<h:outputText value="#{msg['no']}" rendered="#{var.almacenPrincipal == 0}" />
+					<h:outputText value="#{msg['si']}" rendered="#{var.almacenPrincipal == 1}" />
+				</rich:column>
+				
+				<rich:column style="width:20px; text-align:center;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEditarObraAlmacen" 
+				   		image="#{msg['editar16.img']}" title="#{msg['editar']}"
+				   		rendered="#{almObraAction.permiteModificar}"
+				   		action="#{almObraAction.editar}"
+						oncomplete="#{rich:component('pnlObrasAlmacen')}.show()" 
+						render="pnlObrasAlmacen">
+						<f:setPropertyActionListener target="#{almObraAction.pojoObraAlmacen}" value="#{var}" for="cmdEditarObraAlmacen" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="width:20px; text-align:center;" styleClass="Descripcion">
+				   	<a4j:commandButton id="cmdBorrarObraAlmacen" 
+				   		image="#{msg['eliminar16.img']}" title="#{msg['eliminar']}"
+				   		rendered="#{almObraAction.permiteModificar}"
+						oncomplete="#{rich:component('pnlEliminar')}.show()" 
+						render="pnlEliminar">
+						<f:setPropertyActionListener target="#{almObraAction.pojoObraAlmacenBorrar}" value="#{var}" for="cmdBorrarObraAlmacen" />
+				   	</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller id="dScrollObraAlmacenes" align="center" for="dtObraAlmacenes" maxPages="10"
+						ajaxSingle="true" page="#{almObraAction.obraAlmacenesPagina}"
+						styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

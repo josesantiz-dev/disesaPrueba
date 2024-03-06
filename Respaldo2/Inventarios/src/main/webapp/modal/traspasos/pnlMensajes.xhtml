@@ -1,0 +1,38 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlMensajes" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['atencion']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<h:panelGrid id="grupoResOperacion" columns="1" style="text-align:center; min-width:300px;">
+			<h:outputText value="#{traspasosAction.mensaje}" 			rendered="#{traspasosAction.tipoMensaje ==  -1}" styleClass="Descripcion" escape="false" />
+			<h:outputText value="#{msg['mensaje.info.infoReg']}" 		rendered="#{traspasosAction.tipoMensaje ==   0}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['mensaje.error.inesperado']}" 	rendered="#{traspasosAction.tipoMensaje ==   1}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['mensaje.info.busquedaVacia']}" 	rendered="#{traspasosAction.tipoMensaje ==   2}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['mensaje.error.requerido']}" 	rendered="#{traspasosAction.tipoMensaje ==   3}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['productoAgregado']}" 			rendered="#{traspasosAction.tipoMensaje ==   4}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos10']}" 	rendered="#{traspasosAction.tipoMensaje == -10}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos11']}" 	rendered="#{traspasosAction.tipoMensaje == -11}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos12']}" 	rendered="#{traspasosAction.tipoMensaje == -12}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos13']}" 	rendered="#{traspasosAction.tipoMensaje == -13}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos14']}" 	rendered="#{traspasosAction.tipoMensaje == -14}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos15']}" 	rendered="#{traspasosAction.tipoMensaje == -15}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos16']}" 	rendered="#{traspasosAction.tipoMensaje == -16}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos17']}" 	rendered="#{traspasosAction.tipoMensaje == -17}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos18']}" 	rendered="#{traspasosAction.tipoMensaje == -18}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos19']}" 	rendered="#{traspasosAction.tipoMensaje == -19}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['mensaje.errorTraspasos20']}" 	rendered="#{traspasosAction.tipoMensaje == -20}" styleClass="Descripcion" />
+		
+			<a4j:commandButton style="margin:10px auto 0; min-width:100px; cursor:pointer;"
+				value="#{msg['aceptar']}"
+				onclick="#{rich:component('pnlMensajes')}.hide()" />	
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

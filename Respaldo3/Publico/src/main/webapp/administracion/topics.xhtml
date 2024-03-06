@@ -1,0 +1,242 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title" >
+    	<h:outputText value="#{msg['eventos']}" />
+    </ui:define>
+
+	<ui:define name="menuFrag">
+		<rich:toolBarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" styleClass="Titulo"
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}" 
+				action="#{topicsAction.buscar}"
+				reRender="dtComando" />
+		</rich:toolBarGroup>
+		
+		<rich:toolBarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdInflate" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['nuevo22.img']}" title="Inflar"
+				action="#{topicsAction.inflate}" 
+				oncomplete="#{rich:component('pnlMensajes')}.show()"
+				reRender="pnlMensajes" />
+		</rich:toolBarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<a4j:loadStyle src="resource:///resources/css/adm/adm.css" />
+		<a4j:loadStyle src="resource:///resources/css/adm/admEmpresas.css" />
+		<a4j:loadScript src="resource:///resources/scripts/adm/empresas.js"/>
+		
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText value="#{msg['eventos']}" style="font-weight: bold; font-size: 28px; color:#525252;" />
+		</div>
+		
+		<h:panelGrid columns="3" columnClasses="tygGtosCompColIzq,tygGtosCompColDer,tygGtosCompColDer" style="margin:30px 5px 0; display:block; max-width:720px;" cellpadding="0" cellspacing="5">
+			<h:outputText value="Busqueda:" styleClass="Titulo" />
+			<h:selectOneMenu id="cmbTipoBusqueda" value="#{topicsAction.campoBusqueda}" style="width:120px;">
+				<f:selectItems value="#{topicsAction.tiposBusqueda}" />
+			</h:selectOneMenu>
+			<h:inputText id="txtvalor" value="#{topicsAction.valorBusqueda}" />
+			
+			<h:outputText value="" styleClass="Titulo" />
+			<h:selectBooleanCheckbox id="checkFecha" value="#{topicsAction.activarFecha}" style="float:right;" />
+			<rich:calendar id="cbFechaBusqueda" datePattern="dd/MMM/yyyy" inputSize="18" zindex="100" showWeekDaysBar="false" showWeeksBar="false" 
+				value="#{topicsAction.fechaBusqueda}" />
+		</h:panelGrid>
+		
+		<div class="div_pagina" style="margin:5px auto 25px; padding:0;">
+			<rich:dataTable id="dtComando" value="#{topicsAction.listEventos}" var="var" rows="100" styleClass="tabla_pagina"
+				cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" style="margin:0 auto;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:80px;">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:120px;">
+							<h:outputText value="#{msg['topic']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+							<h:outputText value="#{msg['evento']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+							<h:outputText value="#{msg['target']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+							<h:outputText value="#{msg['referencia']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; max-width:120px;">
+							<h:outputText value="#{msg['atributos']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+							<h:outputText value="#{msg['creado']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+							<h:outputText value="#{msg['ejecutado']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:100px;">
+							<h:outputText value="#{msg['estatus']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:40px;" colspan="2" />
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;"
+					sortBy="#{var.id}">
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left;"
+					sortBy="#{var.nombre}">
+					<h:outputText value="#{var.nombre}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left;"
+					sortBy="#{var.evento}">
+					<h:outputText value="#{var.evento}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left;"
+					sortBy="#{var.target}">
+					<h:outputText value="#{var.target}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left;"
+					sortBy="#{var.referencia}">
+					<h:outputText value="#{var.referencia}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; max-width:120px;"
+					sortBy="#{var.atributos}">
+					<h:outputText value="#{var.atributosAux}" title="#{var.atributos}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;"
+					sortBy="#{var.fechaCreado}">
+					<h:outputText value="#{var.fechaCreado}"><f:convertDateTime type="date" pattern="dd/MMM/yyyy"/></h:outputText>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;"
+					sortBy="#{var.fechaEjecutado}">
+					<h:outputText value="#{var.fechaEjecutado}"><f:convertDateTime type="date" pattern="dd/MMM/yyyy"/></h:outputText>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left;">
+					<h:outputText value="#{var.estatus}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+					<a4j:commandButton id="cmdVer" 
+						image="#{msg['detalles16.img']}" title="Ver"
+						action="#{topicsAction.ver}" 
+						oncomplete="#{rich:component('pnlEvento')}.show()"
+						reRender="pnlEvento">
+						<f:setPropertyActionListener target="#{topicsAction.evento}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+					<a4j:commandButton id="cmdLanzar" 
+						image="#{msg['aplicar16.img']}" title="Lanzar"
+						action="#{topicsAction.lanzar}" 
+						reRender="pnlMensajes">
+						<f:setPropertyActionListener target="#{topicsAction.evento}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<f:facet name="footer">
+					<rich:datascroller for="dtComando" page="#{topicsAction.numPagina}" renderIfSinglePage="false"
+						align="center" ajaxSingle="true" styleClass="Titulo" maxPages="10" fastStep="10" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<rich:modalPanel id="pnlEvento" autosized="true" domElementAttachment="form" top="5">
+			<f:facet name="header">
+				<h:outputText value="#{msg['evento']} #{topicsAction.idEvento}" styleClass="Titulo" />
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage style="cursor:pointer;" 
+					value="#{msg['navegacion.gral.cerrar.img']}" 
+					onclick="#{rich:component('pnlEvento')}.hide()" />
+			</f:facet>
+			
+			<a4j:form id="frmEvento">
+				<h:panelGroup style="display:block; width:600px; min-height:22px;">
+					<h:panelGrid columns="2" style="margin:0 auto; text-align:left; width:100%;">
+						<h:panelGroup style="vertical-align:middle; position:relative; width:100%; min-height:22px; overflow:hidden;">
+							<h:outputText value="#{topicsAction.evento.nombre}.#{topicsAction.evento.evento}" styleClass="Titulo" />
+							<rich:messages id="validadorEventos" showDetail="false" showSummary="true" />
+						</h:panelGroup>
+						
+						<h:panelGroup style="vertical-align:middle; position:relative; width:100%; min-height:22px; overflow:hidden;">
+							<a4j:commandButton id="cmdSalvar" style="float:right; vertical-align: middle; position:relative; margin:auto 0;"
+								image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}/#{msg['Lanzar']}"
+								onclick="#{rich:element('cmdSalvar')}.disabled = true;" 
+								action="#{topicsAction.guardar}" 
+								oncomplete="#{rich:element('cmdSalvar')}.disabled = false;"
+								reRender="dtComando,pnlMensajes" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+				
+				<h:panelGrid id="pnlDatos" columns="2" cellpadding="3" columnClasses="tygGtosCompColIzq, tygGtosCompColDer" style="display: block;position:relative; margin:10px auto 0;">
+					<h:outputText value="#{msg['target']} :" styleClass="Titulo" />	
+					<h:inputText value="#{topicsAction.evento.target}" readonly="true" />
+					
+					<h:outputText value="#{msg['referencia']}:" styleClass="Titulo" />	
+					<h:panelGroup>
+						<h:inputText value="#{topicsAction.evento.referencia}" readonly="true" />
+						<h:inputText value="#{topicsAction.evento.referenciaExtra}" title="#{msg['referencia']} #{msg['extra']}" readonly="true" style="margin:auto 5px;" />
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['atributos']}:" styleClass="Titulo" />	
+					<h:inputTextarea value="#{topicsAction.evento.atributos}" readonly="true" style="width:512px; height:48px; scroll:vertical; resize:none;" />
+					
+					<h:outputText value="#{msg['comando']}:" styleClass="Titulo" />	
+					<h:inputTextarea id="txtComando" style="width:512px; height:96px; scroll:vertical; resize:none;" 
+						value="#{topicsAction.evento.comando}" />
+					
+					<h:outputText value="#{msg['estatus']} (#{topicsAction.evento.estatus}):" styleClass="Titulo" />	
+					<h:inputTextarea id="txtdMensaje" style="width:512px; height:192px; scroll:vertical;" 
+						value="#{topicsAction.evento.descripcion}" />
+				</h:panelGrid>
+			</a4j:form>
+		</rich:modalPanel>
+		
+		<rich:modalPanel id="pnlMensajes" autosized="true" domElementAttachment="form" width="300"
+			onshow="document.getElementById('#{rich:clientId('pnlMensajesOk')}').focus();">
+			<f:facet name="header">
+				<h:outputText value="#{msg['atencion']}" styleClass="Titulo" />
+			</f:facet>
+			
+			<a4j:form id="frmMensajes" style="text-align:center;">
+				<h:panelGroup style="display:block; min-width:300px; max-width:500px; float:center; text-align:center;">
+					<h:outputText styleClass="Descripcion" value="#{topicsAction.mensaje}" escape="false" />
+					
+					<a4j:commandButton id="pnlMensajesOk" style="margin:10px auto 0; width:100px; cursor:pointer;"
+						value="#{msg['aceptar']}"
+						onclick="#{rich:component('pnlMensajes')}.hide()"  />
+				</h:panelGroup>
+			</a4j:form>
+		</rich:modalPanel>
+	</ui:define>
+</ui:composition>

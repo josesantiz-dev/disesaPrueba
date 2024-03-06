@@ -1,0 +1,37 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlFinalizarComprobacion" autosized="true">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo"/>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor:pointer;" id="imgCerrarFinalizarComprobacion"/>
+				<rich:componentControl for="pnlFinalizarComprobacion" attachTo="imgCerrarFinalizarComprobacion" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="frmFinalizarComprobacion">
+			<a4j:region id="loadFinalizarComprobacion">
+				<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+					<h:outputText value="#{msg['mensaje.pregunta.estaSeguroComprobacion']}" style="display:block;"  styleClass="Descripcion"/>
+					<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+						<a4j:commandButton id="cmdFinal" onclick="#{rich:element('cmdFinal')}.disabled = true;" action="#{comprobacionGastosAction.revisarComprobacionGasto}" oncomplete="finaliza('pnlFinalizarComprobacion', 'pnlMsgReembolsoDevolucion', '/VIEWConsol/ReporteGeneric.faces'); #{rich:element('cmdFinal')}.disabled = false;" value="#{msg['navegacion.label.aceptar']}" reRender="pnlMsgReembolsoDevolucion,dtResultsGastosComprobar"/>
+						<a4j:commandButton onclick="#{rich:component('pnlFinalizarComprobacion')}.hide()" value="#{msg['cancelar.e']}" style="margin-left:10px;"/>
+					</h:panelGroup>
+					<a4j:status for="loadFinalizarComprobacion">
+						<f:facet name="start">
+							<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}"/>
+						</f:facet>				 			
+					</a4j:status>
+				</h:panelGrid>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>	
+</ui:composition>

@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlArea" autosized="true" domElementAttachment="form" style="min-width:500px; max-width:1024px;">
+		<f:facet name="header">
+			<h:outputText styleClass="Titulo"
+				value="#{areaAction.pojoArea.id == null ? 'Nueva Area' : 'Editar Area'}" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlArea')}.hide()" />
+		</f:facet>
+		
+		<a4j:region id="regArea">
+			<h:panelGrid columns="2" style="text-align:left; min-height: 22px; margin:0 auto; width:100%">
+				<h:panelGroup style="width:100%; vertical-align:middle; position:relative;">
+					<rich:messages id="validadorArea" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!">
+						<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" /></f:facet>
+					</rich:messages>
+				</h:panelGroup>
+				
+				<h:panelGroup style="width:100%; vertical-align:middle; position:relative;">
+					<a4j:commandButton id="cmdSalvar" style="float:right; margin:0 5px auto; vertical-align:top; position:relative;" 
+						image="#{msg['salvar22.img']}" 
+						onclick="#{rich:element('cmdSalvar')}.disabled = true;" 
+						action="#{areaAction.guardar}" 
+						oncomplete="salvar(#{areaAction.band}, '#{rich:clientId('pnlArea')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorArea')}); #{rich:element('cmdSalvar')}.disabled = false;"
+						render="validadorArea,pnlMensajes,dtAreas" />
+				</h:panelGroup>
+			</h:panelGrid>
+
+			<fieldset style="margin:10px auto 0;">
+				<legend><h:outputText value="#{msg['area']}" styleClass="Titulo" /></legend>
+				
+				<h:panelGrid columns="2" columnClasses="colTitulo,colDato">
+					<h:outputText value="#{msg['id']}:" styleClass="Titulo" />
+					<h:outputText id="txtIdArea" style="text-align:left;"
+						value="#{areaAction.pojoArea.id}" />
+					
+					<h:outputText value="#{msg['descripcion']}:" styleClass="Titulo" />
+					<h:inputText id="txtDescripcion" style="text-align:left; width:310px; display:block;"
+						value="#{areaAction.descripcion}" 
+						required="#{!empty param[rich:clientId('cmdSalvar')]}"
+						requiredMessage="#{msg['mensage.error.descripcion']} #{msg['mensaje.error.requerido']}" />
+					
+					<h:outputText value="#{msg['responsable']}:" styleClass="Titulo" />
+					<h:selectOneMenu id="cbResponsables" style="width:316px;"
+						value="#{areaAction.responsable}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />		
+						<f:selectItems value="#{areaAction.responsables}" />			  					
+					</h:selectOneMenu>
+				</h:panelGrid>
+			</fieldset>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

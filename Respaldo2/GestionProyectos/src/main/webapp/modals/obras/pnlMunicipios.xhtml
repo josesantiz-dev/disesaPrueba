@@ -1,0 +1,79 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlMunicipios" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+		<f:facet name="header">
+			<h:outputText value="#{msg['seleccionarMunicipio']}" styleClass="Titulo"/>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlMunicipios')}.hide()"/>
+		</f:facet>
+
+		<div style="display: block; width: 450px; height: 22px;">
+			<h:panelGrid columns="1" style="position:relative; float:right; margin-right:5px;">	
+				<h:panelGroup style="padding:0 2px 0 2px; float:right;">
+					<a4j:commandButton id="cmdBuscarMunicipios" 
+						image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+						action="#{obrasAction.buscarMunicipios}" 
+						render="dtMunicipios" />
+				</h:panelGroup>
+			</h:panelGrid>
+		</div>
+				
+		<h:panelGroup styleClass="encabezado">
+			<h:outputText value="#{obrasAction.pojoEstado != null ? obrasAction.pojoEstado.nombre : ' '} "/>
+		</h:panelGroup>
+		
+		<h:panelGroup style="display:block;">
+			<h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+			<h:inputText value="#{obrasAction.busquedaMunicipio}" style="margin-left:5px;" />
+		</h:panelGroup>
+				
+		<rich:dataTable id="dtMunicipios" cellpadding="0" cellspacing="0"
+			rows="5" border="0" var="mun" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+			value="#{obrasAction.listMunicipios}">
+
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['id']}" />
+					</rich:column>
+
+					<rich:column colspan="2" style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['nombre']}" />
+					</rich:column>
+				</rich:columnGroup>
+			</f:facet>
+
+			<rich:column width="30" styleClass="Descripcion">
+				<h:outputText value="#{mun.id}" />
+			</rich:column>
+
+			<rich:column styleClass="Descripcion">
+				<h:outputText value="#{mun.nombre}" />
+			</rich:column>
+
+			<rich:column width="20" style="text-align:center;">
+				<a4j:commandButton ajaxSingle="true"
+					image="#{msg['drag16.img']}" 
+					oncomplete="#{rich:component('pnlMunicipios')}.hide()" 
+					render="pnlPersonaGral, grpDomiDom">
+					<f:setPropertyActionListener target="#{obrasAction.pojoMunicipio}" value="#{mun}" />
+				</a4j:commandButton>
+			</rich:column>
+
+			<f:facet name="footer">
+				<rich:dataScroller id="dScrollMunicipios" align="center" for="dtMunicipios" maxPages="10"
+					ajaxSingle="true" page="#{obrasAction.numPaginaMunicipio}" styleClass="Titulo" />
+			</f:facet>
+		</rich:dataTable>
+	</rich:popupPanel>
+</ui:composition>

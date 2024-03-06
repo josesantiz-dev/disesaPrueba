@@ -1,0 +1,116 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlTimbre" autosized="true" domElementAttachment="form" style="min-width:300px; max-width:1024px;" top="20">
+		<f:facet name="header">				
+			<h:outputText value="#{msg['timbrar']}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;"
+				value="#{msg['navegacion.gral.cerrar.img']}"
+				onclick="#{rich:component('pnlTimbre')}.hide()" />	
+		</f:facet>
+		
+		<a4j:region>
+			<h:panelGroup styleClass="encabezado" style="min-height: 1em;">
+				<h:outputText value="#{facturaAction.tituloFactura}" />
+			</h:panelGroup>
+		
+			<rich:messages id="timbreValidadorCampos" ajaxRendered="true" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+				<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" /></f:facet>
+			</rich:messages>
+			
+			<h:panelGroup style="display:block; min-width:500px; text-align:center;">
+				<h:panelGrid columns="2" width="100%" style="margin:5px auto 0;" columnClasses="colTitulo,colDato">
+					<h:outputText value="#{msg['version']}:" styleClass="Descripcion" />
+					<h:selectOneMenu id="cbCfdiVersion" style="width:162px;"
+						value="#{facturaAction.cfdiVersion}"
+		            	required="#{!empty param[rich:clientId('cmdDoTimbrar')]}" 
+		            	requiredMessage="#{msg['version']} #{msg['mensaje.error.requerido']}">
+		            	<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{facturaAction.listCFDIVersionItems}" />
+					</h:selectOneMenu>
+					
+					<h:outputText value="#{msg['tipoComprobante']}:" styleClass="Descripcion" />
+					<h:selectOneMenu id="cbTiposComprobante" style="width:162px;"
+						value="#{facturaAction.idTipoComprobante}"
+		            	required="#{!empty param[rich:clientId('cmdDoTimbrar')]}" 
+		            	requiredMessage="#{msg['tipoComprobante']} #{msg['mensaje.error.requerido']}">
+		            	<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{facturaAction.listCFDITipoComprobanteItems}" />
+					</h:selectOneMenu>
+					
+					<h:outputText value="#{msg['usoCfdi']}:" styleClass="Descripcion" />
+					<h:selectOneMenu id="cbUsoCfdi" style="width:262px;"
+						value="#{facturaAction.idUsoCfdi}" 
+		            	required="#{!empty param[rich:clientId('cmdDoTimbrar')]}" 
+		            	requiredMessage="#{msg['usoCfdi']} #{msg['mensaje.error.requerido']}">
+		            	<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{facturaAction.listCFDIUsoItems}" />
+					</h:selectOneMenu>
+					
+					<h:outputText value="#{msg['cfdiRelaciondo']}:" styleClass="Descripcion" />
+					<h:selectBooleanCheckbox value="#{facturaAction.cfdiRelacionado}">
+						<a4j:ajax event="change" 
+							render="cmdSeleccionarCfdiRelacionado,cbTipoRelacionCfdi" 
+							limitRender="true" />
+					</h:selectBooleanCheckbox>
+					
+					<h:outputText value="#{msg['uuid']}:" styleClass="Descripcion"/>
+					<h:panelGroup id="pnlCfdiRelacionado">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtCfdiRelacionado" value="#{facturaAction.cfdiRelacionadoUuid}" styleClass="Titulo" />
+							<h:panelGroup>
+								<a4j:commandLink id="cmdSeleccionarCfdiRelacionado" style="display:#{facturaAction.cfdiRelacionado ? 'block' : 'none'}"
+									value="#{facturaAction.cfdiRelacionadoUuid == '' ? msg['seleccionar'] : msg['cambiar']}" 
+									action="#{facturaAction.nuevaBusquedaFacturas}" 
+									oncomplete="#{rich:component('pnlBusquedaFacturas')}.show();"
+									render="pnlBusquedaFacturas"
+									limitRender="true" />
+								
+								<!-- Este input es solo con propósito de que se permita hacer validator al proyecto -->
+								<h:inputText id="txtFacturaHidden" style="text-align:left;  display:none;"
+									value="#{facturaAction.cfdiRelacionadoUuid}"
+									required="#{facturaAction.cfdiRelacionado ? !empty param[rich:clientId('cmdDoTimbrar')] : false}" 
+									requiredMessage="#{msg['uuid']} #{msg['mensaje.error.requerido']}">
+								</h:inputText>
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['tipoRelacionCfdi']}:" styleClass="Descripcion" />
+					<h:selectOneMenu id="cbTipoRelacionCfdi" style="width:262px;"
+						disabled="#{! facturaAction.cfdiRelacionado}"
+						value="#{facturaAction.idTipoRelacion}" 
+		            	required="#{facturaAction.cfdiRelacionado ? !empty param[rich:clientId('cmdDoTimbrar')] : false}" 
+		            	requiredMessage="#{msg['tipoRelacionCfdi']} #{msg['mensaje.error.requerido']}">
+		            	<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{facturaAction.listCFDITipoRelacionItems}" />
+					</h:selectOneMenu>
+				</h:panelGrid>
+			</h:panelGroup>
+			
+			<h:panelGrid columns="2" width="100%" style="margin:10px auto 0; text-align:center;">
+				<a4j:commandButton id="cmdDoTimbrar" style="float:right; margin:0 5px 0 auto; width:100px;"
+					value="#{msg['timbrar']}" 
+					action="#{facturaAction.timbrar}"
+					oncomplete="timbrar(#{facturaAction.band}, '#{rich:clientId('pnlTimbre')}', '#{rich:clientId('pnlMensajesCustom')}', #{rich:element('timbreValidadorCampos')}); #{rich:component('pnlMensajesCustom')}.show()"
+					render="timbreValidadorCampos, pnlMensajesCustom, panelBotoneraIzquierda, dtFacturas, txtUuid"
+					limitRender="true"
+					execute="@region" />
+					
+				<a4j:commandButton style="float:left; margin:0 auto 0 5px; width:100px;"
+					value="#{msg['cancelar']}"
+					onclick="#{rich:component('pnlTimbre')}.hide()" />
+			</h:panelGrid>
+			
+			<a4j:log rendered="#{facturaAction.debugging}" style="max-width:500px; margin:0 auto; max-height:200px;" />
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

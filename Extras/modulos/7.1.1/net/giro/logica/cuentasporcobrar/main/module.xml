@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="net.giro.logica.cuentasporcobrar" xmlns="urn:jboss:module:1.1">
+	<resources>
+		<resource-root path="Logica_CuentasPorCobrar.jar"/>
+	</resources>
+	<dependencies>
+		<module export="true" name="ca.juliusdavies.not-yet-commons-ssl"/>
+		<module export="true" name="com.enterprisedt.edtFTPj"/>
+		<module export="true" name="com.google.code.gson"/>
+		<!--module export="true" name="com.sun.net.ssl.internal.ssl"/-->
+		<module export="true" name="javax.api"/>
+		<module export="true" name="org.apache.log4j"/>
+		<module export="true" name="org.apache.commons.beanutils"/>
+		<module export="true" name="org.apache.commons.httpclient"/>
+		<module export="true" name="org.apache.santuario.xmlsec"/>
+		<module export="true" name="org.beanshell.bsh"/>
+		<module export="true" name="org.hibernate"/>
+		<module export="true" name="org.hibernate.validator"/>
+		<module export="true" name="org.jdom"/>
+		<module export="true" name="net.giro.comun"/>
+		<module export="true" name="net.giro.logica.clientes"/>
+		<module export="true" name="net.giro.logica.gestionproyectos"/>
+		<module export="true" name="net.giro.logica.tyg"/>
+		<module export="true" name="net.giro.model.clientes"/>
+		<module export="true" name="net.giro.model.cuentasporcobrar"/>
+		<module export="true" name="net.giro.model.gestionproyectos"/>
+		<module export="true" name="net.giro.model.publico"/>
+		<module export="true" name="net.giro.model.tesoreria"/>
+		<module export="true" name="net.giro.model.tyg"/>
+	</dependencies>
+</module>

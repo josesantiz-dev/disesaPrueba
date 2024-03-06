@@ -1,0 +1,35 @@
+.colIzq{
+	width: 100px;
+	text-align: right;
+}
+.colDer{
+	text-align: left;
+	width:300px;
+}
+.colDer2{
+	text-align: left;
+	width:220px;
+}
+.colIzq2{
+	width: 80px;
+	text-align: right;
+}
+.colDetalleIzq{
+	width: 10em;
+	text-align: right;
+}
+.colDetalleDer{
+	width: 20em;
+	text-align: left;
+}
+.colSeparatorIzq{
+	width: 7em;
+	text-align: right;
+}
+.colSeparatorDer{
+	width: 100%;
+	text-align: left;
+}
+.combo{
+	width:15em;
+}

@@ -1,0 +1,85 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlBusquedaOperaciones" autosized="true" domElementAttachment="form" top="10" 
+    	header="#{msg['buscar.e']} #{msg['operacion']}"
+    	onshow="document.getElementById('#{rich:clientId('txtValorBusquedaOperaciones')}').focus();">
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlBusquedaOperaciones')}.hide()" />
+		</f:facet>
+		
+		<rich:hotKey id="richHotKeyBusquedaOperaciones" enabledInInput="true" preventDefault="true" 
+			selector="#txtValorBusquedaOperaciones" key="return"
+			onkeydown="#{rich:element('frmPrincipal:cmdBuscarOperaciones')}.click()" />
+		
+		<div style="display:block; min-width: 400px; width:100%; height: 22px;">
+			<a4j:commandButton id="cmdBuscarOperaciones" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+				action="#{operIntTransAction.buscarOperaciones}" 
+				oncomplete="buscar(#{operIntTransAction.operacion}, '#{rich:clientId('pnlMensajes')}');" 
+				render="dtBusquedaOperaciones, pnlMensajes"
+				limitRender="true" />
+		</div> 
+		
+		<div style="margin:10px auto 0;">
+			<h:panelGrid id="pnlBusquedaOperacionesPrincipal" columns="2" columnClasses="colTitulo, colDato" style="margin:10px auto; display:block;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>				
+				<h:selectOneMenu value="#{operIntTransAction.campoBusquedaOperaciones}" styleClass="Titulo" style="width: 216px;">
+					<f:selectItems value="#{operIntTransAction.tiposBusquedaOperaciones}" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText id="txtValorBusquedaOperaciones" maxlength="50" style="width: 210px;"
+					value="#{operIntTransAction.valorBusquedaOperaciones}" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtBusquedaOperaciones" value="#{operIntTransAction.listBusquedaOperaciones}" var="var" 
+				cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column styleClass="Titulo" style="text-align:center; width:90px;" breakRowBefore="true">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center;">
+							<h:outputText value="#{msg['descripcion']}" />
+						</rich:column>
+
+						<rich:column styleClass="Titulo" style="text-align:center; width:20px;" />
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="width:90px; text-align:center;">
+					<h:outputText value="#{var.id}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.descripcion}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column style="width:20px; text-align:center;">
+				   <a4j:commandButton id="cmdSeleccionarOperacion" 
+				   		image="#{msg['agregar16.img']}" title="#{msg['seleccionar']}"
+						action="#{operIntTransAction.seleccionarOperacion}"
+						oncomplete="seleccionar(#{operIntTransAction.operacion}, '#{rich:clientId('pnlBusquedaOperaciones')}', '#{rich:clientId('pnlMensajes')}')"
+						render="pnlOperacionDatos,pnlMensajes"
+						limitRender="true">
+						<f:setPropertyActionListener target="#{operIntTransAction.pojoOperacionSeleccionada}" value="#{var}" for="cmdSeleccionarOperacion" />
+				   </a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller page="#{operIntTransAction.numPaginaBusquedaOperaciones}" for="dtBusquedaOperaciones" 
+						maxPages="10" fastStep="10" ajaxSingle="true" align="center" styleClass="Titulo" renderIfSinglePage="false" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

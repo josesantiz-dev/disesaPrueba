@@ -1,0 +1,109 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+	
+	<rich:popupPanel id="pnlImportarNominaQuincenal" autosized="true" domElementAttachment="form" top="10">
+		<f:facet name="header">
+			<h:outputLabel value="#{msg['importar']} #{msg['nomina']} #{msg['quincenal']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.panel.cerrar.img']}" 
+				onclick="#{rich:component('pnlImportarNominaQuincenal')}.hide()" />
+		</f:facet>
+		
+		<a4j:region id="regCargaNominaQuincenal">
+			<rich:messages id="validadorNominaQuincenal" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+				<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+			</rich:messages>
+			
+			<div style="display:block; padding:0; min-width:400px; min-height:22px; text-align:left; background-color:none;">
+				<rich:fileUpload id="miUploadExcel" listWidth="100%" listHeight="120"
+					acceptedTypes=".xls, .xlsx"
+					addControlLabel="#{msg['navegacion.label.anadirArchivo']}" 
+					addLabel="#{msg['agregar.e']}"
+					cancelEntryControlLabel="#{msg['navegacion.boton.eliminar.e']}" 
+					cleanButtonClass="Titulo" 
+					clearAllControlLabel="#{msg['navegacion.label.eliminarTodo']}"
+					clearAllLabel="#{msg['borrarTodo']}" 
+					clearLabel="#{msg['borrar']}"
+					doneLabel="#{msg['navegacion.label.archivoEnviado']}" 
+					fileEntryControlClass="Descripcion"
+					fileUploadListener="#{nominaAction.cargarNominaQuincenal}"
+					immediateUpload="true"
+					maxFilesQuantity="1" 
+					ontyperejected="alert('#{msg['soloExcel']}');"
+					progressLabel="#{msg['navegacion.label.enviando']}"
+					stopButtonClass="Titulo"
+					stopControlLabel="#{msg['navegacion.label.detener']}"
+					style="text-align: left;"
+					uploadButtonClass="Titulo"
+					uploadButtonClassDisabled="true" 
+					uploadControlLabel="#{msg['navegacion.label.enviarArchivo']}">
+		            <a4j:ajax event="clear" execute="regCargaNominaQuincenal" render="regCargaNominaQuincenal" limitRender="true" />
+		   		</rich:fileUpload>
+		   		
+				<h:panelGrid id="panelFechasQuincenal" columns="2" style="margin:10px auto 0;">
+					<h:outputText value="#{msg['fecha']} #{msg['desde']}:" styleClass="Titulo" />
+		            <rich:calendar id="txtFechaDesdeQuincenal" datePattern="dd/MMM/yyyy" enableManualInput="true"
+		            	value="#{nominaAction.fechaDesdeQuincenal}"
+						required="#{!empty param[rich:clientId('cmdImportarNominaQuincenal')]}" 
+						requiredMessage="#{msg['fecha']} #{msg['desde']} #{msg['mensaje.error.requerido']}">
+						<a4j:ajax event="change" 
+							listener="#{nominaAction.autoasignaFechaHastaQuincenal}" 
+							render="txtFechaHastaQuincenal"
+							limitRender="true" />
+		            </rich:calendar>
+					
+					<h:outputText value="#{msg['fecha']} #{msg['hasta']}:" styleClass="Titulo" />
+		            <rich:calendar id="txtFechaHastaQuincenal" datePattern="dd/MMM/yyyy" enableManualInput="true" 
+		            	value="#{nominaAction.fechaHastaQuincenal}"
+						required="#{!empty param[rich:clientId('cmdImportarNominaQuincenal')]}" 
+						requiredMessage="#{msg['fecha']} #{msg['hasta']} #{msg['mensaje.error.requerido']}" />
+					
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Descripcion" rendered="#{nominaAction.activarRetroactivo}" />
+					<h:panelGroup rendered="#{nominaAction.activarRetroactivo}">
+						<h:selectBooleanCheckbox id="ckRetroactivo" value="#{nominaAction.retroactivo}" />
+						<h:outputLabel for="ckRetroactivo" value="Retroactivo" style="margin:auto 2px;" />
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Descripcion" rendered="#{nominaAction.activarRetroactivo}" />
+					<h:panelGroup rendered="#{nominaAction.activarRetroactivo}">
+						<h:selectBooleanCheckbox id="ckPermitirSinSueldo" value="#{nominaAction.permitirSinSueldo}" />
+						<h:outputLabel for="ckPermitirSinSueldo" value="Permitir Empleados sin Sueldo" style="margin:auto 2px;" />
+					</h:panelGroup>
+				</h:panelGrid>
+				
+				<h:panelGrid columns="2" style="width: 100%">
+					<h:panelGroup>
+						<a4j:status id="statusQuincenal" for="regCargaNominaQuincenal">
+							<f:facet name="start">
+								<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;" />
+								<h:outputLabel  value="#{msg['procesando']}" style="cursor:pointer;" styleClass="Titulo" />
+							</f:facet>
+							
+							<f:facet name="stop">
+								<h:outputLabel value="#{msg['navegacion.label.vacio']}" style="cursor:pointer;" styleClass="Titulo" />
+							</f:facet>
+						</a4j:status>
+					</h:panelGroup>
+					
+					<h:panelGroup>
+				   		<a4j:commandButton id="cmdImportarNominaQuincenal" style="float:right; margin:5px;" 
+				   			image="#{msg['aplicar22.img']}" title="#{msg['importar']} #{msg['nomina']} #{msg['quincenal']}"
+							action="#{nominaAction.importarNominaQuincenal}" execute="regCargaNominaQuincenal"
+							oncomplete="cargaNominaQuincenal(#{nominaAction.operacion}, #{nominaAction.tipoMensaje}, '#{rich:clientId('pnlImportarNominaQuincenal')}', '#{rich:clientId('pnlEmpleadosSinProcesar')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorNominaQuincenal')})"
+							render="validadorNominaQuincenal,pnlEmpleadosSinProcesar,pnlMensajes" 
+							limitRender="true" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

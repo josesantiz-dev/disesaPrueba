@@ -1,0 +1,102 @@
+### INSTRUCCION DE CONFIGURACION DEL ARCHIVO STANDALONE-FULL.XML DE JBOSS7 PARA DISESA.
+---------------------------------------------------------------------------------------
+
+
+* GENERACION DE SSO.
+---------------------------------------------------------------------------------------
+- Respalda el archivo cacerts del path de java: JAVA_HOME/jre/lib/security/.
+- Copia el cacerts a tu directorio actual.
+- Ejecutar los siguiente comandos (Todos los passwords que se requieran deben ser "changeit" (sin comillas)):
+	- Generamos el keystore:
+		keytool -genkey -alias jboss7disesa -keyalg RSA -ext san=dns:disesa.condese.net *** 
+	- Generamos certificado:
+		keytool -export -alias jboss7disesa -file disesa_cas.crt 
+	- Importamos el certificado al cacerts (previamente copiado):
+		keytool -import -alias jboss7disesa -file disesa_cas.crt -keystore cacerts 
+
+	NOTA: El .keystore se genera en el HOME del usuario que este ejecutando los comandos, 
+		ejemplo: si fuera el usuario root, el keystore se generara en en directorio /root
+- copiar y reemplazar el cacerts a la ruta original (JAVA_HOME/jre/lib/security/).
+
+
+
+* CONFIGURACION DE CONECTOR HTTPS.
+---------------------------------------------------------------------------------------
+- busca la seccion: <subsystem xmlns="urn:jboss:domain:web:1.1">. Y agrega:
+	<connector name="https" protocol="HTTP/1.1" scheme="https" socket-binding="https" secure="true">
+        <ssl key-alias="jboss7disesa" password="changeit" certificate-key-file="PATH_KEYSTORE.keystore"/>
+    </connector>
+- Reemplaza "PATH_KEYSTORE" por la ruta donde se genero o donde se encuentra el keystore generado en el paso anterior.
+
+
+
+* CONFIGURACION DE DATASOURCE Y DRIVER.
+---------------------------------------------------------------------------------------
+- busca la seccion: <subsystem xmlns="urn:jboss:domain:datasources:1.0">. Y agrega:
+	<xa-datasource jndi-name="java:/giroDS" pool-name="PGGiroXADS" enabled="true" use-java-context="true">
+	    <xa-datasource-property name="ServerName">localhost</xa-datasource-property>
+	    <xa-datasource-property name="PortNumber">9450</xa-datasource-property>
+	    <xa-datasource-property name="DatabaseName">disesa</xa-datasource-property>
+	    <driver>postgresql</driver>
+	    <security>
+	        <user-name>apps</user-name>
+	        <password>apps</password>
+	    </security>
+	    <validation>
+	        <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker"/>
+	        <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter"/>
+	    </validation>
+	</xa-datasource>
+
+- despues en esa misma seccion busca el tag: <drivers>. Y agrega:
+    <driver name="postgresql" module="org.postgresql">
+        <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+    </driver>
+
+
+* CONFIGURACION DE TOPICOS Y COLAS.
+---------------------------------------------------------------------------------------
+- busca la seccion: <jms-destinations>. Y agrega:
+    <jms-topic name="INVENTARIOS">
+        <entry name="topic/INVENTARIOS"/>
+        <entry name="java:jboss/exported/jms/topic/INVENTARIOS"/>
+    </jms-topic>
+    <jms-topic name="TRANSACCIONES">
+        <entry name="topic/TRANSACCIONES"/>
+        <entry name="java:jboss/exported/jms/topic/TRANSACCIONES"/>
+    </jms-topic>
+    <jms-topic name="CONTABILIZAR">
+        <entry name="topic/CONTABILIZAR"/>
+        <entry name="java:jboss/exported/jms/topic/CONTABILIZAR"/>
+    </jms-topic>
+
+
+
+* ORDEN DE COMPILACION.
+---------------------------------------------------------------------------------------
+Si se requiere, este es el orden para compilar los modulos del proyecto:
+	 1. Comun
+	 2. TODOS LOS MODEL's
+	 3. FRAMEWORK
+	 4. Logica_Publico
+	 5. Logica_Cargas_Documentos
+	 6. Logica_Clientes
+	 7. Logica_TYG
+	 8. Logica_RecHum
+	 9. Logica_Inventarios
+	10. Logica_GestionProyectos
+	11. Logica_Compras
+	12. Logica_Contabilidad
+	13. Logica_CuentasPorCobrar
+	14. Logica_CuentasPorPagar
+	15. Logica_Factoraje
+	16. TODAS LAS VISTAS's
+
+
+* COPIA DE JAR's
+---------------------------------------------------------------------------------------
+- Copia todos los proyectos correspondientes a DISESA en la carpeta deployments del JBOSS.
+- Copia todo el contenido de la carpeta modulos/7.1.1 contenido en el repositorio de Extras de DISESA.
+	Estos copian todos los modulos necesarios para el funcionamiento del proyecto, excepto, los modulos
+	del sistema (Model, Logica, vistas), solamente genera las carpetas necesarias con su respectivo
+	module.xml. Los JAR's deben ser copiados manualmente.

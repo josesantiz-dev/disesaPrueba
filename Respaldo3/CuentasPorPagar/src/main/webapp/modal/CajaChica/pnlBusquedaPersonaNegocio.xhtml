@@ -1,0 +1,110 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlBusquedaPersonaNegocio" autosized="true" top="20">
+		<f:facet name="header">
+			<h:outputText style="margin-left:10px" styleClass="Titulo"
+				value="#{cajaChicaAction.pojoPersonaNegocio == null ? msg['seleccionar'] : msg['cambiar']} #{msg['persona']}/#{msg['negocio']}" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage id="imgCerrarBuscarPersonaNegocio" styleClass="cursor:pointer;" 
+					value="#{msg['navegacion.panel.cerrar.img']}" />
+				<rich:componentControl operation="hide" event="onclick"
+					for="pnlBusquedaPersonaNegocio" attachTo="imgCerrarBuscarPersonaNegocio" />
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmBusquedaPersonaNegocio">
+			<a4j:region id="loadBusquedaPersonaNegocio">
+				<div style="display: block; width:100%; height: 22px;">
+					<a4j:commandButton id="cmdBuscarPersonaNegocio" image="#{msg['buscar22.img']}" 
+						style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+						onclick="#{rich:element('cmdBuscarPersonaNegocio')}.disabled = true;" 
+						action="#{cajaChicaAction.buscarPersonaNegocio}" 
+						oncomplete="buscarPersonaNegocio(#{cajaChicaAction.encontroMismoGrupo}, '#{rich:clientId('pnlMsgGralesCajaChica')}'); #{rich:element('cmdBuscarPersonaNegocio')}.disabled = false;" 
+						reRender="dtResultsPersonaNegocio,pnlMsgGralesCajaChica">
+						<rich:toolTip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarPersonaNegocio"/>
+					</a4j:commandButton>
+				</div>
+		
+				<h:panelGrid columns="2" columnClasses="tygCompGtosColIzq, tygCompGtosColDer" 
+					style="margin: 10px auto; display:block;" width="700">
+					<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>	
+					<rich:comboBox width="180" listStyle="text-align:left;" enableManualInput="false" selectFirstOnUpdate="false"
+						value="#{cajaChicaAction.campoBusquedaPersonaNegocio}">
+						<f:selectItems value="#{cajaChicaAction.tiposBusquedaPersonaNegocio}" />
+					</rich:comboBox>
+					
+					<h:outputText value="#{msg['navegacion.label.valor']}:" styleClass="Titulo"/>
+					<h:inputText size="50" maxlength="35" value="#{cajaChicaAction.valorBusquedaPersonaNegocio}" />
+				</h:panelGrid>
+				
+				<rich:dataTable id="dtResultsPersonaNegocio" var="var" value="#{cajaChicaAction.listPersonasNegocios}" 
+					rows="5" cellpadding="0" cellspacing="0" width="780" border="0" rowClasses="Row1, Row2">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column width="100" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['navegacion.label.id']}"/>
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['nombre']}"/>
+							</rich:column>
+							
+							<rich:column width="150" style="text-align:center; margin-left:10px;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['rfc']}" />
+							</rich:column>
+							
+							<rich:column width="50" style="text-align:center; margin-left:10px;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['tipo']}" />
+							</rich:column>
+							
+							<rich:column width="30" style="text-align:center; margin-left:10px;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['seleccionar']}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column width="100" style="text-align:center;" styleClass="tygCompGtosDesc">
+						<h:outputText  value="#{var.id}" />
+					</rich:column>
+					
+					<rich:column style="text-align:left;" styleClass="tygCompGtosDesc">
+						<h:outputText  value="#{var.nombre}" />
+					</rich:column>
+					
+					<rich:column width="150" style="text-align:center;" styleClass="tygCompGtosDesc">
+						<h:outputText  value="#{var.rfc}" />
+					</rich:column>
+					
+					<rich:column width="50" style="text-align:center;" styleClass="tygCompGtosDesc">
+						<h:outputText  value="#{var.tipo == 'P' ? msg['persona'] : msg['negocio']}" />
+					</rich:column>
+					
+					<rich:column width="30" style="text-align:center;" styleClass="tygCompGtosDesc">
+						<a4j:commandButton id="cmdSeleccionarPersonaNegocio" image="#{msg['agregar16.img']}" 
+							action="#{cajaChicaAction.seleccionarPersonaNegocio}" 
+							oncomplete="seleccionarPersonaNegocio(#{cajaChicaAction.encontroMismoGrupo}, '#{rich:clientId('pnlMsgGralesCajaChica')}', '#{rich:clientId('pnlBusquedaPersonaNegocio')}');" 
+							reRender="pnlBeneficiarioDatos,pnlMsgGralesCajaChica">
+							<f:setPropertyActionListener target="#{cajaChicaAction.pojoPersonaNegocio}" value="#{var}" />
+							<rich:toolTip showDelay="300" value="#{msg['agregar.e']}" for="cmdAgregar" />
+						</a4j:commandButton>
+					</rich:column>
+		
+					<f:facet name="footer">
+						<rich:datascroller align="center" for="dtResultsPersonaNegocio" maxPages="10"
+							ajaxSingle="true" page="#{cajaChicaAction.paginacionBusquedaPersonaNegocio}" id="dScroll"
+							styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

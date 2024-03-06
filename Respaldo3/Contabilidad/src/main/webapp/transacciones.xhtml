@@ -1,0 +1,219 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['transacciones']} - #{msg['modulo']}" />
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}" 
+				action="#{transAction.buscar}" 
+				oncomplete="buscar(#{transAction.operacion},'#{rich:clientId('pnlMensajes')}');"
+				render="dtResults, pnlMensajes" />
+		</rich:toolbarGroup>
+		 
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['nuevo22.img']}" title="#{msg['nuevo.e']}" 
+				action="#{transAction.nuevo}" 
+				oncomplete="#{rich:component('pnlTransaccion')}.show()"
+				render="pnlTransaccion" />
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="contabilidad.css" />
+		<h:outputScript library="scripts" name="contabilidad.js" />
+		<h:outputScript library="scripts" name="transacciones.js" />
+		
+		<div class="div_pagina" style="margin-top: 20px;">
+			<div style="margin: 0 auto; text-align: center; width:100%;">
+				<h1><h:outputText value="#{msg['transacciones']}" styleClass="Titulo" style="font-size: 1em;"/></h1>
+			</div>
+		
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin: 10px; display:block; width: 720px;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+				<h:selectOneMenu id="cmbTipoBusqueda" value="#{transAction.campoBusqueda}" style="width: 216px">
+		            <f:selectItems value="#{transAction.tiposBusqueda}" />
+		        </h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText id="txtvalor" maxlength="50" style="width: 210px"
+					value="#{transAction.valorBusqueda}" />
+			</h:panelGrid>
+			
+			<rich:dataTable id="dtResults" cellpadding="0" cellspacing="0" rows="100" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+				var="var" value="#{transAction.listTransacciones}" style="margin:0 auto 20px; width:100%;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:80px">
+							<h:graphicImage style="margin:auto 0; float:right;"
+								value="#{tranFilter.idOrder eq 'ascending' ? msg['ordenAsc16.img'] : (tranFilter.idOrder eq 'descending' ? msg['ordenDesc16.img'] : msg['orden16.img'])}" />
+							<a4j:commandLink value="#{msg['id']}" action="#{tranFilter.sortById}" render="dtResults" /> 
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:60px">
+							<h:graphicImage style="margin:auto 0; float:right;"
+								value="#{tranFilter.codigoOrder eq 'ascending' ? msg['ordenAsc16.img'] : (tranFilter.codigoOrder eq 'descending' ? msg['ordenDesc16.img'] : msg['orden16.img'])}" />
+							<a4j:commandLink value="#{msg['codigo']}" action="#{tranFilter.sortByCodigo}" render="dtResults" /> 
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+							<h:graphicImage style="margin:auto 0; float:right;"
+								value="#{tranFilter.descripcionOrder eq 'ascending' ? msg['ordenAsc16.img'] : (tranFilter.descripcionOrder eq 'descending' ? msg['ordenDesc16.img'] : msg['orden16.img'])}" />
+							<a4j:commandLink value="#{msg['descripcion']}" action="#{tranFilter.sortByDescripcion}" render="dtResults" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+							<h:graphicImage style="margin:auto 0; float:right;"
+								value="#{tranFilter.operacionOrder eq 'ascending' ? msg['ordenAsc16.img'] : (tranFilter.operacionOrder eq 'descending' ? msg['ordenDesc16.img'] : msg['orden16.img'])}" />
+							<a4j:commandLink value="#{msg['operacion']}" action="#{tranFilter.sortByOperacion}" render="dtResults" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+							<h:graphicImage style="margin:auto 0; float:right;"
+								value="#{tranFilter.glosaOrder eq 'ascending' ? msg['ordenAsc16.img'] : (tranFilter.glosaOrder eq 'descending' ? msg['ordenDesc16.img'] : msg['orden16.img'])}" />
+							<a4j:commandLink value="#{msg['glosa']}" action="#{tranFilter.sortByGlosa}" render="dtResults" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+							<h:graphicImage style="margin:auto 0; float:right;"
+								value="#{tranFilter.moduloOrder eq 'ascending' ? msg['ordenAsc16.img'] : (tranFilter.moduloOrder eq 'descending' ? msg['ordenDesc16.img'] : msg['orden16.img'])}" />
+							<a4j:commandLink value="#{msg['modulo.e']}" action="#{tranFilter.sortByModulo}" render="dtResults" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:40px;" colspan="2">
+							<h:graphicImage style="cursor:pointer;" 
+								value="#{msg['filter16.img']}" title="Mostrar/Ocultar Filtros">
+		                    	<a4j:ajax event="click" execute="@this" 
+		                    		listener="#{tranFilter.toggleFilters}" 
+		                    		render="dtResults" 
+		                    		limitRender="true"/>
+		                   	</h:graphicImage>
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column styleClass="Descripcion" style="text-align:center;"
+					sortBy="#{var.id}" sortOrder="#{tranFilter.idOrder}"
+					filterValue="#{tranFilter.idFilter}" filterExpression="#{fn:containsIgnoreCase(var.id,tranFilter.idFilter)}">
+					<f:facet name="header">
+						<rich:inplaceInput style="backgroud-color:white; display:block; margin:0 auto; padding:2px 0;" 
+							rendered="#{tranFilter.filtrosActivos}" saveOnBlur="true"
+							value="#{tranFilter.idFilter}" defaultLabel="#{msg['filtrar']} #{msg['id']}">
+                            <a4j:ajax event="change" render="dtResults" execute="@this" />
+                        </rich:inplaceInput>
+					</f:facet>
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+
+				<rich:column styleClass="Descripcion" style="text-align:center;"
+					sortBy="#{var.codigo}" sortOrder="#{tranFilter.codigoOrder}"
+					filterValue="#{tranFilter.codigoFilter}" filterExpression="#{fn:containsIgnoreCase(var.codigo,tranFilter.codigoFilter)}">
+					<f:facet name="header">
+						<rich:inplaceInput style="backgroud-color:white; display:block; margin:0 auto; padding:2px 0;" 
+							rendered="#{tranFilter.filtrosActivos}" saveOnBlur="true"
+							value="#{tranFilter.codigoFilter}" defaultLabel="#{msg['filtrar']} #{msg['codigo']}">
+                            <a4j:ajax event="change" render="dtResults" execute="@this" />
+                        </rich:inplaceInput>
+					</f:facet>
+					<h:outputText value="#{var.codigo}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left;"
+					sortBy="#{var.descripcion}" sortOrder="#{tranFilter.descripcionOrder}"
+					filterValue="#{tranFilter.descripcionFilter}" filterExpression="#{fn:containsIgnoreCase(var.descripcion,tranFilter.descripcionFilter)}">
+					<f:facet name="header">
+						<rich:inplaceInput style="backgroud-color:white; display:block; margin:0 auto; padding:2px 0;" 
+							rendered="#{tranFilter.filtrosActivos}" saveOnBlur="true"
+							value="#{tranFilter.descripcionFilter}" defaultLabel="#{msg['filtrar']} #{msg['descripcion']}">
+                            <a4j:ajax event="change" render="dtResults" execute="@this" />
+                        </rich:inplaceInput>
+					</f:facet>
+					<h:outputText value="#{var.descripcion}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left;"
+					sortBy="#{var.operacion}" sortOrder="#{tranFilter.operacionOrder}"
+					filterValue="#{tranFilter.operacionFilter}" filterExpression="#{fn:containsIgnoreCase(var.operacionNombre,tranFilter.operacionFilter)}">
+					<f:facet name="header">
+						<rich:inplaceInput style="backgroud-color:white; display:block; margin:0 auto; padding:2px 0;" 
+							rendered="#{tranFilter.filtrosActivos}" saveOnBlur="true"
+							value="#{tranFilter.operacionFilter}" defaultLabel="#{msg['filtrar']} #{msg['operacion']}">
+                            <a4j:ajax event="change" render="dtResults" execute="@this" />
+                        </rich:inplaceInput>
+					</f:facet>
+					<h:outputText value="#{var.operacionNombre}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left;"
+					sortBy="#{var.glosa}" sortOrder="#{tranFilter.glosaOrder}"
+					filterValue="#{tranFilter.glosaFilter}" filterExpression="#{fn:containsIgnoreCase(var.glosa,tranFilter.glosaFilter)}">
+					<f:facet name="header">
+						<rich:inplaceInput style="backgroud-color:white; display:block; margin:0 auto; padding:2px 0;" 
+							rendered="#{tranFilter.filtrosActivos}" saveOnBlur="true"
+							value="#{tranFilter.glosaFilter}" defaultLabel="#{msg['filtrar']} #{msg['glosa']}">
+                            <a4j:ajax event="change" render="dtResults" execute="@this" />
+                        </rich:inplaceInput>
+					</f:facet>
+					<h:outputText value="#{var.glosa}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left;"
+					sortBy="#{var.modulo}" sortOrder="#{tranFilter.moduloOrder}"
+					filterValue="#{tranFilter.moduloFilter}" filterExpression="#{fn:containsIgnoreCase(var.operacionModulo,tranFilter.moduloFilter)}">
+					<f:facet name="header">
+						<rich:inplaceInput style="backgroud-color:white; display:block; margin:0 auto; padding:2px 0;" 
+							rendered="#{tranFilter.filtrosActivos}" saveOnBlur="true"
+							value="#{tranFilter.moduloFilter}" defaultLabel="#{msg['filtrar']} #{msg['modulo']}">
+                            <a4j:ajax event="change" render="dtResults" execute="@this" />
+                        </rich:inplaceInput>
+					</f:facet>
+					<h:outputText value="#{var.operacionModulo}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<a4j:commandButton id="cmdEditar" 
+						image="#{msg['editar16.img']}" title="#{msg['editar']}"
+						action="#{transAction.editar}" 
+						oncomplete="#{rich:component('pnlTransaccion')}.show()"
+						render="pnlTransaccion,pnlMensajes">
+						<f:setPropertyActionListener value="#{var.id}" target="#{transAction.idTransaccion}" for="cmdEditar" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<a4j:commandButton id="cmdBorrar" 
+						image="#{msg['eliminar16.img']}" title="#{msg['eliminar']}"
+						oncomplete="#{rich:component('pnlEliminar')}.show()" 
+						render="pnlEliminar">
+						<f:setPropertyActionListener value="#{var.id}" target="#{transAction.idTransaccion}" for="cmdBorrar" />
+					</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller page="#{transAction.numPagina}" for="dtResults" renderIfSinglePage="false"
+						align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define> 
+	
+	<ui:define name="modals">
+		<ui:include src="/modals/transacciones/pnlMensajes.xhtml" />
+		<ui:include src="/modals/transacciones/pnlTransaccion.xhtml" />
+		<ui:include src="/modals/transacciones/pnlBusquedaOperaciones.xhtml" />
+		<ui:include src="/modals/transacciones/pnlBusquedaConceptos.xhtml" />
+		<ui:include src="/modals/transacciones/pnlEliminar.xhtml" />
+		<ui:include src="/modals/transacciones/pnlEliminarTransaccionConcepto.xhtml" />
+		<ui:include src="/modals/transacciones/pnlConfirmarActualizacion.xhtml" />
+	</ui:define>
+</ui:composition>

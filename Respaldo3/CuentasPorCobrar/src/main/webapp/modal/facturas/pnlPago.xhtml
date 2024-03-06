@@ -1,0 +1,105 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlPago" autosized="true" domElementAttachment="form" style="min-width:600px; max-width:1024px;" top="20">
+		<f:facet name="header">
+			<h:outputText id="lblTituloFacPagos" value="#{facturaAction.pojoFacPago.id == null ? msg['nuevoPago'] : msg['editarPago']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlPago')}.hide()" />
+		</f:facet>
+		
+		<a4j:region id="regPago">
+			<h:panelGrid id="botonera" columns="2" style="padding:0; width:100%; min-width:600px; min-height:22px; text-align:left;">
+				<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+					<rich:messages id="validadorFacturaPago" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" style="text-align:left;">
+						<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin:0 10px;" /></f:facet>
+					</rich:messages>
+				</h:panelGroup>
+				
+				<h:panelGroup id="grupoBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+					<a4j:commandButton id="cmdSalvarPago" style="float:right; margin-left: 5px; vertical-align:top; position:relative;" styleClass="Titulo"
+						rendered="#{facturaAction.timbrar}"
+						image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+						action="#{facturaAction.guardarPago}" 
+						oncomplete="salvar(#{facturaAction.band}, '#{rich:clientId('pnlPago')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorFacturaPago')});"
+						render="dtResults txtfacPagosClave validadorFacturaPago pnlMensajes"
+						limitRender="true" />
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<h:panelGroup styleClass="encabezado" style="min-height: 1em;">
+				<h:outputText value="#{facturaAction.tituloFactura}" />
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoDatosGenerales" style="margin:10px auto 0;">
+				<fieldset id="groupPago" style="margin:10px auto 0;">
+					<legend><h:outputText value="#{msg['pago']}" styleClass="Titulo"/></legend>
+					
+					<h:panelGrid columns="2" columnClasses="colTitulo,colDato" style="margin: auto; width:100%;">
+						<h:outputLabel value="#{msg['fecha']}:" styleClass="Titulo" />
+						<h:inputText id="txtPagoFecha" maxlength="30" style="width: 140px; text-align:right;" readonly="true"
+							value="#{facturaAction.pojoFacPago.fecha}">
+							<f:convertDateTime type="date" pattern="dd/MMM/yyyy" />
+						</h:inputText>
+						
+						<h:outputLabel value="#{msg['monto']}:" styleClass="Titulo" />
+						<h:inputText id="txtPagoMonto" maxlength="30" style="width: 140px; text-align:right;" readonly="true"
+							value="#{facturaAction.pojoFacPago.pago}">
+							<f:convertNumber pattern="###,###,##0.00" />
+						</h:inputText>
+						
+						<h:outputLabel value="#{msg['formaPago']}:" styleClass="Titulo" />
+						<h:selectOneMenu id="txtFormasPago" style="width: 300px;"
+							value="#{facturaAction.formaPago}" 
+							required="#{!empty param[rich:clientId('cmdSalvarPago')]}" 
+							requiredMessage="#{msg['formaPago']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+							<f:selectItems value="#{facturaAction.listFormasPagoItems}" />
+						</h:selectOneMenu>
+						
+						<h:outputLabel value="#{msg['referencia']}:" styleClass="Titulo" />
+						<h:inputText id="txtFormaPagoReferencia" maxlength="30" style="width:140px; text-align:left;"
+							value="#{facturaAction.pojoFacPago.referenciaFormaPago}" />
+						
+						<h:outputLabel value="#{msg['banco']}:" styleClass="Titulo" />
+						<h:selectOneMenu id="txtBancoOrigen" style="width: 300px;"
+							value="#{facturaAction.bancoOrigen}" 
+							required="#{!empty param[rich:clientId('cmdSalvarPago')]}" 
+							requiredMessage="#{msg['bancoOrigen']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+							<f:selectItems value="#{facturaAction.listBancosItems}" />
+						</h:selectOneMenu>
+					</h:panelGrid>
+				</fieldset>
+				
+				<fieldset id="groupCuenta" style="margin:10px auto 0;">
+					<legend><h:outputText value="#{msg['cuenta']}" styleClass="Titulo"/></legend>
+					
+					<h:panelGrid columns="2" columnClasses="colTitulo,colDato" style="margin: auto; width:100%;">
+						<h:outputLabel value="#{msg['cuentaBancaria']}:" styleClass="Titulo" />
+						<h:selectOneMenu id="txtCuentaBancaria" style="width: 300px;"
+							value="#{facturaAction.cuentaBancaria}"
+							required="#{!empty param[rich:clientId('cmdSalvarPago')]}" 
+							requiredMessage="#{msg['cuentaBancaria']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+							<f:selectItems value="#{facturaAction.listCuentasItems}" />
+						</h:selectOneMenu>
+						
+						<h:outputLabel value="#{msg['observaciones']}:" styleClass="Titulo" />
+						<h:inputTextarea id="txtObservaciones" style="width:300px; height:60px; resize:none;"
+							value="#{facturaAction.pojoFacPago.observaciones}" />
+					</h:panelGrid>
+				</fieldset>
+			</h:panelGroup>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

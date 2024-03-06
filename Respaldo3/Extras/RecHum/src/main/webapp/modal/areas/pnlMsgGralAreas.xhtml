@@ -1,0 +1,34 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    
+	<rich:popupPanel id="pnlMsgGralAreas" autosized="true"
+		domElementAttachment="form">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText
+					value="#{areaAction.resOperacion == '' ? msg['informacion'] : msg['atencion']}"
+					styleClass="Titulo" />
+			</h:panelGroup>
+		</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}"
+				style="cursor:pointer;"
+				onclick="#{rich:component('pnlMsgGralAreas')}.hide()" />
+		</f:facet>
+		<h:panelGroup id="groupResOperacion" style="display:block; width:300px; float:center;">
+			<h:outputText
+				value="#{areaAction.resOperacion != '' ? areaAction.resOperacion : msg['mensaje.info.infoReg']}"
+				style="display:block;" styleClass="Descripcion" />
+		</h:panelGroup>
+		<a4j:commandButton value="#{msg['aceptar']}"
+			onclick="#{rich:component('pnlMsgGralAreas')}.hide()"
+			style="margin-top:10px; cursor:pointer;" />	
+	</rich:popupPanel>
+
+</ui:composition>

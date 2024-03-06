@@ -1,0 +1,55 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlPuesto" autosized="true" domElementAttachment="form" top="20"
+    	onshow="document.getElementById('#{rich:clientId('txtDescripcion')}').focus();"
+    	onhide="document.getElementById('#{rich:clientId('txtvalor')}').focus();">
+		<f:facet name="header">
+			<h:outputText value="#{puestoAction.pojoPuesto.id == null ? 'Nuevo Puesto' : 'Editar Puesto'}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlPuesto')}.hide()" />
+		</f:facet>
+		
+		<rich:messages id="validadorPuesto" rendered="#{true}" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+			<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" /></f:facet>
+		</rich:messages>
+		
+		<h:panelGroup style="display:block; height: 22px; margin-bottom:10px;">
+			<h:panelGroup style="float:right; margin-right:5px; vertical-align: middle; position:relative; ">
+				<a4j:commandButton id="cmdSalvar" style="vertical-align: right; position:relative;"
+					image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+					onclick="#{rich:element('cmdSalvar')}.disabled = true;"  
+					action="#{puestoAction.guardar}" 
+					oncomplete="msgRevisando(#{rich:element('validadorPuesto')},'#{rich:clientId('pnlPuesto')}','#{rich:clientId('pnlMensajes')}',#{puestoAction.band},'guardar'); #{rich:element('cmdSalvar')}.disabled = false;"
+					render="dtPuestos,pnlMensajes,validadorPuesto"/>
+			</h:panelGroup>
+		</h:panelGroup>
+
+		<h:panelGroup id="grupoDatos">
+			<fieldset style="margin:10px auto 0;">
+				<legend><h:outputText value="#{msg['puesto']}" /></legend>
+				
+				<h:panelGrid columns="2" columnClasses="colTitulo,colDato">
+					<h:outputText value="#{msg['id']}:" styleClass="Titulo"/>
+					<h:outputText id="txtIdPuesto" style="text-align:left; display:block;"
+						value="#{puestoAction.pojoPuesto.id}" />
+					
+					<h:outputText value="#{msg['descripcion']}:" styleClass="Titulo"/>
+					<h:inputText id="txtDescripcion" size="30"
+						value="#{puestoAction.descripcion}" 
+						required="#{!empty param[rich:clientId('cmdSalvar')]}"
+						requiredMessage="#{msg['mensage.error.descripcion']} #{msg['mensaje.error.requerido']}" />
+				</h:panelGrid>
+			</fieldset>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

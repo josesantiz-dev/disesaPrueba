@@ -1,0 +1,41 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlConfirmaOrigen" autosized="true" domElementAttachment="form" style="min-width:300px; max-width:500px;"
+		onshow="document.getElementById('#{rich:clientId('btnOrigenRequisicion')}').focus();"
+		header="#{msg['navegacion.label.atencion']}">
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.panel.cerrar.img']}" 
+				onclick="#{rich:component('pnlConfirmaOrigen')}.hide()" />
+		</f:facet>
+
+		<a4j:region>
+		<h:panelGroup style="margin:0 auto; text-align:center; width:100%;">
+			<h:outputText value="#{msg['indiqueOrigenProductos']}" styleClass="Descripcion" />
+		
+			<h:panelGrid columns="2" cellspacing="0" cellpadding="0" style="margin:10px auto 0; text-align:center; min-width:200px;">
+				<a4j:commandButton id="btnOrigenCotizacion" style="margin:auto 5px; min-width:100px;"
+					value="#{msg['conComparativa']}" 
+					onclick="#{rich:component('pnlConfirmaOrigen')}.hide()"
+					action="#{ordenesAction.nuevoCotizacion}"
+					oncomplete="#{rich:component('pnlOrden')}.show()" 
+					render="pnlOrden,pnlProveedorDatos,pnlRequisicionDatos,pnlCotizacionDatos" limitRender="true" />
+					
+				<a4j:commandButton id="btnOrigenRequisicion" style="margin:auto 5px; min-width:100px;" 
+					value="#{msg['compraDirecta']}" 
+					onclick="#{rich:component('pnlConfirmaOrigen')}.hide()"
+					action="#{ordenesAction.nuevoRequisicion}"
+					oncomplete="#{rich:component('pnlOrden')}.show()" 
+					render="pnlOrden,pnlProveedorDatos,pnlRequisicionDatos,pnlCotizacionDatos" limitRender="true" />
+			</h:panelGrid>
+		</h:panelGroup>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

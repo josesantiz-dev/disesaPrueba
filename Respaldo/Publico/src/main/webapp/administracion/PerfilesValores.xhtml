@@ -1,0 +1,315 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+
+
+
+<ui:define name="menuFrag" >
+  
+	<rich:toolBarGroup id="tbgBuscar" location="right">
+		<a4j:commandButton id="cmdBuscar" action="#{PerfilesValoresAction.buscar}" image="#{msg['buscar22.img']}"
+			oncomplete = "buscar('#{PerfilesValoresAction.resOperacion}', 'pnlMsgPerfiles', #{rich:element('msgErrPerfilesValores')});" reRender="dtResults, msgErrPerfilesValores, miMenu, pnlMsgPerfiles" styleClass="Titulo">
+			<rich:toolTip id="ttBuscar" showDelay="300" value="#{msg['buscar.e']}" styleClass="Descripcion"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>
+
+	<rich:toolBarGroup id="tbgSalvar" location="right">
+		<a4j:commandButton id="cmdSalvar" action="#{PerfilesValoresAction.guardar}" image="#{msg['salvar22.img']}" rendered="#{PerfilesValoresAction.hayRegistros }"
+			oncomplete="guardar('pnlMsgPerfiles');" reRender="dtResults" styleClass="Titulo">
+			<rich:toolTip id="ttSalvar" showDelay="300" value="#{msg['salvar.e']}" styleClass="Descripcion"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>
+
+</ui:define>
+
+<ui:define name="body">
+		<a4j:queue id="suggQPerfilesValores" name="suggQPerfilesValores" sizeExceededBehavior="fireNew" ignoreDupResponses="true" size="1"/>
+		<a4j:loadStyle src="resource:///resources/css/adm/adm.css" />
+		<a4j:loadStyle src="resource:///resources/css/adm/admPerfilesValores.css" />
+		<a4j:loadScript src="resource:///resources/scripts/adm/perfilesValores.js"/>
+		
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText value="#{msg['valoresPerfiles']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina">
+				
+				<rich:messages id="msgErrPerfilesValores" showDetail="true" showSummary="false" globalOnly="false" ajaxRendered="true">
+					<f:facet name="errorMarker">
+	                    <h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;"/>   
+	                </f:facet>
+				</rich:messages>
+				
+				<a4j:region>
+					<h:panelGrid id="panel_busqueda" columns="4" columnClasses="colPrimPerVal, colSegPerVal, colPrimPerVal, colSegPerVal" style="margin-left:5px; margin-bottom:5px; display:block;" width="740">
+		  				<h:panelGroup>
+							<h:selectBooleanCheckbox id="cbUsuario" value="#{PerfilesValoresAction.nivelUsuario}">
+								<a4j:support event="onchange"/>
+							</h:selectBooleanCheckbox>
+							<h:outputLabel for="cbUsuario" value="#{msg['usuario']}" styleClass="Titulo" style="margin-left:5px;"/>
+						</h:panelGroup>
+						<h:panelGroup>
+								<h:inputText id="txtUsuario" value="#{PerfilesValoresAction.valDatoUsuario}" required="#{PerfilesValoresAction.nivelUsuario &amp;&amp; (!empty param[rich:clientId('cmdBuscar')] || !empty param[rich:clientId('cmdSalvar')])}"
+									onkeypress="keyF9(event, #{rich:component('suggUsuario')})" size="30" 
+									requiredMessage="#{msg['usuario']}: #{msg['requerido']}"
+									validatorMessage="#{msg['usuario']}: #{msg['mensaje.validacion.seleccioneItem']}">
+									<f:validator validatorId="valClaveValor"/>
+								</h:inputText>
+				                <h:graphicImage style="vertical-align:bottom; cursor:pointer;" value="#{msg['despliega.img']}" onclick="#{rich:component('suggUsuario')}.callSuggestion(true)"/>
+				                <rich:suggestionbox height="150" width="225" eventsQueue="suggQPerfilesValores"
+						            suggestionAction="#{PerfilesValoresAction.autoacompletaUsuarios}" var="usuario" minChars="2"
+						            id="suggUsuario" for="txtUsuario" fetchValue="#{usuario.id} - #{usuario.usuario}">
+						            <h:column>
+						                <h:outputText value="#{usuario.id}"/>
+						            </h:column>
+						            <h:column>
+						                <h:outputText value="#{usuario.usuario}"/>
+						            </h:column>
+						        </rich:suggestionbox>
+						</h:panelGroup>
+						<h:panelGroup>
+							<h:selectBooleanCheckbox id="cbTerminal" value="#{PerfilesValoresAction.nivelTerminal}">
+								<a4j:support event="onchange"/>
+							</h:selectBooleanCheckbox>
+							<h:outputLabel for="cbTerminal" value="#{msg['terminal']}" styleClass="Titulo" style="margin-left:5px;"/>
+						</h:panelGroup>
+						<h:panelGroup>
+								<h:inputText id="txtTerminal" value="#{PerfilesValoresAction.valDatoTerminal}" required="#{PerfilesValoresAction.nivelTerminal} &amp;&amp; (!empty param[rich:clientId('cmdBuscar')] || !empty param[rich:clientId('cmdSalvar')])"
+									onkeypress="keyF9(event, #{rich:component('suggTerminal')})" size="30" 
+									requiredMessage="#{msg['terminal']}: #{msg['requerido']}"
+									validatorMessage="#{msg['terminal']}: #{msg['mensaje.validacion.seleccioneItem']}">
+									<f:validator validatorId="valClaveValor"/>
+								</h:inputText>
+				                <h:graphicImage style="vertical-align:bottom; cursor:pointer;" value="#{msg['despliega.img']}" onclick="#{rich:component('suggTerminal')}.callSuggestion(true)"/>
+				                <rich:suggestionbox height="150" width="225" eventsQueue="suggQPerfilesValores"
+						            suggestionAction="#{PerfilesValoresAction.autoacompletaTerminales}" var="terminal" minChars="2"
+						            id="suggTerminal" for="txtTerminal" fetchValue="#{terminal.id} - #{terminal.valor}">
+						            <h:column>
+						                <h:outputText value="#{terminal.id}"/>
+						            </h:column>
+						            <h:column>
+						                <h:outputText value="#{terminal.valor}"/>
+						            </h:column>
+						        </rich:suggestionbox>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+							<h:selectBooleanCheckbox id="cbResponsabilidad" value="#{PerfilesValoresAction.nivelResponsabilidad}">
+								<a4j:support event="onchange"/>
+							</h:selectBooleanCheckbox>
+							<h:outputLabel for="cbResponsabilidad" value="#{msg['responsabilidad']}" styleClass="Titulo" style="margin-left:5px;"/>
+						</h:panelGroup>
+						<h:panelGroup>
+								<h:inputText id="txtResponsabilidad" value="#{PerfilesValoresAction.valDatoResponsabilidad}" required="#{PerfilesValoresAction.nivelResponsabilidad &amp;&amp; (!empty param[rich:clientId('cmdBuscar')] || !empty param[rich:clientId('cmdSalvar')])}" 
+									onkeypress="keyF9(event, #{rich:component('suggResponsabilidad')})" style="margin:0px;" size="30"
+									requiredMessage="#{msg['responsabilidad']}: #{msg['requerido']}"
+									validatorMessage="#{msg['responsabilidad']}: #{msg['mensaje.validacion.seleccioneItem']}">
+									<f:validator validatorId="valClaveValor"/>
+								</h:inputText>
+				                <h:graphicImage style="margin-left:0px;  vertical-align:bottom; cursor:pointer;" value="#{msg['despliega.img']}" onclick="#{rich:component('suggResponsabilidad')}.callSuggestion(true)"/>
+				                <rich:suggestionbox height="150" width="225" eventsQueue="suggQPerfilesValores" 
+						            suggestionAction="#{PerfilesValoresAction.autoacompletaResponsabilidades}" var="responsa" minChars="2"
+						            id="suggResponsabilidad" for="txtResponsabilidad" fetchValue="#{responsa.id} - #{responsa.responsabilidad}">
+						            <h:column>
+						                <h:outputText value="#{responsa.id}"/>
+						            </h:column>
+						            <h:column>
+						                <h:outputText value="#{responsa.responsabilidad}"/>
+						            </h:column>
+						        </rich:suggestionbox>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+							<h:selectBooleanCheckbox id="cbEmpresa" value="#{PerfilesValoresAction.nivelEmpresa}">
+								<a4j:support event="onchange"/>
+							</h:selectBooleanCheckbox>
+							<h:outputLabel for="cbEmpresa" value="#{msg['empresa']}" styleClass="Titulo" style="margin-left:5px;"/>
+						</h:panelGroup>
+						<h:panelGroup>
+								<h:inputText id="txtEmpresa" value="#{PerfilesValoresAction.valDatoEmpresa}" required="#{PerfilesValoresAction.nivelEmpresa &amp;&amp; (!empty param[rich:clientId('cmdBuscar')] || !empty param[rich:clientId('cmdSalvar')])}" 
+									onkeypress="keyF9(event, #{rich:component('suggEmpresa')})" size="30"
+									requiredMessage="#{msg['empresa']}: #{msg['requerido']}"
+									validatorMessage="#{msg['empresa']}: #{msg['mensaje.validacion.seleccioneItem']}">
+									<f:validateLength minimum="1"/>
+									<f:validator validatorId="valClaveValor"/>
+								</h:inputText>
+				                <h:graphicImage style="margin-left:0px;  vertical-align:bottom; cursor:pointer;" value="#{msg['despliega.img']}" onclick="#{rich:component('suggEmpresa')}.callSuggestion(true)"/>
+				                <rich:suggestionbox height="150" width="225" eventsQueue="suggQPerfilesValores" 
+						            suggestionAction="#{PerfilesValoresAction.autoacompletaEmpresa}" var="emp" minChars="2"
+						            id="suggEmpresa" for="txtEmpresa" fetchValue="#{emp.id} - #{emp.empresa}">
+						            <h:column>
+						                <h:outputText value="#{emp.id}"/>
+						            </h:column>
+						            <h:column>
+						                <h:outputText value="#{emp.empresa}"/>
+						            </h:column>
+						        </rich:suggestionbox>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+							<h:selectBooleanCheckbox id="cbSucursal" value="#{PerfilesValoresAction.nivelSucursal}">
+								<a4j:support event="onchange"/>
+							</h:selectBooleanCheckbox>
+							<h:outputLabel for="cbSucursal" value="#{msg['sucursal']}" styleClass="Titulo" style="margin-left:5px;"/>
+						</h:panelGroup>
+						<h:panelGroup>
+								<h:inputText id="txtSucursal" value="#{PerfilesValoresAction.valDatoSucursal}" required="#{PerfilesValoresAction.nivelSucursal} &amp;&amp; (!empty param[rich:clientId('cmdBuscar')] || !empty param[rich:clientId('cmdSalvar')])" 
+									onkeypress="keyF9(event, #{rich:component('suggSucursal')})" style="margin:0px;" size="30"
+									requiredMessage="#{msg['sucursal']}: #{msg['requerido']}"
+									validatorMessage="#{msg['sucursal']}: #{msg['mensaje.validacion.seleccioneItem']}">
+									<f:validateLength minimum="1"/>
+									<f:validator validatorId="valClaveValor"/>
+								</h:inputText>
+				                <h:graphicImage style="margin-left:0px;  vertical-align:bottom; cursor:pointer;" value="#{msg['despliega.img']}" onclick="#{rich:component('suggSucursal')}.callSuggestion(true)"/>
+				                <rich:suggestionbox height="150" width="225" eventsQueue="suggQPerfilesValores" 
+						            suggestionAction="#{PerfilesValoresAction.autoacompletaSucursales}" var="sucursal" minChars="2"
+						            id="suggSucursal" for="txtSucursal" fetchValue="#{sucursal.id} - #{sucursal.sucursal}">
+						            <h:column>
+						                <h:outputText value="#{sucursal.id}"/>
+						            </h:column>
+						            <h:column>
+						                <h:outputText value="#{sucursal.sucursal}"/>
+						            </h:column>
+						        </rich:suggestionbox>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+							<h:selectBooleanCheckbox id="cbSitio" value="#{PerfilesValoresAction.nivelSitio}">
+								<a4j:support event="onchange"/>
+							</h:selectBooleanCheckbox>
+							<h:outputLabel for="cbSitio" value="#{msg['sitio']}" styleClass="Titulo" style="margin-left:5px;"/>
+						</h:panelGroup>
+				  	</h:panelGrid>
+				</a4j:region>
+			  	
+			  	<h:panelGrid id="pnlPerfil" columns="2" style="margin-left:5px; margin-bottom:5px; display:block;" width="100%">
+	  				<h:outputText value="#{msg['perfil']}:" styleClass="Titulo"/>
+	  				<h:inputText value="#{PerfilesValoresAction.valDatoPerfil}" maxlength="50" size="43"/>
+				</h:panelGrid>
+			  	
+				<rich:dataTable id="dtResults" var="perfil" rowClasses="Row1, Row2"
+					value="#{PerfilesValoresAction.listValores}" styleClass="tabla_pagina">
+					
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column colspan="8" styleClass="Titulo10">
+								<h:outputText value="#{msg['perfiles']}"/>
+							</rich:column>
+							<rich:column breakBefore="true" styleClass="Titulo10">
+								<h:outputText value="#{msg['perfil']}"/>
+							</rich:column>
+							<rich:column styleClass="Titulo10">
+								<h:outputText value="#{msg['terminal']}" />
+							</rich:column>
+							<rich:column styleClass="Titulo10">
+								<h:outputText value="#{msg['usuario']}" />
+							</rich:column>
+							<rich:column styleClass="Titulo10">
+								<h:outputText value="#{msg['responsabilidad']}"/>
+							</rich:column>
+							<rich:column styleClass="Titulo10">
+								<h:outputText value="#{msg['sucursal']}"/>
+							</rich:column>
+							<rich:column styleClass="Titulo10">
+								<h:outputText value="#{msg['empresa']}"/>
+							</rich:column>
+							<rich:column styleClass="Titulo10">
+								<h:outputText value="#{msg['sitio']}"/>
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+				
+	               <rich:column width="165" style="text-align:left; pading-left:10px;" styleClass="Descripcion10" sortable="false">
+	               	  <h:outputText value="#{perfil.nombrePerfil}"/>                 
+	               </rich:column>
+	               <rich:column style="text-align:center;" styleClass="Descripcion10" sortable="false">
+			            <a4j:commandLink value="#{perfil.descripciones['1'] != '' ? perfil.descripciones['1'] : msg['asignarValor']}" rendered="#{perfil.pojoTerminal != null}" action="#{PerfilesValoresAction.construyeComponente(1)}" oncomplete="verificaPerfil('#{PerfilesValoresAction.resOperacion}', 'pnlValorPerfil', 'pnlMsgPerfiles')" reRender="pnlValorPerfil, pnlMsgPerfiles">
+			            	<f:setPropertyActionListener target="#{PerfilesValoresAction.pojoPerfilesGral}" value="#{perfil}" />
+			            </a4j:commandLink>
+	               </rich:column>
+	                <rich:column style="text-align:center;" styleClass="Descripcion10" sortable="false">
+			            <a4j:commandLink value="#{perfil.descripciones['2'] != '' ? perfil.descripciones['2'] : msg['asignarValor']}" rendered="#{perfil.pojoUsuario != null}" action="#{PerfilesValoresAction.construyeComponente(2)}" oncomplete="verificaPerfil('#{PerfilesValoresAction.resOperacion}', 'pnlValorPerfil', 'pnlMsgPerfiles')" reRender="pnlValorPerfil, pnlMsgPerfiles">
+			            	<f:setPropertyActionListener target="#{PerfilesValoresAction.pojoPerfilesGral}" value="#{perfil}" />
+			            </a4j:commandLink>
+	               </rich:column>
+	               <rich:column style="text-align:center;" styleClass="Descripcion10" sortable="false">
+			            <a4j:commandLink value="#{perfil.descripciones['4'] != '' ? perfil.descripciones['4'] : msg['asignarValor']}" rendered="#{perfil.pojoResponsabilidad != null}" action="#{PerfilesValoresAction.construyeComponente(4)}" oncomplete="verificaPerfil('#{PerfilesValoresAction.resOperacion}', 'pnlValorPerfil', 'pnlMsgPerfiles')" reRender="pnlValorPerfil, pnlMsgPerfiles">
+			            	<f:setPropertyActionListener target="#{PerfilesValoresAction.pojoPerfilesGral}" value="#{perfil}" />
+			            </a4j:commandLink>
+	               </rich:column>
+	               <rich:column style="text-align:center;" styleClass="Descripcion10" sortable="false">
+	                  <a4j:commandLink value="#{perfil.descripciones['16'] != '' ? perfil.descripciones['16'] : msg['asignarValor']}" rendered="#{perfil.pojoSucursal != null}" action="#{PerfilesValoresAction.construyeComponente(16)}" oncomplete="verificaPerfil('#{PerfilesValoresAction.resOperacion}', 'pnlValorPerfil', 'pnlMsgPerfiles')" reRender="pnlValorPerfil, pnlMsgPerfiles">
+			            	<f:setPropertyActionListener target="#{PerfilesValoresAction.pojoPerfilesGral}" value="#{perfil}" />
+			            </a4j:commandLink>
+	               </rich:column>
+	               <rich:column style="text-align:center;" styleClass="Descripcion10" sortable="false">
+	                  <a4j:commandLink value="#{perfil.descripciones['32'] != '' ? perfil.descripciones['32'] : msg['asignarValor']}" rendered="#{perfil.pojoEmpresa != null}" action="#{PerfilesValoresAction.construyeComponente(32)}" oncomplete="verificaPerfil('#{PerfilesValoresAction.resOperacion}', 'pnlValorPerfil', 'pnlMsgPerfiles')" reRender="pnlValorPerfil, pnlMsgPerfiles">
+			            	<f:setPropertyActionListener target="#{PerfilesValoresAction.pojoPerfilesGral}" value="#{perfil}" />
+			            </a4j:commandLink>
+			       </rich:column>
+	               <rich:column style="text-align:center;" styleClass="Descripcion10" sortable="false">
+	                  <a4j:commandLink value="#{perfil.descripciones['64'] != '' ? perfil.descripciones['64'] : msg['asignarValor']}" rendered="#{perfil.pojoSitio != null}" action="#{PerfilesValoresAction.construyeComponente(64)}" oncomplete="verificaPerfil('#{PerfilesValoresAction.resOperacion}', 'pnlValorPerfil', 'pnlMsgPerfiles')" reRender="pnlValorPerfil, pnlMsgPerfiles">
+		            	<f:setPropertyActionListener target="#{PerfilesValoresAction.pojoPerfilesGral}" value="#{perfil}" />
+		              </a4j:commandLink>
+	               </rich:column>
+	           </rich:dataTable>
+		</div>
+
+		<!-- Fin Pantalla Principal  -->	
+		
+  
+</ui:define>
+
+<ui:define name="modals">
+		
+		<rich:modalPanel id="pnlValorPerfil" autosized="true" width="300">
+		 <f:facet name="header">
+		 	<h:panelGroup>
+				<h:outputText value="#{PerfilesValoresAction.pojoPerfilesGral.valorSeleccion}" styleClass="Titulo" />
+			</h:panelGroup>
+		 </f:facet>
+		 <f:facet name="controls">
+	         <h:panelGroup>
+	             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;">
+	             	<rich:componentControl for="pnlValorPerfil" operation="hide" event="onclick"/>
+	             </h:graphicImage>
+	          </h:panelGroup>
+	       </f:facet>
+	       <a4j:form id="frmValorPerfil" style="text-align:center;" >
+	       		<h:panelGrid binding="#{PerfilesValoresAction.pnlComponentes}" style="margin-right:auto; margin-left:auto; float:center;"/>
+	       		<a4j:commandButton value="#{msg['aceptar']}" action="#{PerfilesValoresAction.guardarValor}" oncomplete="guardarValor('#{PerfilesValoresAction.resOperacion}', 'pnlValorPerfil', 'pnlMsgPerfiles');" reRender="dtResults, pnlMsgPerfiles" style="margin-top:10px; cursor:pointer;"/>
+	       </a4j:form>
+	     </rich:modalPanel>
+		
+		<!-- #### Panel MsgLayout #### -->
+	    <rich:modalPanel id="pnlMsgPerfiles" autosized="true">
+		 <f:facet name="header">
+		 	<h:panelGroup>
+				<h:outputText value="#{PerfilesValoresAction.resOperacion != '' ? msg['atencion'] : msg['informacion']}" styleClass="#{PerfilesValoresAction.resOperacion == '' ? 'Titulo' : 'Err'}"/>
+			</h:panelGroup>
+		 </f:facet>
+		 <f:facet name="controls">
+	         <h:panelGroup>
+	             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="imgCerrarMsgBanc"/>
+	             	<rich:componentControl for="pnlMsgPerfiles" attachTo="imgCerrarMsgBanc" operation="hide" event="onclick"/>
+	          </h:panelGroup>
+	       </f:facet>
+	       <a4j:form id="frmMsgAsig" style="text-align:center;" >
+	       		<h:panelGroup style="display:block; width:300px; float:center; text-align:center;">
+		       		<h:outputText value="#{PerfilesValoresAction.resOperacion == '' ? msg['mensaje.info.infoReg'] : PerfilesValoresAction.resOperacion}" style="display:block;" styleClass="Descripcion"/>
+	       		</h:panelGroup>
+	       		<a4j:commandButton value="#{msg['aceptar']}" onclick="#{rich:component('pnlMsgPerfiles')}.hide()" style="margin-top:10px; cursor:pointer;"/>
+	       </a4j:form>
+	     </rich:modalPanel>	 
+		<!--  Fin Panel Msg-->
+</ui:define>
+
+
+</ui:composition>

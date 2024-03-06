@@ -1,0 +1,147 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlNuevoDev" autosized="true">
+		<f:facet name="header">
+			<h:panelGroup id="pnlMensaje">
+				<h:outputText value="#{msg['navegacion.label.devSobrante']}" style="margin-left:10px" styleClass="Titulo"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" id="btnCerrarNuevo"/>
+				<rich:componentControl for="pnlNuevoDev" attachTo="btnCerrarNuevo" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="frmNuevoDevSob">
+			<a4j:region id="loadNuevoDevSob">
+				<div style = "display: block; width: 600px; height: 22px;margin-bottom:10px">
+					<h:panelGrid  id="pnlSalvar" columns="2" style="float:right; margin-right:5px;" rendered="#{devSobranteAction.muestraSalvar}" >
+						<h:panelGroup style="vertical-align: middle; position:relative; " rendered="#{devSobranteAction.muestraSalvar}">
+							<a4j:commandButton id="cmdSalvar" onclick="#{rich:element('cmdSalvar')}.disabled = true;" action="#{devSobranteAction.guardar}" oncomplete="guardar(#{rich:element('msgErrorDev')},'pnlNuevoDev','pnlDetalleDev','pnlMsgDevSob','salvar',#{rich:element('txtResultDevSob')}); #{rich:element('cmdSalvar')}.disabled = false;" image="#{msg['salvar22.img']}" style="vertical-align: right; position:relative;" reRender="pnlSalvar,dtResultsDevoluciones,txtResultDevSob,pnlMsgDevSob,dtResults"/>
+							<h:outputLabel for="cmdSalvar" value="#{msg['salvar.e']}" style="cursor:pointer;" styleClass="Titulo"/>
+						</h:panelGroup>
+
+						<h:panelGroup style="vertical-align: right; position:relative;" >
+							<a4j:status for="loadNuevoDevSob">
+								<f:facet name="start">
+									<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: right; position:relative;"/>
+								</f:facet>
+								<f:facet name="stop">
+									<h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: right; position:relative;"/>
+								</f:facet>
+							</a4j:status>
+						</h:panelGroup>
+					</h:panelGrid>
+				</div>
+
+				<h:panelGrid id="pnlDevSobrante" columns="2" style="margin-left:15px; margin-bottom:10px; display:block;" width="600" cellpadding="3" columnClasses="colDerDevSob,colIzqDevSob">
+					<h:outputText value="#{msg['navegacion.label.beneficiario']}:" styleClass="Titulo"/>
+					<h:outputText id="txtBeneficiario"  value="#{devSobranteAction.pojoMovCtas.idBeneficiario.nombre} #{devSobranteAction.pojoMovCtas.idBeneficiario.primerApellido} #{devSobranteAction.pojoMovCtas.idBeneficiario.segundoApellido}" styleClass="Titulo"/>
+					<h:outputText value="#{msg['navegacion.label.ctaDestino']}:" style="text-align:right" styleClass="Titulo" />
+					<h:panelGroup id="grpCuenta">
+						<h:inputText id="txtCtaBan"  value="#{devSobranteAction.suggCtaBancaria}" onkeypress="keyF9(event, #{rich:component('suggCtaBancaria')})" style="margin:0px;" size="30" required="#{!empty param[rich:clientId('cmdSalvar')]}" >
+							<f:validator validatorId="valClaveValor"/>
+						</h:inputText>
+						<h:graphicImage style="margin-left:0px;  vertical-align:bottom; cursor:pointer;" value="#{msg['despliega.img']}" onclick="#{rich:component('suggCtaBancaria')}.callSuggestion(true)" alt=""/>
+						<rich:suggestionbox height="100" width="225" eventsQueue="suggQDevSob" 
+							suggestionAction="#{devSobranteAction.autoacompletaCuenta}" var="CtaBan" minChars="2"
+							id="suggCtaBancaria" for="txtCtaBan" fetchValue="#{CtaBan.id} - #{CtaBan.institucionBancaria.nombreCorto}">
+							<h:column>
+								<h:outputText value="#{CtaBan.id}"/>
+							</h:column>
+							<h:column>
+								<h:outputText value="#{CtaBan.institucionBancaria.nombreCorto}"/>
+							</h:column>
+						</rich:suggestionbox>
+						<rich:message for="txtCtaBan" showSummary="false" showDetail="false"  styleClass="Err">
+							<f:facet name="errorMarker">
+								<h:panelGroup>
+									<h:graphicImage id="errorCtaBancaria" value="#{msg['cancelar16.img']}"/>
+									<h:outputLabel styleClass="Err" value="#{msg['mensaje.validacion.selectItem']}"/>
+								</h:panelGroup>
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					<h:outputText value="#{msg['navegacion.label.fecha']}:" styleClass="Titulo" style="text-align:right"/>
+					<h:panelGroup>
+						<rich:calendar id="cmbFecha" zindex="100" showWeeksBar="false"
+							datePattern="dd/MMM/yyyy"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}"
+							value="#{devSobranteAction.varFecha}" />
+							
+						<rich:message for="cmbFecha" showSummary="false" showDetail="false"  styleClass="Err">
+							<f:facet name="errorMarker">
+								<h:panelGroup>
+									<h:graphicImage id="errorCmbFecha" value="#{msg['cancelar16.img']}"/>
+									<h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+								</h:panelGroup>
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['navegacion.label.operacion']}:" styleClass="Titulo"/>
+					<h:panelGroup>
+						<rich:comboBox id="optionOpera" styleClass="Titulo" 
+							defaultLabel="#{msg['seleccione']}" enableManualInput="false" selectFirstOnUpdate="false"
+							value="#{devSobranteAction.operacion}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" >
+							<f:selectItems value="#{devSobranteAction.listFormasPagoItems}"/>							
+							<a4j:support event="onselect" 
+								action="#{devSobranteAction.evaluaOperacion}"
+								reRender="pnlDevSobrante"
+								limitToList="true" />
+						</rich:comboBox>								
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['navegacion.label.ctaTerceros']}" styleClass="Titulo" rendered="#{devSobranteAction.esTransferencia}" />			
+					<h:panelGroup id="grpCuentaTerceros" rendered="#{devSobranteAction.esTransferencia}">
+						<h:inputText id="txtCtaBanTercero"  value="#{devSobranteAction.suggCtaTercero}" onkeypress="keyF9(event, #{rich:component('suggCtaBancaria3')})" style="margin:0px;" size="30" required="#{!empty param[rich:clientId('cmdSalvar')]}" >
+							<f:validator validatorId="valClaveValor"/>
+						</h:inputText>
+						
+						<h:graphicImage style="margin-left:0px;  vertical-align:bottom; cursor:pointer;" value="#{msg['despliega.img']}" onclick="#{rich:component('suggCtaBancaria3')}.callSuggestion(true)" alt=""/>
+						
+						<rich:suggestionbox id="suggCtaBancaria3" height="100" width="225" eventsQueue="suggQDevSob" minChars="2"
+							suggestionAction="#{devSobranteAction.autoacompletaCuentaTercero}" 
+							var="CtaBan" for="txtCtaBanTercero" 
+							fetchValue="#{CtaBan.id} - #{CtaBan.nombre}">
+							<h:column><h:outputText value="#{CtaBan.id}" /></h:column>
+							<h:column><h:outputText value="#{CtaBan.nombre}" /></h:column>
+						</rich:suggestionbox>
+						
+						<rich:message for="txtCtaBanTercero" showSummary="false" showDetail="false"  styleClass="Err">
+							<f:facet name="errorMarker">
+								<h:panelGroup>
+									<h:graphicImage id="errorCtaBancaria3" value="#{msg['cancelar16.img']}"/>
+									<h:outputLabel styleClass="Err" value="#{msg['mensaje.validacion.selectItem']}"/>
+								</h:panelGroup>
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+
+					<h:outputText value="#{msg['navegacion.label.monto']}:" styleClass="Titulo"/>
+					<h:panelGroup>
+						<h:inputText id="txtMonto" value="#{devSobranteAction.varMonto}" required="#{!empty param[rich:clientId('cmdSalvar')]}" maxlength="8"/>
+						<rich:message for="txtMonto" showSummary="false" showDetail="false"  styleClass = "Err">
+							<f:facet name="errorMarker">
+								<h:panelGroup>
+									<h:graphicImage  value="#{msg['cancelar16.img']}"/>
+									<h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+								</h:panelGroup>
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+				</h:panelGrid>
+				<rich:messages id="msgErrorDev" showDetail="false" showSummary="false"/>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

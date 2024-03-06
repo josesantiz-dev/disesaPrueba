@@ -1,0 +1,230 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+
+
+<ui:define name="menuFrag" >
+	<rich:toolBarGroup id="tbgBuscar" location="right">
+		<a4j:commandButton id="cmdBuscar" image="#{msg['buscar22.img']}"
+			action="#{especialistasAction.buscar}"
+			reRender="dtOficiales"			
+			styleClass="Titulo">
+			<rich:toolTip id="ttBuscar" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscar"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>
+	
+	<rich:toolBarGroup id="tbgNuevo" location="right">
+		<a4j:commandButton id="cmdNuevo" action="#{especialistasAction.nuevo}" image="#{msg['nuevo22.img']}" value="#{msg['nuevo.e']}"
+			oncomplete = "Richfaces.showModalPanel('pnlEditarOficial');" reRender="pnlEditarOficial" styleClass="Titulo">
+			<rich:toolTip id="ttNuevo" showDelay="300" value="#{msg['nuevo.e']}" styleClass="Descripcion"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>
+
+</ui:define>
+
+<ui:define name="body">
+	<a4j:loadStyle src="resource:///resources/css/adm/adm.css" />
+	<a4j:loadStyle src="resource:///resources/css/adm/admPerfiles.css" />
+	<a4j:loadScript src="resource:///resources/scripts/adm/perfiles.js"/>
+	
+	<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+		<h:outputText value="#{msg['especialistas']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+	</div>
+
+	<div class="div_pagina">
+		<rich:dataTable id="dtOficiales" cellpadding="0" cellspacing="0"
+			rows="20" border="0" var="var" rowClasses="Row1, Row2"
+			styleClass="tabla_pagina"
+			value="#{especialistasAction.listOficiales}">
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column style="text-align: center;" styleClass="Titulo">
+						<h:outputText value="#{msg['id']}" />
+					</rich:column>
+					<rich:column style="text-align: center;" styleClas="Titulo">
+						<h:outputText value="#{msg['nombre']}"/>
+					</rich:column>
+					<rich:column style="text-align: center;" styleClas="Titulo">
+						<h:outputText value="#{msg['correo']}"/>
+					</rich:column>
+					<rich:column style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['editar']}" />
+					</rich:column>
+				</rich:columnGroup>
+			</f:facet>
+			<rich:column width="50" styleClass="Descripcion"
+				style="text-align:center; padding-left: 5px;">
+				<h:outputText value="#{var.id}" />
+			</rich:column>
+			<rich:column width="50" styleClass="Descripcion"
+				style="text-align:center; padding-left: 5px;">
+				<h:outputText value="#{var.usuarioId.nombre}" />
+			</rich:column>
+			<rich:column width="50" styleClass="Descripcion"
+				style="text-align:center; padding-left: 5px;">
+				<h:outputText value="#{var.usuarioId.correo}" />
+			</rich:column>
+			<rich:column width="20" style="text-align:center;"
+				styleClass="Descripcion">
+				<a4j:commandButton id="cmdEditar" image="#{msg['editar16.img']}"
+					oncomplete="#{rich:component('pnlEditarOficial')}.show()"
+					action="#{especialistasAction.editar}" reRender="pnlEditarOficial">
+					<rich:toolTip showDelay="300" value="#{msg['editar']}" for="cmdEditar" />
+					<f:setPropertyActionListener target="#{especialistasAction.pojoOficial}" value="#{var}" />
+				</a4j:commandButton>
+			</rich:column>
+			<f:facet name="footer">
+				<rich:datascroller align="center" for="dtOficiales" maxPages="10"
+					ajaxSingle="true" page="#{especialistasAction.numPagina}"
+					id="dScroll" styleClass="Titulo" />
+			</f:facet>
+		</rich:dataTable>
+	</div>
+</ui:define>
+
+<ui:define name="modals">
+	<rich:modalPanel id="pnlEditarOficial" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['especialista']}" styleClass="Titulo" />
+		</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlEditarOficial')}.hide()"/>
+		</f:facet>
+		<a4j:form id="frmModalOficial">
+			<a4j:commandButton id="cmdSalvar"
+				action="#{especialistasAction.guardar}"
+				style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+				image="#{msg['salvar22.img']}"
+				oncomplete="guardar('#{especialistasAction.resOperacion}', '#{rich:clientId('pnlEditarOficial')}', '#{rich:clientId('pnlMsgGralEspecialistas')}', #{rich:element('msgErrorOficial')});"
+				reRender="dtOficiales,pnlMsgGralEspecialistas">
+				<rich:toolTip value="#{msg['salvar.e']}" styleClass="Descripcion" />
+			</a4j:commandButton>
+			
+			<rich:messages id="msgErrorOficial" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!">
+				<f:facet name="errorMarker">
+					<h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;"/>   
+				</f:facet>
+			</rich:messages>	
+		
+			<h:panelGroup id="groupUsuario">
+				<h:outputText value="#{msg['usuario']}:" style="margin-right: 5px;"/>
+				<h:outputText value="#{especialistasAction.pojoOficial.usuarioId.id}" rendered="#{especialistasAction.pojoOficial.usuarioId != null ? especialistasAction.pojoOficial.usuarioId.id > 0 : false}" style="margin-left: 5px;"/>
+				<a4j:commandLink id="cmdBuscarUsuario"
+					value="#{especialistasAction.pojoOficial == null ? msg['seleccionar'] : (especialistasAction.pojoOficial.usuarioId.id > 0 ? msg['cambiar'] : msg['seleccionar'])}"
+					oncomplete="#{rich:component('pnlBuscarUsuarios')}.show()"
+					reRender="pnlBuscarUsuarios"
+					style="font-weight: bold; font-size: 12px; margin-left: 10px;"/>
+			</h:panelGroup>
+			
+			<fieldset style="margin-top: 10px;">
+				<legend>
+					<h:outputText value="#{msg['datos']}"/>
+				</legend>
+				<h:panelGroup id="datosUsuario">
+					<h:panelGrid id="pnlResponsabil" columns="2" style="margin-bottom:10px; margin-top:10px; display:block;" width="400">
+						<h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+						<h:outputText value="#{especialistasAction.pojoOficial.usuarioId.nombre}"/>
+						
+						<h:outputText value="#{msg['correo']}:" styleClass="Titulo"/>
+						<h:outputText value="#{especialistasAction.pojoOficial.usuarioId.correo}"/>
+					</h:panelGrid>
+				</h:panelGroup>
+				
+			</fieldset>
+		</a4j:form>
+	</rich:modalPanel>
+	
+	<rich:modalPanel id="pnlBuscarUsuarios" autosized="true" domElementAttachment="form">
+	   <f:facet name="header">
+               <h:outputText style="margin-left:10px" value="#{msg['usuarios']}" styleClass="Titulo"/>
+        </f:facet>
+	    <f:facet name="controls">
+	       <h:panelGroup>
+	       	  <h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" id="btnCerrarUsuarios"/>
+	          <rich:componentControl for="pnlBuscarUsuarios" attachTo="btnCerrarUsuarios" operation="hide" event="onclick"/>
+	       </h:panelGroup>
+	    </f:facet>
+		<a4j:form id="frmModalUsuarios">
+			<div style="display:block; width:700px;">
+				<a4j:commandButton id="cmdBuscarUsuarios" action="#{especialistasAction.buscarUsuarios}" image="#{msg['buscar22.img']}" style="float:right; margin-right:15px;"  reRender="dtUsuarios">
+					<rich:toolTip value="#{msg['buscar.e']}" styleClass="Descripcion" style="cursor:pointer;" showDelay="300"/>
+				</a4j:commandButton>
+			</div>
+			
+			<rich:dataTable id="dtUsuarios" cellpadding="0" cellspacing="0"
+				rows="12" border="0" var="var" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+				value="#{especialistasAction.listUsuarios}" style="margin-top: 30px;">
+		
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column colspan="4" styleClass="Titulo">
+							<h:outputText value="#{msg['usuarios']}"/>
+						</rich:column>
+		                <rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+		                </rich:column>
+		                <rich:column  style="text-align:center;" styleClass="Titulo">
+		                    <h:outputText value="#{msg['nombre']}" />
+		                </rich:column>
+		                <rich:column  style="text-align:center;" styleClass="Titulo">
+		                    <h:outputText value="#{msg['correo']}" />
+		                </rich:column>
+	                	<rich:column/>
+		            </rich:columnGroup>
+		        </f:facet>
+		        <rich:column width="50" style="text-align:center;" styleClass="Descripcion">
+		       		<h:outputText value="#{var.id}"/>                 
+		    	</rich:column>
+		    	<rich:column width="200" style="text-align:center;" styleClass="Descripcion">
+		       		<h:outputText value="#{var.nombre}"/>                 
+		    	</rich:column>
+		    	<rich:column width="100" style="text-align:center;" styleClass="Descripcion">
+		       		<h:outputText value="#{var.correo}"/>                 
+		    	</rich:column>
+		    	<rich:column width="50" style="text-align:center; ">
+				    <a4j:commandButton image="#{msg['drag16.img']}" oncomplete="Richfaces.hideModalPanel('pnlBuscarUsuarios')"
+				    	reRender="groupUsuario,datosUsuario">
+				     	<f:setPropertyActionListener target="#{especialistasAction.pojoOficial.usuarioId}" value="#{var}" />
+				     	<rich:toolTip showDelay="300">
+				     		<h:outputText value="#{msg['seleccionar']}" styleClass="Descripcion"/>
+				     	</rich:toolTip>	
+				    </a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer" >
+					<rich:datascroller align="center" for="dtUsuarios" maxPages="10"
+						ajaxSingle="true" page="#{especialistasAction.numPaginaUsuarios}"
+						id="dScrollUsuarios" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</a4j:form>
+	</rich:modalPanel>
+	
+	<rich:modalPanel id="pnlMsgGralEspecialistas" autosized="true" width="350">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText value="#{especialistasAction.resOperacion == '' ? msg['informacion'] : msg['atencion']}" styleClass="Titulo" />
+			</h:panelGroup>
+		</f:facet>
+		<f:facet name="controls">
+	       <h:panelGroup>
+	           <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="imgCerrarMsgGral"/>
+	           	<rich:componentControl for="pnlMsgGralEspecialistas" attachTo="imgCerrarMsgGral" operation="hide" event="onclick"/>
+	        </h:panelGroup>
+		</f:facet>
+		<a4j:form id="frmMsgGral" style="text-align:center;" >
+			<h:panelGroup style="display:block; width:300px; float:center;">
+				<h:outputText value="#{especialistasAction.resOperacion != '' ? especialistasAction.resOperacion : msg['mensaje.info.infoReg']}" style="display:block;" styleClass="Descripcion"/>
+			</h:panelGroup>
+			<a4j:commandButton value="#{msg['aceptar']}" onclick="#{rich:component('pnlMsgGralEspecialistas')}.hide()" style="margin-top:10px; cursor:pointer;"/>
+		</a4j:form>
+	</rich:modalPanel>		
+</ui:define>
+
+</ui:composition>

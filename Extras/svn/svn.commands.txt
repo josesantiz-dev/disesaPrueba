@@ -1,0 +1,46 @@
+### ------------------------------------------------------------------
+### SVN Commands
+### ------------------------------------------------------------------
+
+### Crear Repositorio:
+svnadmin create /svn/respositorios/NOMBRE
+
+### Primer usuario o reiniciar usuarios añadiendo el primero
+htpasswd -cm /etc/passwd USER
+
+### Añadir usuario:
+htpasswd -m /etc/passwd USER
+
+### Importar repositorio IMPORT
+svn import PATH_LOCAL REPO_URL
+
+### Descargar repositorio en ruta local CHECKOUT
+svn co REPO_URL PATH_LOCAL
+
+### Añadir archivos a copia local ADD
+svn add PATH_FILE [--force]
+
+### Confirmar cambios de copia local COMMIT
+svn ci PATH_LOCAL
+
+### Descargar cambios a copia local UPDATE
+svn up PATH_LOCAL
+
+### Comprobar cambios en la ruta local STATUS
+svn st PATH_LOCAL
+
+### Borrar archivo o carpeta de copia local sin confirmar cambio DELETE
+svn delete PATH_LOCAL
+
+### Comprobar cambios de copia local con copia servidor
+svn diff PATH_LOCAL
+
+### Crear BRANCHE/TAG
+svn copy REPO_URL/trunk REPO_URL/branches/NAME_BRANCH -m "Branch para agregar soporte para IP v6"
+
+### Reintegrar BRANCH a TRUNK MERGE
+svn merge --reintegrate REPO_URL/branches/NAME_BRANCH
+svn commit -m "Merge NAME_BRANCH back into trunk!"
+
+### Crear copia de repositorio COPY
+svn copy REPO_URL/ORIGEN REPO_URL/DESTINO 

@@ -1,0 +1,90 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlObrasEmpleados" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+    	<f:facet name="header">
+			<h:outputText value="#{msg['empleadosObra']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" onclick="#{rich:component('pnlObrasEmpleados')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+	
+		<div style = "display: block; min-width:600px; height: 22px;">
+			<a4j:commandButton id="cmdBusquedaEmpleado" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+				image="#{msg['agregar22.img']}" 
+				rendered="#{empObraAction.permiteModificar}" 
+				action="#{empObraAction.nuevaBusquedaEmpleados}" 
+				oncomplete="#{rich:component('pnlObrasBusquedaEmpleados')}.show()"
+				render="pnlObrasBusquedaEmpleados"
+				limitRender="true">
+				<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['agregar.e']}" for="cmdBusquedaEmpleado"/>
+			</a4j:commandButton>
+		</div>
+
+		<div style="margin: 10px auto 0;">
+			<h:panelGroup styleClass="encabezado" style="min-height: 1em;">
+				<h:outputText value="#{empObraAction.pojoObra.id != null ? empObraAction.pojoObra.id : '0'} " />
+				<h:outputText value="#{empObraAction.pojoObra.nombre}" />
+			</h:panelGroup>
+
+			<rich:dataTable id="dtObraEmpleados" value="#{empObraAction.listObraEmpleados}" var="var" cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header"> 
+					<rich:columnGroup>
+						<rich:column colspan="4" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['empleadosObra']}" />
+						</rich:column>
+						
+						<rich:column breakRowBefore="true" style="width:100px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="width:100px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['clave']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+
+						<rich:column style="width: 20px; text-align:center;" styleClass="Titulo" />
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="width: 60px; text-align:center;">
+					<h:outputText value="#{var.empleadoId}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="width: 60px; text-align:center;">
+					<h:outputText value="#{var.idEmpleado.clave}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.empleadoNombre}" />
+				</rich:column>
+				
+				<rich:column style="width: 30px; text-align:center;" styleClass="Descripcion">
+				   <a4j:commandButton id="cmdEliminarObraEmpleado" 
+				   		image="#{msg['eliminar16.img']}" 
+				   		rendered="#{empObraAction.permiteModificar}" 
+						oncomplete="#{rich:component('pnlEliminar')}.show()" 
+						render="pnlEliminar">
+						<rich:tooltip showDelay="300" value="#{msg['agregar.e']}" for="cmdEliminarObraEmpleado" />	
+						<f:setPropertyActionListener target="#{empObraAction.pojoObraEmpleado}" value="#{var}" for="cmdEliminarObraEmpleado" />
+				   </a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller id="dScrollObraEmpleados" align="center" for="dtObraEmpleados" maxPages="10"
+						ajaxSingle="true" page="#{empObraAction.numPaginaObraEmpleados}"
+						styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

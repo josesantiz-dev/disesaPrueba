@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich">
+	<h:head>
+		<meta http-equiv="Cache-Control" content="no-store" />
+		<meta http-equiv="Cache-Control" content="no-cache" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="Expires" content="-1" />
+	    <title><ui:insert name="title"/></title>
+	    <ui:insert name="metas" />
+	    <h:outputStylesheet library="css/general"  name="general.css" />
+	  	<h:outputScript library="scripts/general" name="general.js" />
+		<h:outputScript library="scripts" name="gestion_proyectos.js" />
+	    <script>
+		    A4J.AJAX.onExpired = function(loc, expiredMsg){
+		    	console.info(loc);
+		    	console.error(expiredMsg);
+			    //alert(expiredMsg);
+			    document.location="/cas/logout"; 
+			};
+			
+			A4J.AJAX.onError = function(req, status, message) {
+		    	console.info(req);
+		    	console.info(status);
+		    	console.error("Custom onError handler " + message);
+		    	// window.alert("Custom onError handler "+message);
+			};
+			
+			/*function handlePaste (e) {
+				var clipboardData, pastedData;
+				
+				console.log('handlePaste :: event');
+				console.log(e);
+				
+				// Stop data actually being pasted into div
+				console.log('Stop data actually being pasted');
+				e.stopPropagation();
+				e.preventDefault();
+				
+				// Get pasted data via clipboard API
+				console.log('Get pasted data via clipboard API');
+				clipboardData = e.clipboardData || window.clipboardData;
+				pastedData = clipboardData.getData('Text');
+				  
+				// Do whatever with pasteddata
+				console.log('Do whatever with pasteddata');
+				soloNumerosPostvalidate('', pastedData);
+			}
+			
+			document.getElementsByClassName('decimales').addEventListener('paste', handlePaste);*/
+			
+			/*document.body.onpaste = function(e) {
+				var textPaste = '';
+				console.log(e);
+				
+				console.log("Obtenemos valor");
+				textPaste = e.clipboardData.getData("Text");
+				console.log("---> " + textPaste);
+				
+				soloNumerosPostvalidate('', textPaste);
+			    e.preventDefault();
+			};*/
+	    </script>
+	</h:head>
+	 
+  	<h:body style="text-align:left;">
+       	<a4j:region id="loadGral">
+       		<a4j:status id="statusMensaje" for="loadGral" onstart="#{rich:component('wait')}.show()" onstop="#{rich:component('wait')}.hide()" />
+	 		<a4j:queue id="quePrincipal" name="miQueue" ignoreDupResponses="true" requestDelay="500" size="1" />
+	 		
+	       	<h:form ignoreDupResponses="true" id="frmPrincipal" style="text-align:center; float:center; width:100%;">
+				<rich:toolbar binding="#{appMediator.navegador.arbolMenu}" id="miMenu" itemSeparator="none" styleClass="div_header">
+					<ui:insert name="menuFrag" />
+				</rich:toolbar>
+				
+	      		<div id="div_footer">
+      				<h:outputText id="txtFooterUsuario" value="#{msg['usuario']}: #{loginManager.usuario}" styleClass="div_footer_txt"/>
+      				<h:outputText id="txtFooterResp" value="#{msg['responsabilidad']}: #{loginManager.usuarioResponsabilidad.responsabilidad.responsabilidad}" styleClass="div_footer_txt"/>
+      				<h:outputText id="txtFooterFecha" value="#{msg['fecha']}: #{navegador.fecha}" styleClass="div_footer_txt"/>
+      				
+      				<a4j:commandButton id="cmdCerrarSession" styleClass="div_footer_cerrar_session"
+      					image="#{msg['ruta_img_22']}#{msg['salir.img']}" title="#{msg['cerrarSession']}" 
+      					action="#{navegador.cerrarSession}" />
+      				
+      				<a4j:commandButton id="cmdCambiarResponsabilidad" styleClass="div_footer_cambia_responsabilidad"
+						image="#{msg['ruta_img_22']}#{msg['responsabilidad.img']}" title="#{msg['cambiarResponsabilidad']}" 
+						oncomplete="#{rich:component('pnlSeleccionResponsabilidad')}.show()" 
+						render="pnlSeleccionResponsabilidad" />
+
+					<a4j:commandButton id="cmdCambiarEmpresa" styleClass="div_footer_cambia_responsabilidad" 
+						image="#{msg['ruta_img_22']}#{msg['responsabilidad.img']}" title="#{msg['cambiarEmpresa']}" 
+						oncomplete="#{rich:component('pnlSeleccionEmpresa')}.show()" 
+						render="pnlSeleccionEmpresa" />
+      				
+      				<a4j:commandButton id="cmdCambiarModulo" styleClass="div_footer_cambia_responsabilidad"
+						image="#{msg['ruta_img_22']}#{msg['modulo.img']}" title="#{msg['cambiarModulo']}"
+						action="#{navegador.cambiarModulo}" />
+      				
+      				<!--a4j:commandButton id="cmdCambiarPass" image="#{msg['ruta_img_22']}#{msg['password.img']}"  action="#{loginManager.resetContrasena}" oncomplete="Richfaces.showModalPanel('pnlCambioPass');" styleClass="div_footer_cambia_responsabilidad" reRender="pnlCambioPass">
+      					<a4j:param name="origenCambioPass" value="admon" assignTo="#{navegador.origenCambioPass}"/>
+      					<rich:tooltip value="#{msg['cambiarContrasena']}" styleClass="DescripcionGral"/>
+      				</a4j:commandButton-->
+	      		</div>
+	      		
+	      		<div id="divContainer">
+					<ui:insert name="body" />
+	      		</div>
+	      		
+	      		<ui:insert name="modals" />
+			</h:form>
+			
+	      	<ui:insert name="external_modals" />
+		 
+			<ui:include src="/layout/modalsGenerales.xhtml" />
+		</a4j:region>
+	</h:body>
+</html>
+ 

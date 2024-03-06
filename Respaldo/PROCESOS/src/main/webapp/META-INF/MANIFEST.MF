@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Class-Path: 
+Dependencies: net.izel.framework export, 
+ com.enterprisedt.edtFTPj export,
+ net.giro.comun export

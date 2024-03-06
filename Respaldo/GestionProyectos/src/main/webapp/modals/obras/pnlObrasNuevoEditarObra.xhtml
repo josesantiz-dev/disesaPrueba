@@ -1,0 +1,509 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlObrasNuevoEditarObra" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+		<f:facet name="header">
+			<h:outputText id="lblTituloPresupuesto" value="#{obrasAction.pojoObra.id == null ? msg['nueva'] : msg['editar']} #{msg['obra']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" onclick="#{rich:component('pnlObrasNuevoEditarObra')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+		
+		<div style="display: block; padding:0; width:100%; height: 22px; text-align: left; background-color: none;">
+			<h:panelGroup id="botonera" style="display: block; width: 100%; height: 22px; margin-bottom: 1em;">
+				<h:panelGroup id="grupoBotonesDerechos" style="width: 100%; vertical-align: middle; position:relative; ">
+					<a4j:commandButton id="cmdSalvar" style="float:right; margin-left: 5px; vertical-align: middle; position:relative;"
+						image="#{msg['salvar22.img']}" 
+						action="#{obrasAction.guardar}"
+						oncomplete="salvar(#{obrasAction.band}, '#{rich:clientId('pnlObrasNuevoEditarObra')}', '#{rich:clientId('pnlObrasMsgGrales')}', #{rich:element('msgErrorObras')});"
+						render="dtResults,msgErrorObras,pnlObrasMsgGrales"
+						limitRender="true">
+						<rich:tooltip for="cmdSalvar" showDelay="300" 
+							value="#{msg['salvar.e']}" />
+					</a4j:commandButton>
+				</h:panelGroup>
+				
+				<h:panelGroup id="grupoBotonesIzquierdos" style="width: 100%; vertical-align: middle; position:relative;">
+					<h:panelGroup>
+						<a4j:commandButton id="cmdRevisado" style="margin:0 5px 0 0; vertical-align: middle; position:relative;"
+							rendered="#{obrasAction.pojoObra.id > 0}" 
+							image="#{msg['aplicar22.img']}" 
+							action="#{obrasAction.revisado}" 
+							oncomplete="revisado(#{obrasAction.band}, '#{rich:clientId('pnlObrasNuevoEditarObra')}', '#{rich:clientId('pnlObrasMsgGrales')}');"
+							render="pnlObrasMsgGrales,cmdRevisado,txtObraRevisado"
+							limitRender="true" execute="@this"> 
+							<rich:tooltip for="cmdRevisado" showDelay="300"
+								value="#{obrasAction.pojoObra.revisado == 1 ? msg['quitar'] : ''} #{msg['revisado']}" />
+						</a4j:commandButton>
+						<h:outputText id="txtObraRevisado" styleClass="Titulo"
+							value="#{obrasAction.pojoObra.revisado == 1 ? msg['revisado'] : msg['noRevisado']}" />
+					</h:panelGroup>
+				</h:panelGroup>
+			</h:panelGroup>
+		</div>
+		
+		<h:panelGroup styleClass="encabezado" style="min-height: 1em;">
+			<h:outputText value="#{obrasAction.pojoObra.id != null ? obrasAction.pojoObra.id : '0'} " />
+			<h:outputText value="#{obrasAction.pojoObra.nombre}" />
+		</h:panelGroup>
+		
+		<a4j:log rendered="false" />
+		
+		<rich:messages id="msgErrorObras" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+			<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+		</rich:messages>
+		
+		<div style="display: block; margin: 0 auto; padding: 0; text-align: left; background-color: none;">
+			<rich:tabPanel id="groupTabs" style="min-width:800px: width:100%; min-height:300px; height:auto;">
+				<rich:tab id="grupoDatosGenerales" header="#{msg['datosGenerales']}">
+					<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+						<h:outputText value="#{msg['tipo']}:" styleClass="Titulo" />
+						<h:selectOneRadio id="rbTipoObra" style="min-width: 100px"
+							value="#{obrasAction.pojoObra.tipoObra}">
+							<f:selectItems value="#{obrasAction.listObrasTiposItems}" />
+							<a4j:ajax event="change" 
+								render="labelObraPrincipalDatos,pnlObraPrincipalDatos" />
+						</h:selectOneRadio>
+						
+						<h:outputText value="#{msg['nombre']} #{msg['obra']}:" styleClass="Titulo" />
+						<h:inputText id="txtObraNombre" style="text-align:left;" size="80"
+							value="#{obrasAction.pojoObra.nombre}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['nombreObra']} #{msg['mensaje.error.requerido']}" />
+						
+						<h:outputText id="labelObraPrincipalDatos" value="#{msg['obraPrincipal']}:" styleClass="Titulo" style="display: #{obrasAction.pojoObra.tipoObra != 2 ? 'block' : 'none'}" />
+						<h:panelGroup id="pnlObraPrincipalDatos" style="display: #{obrasAction.pojoObra.tipoObra != 2 ? 'block' : 'none'}">
+							<h:panelGrid columns="2">
+								<h:outputText id="txtObraPrincipal" value="#{obrasAction.pojoObra.obraPrincipal}" style="text-align:left; display:block;" />
+								<h:panelGroup>
+									<h:panelGrid columns="2">
+										<a4j:commandLink id="cmdSeleccionarObraPrincipal"
+											action="#{obrasAction.nuevaBusquedaObras}"
+											value="#{obrasAction.pojoObra.obraPrincipal == '' ? msg['seleccionar'] : msg['cambiar'] }" 
+											oncomplete="#{rich:component('pnlObrasBusquedaObras')}.show();"
+											render="pnlObrasBusquedaObras" />
+											
+										<a4j:commandLink id="cmdQuitarObraPrincipal"
+											rendered="#{obrasAction.pojoObra.obraPrincipal != ''}"
+											action="#{obrasAction.quitarObra}"
+											value="#{msg['quitar']}" 
+											render="pnlObraPrincipalDatos" />
+									</h:panelGrid>
+								</h:panelGroup>
+							</h:panelGrid>
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['cliente']}:" styleClass="Titulo" />
+						<h:panelGroup id="pnlObraClienteDatos">
+							<h:panelGrid columns="2">
+								<h:outputText id="txtCliente" value="#{obrasAction.pojoObra.cliente}" style="text-align:left; display:block;" />
+								<h:panelGroup>
+									<a4j:commandLink id="cmdSeleccionarCliente" 
+										action="#{obrasAction.nuevaBusquedaClientes}"
+										value="#{obrasAction.pojoObra.idCliente == null ? msg['seleccionar'] : msg['cambiar'] }" 
+										oncomplete="#{rich:component('pnlObrasBusquedaClientes')}.show();"
+										render="pnlObrasBusquedaClientes" />
+										
+									<h:inputText id="txtClienteHidden" style="text-align:left;  display:none;"
+										value="#{obrasAction.pojoObra.cliente}"
+										required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+										requiredMessage="#{msg['cliente']} #{msg['mensaje.error.requerido']}" />
+								</h:panelGroup>
+							</h:panelGrid>
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['estatus']}:" styleClass="Titulo" />
+						<h:selectOneMenu id="cmbObraEstatus" style="width: 180px;"
+							value="#{obrasAction.pojoObra.estatus}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['estatus']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+				            <f:selectItems value="#{obrasAction.listEstatusObrasItems}" />
+				        </h:selectOneMenu>
+						
+						<h:outputText value="#{msg['sucursal']}:" styleClass="Titulo" />
+						<h:selectOneMenu id="cmbObraSucursal" style="width: 180px;"
+							value="#{obrasAction.sucursal}" 
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['sucursal']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+				            <f:selectItems value="#{obrasAction.listSucursalesItems}" />
+				        </h:selectOneMenu>
+						
+						<h:outputText value="#{msg['responsable']}:" styleClass="Titulo" />
+						<h:panelGroup id="pnlObraResponsableDatos">
+							<h:panelGrid columns="2">
+								<h:outputText id="txtResponsable" value="#{obrasAction.pojoObra.responsable}" style="text-align:left; display:block;" />
+								<h:panelGroup>
+									<a4j:commandLink id="cmdSeleccionarResponsable" 
+										action="#{obrasAction.nuevaBusquedaResponsables}" 
+										value="#{obrasAction.pojoObra.idResponsable == null ? msg['seleccionar'] : msg['cambiar'] }" 
+										oncomplete="#{rich:component('pnlBusquedaResponsables')}.show();"
+										render="pnlBusquedaResponsables" />
+										
+									<h:inputText id="txtResponsableHidden" style="text-align:left;  display:none;"
+										value="#{obrasAction.pojoObra.responsable}"
+										required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+										requiredMessage="#{msg['responsable']} #{msg['mensaje.error.requerido']}" />
+								</h:panelGroup>
+							</h:panelGrid>
+						</h:panelGroup>
+					</h:panelGrid>
+				</rich:tab>
+				
+				<rich:tab id="grupoDatosContrato" header="#{msg['datosContrato']}">
+					<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+						<h:outputText value="#{msg['contrato']}:" styleClass="Titulo" />
+						<h:inputText id="txtObraNombreContrato" style="text-align:left;" size="80"
+							value="#{obrasAction.pojoObra.nombreContrato}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['contrato']} #{msg['mensaje.error.requerido']}" />
+							
+						<h:outputText value="#{msg['objetoContrato']}:" styleClass="Titulo" />
+						<h:inputText id="txtObraObjetoContrato" style="text-align:left;" size="80"
+							value="#{obrasAction.pojoObra.objetoContrato}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['objetoContrato']} #{msg['mensaje.error.requerido']}" />
+						
+						<h:outputText value="#{msg['estatus']} #{msg['contrato']}:" styleClass="Titulo" />
+						<h:selectOneMenu id="cmbObraEstatusContrato" style="width: 180px;"
+							value="#{obrasAction.pojoObra.estatusContrato}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['estatus']} #{msg['contrato']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+				            <f:selectItems value="#{obrasAction.listEstatusContratoItems}" />
+				        </h:selectOneMenu>
+							
+						<h:outputText value="#{msg['domicilio']}:" styleClass="Titulo" />
+						<h:panelGroup id="pnlObraDomicilioDatos">
+							<h:panelGrid columns="2">
+								<h:outputText id="txtDomicilio" value="#{obrasAction.pojoObra.domicilio}" style="text-align:left; display:block;" />
+								<h:panelGroup>
+									<a4j:commandLink id="cmdSeleccionarDomicilio" 
+										action="#{obrasAction.nuevoDomicilio}" immediate="true"
+										value="#{obrasAction.pojoObra.domicilio == null || obrasAction.pojoObra.domicilio == '' ? msg['seleccionar'] : msg['cambiar'] }" 
+										oncomplete="#{rich:component('pnlDomicilio')}.show();"
+										render="pnlDomicilio, grpDomiDom0, grpDomiDom" />
+								</h:panelGroup>
+							</h:panelGrid>
+						</h:panelGroup>
+					</h:panelGrid>
+					
+					<h:panelGrid columns="4" columnClasses="colTitulo, colDato, colTitulo, colDato">
+						<h:outputText value="#{msg['satic02']}:" styleClass="Titulo" />
+						<h:panelGroup>
+							<h:selectBooleanCheckbox id="txtObraStatic02" 
+								value="#{obrasAction.pojoObra.satic02}" />
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['montoContratado']} #{msg['conIva']}:" styleClass="Titulo" />
+						<h:inputText id="txtObraMontoContratado" style="text-align:right;" size="16" maxlength="13"
+							value="#{obrasAction.pojoObra.montoContratado}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['montoContratado']} #{msg['mensaje.error.requerido']}"
+							onkeypress="return soloDecimales(event, this.value, 10, 2);">
+							<f:convertNumber pattern="###,###,##0.00" />
+							<a4j:ajax event="change" listener="#{obrasAction.calcularAnticipoPorcentaje}" render="txtObraMontoContratado, txtObraMontoAnticipo, txtObraAnticipo" />
+						</h:inputText>
+							
+						<h:outputLabel value="#{msg['fechaInicio']}:" styleClass="Titulo" />
+						<rich:calendar id="txtFechaInicio" datePattern="dd/MM/yyyy"
+							value="#{obrasAction.pojoObra.fechaInicio}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['fechaInicio']} #{msg['mensaje.error.requerido']}">
+							<rich:placeholder value="dd/MM/yyyy" />
+						</rich:calendar>
+						
+						<h:outputText value="#{msg['montoAnticipo']} #{msg['conIva']}:" styleClass="Titulo" />
+						<h:inputText id="txtObraMontoAnticipo" style="text-align:right;" size="16" maxlength="13"
+							value="#{obrasAction.pojoObra.montoAnticipo}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['montoAnticipo']} #{msg['mensaje.error.requerido']}"
+							onkeypress="return soloDecimales(event, this.value, 10, 2);">
+							<f:convertNumber pattern="###,###,##0.00" />
+							<a4j:ajax event="change" 
+								listener="#{obrasAction.calcularAnticipoPorMonto}" 
+								render="txtObraMontoContratado, txtObraMontoAnticipo, txtObraAnticipo" />
+						</h:inputText>
+							
+						<h:outputLabel value="#{msg['fechaTerminacion']}:" styleClass="Titulo" />
+						<rich:calendar id="txtFechaTerminacion" datePattern="dd/MM/yyyy"
+							value="#{obrasAction.pojoObra.fechaTerminacion}" 
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['fechaTerminacion']} #{msg['mensaje.error.requerido']}">
+							<rich:placeholder value="dd/MM/yyyy" />
+						</rich:calendar>
+						
+						<h:outputText value="#{msg['montoDeductiva']} #{msg['conIva']}:" styleClass="Titulo" />
+						<h:inputText id="txtObraMontoDeductiva" style="text-align:right;" size="16" maxlength="13"
+							value="#{obrasAction.pojoObra.montoDeductiva}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['montoDeductiva']} #{msg['mensaje.error.requerido']}"
+							onkeypress="return soloDecimales(event, this.value, 10, 2);">
+							<f:convertNumber pattern="###,###,##0.00" />
+							<a4j:ajax event="blur" render="txtObraMontoDeductiva" />
+						</h:inputText>
+						
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						
+						<h:outputText value="#{msg['anticipo']}:" styleClass="Titulo" />
+						<h:panelGrid columns="2">
+							<rich:inputNumberSpinner id="txtObraAnticipo" size="3" minValue="0" maxValue="100" 
+								value="#{obrasAction.pojoObra.porcentajeAnticipo}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['anticipo']} #{msg['mensaje.error.requerido']}"
+								onkeydown="return soloNumeros(event)">
+								<f:convertNumber pattern="###,###,##0.00" />
+								<a4j:ajax event="change" 
+									listener="#{obrasAction.calcularAnticipoPorPorcentaje}" 
+									render="txtObraMontoContratado, txtObraMontoAnticipo, txtObraMontoAnticipo" />
+							</rich:inputNumberSpinner>
+								
+							<h:outputText value="#{msg['%']}" styleClass="Titulo" />
+						</h:panelGrid>
+					</h:panelGrid>
+				</rich:tab>
+				
+				<rich:tab id="grupoObservaciones" header="#{msg['observaciones']}">
+					<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+						<h:outputText value="#{msg['observaciones']}" styleClass="Titulo" />
+						<h:inputTextarea id="txtObservaciones" style="width:100%; min-width:700px; resize:none;" rows="5"
+							value="#{obrasAction.pojoObra.observaciones}" />
+					</h:panelGrid>
+				</rich:tab>
+			</rich:tabPanel>
+
+			<!--h:panelGroup id="grupoDatosGenerales">
+				<fieldset style="margin: 5px auto;">
+					<legend><h:outputText value="#{msg['datosGenerales']}" styleClass="Titulo" /></legend>
+					
+					<h:panelGrid columns="3" columnClasses="colTitulo, colDato, colTitulo">
+						<h:outputText value="#{msg['tipo']}:" styleClass="Titulo" />
+						<h:selectOneRadio id="rbTipoObra" style="min-width: 100px"
+							value="#{obrasAction.pojoObra.tipoObra}">
+							<f:selectItem itemLabel="#{msg['obra']}" itemValue="1" />
+							<f:selectItem itemLabel="#{msg['proyecto']}" itemValue="2" />
+							<f:selectItem itemLabel="#{msg['ordenTrabajo']}" itemValue="3" />
+							<a4j:ajax event="change" render="labelObraPrincipalDatos,pnlObraPrincipalDatos" />
+						</h:selectOneRadio>
+						
+						<h:panelGroup>
+							<div style="margin: 0; float: right; padding: 0; text-align: right; background: none; width: 278px;">
+								<h:outputText id="txtObraRevisado" styleClass="Titulo"
+									value="#{obrasAction.pojoObra.revisado == 1 ? msg['revisado'] : ''}" />
+							</div>
+						</h:panelGroup>
+					</h:panelGrid>
+					
+					<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+						<h:outputText value="#{msg['nombre']} #{msg['obra']}:" styleClass="Titulo" />
+						<h:inputText id="txtObraNombre" style="text-align:left;" size="80"
+							value="#{obrasAction.pojoObra.nombre}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['nombreObra']} #{msg['mensaje.error.requerido']}" />
+						
+						<h:outputText id="labelObraPrincipalDatos" value="#{msg['obraPrincipal']}:" styleClass="Titulo" style="display: #{obrasAction.pojoObra.tipoObra != 2 ? 'block' : 'none'}" />
+						<h:panelGroup id="pnlObraPrincipalDatos" style="display: #{obrasAction.pojoObra.tipoObra != 2 ? 'block' : 'none'}">
+							<h:panelGrid columns="2">
+								<h:outputText id="txtObraPrincipal" value="#{obrasAction.pojoObra.obraPrincipal}" style="text-align:left; display:block;" />
+								<h:panelGroup>
+									<a4j:commandLink id="cmdSeleccionarObraPrincipal"
+										action="#{obrasAction.nuevaBusquedaObras}"
+										value="#{obrasAction.pojoObra.idObraPrincipal == null ? msg['seleccionar'] : msg['cambiar'] }" 
+										oncomplete="#{rich:component('pnlObrasBusquedaObras')}.show();"
+										render="pnlObrasBusquedaObras" />
+								</h:panelGroup>
+							</h:panelGrid>
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['cliente']}:" styleClass="Titulo" />
+						<h:panelGroup id="pnlObraClienteDatos">
+							<h:panelGrid columns="2">
+								<h:outputText id="txtCliente" value="#{obrasAction.pojoObra.cliente}" style="text-align:left; display:block;" />
+								<h:panelGroup>
+									<a4j:commandLink id="cmdSeleccionarCliente" 
+										action="#{obrasAction.nuevaBusquedaClientes}"
+										value="#{obrasAction.pojoObra.idCliente == null ? msg['seleccionar'] : msg['cambiar'] }" 
+										oncomplete="#{rich:component('pnlObrasBusquedaClientes')}.show();"
+										render="pnlObrasBusquedaClientes" />
+										
+									<h:inputText id="txtClienteHidden" style="text-align:left;  display:none;"
+										value="#{obrasAction.pojoObra.cliente}"
+										required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+										requiredMessage="#{msg['cliente']} #{msg['mensaje.error.requerido']}" />
+								</h:panelGroup>
+							</h:panelGrid>
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['estatus']}:" styleClass="Titulo" />
+						<h:selectOneMenu id="cmbObraEstatus" style="width: 180px;"
+							value="#{obrasAction.pojoObra.estatus}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['estatus']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+				            <f:selectItems value="#{obrasAction.listEstatusObrasItems}" />
+				        </h:selectOneMenu>
+						
+						<h:outputText value="#{msg['sucursal']}:" styleClass="Titulo" />
+						<h:selectOneMenu id="cmbObraSucursal" style="width: 180px;"
+							value="#{obrasAction.sucursal}" 
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['sucursal']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+				            <f:selectItems value="#{obrasAction.listSucursalesItems}" />
+				        </h:selectOneMenu>
+						
+						<h:outputText value="#{msg['responsable']}:" styleClass="Titulo" />
+						<h:panelGroup id="pnlObraResponsableDatos">
+							<h:panelGrid columns="2">
+								<h:outputText id="txtResponsable" value="#{obrasAction.pojoObra.responsable}" style="text-align:left; display:block;" />
+								<h:panelGroup>
+									<a4j:commandLink id="cmdSeleccionarResponsable" 
+										action="#{obrasAction.nuevaBusquedaResponsables}" 
+										value="#{obrasAction.pojoObra.idResponsable == null ? msg['seleccionar'] : msg['cambiar'] }" 
+										oncomplete="#{rich:component('pnlBusquedaResponsables')}.show();"
+										render="pnlBusquedaResponsables" />
+										
+									<h:inputText id="txtResponsableHidden" style="text-align:left;  display:none;"
+										value="#{obrasAction.pojoObra.responsable}"
+										required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+										requiredMessage="#{msg['responsable']} #{msg['mensaje.error.requerido']}" />
+								</h:panelGroup>
+							</h:panelGrid>
+						</h:panelGroup>
+					</h:panelGrid>
+				</fieldset>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoDatosContrato">
+				<fieldset style="margin: 5px auto;">
+					<legend><h:outputText value="#{msg['datosContrato']}" styleClass="Titulo" /></legend>
+					
+					<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+						<h:outputText value="#{msg['contrato']}:" styleClass="Titulo" />
+						<h:inputText id="txtObraNombreContrato" style="text-align:left;" size="80"
+							value="#{obrasAction.pojoObra.nombreContrato}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['contrato']} #{msg['mensaje.error.requerido']}" />
+							
+						<h:outputText value="#{msg['objetoContrato']}:" styleClass="Titulo" />
+						<h:inputText id="txtObraObjetoContrato" style="text-align:left;" size="80"
+							value="#{obrasAction.pojoObra.objetoContrato}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['objetoContrato']} #{msg['mensaje.error.requerido']}" />
+						
+						<h:outputText value="#{msg['estatus']} #{msg['contrato']}:" styleClass="Titulo" />
+						<h:selectOneMenu id="cmbObraEstatusContrato" style="width: 180px;"
+							value="#{obrasAction.pojoObra.estatusContrato}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['estatus']} #{msg['contrato']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+				            <f:selectItems value="#{obrasAction.listEstatusContratoItems}" />
+				        </h:selectOneMenu>
+							
+						<h:outputText value="#{msg['domicilio']}:" styleClass="Titulo" />
+						<h:panelGroup id="pnlObraDomicilioDatos">
+							<h:panelGrid columns="2">
+								<h:outputText id="txtDomicilio" value="#{obrasAction.pojoObra.domicilio}" style="text-align:left; display:block;" />
+								<h:panelGroup>
+									<a4j:commandLink id="cmdSeleccionarDomicilio" 
+										action="#{obrasAction.nuevoDomicilio}" immediate="true"
+										value="#{obrasAction.pojoObra.domicilio == null || obrasAction.pojoObra.domicilio == '' ? msg['seleccionar'] : msg['cambiar'] }" 
+										oncomplete="#{rich:component('pnlDomicilio')}.show();"
+										render="pnlDomicilio, grpDomiDom0, grpDomiDom" />
+								</h:panelGroup>
+							</h:panelGrid>
+						</h:panelGroup>
+					</h:panelGrid>
+					
+					<h:panelGrid columns="4" columnClasses="colTitulo, colDato, colTitulo, colDato">
+						<h:outputText value="#{msg['satic02']}:" styleClass="Titulo" />
+						<h:panelGroup>
+							<h:selectBooleanCheckbox id="txtObraStatic02" value="#{obrasAction.pojoObra.satic02}" />
+						</h:panelGroup>
+						
+						<h:outputText value="#{msg['montoContratado']} #{msg['conIva']}:" styleClass="Titulo" />
+						<h:inputText id="txtObraMontoContratado" style="text-align:right;" size="16" maxlength="13"
+							value="#{obrasAction.pojoObra.montoContratado}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['montoContratado']} #{msg['mensaje.error.requerido']}"
+							onkeypress="return soloDecimales(event, this.value, 10, 2);">
+							<f:convertNumber pattern="###,###,##0.00" />
+							<a4j:ajax event="change" listener="#{obrasAction.calcularAnticipoPorcentaje}" render="txtObraMontoContratado, txtObraMontoAnticipo, txtObraAnticipo" />
+						</h:inputText>
+							
+						<h:outputLabel value="#{msg['fechaInicio']}:" styleClass="Titulo" />
+						<rich:calendar id="txtFechaInicio" datePattern="dd/MM/yyyy"
+							value="#{obrasAction.pojoObra.fechaInicio}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['fechaInicio']} #{msg['mensaje.error.requerido']}">
+							<rich:placeholder value="dd/MM/yyyy" />
+						</rich:calendar>
+						
+						<h:outputText value="#{msg['montoAnticipo']} #{msg['conIva']}:" styleClass="Titulo" />
+						<h:inputText id="txtObraMontoAnticipo" style="text-align:right;" size="16" maxlength="13"
+							value="#{obrasAction.pojoObra.montoAnticipo}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['montoAnticipo']} #{msg['mensaje.error.requerido']}"
+							onkeypress="return soloDecimales(event, this.value, 10, 2);">
+							<f:convertNumber pattern="###,###,##0.00" />
+							<a4j:ajax event="change" 
+								listener="#{obrasAction.calcularAnticipoPorMonto}" 
+								render="txtObraMontoContratado, txtObraMontoAnticipo, txtObraAnticipo" />
+						</h:inputText>
+							
+						<h:outputLabel value="#{msg['fechaTerminacion']}:" styleClass="Titulo" />
+						<rich:calendar id="txtFechaTerminacion" datePattern="dd/MM/yyyy"
+							value="#{obrasAction.pojoObra.fechaTerminacion}" 
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['fechaTerminacion']} #{msg['mensaje.error.requerido']}">
+							<rich:placeholder value="dd/MM/yyyy" />
+						</rich:calendar>
+						
+						<h:outputText value="#{msg['montoDeductiva']} #{msg['conIva']}:" styleClass="Titulo" />
+						<h:inputText id="txtObraMontoDeductiva" style="text-align:right;" size="16" maxlength="13"
+							value="#{obrasAction.pojoObra.montoDeductiva}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['montoDeductiva']} #{msg['mensaje.error.requerido']}"
+							onkeypress="return soloDecimales(event, this.value, 10, 2);">
+							<f:convertNumber pattern="###,###,##0.00" />
+							<a4j:ajax event="blur" render="txtObraMontoDeductiva" />
+						</h:inputText>
+						
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+						
+						<h:outputText value="#{msg['anticipo']}:" styleClass="Titulo" />
+						<h:panelGrid columns="2">
+							<rich:inputNumberSpinner id="txtObraAnticipo" size="3" minValue="0" maxValue="100" 
+								value="#{obrasAction.pojoObra.porcentajeAnticipo}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['anticipo']} #{msg['mensaje.error.requerido']}"
+								onkeydown="return soloNumeros(event)">
+								<f:convertNumber pattern="###,###,##0.00" />
+								<a4j:ajax event="change" 
+									listener="#{obrasAction.calcularAnticipoPorPorcentaje}" 
+									render="txtObraMontoContratado, txtObraMontoAnticipo, txtObraMontoAnticipo" />
+							</rich:inputNumberSpinner>
+								
+							<h:outputText value="#{msg['%']}" styleClass="Titulo" />
+						</h:panelGrid>
+					</h:panelGrid>
+				</fieldset>
+			</h:panelGroup>
+			
+			<h:panelGrid id="grupoObservaciones" columns="1" style="width: 100%; padding-right: 10px">
+				<h:outputText value="#{msg['observaciones']}" styleClass="Titulo" />
+				<h:inputTextarea id="txtObservaciones" style="width: 100%; resize: none;" rows="1"
+					value="#{obrasAction.pojoObra.observaciones}" />
+			</h:panelGrid>-->
+		</div>
+	</rich:popupPanel>
+</ui:composition>

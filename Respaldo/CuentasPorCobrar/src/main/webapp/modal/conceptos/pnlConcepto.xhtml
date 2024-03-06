@@ -1,0 +1,147 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlConcepto" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+		<f:facet name="header">
+			<h:panelGroup style="text-align:center;"><h:outputText value="#{msg['conceptoFacturacion']}" styleClass="Titulo" /></h:panelGroup>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlConcepto')}.hide()" />
+		</f:facet>
+		
+		<div style="display:block; margin:10px auto; padding:0 0 10px; min-width:800px; width:100%; min-height: 22px; text-align:left;">
+			<h:panelGrid columns="2" style="margin:0 auto; min-width:800px; width:100%;">
+				<h:panelGroup style="vertical-align:middle; position:relative;">
+					<rich:messages id="msgErrorConceptos" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+						<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" /></f:facet>
+					</rich:messages>
+				</h:panelGroup>
+		
+				<h:panelGroup style="vertical-align: middle; position:relative;">
+					<a4j:commandButton id="cmdSalvar" style="float:right; margin:0 5px 0 2px; vertical-align: right; position:relative;"
+						image="#{msg['salvar22.img']}" 
+						action="#{conceptosAction.guardar}"
+						oncomplete="salvar(#{conceptosAction.band}, '#{rich:clientId('pnlConcepto')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrorConceptos')});"
+						render="dtResults,txtConceptoClave,msgErrorConceptos,pnlMensajes">
+						<rich:tooltip id="ttSalvar" showDelay="300" value="#{msg['salvar.e']}" for="cmdSalvar" />
+					</a4j:commandButton>
+				</h:panelGroup>
+			</h:panelGrid>
+		</div>
+		
+		<div style="display:block; margin:10px auto; padding:0; text-align: left; background-color: none;">
+			<rich:tabPanel id="tabs" switchType="client" style="margin: 10px auto 0; min-width: 500px;">
+				<rich:tab id="tabDatsosGenerales" header="#{msg['datosGenerales']}">
+			    	<h:panelGroup style="margin:0 auto; width:400px; min-height:228px; height:auto; background-color:none;">
+						<h:panelGrid id="pnlDatos1" columns="2" cellpadding="3" columnClasses="Observacion" style="display: block; position:relative; margin:10px;">						
+							<h:outputText value="*" />
+							<h:outputText value="#{conceptosAction.pojoConcepto.id > 0 ? msg['navegacion.label.noeditar'] : msg['navegacion.label.generaAuto']}" />
+							<h:outputText value="" />
+							<h:outputText value="#{conceptosAction.pojoConcepto.id > 0 ? msg['navegacion.label.vacio'] : msg['navegacion.label.cuandoSalve']}"  />						
+						</h:panelGrid>
+						
+						<h:panelGrid id="pnlDatos2" columns="2" cellpadding="3" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="display:block; position:relative; margin:15px auto;" >					
+							<h:outputText value="#{msg['id']}:" styleClass="Titulo" />					
+							<h:outputText id="txtConceptoClave" styleClass="Titulo" 
+								value="#{conceptosAction.pojoConcepto.id}" />
+							
+							<h:outputText value="#{msg['descripcion']}:" styleClass="Titulo" />
+							<h:inputTextarea id="txtConceptoDescripcion" rows="3" style="resize:none; width:90%;"
+								value="#{conceptosAction.descripcion}" 
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['descripcion']} #{msg['mensaje.error.requerido']}" />
+							
+							<h:outputText value="#{msg['cuentaContable']}:" styleClass="Titulo" />
+							<h:inputText id="txtConceptoCunetaContable" style="width:210px"
+								value="#{conceptosAction.cuentaContable}" 
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['cuentaContable']} #{msg['mensaje.error.requerido']}" />
+							
+							<h:outputText value="#{msg['claveSat']}:" styleClass="Titulo" />
+							<h:selectOneMenu id="cbConceptoClaveSat" style="width:216px"
+								value="#{conceptosAction.claveSat}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['claveSat']} #{msg['mensaje.error.requerido']}">
+					            <f:selectItem itemLabel="#{msg['seleccione']}" />
+					            <f:selectItems value="#{conceptosAction.listClaveSatItems}" />
+					        </h:selectOneMenu>
+						</h:panelGrid>
+					</h:panelGroup>
+				</rich:tab>
+				
+				<rich:tab id="tabImpuestos" header="#{msg['impuestos']}">
+					<a4j:region>
+						<div style="margin:0 auto; width:100%; min-height:	228px; height:auto; background-color: none;">
+							<div style="margin: 0 auto; display: block; padding:10px 0; position:relative; width:400px; background-color: none;">
+								<h:panelGrid id="pnlBuscaImpuesto" columns="3" columnClasses="tygCompGtosColIzq, tygCompGtosCol2, tygCompGtosCol2" cellpadding="3" style="margin: 0 auto;">
+									<h:outputText value="#{msg['seleccionar.e']}:" styleClass="Titulo" />
+									
+									<rich:autocomplete id="cmbImpuestos" mode="ajax" showButton="true" layout="table" selectFirst="false" minChars="0" inputClass="autocompleteInputSize" popupClass="autocompletePopupSize"
+										value="#{conceptosAction.nombreImpuesto}" var="var" fetchValue="#{var.id} - #{var.descripcion}"
+										autocompleteMethod="#{conceptosAction.autoacompletaImpuestos}" 
+										onkeydown="autocompleteKeyDownEvent('#{rich:clientId('cmbImpuestos')}', event)" 
+										onfocus="autocompleteFocusEvent('#{rich:clientId('cmbImpuestos')}', event)">
+										<rich:column style="padding: 3px 0; text-align: center; width:  48px"><h:outputText value="#{var.id}" /></rich:column>  
+										<rich:column style="padding: 3px 0; text-align: left;   width: 256px"><h:outputText value="#{var.descripcion}" /></rich:column>
+									</rich:autocomplete>
+									
+									<a4j:commandButton id="cmdAgregar" image="#{msg['agregar16.img']}" style="cursor: pointer; vertical-align: top;"
+										action="#{conceptosAction.agregarImpuesto}" 
+										render="dtImpuestos,pnlBuscaImpuesto">
+										<rich:tooltip id="ttAgregar" showDelay="300" value="#{msg['agregar.e']}" for="cmdAgregar" />
+									</a4j:commandButton>
+								</h:panelGrid>
+							</div>
+							
+							<rich:dataTable id="dtImpuestos" value="#{conceptosAction.listImpuestosGrid}" var="var" style="margin: 0 auto; min-width: 400px" rows="6" cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2">
+								<f:facet name="header">
+									<rich:columnGroup>
+										<rich:column colspan="3" style="text-align:center;" styleClass="tygImpTit">
+											<h:outputText value="#{msg['impuestos']}" />
+										</rich:column>
+										
+										<rich:column breakRowBefore="true" style="text-align:center;" styleClass="tygImpTit">
+											<h:outputText value="#{msg['id']}" />
+										</rich:column>
+										
+										<rich:column colspan="2" style="text-align:center;" styleClass="tygImpTit">
+											<h:outputText value="#{msg['descripcion']}" />
+										</rich:column>
+									</rich:columnGroup>
+								</f:facet>
+							  
+								<rich:column style="text-align:center; width:40px" styleClass="tygImpDesc">
+									<h:outputText value="#{var.idImpuesto.id}" />
+								</rich:column>
+							  
+								<rich:column style="text-align:center; width:300px" styleClass="tygImpDesc">
+									<h:outputText value="#{var.idImpuesto.descripcion}" />
+								</rich:column>
+				
+								<rich:column style="text-align:center; font-weight: bold; font-size:12px; width:20px">
+									<a4j:commandButton id="cmdEliminarImpuesto" image="#{msg['eliminar16.img']}" 
+										render="pnlEliminarImpuesto" oncomplete="#{rich:component('pnlEliminarImpuesto')}.show()">
+										<f:setPropertyActionListener target="#{conceptosAction.pojoConceptoImpuesto}" value="#{var}" for="cmdEliminarImpuesto" />
+										<rich:tooltip showDelay="300" value="#{msg['eliminar']}" for="cmdEliminarImpuesto" />
+									</a4j:commandButton>
+								</rich:column>
+				
+							   <f:facet name="footer" >
+									<rich:dataScroller align="center" for="dtImpuestos" maxPages="10" ajaxSingle="true" page="#{conceptosAction.numPaginaImpuesto}" id="dScroll" styleClass="tygImpTit"/>
+							   </f:facet>
+						   </rich:dataTable>
+					   </div>
+					</a4j:region>
+				</rich:tab>
+			</rich:tabPanel>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

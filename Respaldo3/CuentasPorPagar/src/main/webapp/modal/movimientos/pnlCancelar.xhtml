@@ -1,0 +1,40 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlCancelar" autosized="true">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo"/>
+		</f:facet>
+
+		<a4j:form id="frmCancelar">
+			<a4j:region id="loadCancelar">
+				<h:panelGrid columns="1" style="text-align:center; margin:0 auto; min-width:300px; width:auto; max-width:500px;" cellspacing="10">
+					<h:outputText value="#{msg['navegacion.label.deseaCancelar']}" style="display:block;" styleClass="Descripcion" />
+
+					<h:panelGroup style="margin:10px auto 0; width:200px; text-align:center; display:block;">
+						<a4j:commandButton style="margin:0 auto; width:100px;"
+							value="#{msg['navegacion.label.aceptar']}"
+							action="#{movCuentasAction.cancelar}" 
+							oncomplete="msgRevisando(#{rich:element('msgErrorMovimientos')},'pnlCancelar','pnlMensajes',#{movCuentasAction.band},'boton2')"
+							reRender="pnlMensajes,dtResults" />
+							
+						<a4j:commandButton style="margin:0 auto; width:90px;"
+							onclick="#{rich:component('pnlCancelar')}.hide()" 
+							value="#{msg['cancelar.e']}" />
+					</h:panelGroup>
+
+					<a4j:status for="loadCancelar">
+						<f:facet name="start">
+							<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}"/>
+						</f:facet>
+					</a4j:status>
+				</h:panelGrid>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

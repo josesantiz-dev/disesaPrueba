@@ -1,0 +1,15 @@
+
+/***** LAYOUT PARA UNA COLUMNA ****/
+.lay_col1_grid{
+	width:500px;
+	display:block;
+	text-align:left;
+	margin-top:20px;
+}
+.lay_col1_labels{
+	text-align:right;
+	width:100px;
+}
+.lay_col1_datos{
+	text-align:left;
+}

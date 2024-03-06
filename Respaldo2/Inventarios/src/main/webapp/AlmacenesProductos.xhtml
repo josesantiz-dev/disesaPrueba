@@ -1,0 +1,188 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['inventarioProductos']}"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag" />
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css/acc" name="acc.css" />
+		<h:outputScript library="scripts" name="inventarios.js" />
+		
+		<div class="div_titulo" style="margin:50px auto 10px; padding:0;">
+			<h:outputText value="#{msg['inventarioProductos']}" style="font-weight:bold; font-size:28px; color:#525252;" />
+		</div>
+		
+		<rich:hotKey id="richHotKeyInventario1" enabledInInput="true" preventDefault="true" 
+			selector="#txtValorObra" key="return"
+			onkeydown="#{rich:element('frmPrincipal:cmdBuscar')}.click()" />
+		
+		<rich:hotKey id="richHotKeyInventario2" enabledInInput="true" preventDefault="true" 
+			selector="#cbAlmacenes" key="return"
+			onkeydown="#{rich:element('frmPrincipal:cmdBuscar')}.click()" />
+	
+		<div class="div_pagina" style="margin:5px auto 0; padding:0; text-align:left;">
+			<h:panelGrid id="gBusqueda" columns="2" columnClasses="colLayoutMiddle,colLayoutBottom" cellpadding="0" cellspacing="2" style="width:100%;">
+				<h:panelGroup style="width:100%; text-align:left;">
+					<h:panelGrid columns="3" columnClasses="colTitulo,colDato,colDato" cellpadding="0" cellspacing="0">
+						<h:outputText value="#{msg['almacen']}:" styleClass="Titulo" />
+						<h:selectOneMenu id="cbAlmacenes" style="width:216px;"
+							value="#{invAction.idAlmacen}"
+							required="#{!empty param[rich:clientId('cmdBuscar')]}"
+							requiredMessage="#{msg['almacen']} #{msg['mensaje.error.requerido']}">
+							<f:selectItem itemLabel="#{msg['seleccione']}" />
+							<f:selectItems value="#{invAction.listAlmacenesItems}" />
+						</h:selectOneMenu>
+						<rich:message for="cbAlmacenes" ajaxRendered="true" />
+						
+						<h:outputText value="#{msg['busqueda']}:" styleClass="Titulo"/>
+						<h:inputText id="txtValorObra" maxlength="50" style="width:210px;"
+							value="#{invAction.inventarioBusquedaValor}" />
+						<h:panelGroup>
+							<a4j:commandButton id="cmdBuscar" style="margin:0 5px; vertical-align: middle; cursor: pointer;"
+								image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+								onclick="#{rich:element('cmdBuscar')}.disabled = true;" 
+								action="#{invAction.buscar}" 
+								oncomplete="#{rich:element('cmdBuscar')}.disabled = false; busqueda(#{invAction.operacionCancelada}, '#{rich:clientId('pnlMensajes')}')"
+								render="dtResults,obrasScrollTop,pnlMensajes" />
+								
+							<a4j:commandButton id="cmdBusquedaAvanzada" 
+								image="#{msg['toggle.img']}" title="#{msg['busqueda']} #{msg['avanzada']}"
+								action="#{invAction.toggleInventarioBusquedaAvanzada}"
+								render="gBusquedaAvanzada"
+								limitRender="true" />
+								
+							<a4j:commandButton id="cmdImprimir" style="margin:0 auto; margin-left:20px; vertical-align: middle; cursor: pointer;"
+								image="#{msg['imprimir22.img']}" title="#{msg['imprimir.e']}"
+								onclick="#{rich:element('cmdImprimir')}.disabled = true;" 
+								action="#{invAction.ejecutarReporte}" 
+								oncomplete="#{rich:element('cmdImprimir')}.disabled = false; reporte(#{invAction.operacionCancelada}, '#{rich:clientId('pnlMensajes')}')"
+								render="pnlMensajes"
+								limitRender="true" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+				
+				<h:panelGroup style="width:100%; text-align:right;">
+					<h:panelGroup style="width:100%; text-align:left;">
+					</h:panelGroup>
+					
+					<h:panelGroup style="width:100%; text-align:left;">
+						<rich:dataScroller id="obrasScrollTop" page="#{invAction.inventarioBusquedaPagina}" for="dtResults" renderIfSinglePage="true"
+							align="center" maxPages="5" fastStep="5" ajaxSingle="true" styleClass="Titulo" style="float:right; clear:both; margin:0;" />
+					</h:panelGroup>
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<h:panelGroup id="gBusquedaAvanzada" style="width:100%; margin:5px auto 0; padding:0; display:#{invAction.inventarioBusquedaAvanzada ? 'block' : 'none'};">
+				<h:panelGrid columns="2" style="margin:0; padding:0;">
+					<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo" />
+					<h:selectOneMenu id="cmbTipoBusquedaProducto" style="width:216px;"
+						value="#{invAction.inventarioBusquedaCampo}">
+						<f:selectItems value="#{invAction.inventarioBusquedaTipos}" />
+					</h:selectOneMenu>
+					
+					<h:outputText value="#{msg['productos.familia']}:" styleClass="Titulo" />
+					<h:selectOneMenu id="cbFamilias" style="width:216px;"
+						value="#{invAction.idFamilia}">
+						<f:selectItem itemLabel="#{msg['todas']}" />
+						<f:selectItems value="#{invAction.listFamiliasItems}" />
+					</h:selectOneMenu>
+				</h:panelGrid>
+			</h:panelGroup>
+
+			<rich:dataTable id="dtResults" value="#{invAction.listInventario}" var="var" iterationStatusVar="it"
+				cellpadding="0" cellspacing="0" rows="100" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" 
+				style="margin:10px auto 30px; width:100%;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="text-align:center; width:90px; max-width:100px;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:90px; max-width:100px;" styleClass="Titulo">
+							<h:outputText value="#{msg['productos.codigo']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['productos.descripcion']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:90px; max-width:100px;" styleClass="Titulo">
+							<h:outputText value="#{msg['productos.um']}" title="#{msg['productos.unidadMedida']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:90px; max-width:100px;" styleClass="Titulo">
+							<h:outputText value="#{msg['productos.familia']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:90px; max-width:120px;" styleClass="Titulo">
+							<h:outputText value="#{msg['productos.precioCompra']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;width: 60px;" styleClass="Titulo">
+							<h:outputText value="#{msg['productos.moneda']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;width: 60px;" styleClass="Titulo">
+							<h:outputText value="#{msg['productos.existencia']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align:center; width:90px; max-width:100px;">
+					<h:outputText value="#{var.producto.id}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+
+				<rich:column style="text-align:center; width:90px; max-width:100px;">
+					<h:outputText value="#{var.producto.clave}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left:5px; ">
+					<h:outputText value="#{var.producto.descripcion}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:90px; max-width:120px;">
+					<h:outputText value="#{var.producto.descUnidadMedida}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; width:90px; max-width:150px;">
+					<h:outputText value="#{var.producto.descFamilia}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+						
+				<rich:column style="text-align:right; width:90px; max-width:120px;" styleClass="Titulo">
+					<h:outputText value="#{var.producto.precioCompra}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}">
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:90px; max-width:100px;">
+					<h:outputText value="#{var.producto.descMonedaAbreviatura}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:90px; max-width:100px;">
+					<h:outputText value="#{var.existencia}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+ 				
+				<f:facet name="footer">
+					<rich:dataScroller id="obrasScrollBottom" page="#{invAction.inventarioBusquedaPagina}" for="dtResults" renderIfSinglePage="true"
+						align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+		
+		<a4j:log rendered="false" popup="false" level="ALL" mode="inline" style="margin:5px auto; max-width:800px;" />
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modal/almacenesProductos/pnlMensajes.xhtml" />
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,176 @@
+<!DOCTYPE composition>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich"
+	template="/layout/template.xhtml">
+
+	<ui:define name="title">
+		<h:outputText value="#{msg['navegacion.modulo']} - Programacion de Pagos"/>
+	</ui:define>
+
+	<ui:define name="menuFrag">
+		<rich:toolBarGroup location="right" style="padding:0 2px 0 2px;" >
+			<a4j:commandButton id="cmdBuscar" onclick="#{rich:element('cmdBuscar')}.disabled = true;" image="#{msg['buscar22.img']}" style="cursor:pointer;" 
+				action="#{progPagosAction.buscar}" reRender="pnlMsgGralesProgramacionPagos,dtResults" 
+				oncomplete="checaResultado('#{progPagosAction.resOperacion}', '', 'pnlMsgGralesProgramacionPagos', 'buscar', #{rich:element('msgErrorProgramacionPagos')}); #{rich:element('cmdBuscar')}.disabled = false;" />
+			<h:outputLabel for="cmdBuscar" value="#{msg['buscar.e']}" style="cursor:pointer; font-weight: bold; font-family: Arial, Verdana, sans-serif; font-size: 11px;" styleClass="Titulo"/>
+		</rich:toolBarGroup>
+		
+		<rich:toolBarGroup location="right" style="padding:0 2px 0 2px;" >
+			<a4j:commandButton id="cmdNuevo"
+				onclick="#{rich:element('cmdNuevo')}.disabled = true;" 
+				image="#{msg['nuevo22.img']}" style="cursor: pointer;" 
+				action="#{progPagosAction.nuevo}" 
+				reRender="pnlNuevoEditarProgramacionPagos"
+				oncomplete="Richfaces.showModalPanel('pnlNuevoEditarProgramacionPagos'); #{rich:element('cmdNuevo')}.disabled = false;" />
+			<h:outputLabel for="cmdNuevo" value="#{msg['nuevo.e']}" style="cursor:pointer;" styleClass="Titulo"/>
+		</rich:toolBarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<a4j:loadStyle src="resource:///resources/css/gastos/gastosComprobar.css" />
+		<a4j:loadScript src="resource:///resources/scripts/gastos/programacionPagos.js"/>
+		<br/>
+		<h:panelGrid id="pnlGridBusqueda" columns="2" columnClasses="tygCompGtosColIzq, tygCompGtosColDer" style="margin:10px auto; display:block;" width="720" >
+			<h:outputText value="#{msg['sucursal']}:" styleClass="Titulo"/>
+			<h:panelGroup>
+				<h:selectOneMenu id="txtSucursalBusqueda" styleClass="Titulo" style="width:216px;"
+					value="#{progPagosAction.sucursalBusqueda}" 
+	                required="#{!empty param[rich:clientId('cmdBuscar')]}" 
+		           	requiredMessage="#{msg['sucursal']} #{msg['mensaje.validacion.selectItem']}">
+					<f:selectItem itemLabel="#{msg['seleccione']}" />
+					<f:selectItems value="#{progPagosAction.listSucursalesItems}" />
+				</h:selectOneMenu>
+				
+				<rich:message for="txtSucursalBusqueda" showSummary="false" showDetail="false"  style="color:red">
+					<f:facet name="errorMarker">
+						<h:panelGroup>
+							<h:graphicImage value="#{msg['cancelar16.img']}" />
+							<h:outputLabel  styleClass="Err" value="#{msg['mensaje.validacion.selectItem']}"/>
+						</h:panelGroup>
+					</f:facet>
+				</rich:message>
+			</h:panelGroup>
+		</h:panelGrid>
+
+		<rich:dataTable id="dtResults" var="prog" value="#{progPagosAction.listProgPagos}" rows="100" cellpadding="0" cellspacing="0" 
+			border="0" rowClasses="Row1, Row2" style="margin: 10px auto 20px; min-width:720px; width:100%;">
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column colspan="8" styleClass="Titulo">
+						<h:outputText value="#{msg['navegacion.label.progPagos']}"/>
+					</rich:column>
+					
+					<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['navegacion.label.clave']}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; margin-left:10px;" styleClass="Titulo">
+						<h:outputText value="#{msg['navegacion.label.del']}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; margin-left:10px;" styleClass="Titulo">
+						<h:outputText value="#{msg['navegacion.label.al']}" />
+					</rich:column> 
+					
+					<rich:column style="text-align:center; margin-left:10px;" styleClass="Titulo">
+						<h:outputText value="#{msg['total']}" />
+					</rich:column>
+
+					<rich:column style="text-align:center; margin-left:10px;" styleClass="Titulo">
+						<h:outputText value="#{msg['navegacion.label.totalRev']}" />
+					</rich:column>
+
+					<rich:column colspan="3" style="text-align:center; margin-left:10px;"  styleClass="Titulo"/>  
+				</rich:columnGroup>
+			</f:facet>
+			
+			<rich:column width="100" style="text-align:center;">
+				<h:outputText value="#{prog.id}" rendered="#{prog.estatus =='P'}" />								
+				<h:outputText value="#{prog.id}" rendered="#{prog.estatus =='R'}" styleClass="tygGtosCompRevisado" />
+			</rich:column>
+			
+			<rich:column width="100" style="text-align:center;" >
+				<h:outputText  value="#{prog.del}" rendered="#{prog.estatus =='P'}" >
+					<f:convertDateTime pattern="dd, MMM yyyy" />
+				</h:outputText>	
+				
+				<h:outputText  value="#{prog.del}" rendered="#{prog.estatus =='R'}" styleClass="tygGtosCompRevisado">
+					<f:convertDateTime pattern="dd, MMM yyyy" />
+				</h:outputText>								
+			</rich:column>
+			
+			<rich:column width="100" style="text-align:center;">
+				<h:outputText  value="#{prog.al}" rendered="#{prog.estatus =='P'}">
+					<f:convertDateTime pattern="dd, MMM yyyy" />
+				</h:outputText>	
+				
+				<h:outputText  value="#{prog.al}" rendered="#{prog.estatus =='R'}" styleClass="tygGtosCompRevisado">
+					<f:convertDateTime pattern="dd, MMM yyyy" />
+				</h:outputText>								
+			</rich:column>
+			
+			<rich:column  width="110" style="text-align:center;"  >
+				<h:outputText value="#{prog.total}"  rendered="#{prog.estatus =='P'}" >
+					<f:convertNumber pattern="$###,###.00" /> 
+				</h:outputText>	
+					
+				<h:outputText value="#{prog.total}"  rendered="#{prog.estatus =='R'}" styleClass="tygGtosCompRevisado" >
+					<f:convertNumber pattern="$###,###.00" /> 
+				</h:outputText>						
+			</rich:column>	
+			
+			<rich:column  width="110" style="text-align:center;">
+				<h:outputText value="#{prog.montoRevisado}"	rendered="#{prog.estatus =='P'}"><f:convertNumber pattern="$###,###.00" /></h:outputText>
+				
+				<h:outputText value="#{prog.montoRevisado}" rendered="#{prog.estatus =='R'}" styleClass="tygGtosCompRevisado"><f:convertNumber pattern="$###,###.00" /></h:outputText>
+			</rich:column>	
+					
+			<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;" styleClass="tygMovDesc">
+				<a4j:commandButton image="#{msg['editar22.img']}" style="cursor: pointer;"
+					action="#{progPagosAction.editar}" 
+					oncomplete="checaResultado('#{progPagosAction.resOperacion}', 'pnlNuevoEditarProgramacionPagos', 'pnlMsgGralesProgramacionPagos', 'editar', #{rich:element('msgErrorProgramacionPagos')});" 
+					reRender="pnlNuevoEditarProgramacionPagos,pnlMsgGralesProgramacionPagos">
+					<f:setPropertyActionListener target="#{progPagosAction.pojoProgPagos}" value="#{prog}" />
+					<rich:toolTip showDelay="300"><h:outputText value="#{msg['editar.e']}" styleClass="Descripcion"/></rich:toolTip>	
+				</a4j:commandButton>																
+			</rich:column>	
+								
+			<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;">
+				<a4j:commandButton image="#{msg['editarMonto22.img']}" style="cursor: pointer;"
+					action="#{progPagosAction.editarGasto}" 
+					oncomplete="checaResultado('#{progPagosAction.resOperacion}', 'pnlEditarMontoProgPagos', 'pnlMsgGralesProgramacionPagos', 'editar', #{rich:element('msgErrorProgramacionPagos')});" 
+					reRender="pnlEditarMontoProgPagos,pnlMsgGralesProgramacionPagos,msgErrorProgramacionPagos">
+					<f:setPropertyActionListener target="#{progPagosAction.pojoProgPagos}" value="#{prog}" />
+					<rich:toolTip showDelay="300"><h:outputText value="#{msg['editarGasto.e']}" styleClass="Descripcion"/></rich:toolTip>	
+				</a4j:commandButton>
+			</rich:column>
+			
+			<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;">
+				<a4j:commandButton image="#{msg['eliminar22.img']}" style="cursor: pointer;" 
+					action="#{progPagosAction.revisarEstatusEliminar}"
+					oncomplete="checaResultado('#{progPagosAction.resOperacion}', 'pnlEliminarProgGto', 'pnlMsgGralesProgramacionPagos', 'eliminar', #{rich:element('msgErrorProgramacionPagos')});" 
+					reRender="pnlEliminarProgGto,pnlMsgGralesProgramacionPagos">
+					<f:setPropertyActionListener target="#{progPagosAction.pojoProgPagos}" value="#{prog}" />
+					<rich:toolTip showDelay="300"><h:outputText value="#{msg['eliminar.e']}" styleClass="Descripcion"/></rich:toolTip>	
+				</a4j:commandButton>
+			</rich:column> 
+
+			<f:facet name="footer" >
+				<rich:datascroller align="center" for="dtResults" maxPages="10" ajaxSingle="true" page="#{progPagosAction.numPagina}" id="dScroll" styleClass="Descripcion"/>
+			</f:facet>			
+		</rich:dataTable>
+		
+	</ui:define>
+
+	<ui:define name="modals"> 
+		<ui:include src="/modal/ProgramacionPagos/pnlMsgGralesProgramacionPagos.xhtml" />
+		<ui:include src="/modal/ProgramacionPagos/pnlEliminarProgGto.xhtml" />
+		<ui:include src="/modal/ProgramacionPagos/pnlNuevoEditarProgramacionPagos.xhtml" />
+		<ui:include src="/modal/ProgramacionPagos/pnlEditarMontoProgPagos.xhtml" />
+		<ui:include src="/modal/ProgramacionPagos/pnlBusquedaOrdenesCompra.xhtml" />
+	</ui:define>
+</ui:composition>

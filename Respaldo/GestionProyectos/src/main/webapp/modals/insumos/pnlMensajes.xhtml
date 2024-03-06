@@ -1,0 +1,37 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlMensajes" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText style="cursor:pointer;"
+				value="#{insumosAction.band ? msg['navegacion.label.atencion'] : msg['navegacion.label.informacion']}" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;"
+				value="#{msg['navegacion.panel.cerrar.img']}" 
+				onclick="#{rich:component('pnlMensajes')}.hide()" />
+		</f:facet>
+
+		<h:panelGrid columns="1" style="text-align:center; min-width:200px; width:auto;" cellspacing="10">
+			<h:outputText rendered="#{insumosAction.tipoMensaje == -1}" value="#{insumosAction.mensaje}" styleClass="Descripcion" escape="#{insumosAction.escapeForInputMesssage}" />
+			<h:outputText rendered="#{insumosAction.tipoMensaje ==  0}" value="#{msg['mensaje.info.infoReg']}" styleClass="Descripcion" />       			
+			<h:outputText rendered="#{insumosAction.tipoMensaje ==  1}" value="#{msg['mensaje.error.inesperado']}" styleClass="Descripcion" />
+			<h:outputText rendered="#{insumosAction.tipoMensaje ==  2}" value="#{msg['mensaje.info.busquedaVacia']}" styleClass="Descripcion" />
+			<h:outputText rendered="#{insumosAction.tipoMensaje ==  3}" value="#{msg['mensaje.error.requerido']}" styleClass="Descripcion" />
+			<h:outputText rendered="#{insumosAction.tipoMensaje ==  4}" value="#{msg['maestroNoActualizado']}" styleClass="Descripcion" />
+			<h:outputText rendered="#{insumosAction.tipoMensaje ==  5}" value="#{msg['existenInsumosObra']}" styleClass="Descripcion" />
+			
+			<a4j:commandButton value="#{msg['navegacion.label.aceptar']}" 
+				onclick="#{rich:component('pnlMensajes')}.hide()"
+				execute="@none"
+				render="miUploadExcel" />
+			<!-- oncomplete="mensaje(#{insumosAction.band}, '#{rich:clientId('pnlInsumo')}', '#{rich:clientId('pnlMensajes')}');" -->
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

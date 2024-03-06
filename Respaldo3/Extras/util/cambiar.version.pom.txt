@@ -1,0 +1,12 @@
+# Modificar version de POM (incluye sus dependientes).
+# ------------------------------------------------------------
+
+BUSCAR:
+<groupId>net.giro</groupId>
+			<artifactId>(MODULO)</artifactId>
+			<version>(([0-9])+|([0-9]+(.)[0-9]+)+)</version>
+			
+REEMPLAZAR CON:
+<groupId>net.giro</groupId>
+			<artifactId>$1</artifactId>
+			<version>NUEVA_VERSION</version>

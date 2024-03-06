@@ -1,0 +1,52 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlMensajes" autosized="true" >
+		<f:facet name="header">
+			<h:outputText value="#{cajaChicaAction.encontroMismoGrupo ? msg['navegacion.label.atencion'] : msg['navegacion.label.informacion']}" styleClass="Titulo" />
+		</f:facet>
+		 
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="imgCerrarMsgCancelarChequeCajaChica"/>
+				<rich:componentControl for="pnlMensajes" attachTo="imgCerrarMsgCancelarChequeCajaChica" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmMsgGralesCajaChica">
+			<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje == -1}" value="#{cajaChicaAction.mensaje}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje ==  0}" value="#{msg['mensaje.info.infoReg']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje ==  1}" value="#{msg['mensaje.info.impuestoDuplicado']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje ==  2}" value="#{msg['mensaje.info.noEliminar']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje ==  3}" value="#{msg['mensaje.info.imptosCero']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje ==  4}" value="#{msg['mensaje.info.montoFacturaCero']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje ==  5}" value="#{msg['mensaje.info.montoFacturaMenorImptos']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje ==  6}" value="#{cajaChicaAction.mensaje}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje ==  8}" value="#{msg['navegacion.label.montoInvalido']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje ==  9}" value="#{msg['mensaje.error.inesperado']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje == 10}" value="#{msg['mensaje.info.noAgregar']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje == 11}" value="#{msg['mensaje.info.noEditar']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje == 12}" value="#{msg['mensaje.info.busquedaVacia']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje == 13}" value="#{msg['navegacion.label.saldoInsuficiente']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje == 14}" value="#{msg['navegacion.label.retDuplicada']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje == 15}" value="#{msg['mensaje.info.faltanFacturas']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje == 16}" value="#{msg['navegacion.label.gtoNoPro']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje == 17}" value="#{msg['navegacion.label.gtoNoRev']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje == 18}" value="#{msg['navegacion.label.gtoMtoInva']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje == 19}" value="#{msg['obraRequerido']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje == 20}" value="#{msg['facturaNoAsignada']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cajaChicaAction.tipoMensaje == 21}" value="#{msg['facturaNoEncontrada']}" styleClass="Descripcion" />
+				
+				<a4j:commandButton value="#{msg['navegacion.label.aceptar']}"
+					onclick="#{rich:component('pnlMensajes')}.hide()" />
+			</h:panelGrid>
+		</a4j:form>
+	 </rich:modalPanel>		 
+	
+</ui:composition>

@@ -1,0 +1,36 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlConfirmaOrigen" modal="true" autosized="true" header="#{msg['navegacion.label.atencion']}">
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" onclick="#{rich:component('pnlConfirmaOrigen')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+
+		<a4j:region>
+			<h:panelGroup>
+				<h:outputText value="#{msg['indiqueOrigenProductos']}"  styleClass="Descripcion" />
+			</h:panelGroup>
+			
+			<h:panelGrid columns="2" columnClasses="colTitulo,colTitulo" width="200" style="text-align:center;" cellspacing="10">
+				<a4j:commandButton value="#{msg['insumos']}" 
+					onclick="#{rich:component('pnlConfirmaOrigen')}.hide()"
+					action="#{cotizaAction.nuevoInsumos}"
+					oncomplete="#{rich:component('pnlCotizacion')}.show()" 
+					render="pnlCotizacion"
+					limitRender="true" />
+					
+				<a4j:commandButton value="#{msg['requisicion']}" 
+					onclick="#{rich:component('pnlConfirmaOrigen')}.hide()"
+					action="#{cotizaAction.reqNuevaBusqueda}"
+					oncomplete="#{rich:component('pnlBusquedaRequisiciones')}.show()" 
+					render="pnlBusquedaRequisiciones"
+					limitRender="true" />
+			</h:panelGrid>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

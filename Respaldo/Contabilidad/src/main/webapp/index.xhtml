@@ -1,0 +1,74 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+
+	<ui:define name="title">
+		<h:outputText value="#{msg['modulo']}"/>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="contabilidad.css" />
+		
+		<div class="moduleContainer" style="height: 100%;">
+			<h1><h:outputText value="#{msg['modulo']}" /></h1>
+			<h5><h:outputText value="Seleccione opcion en el menu" /></h5>
+		
+			<div class="funciones_conteiner">
+				<ul class="funciones_list">
+					<!--li class="funciones_item">
+						<h:outputLink id="lnkMenu1" value="#{msg['moduloUrl']}/operIntegraTransacciones.faces">
+							<div class="tile"> 
+								<h:outputLabel for="lnkMenu1" value="Operaciones Integradas Transacciones" styleClass="titulo" />
+								<h:outputLabel for="lnkMenu1" value="Catalogo de Operaciones Integradas Transacciones" styleClass="subtitulo" />
+							</div>
+						</h:outputLink>
+					</li>
+					<li class="funciones_item">
+						<h:outputLink id="lnkMenu2" value="#{msg['moduloUrl']}/Areas.faces">
+							<div class="tile">
+								<h:outputLabel for="lnkMenu2" value="Areas" styleClass="titulo" />
+								<h:outputLabel for="lnkMenu2" value="Catalogo de Areas" styleClass="subtitulo" />
+							</div>
+						</h:outputLink>
+					</li>
+					<li class="funciones_item">
+						<h:outputLink id="lnkMenu3" value="#{msg['moduloUrl']}/Categorias.faces">
+							<div class="tile">
+								<h:outputLabel for="lnkMenu3" value="Categorias" styleClass="titulo" />
+								<h:outputLabel for="lnkMenu3" value="Catalogo de Categorias" styleClass="subtitulo" />
+							</div>
+						</h:outputLink>
+					</li>
+					<li class="funciones_item">
+						<h:outputLink id="lnkMenu4" value="#{msg['moduloUrl']}/Empleados.faces">
+							<div class="tile">
+								<h:outputLabel for="lnkMenu4" value="Empleados" styleClass="titulo" />
+								<h:outputLabel for="lnkMenu4" value="Catalogo de Empleados" styleClass="subtitulo" />
+							</div>
+						</h:outputLink>
+					</li>
+					<li class="funciones_item">
+						<h:outputLink id="lnkMenu5" value="#{msg['moduloUrl']}/Puestos.faces">
+							<div class="tile">
+								<h:outputLabel for="lnkMenu5" value="Puestos" styleClass="titulo" />
+								<h:outputLabel for="lnkMenu5" value="Catalogo de Puestos" styleClass="subtitulo" />
+							</div>
+						</h:outputLink>
+					</li>
+					<li class="funciones_item">
+						<h:outputLink id="lnkMenu6" value="#{msg['moduloUrl']}/PuestosCategorias.faces">
+							<div class="tile">
+								<h:outputLabel for="lnkMenu6" value="Puestos en Categorias" styleClass="titulo" />
+								<h:outputLabel for="lnkMenu6" value="Catalogos de Puesto en Categorias" styleClass="subtitulo" />
+							</div>
+						</h:outputLink>
+					</li-->
+				</ul>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

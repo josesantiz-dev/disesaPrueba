@@ -1,0 +1,160 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['modulo']} - #{msg['operacionesIntegradasTransacciones']}" />
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" image="#{msg['buscar22.img']}" styleClass="Titulo" style="cursor:pointer;"
+				action="#{operIntTransAction.buscar}" 
+				render="dtResults, pnlMensajes" 
+				oncomplete="buscar(#{operIntTransAction.operacion},'#{rich:clientId('pnlMensajes')}');">
+				<rich:tooltip id="ttBuscar" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscar" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+		 
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" image="#{msg['nuevo22.img']}" styleClass="Titulo" style="cursor:pointer;"
+				action="#{operIntTransAction.nuevo}" 
+				render="pnlOperacionIntegradaTransaccion"
+				oncomplete="#{rich:component('pnlOperacionIntegradaTransaccion')}.show()">
+				<rich:tooltip id="ttNuevo" showDelay="300" value="#{msg['nuevo.e']}" for="cmdNuevo" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="contabilidad.css" />
+		<h:outputScript library="scripts" name="contabilidad.js" />
+		<h:outputScript library="scripts" name="operacionesIntegradasTransacciones.js" />
+		
+		<div class="div_pagina" style="margin-top: 20px;">
+			<div style="margin: 0 auto; text-align: center; width:100%;">
+				<h1><h:outputText value="#{msg['operacionesIntegradasTransacciones']}" styleClass="Titulo" style="font-size: 1em;"/></h1>
+			</div>
+		
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin: 10px; display:block; width: 720px;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+				<h:selectOneMenu id="cmbTipoBusqueda" value="#{operIntTransAction.campoBusqueda}" style="width: 216px">
+		            <f:selectItems value="#{operIntTransAction.tiposBusqueda}" />
+		        </h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText id="txtvalor" maxlength="50" value="#{operIntTransAction.valorBusqueda}"  style="width: 210px" />
+			</h:panelGrid>
+			
+			<rich:dataTable id="dtResults" cellpadding="0" cellspacing="0" rows="100" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+				var="var" value="#{operIntTransAction.listOperIntegradasTrans}" style="margin:0 auto 20px; width:100%;">
+				<f:facet name="header"> 
+					<rich:columnGroup>
+						<rich:column colspan="#{operIntTransAction.debugging ? 8 : 7}" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['operacionesIntegradasTransacciones']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:80px" styleClass="Titulo" breakRowBefore="true">
+							<h:outputText value="#{msg['id']}" /> 
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['codigo']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['transaccion']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['operacion']}#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['operacion']}" />
+						</rich:column>
+						
+						<rich:column colspan="#{operIntTransAction.debugging ? 3 : 2}" style="text-align:center; width:#{operIntTransAction.debugging ? 60 : 40}px;" styleClass="Titulo" />
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align: center; width: 80px;">
+					<h:outputText value="#{var.id}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column style="text-align:center;  width: 80px;">
+					<h:outputText value="#{var.idTransaccion.codigo}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.idTransaccion.descripcion}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column style="text-align:center;  width: 80px;">
+					<h:outputText value="#{var.idOperacionIntegrada.id}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.idOperacionIntegrada.idOperacion.descripcion}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdOperacionIntegradasSQL" 
+						image="#{msg['sqlWrite22.img']}" 
+						action="#{operIntTransAction.editar}"
+						oncomplete="editar(#{operIntTransAction.operacion}, '#{rich:clientId('pnlOperacionIntegradasSQL')}', '#{rich:clientId('pnlMensajes')}')"
+						render="pnlOperacionIntegradasSQL, pnlMensajes"
+						limitRender="true">
+						<f:setPropertyActionListener value="#{var}" target="#{operIntTransAction.pojoOperacion}" for="cmdOperacionIntegradasSQL" />
+						<rich:tooltip showDelay="300" value="#{msg['campos']} #{msg['sql']}" for="cmdOperacionIntegradasSQL" />
+						<f:param name="editFor" value="OperacionIntegradasSQL" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEditar" 
+						image="#{msg['editar16.img']}" 
+						action="#{operIntTransAction.editar}"
+						oncomplete="editar(#{operIntTransAction.operacion}, '#{rich:clientId('pnlOperacionIntegradaTransaccion')}', '#{rich:clientId('pnlMensajes')}')"
+						render="pnlOperacionIntegradaTransaccion, pnlMensajes">
+						<f:setPropertyActionListener value="#{var}" target="#{operIntTransAction.pojoOperacion}" for="cmdEditar" />
+						<rich:tooltip showDelay="300" value="#{msg['editar']}" for="cmdEditar" />
+						<f:param name="editFor" value="OperacionIntegradaTransaccion" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion" rendered="#{operIntTransAction.debugging}">
+					<a4j:commandButton id="cmdBorrar" 
+						image="#{msg['eliminar16.img']}" 
+						oncomplete="#{rich:component('pnlEliminar')}.show()" 
+						render="pnlEliminar">
+						<f:setPropertyActionListener value="#{var}" target="#{operIntTransAction.pojoOperacionBorrar}" for="cmdBorrar" />
+						<rich:tooltip showDelay="300" value="#{msg['eliminar']}" for="cmdBorrar" />
+					</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller id="dScroll" page="#{operIntTransAction.numPagina}" for="dtResults" 
+						align="center" maxPages="10" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define> 
+	
+	<ui:define name="modals">
+		<ui:include src="/modals/operacionesIntegradasTransacciones/pnlMensajes.xhtml" />
+		<ui:include src="/modals/operacionesIntegradasTransacciones/pnlEliminar.xhtml" />
+		<ui:include src="/modals/operacionesIntegradasTransacciones/pnlOperacionIntegradaTransaccion.xhtml" />
+		<ui:include src="/modals/operacionesIntegradasTransacciones/pnlBusquedaOperacionesIntegradas.xhtml" />
+		<ui:include src="/modals/operacionesIntegradasTransacciones/pnlBusquedaTransacciones.xhtml" /> 
+		<ui:include src="/modals/operacionesIntegradasTransacciones/pnlOperacionIntegradaConceptoSQL.xhtml" /> 
+		<ui:include src="/modals/operacionesIntegradasTransacciones/pnlOperacionIntegradasSQL.xhtml" /> 
+		<ui:include src="/modals/operacionesIntegradasTransacciones/pnlOperacionIntegradaSQL.xhtml" /> 
+		<ui:include src="/modals/operacionesIntegradasTransacciones/pnlEliminarOperacionIntegradaSQL.xhtml" /> 
+	</ui:define>
+</ui:composition>

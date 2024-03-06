@@ -1,0 +1,21 @@
+# Eclipse
+.classpath
+.project
+.settings/
+.metadata
+RemoteSystemsTempFiles/
+
+EMPAQUETADOS/
+
+# Java
+bin/
+target/
+
+# Logs y archivos temporales
+log/
+*.log
+*.swp
+.DS_Store
+
+compila.bat
+compila

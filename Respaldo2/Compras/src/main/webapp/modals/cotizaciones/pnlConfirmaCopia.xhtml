@@ -1,0 +1,33 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlConfirmaCopia" modal="true" autosized="true" domElementAttachment="form"
+		onshow="document.getElementById('#{rich:clientId('btnConfirmaCopiaNo')}').focus();">
+		<f:facet name="header">
+    		<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo"/>
+    	</f:facet>
+		
+		<h:panelGroup style="width:300px; ">
+			<h:outputText value="#{msg['confirmaCopiaCotizacion']}"  styleClass="Descripcion" />
+			
+			<h:panelGrid columns="2" style="text-align:center; margin:10px auto 0; width:200px;" cellspacing="5">
+				<a4j:commandButton id="btnConfirmaCopiaSi" style="width:100px; margin:0 auto;" 
+					value="#{msg['si']}" 
+					onclick="#{rich:component('pnlConfirmaCopia')}.hide()"
+					action="#{cotizaAction.copiar}"
+					oncomplete="copiarCotizacion(#{cotizaAction.operacion},'#{rich:clientId('pnlCotizacion')}', '#{rich:clientId('pnlMensajes')}');"
+					render="pnlCotizacion,pnlMensajes"
+					limitRender="true" />
+					
+				<a4j:commandButton id="btnConfirmaCopiaNo" style="width:90px;"
+					value="#{msg['no']}" 
+					onclick="#{rich:component('pnlConfirmaCopia')}.hide()" />
+			</h:panelGrid>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

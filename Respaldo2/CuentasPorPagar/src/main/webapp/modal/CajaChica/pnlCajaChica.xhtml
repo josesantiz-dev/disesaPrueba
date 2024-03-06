@@ -1,0 +1,383 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlCajaChica" autosized="true" width="600" top="20">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText value="#{cajaChicaAction.pagosGastosId != 0 ? '' : msg['nuevo.e']} #{msg['navegacion.label.cajaChica']}" styleClass="Titulo" />
+			</h:panelGroup>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor: pointer;" id="btnCerrarNuevoMon" />
+				<rich:componentControl for="pnlCajaChica" attachTo="btnCerrarNuevoMon" operation="hide" event="onclick" />
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmNuevoEditarCajaChica">
+			<a4j:region id="loadNuevoEditarCajaChica">
+				<div style="margin:0 auto; display:block; min-height: 42px; height:auto;">
+					<h:panelGrid columns="2" columnClasses="tygCompGtosColDer, tygCompGtosColDer" style="margin-right:5px;">
+						<h:panelGroup style="vertical-align:top; position:relative; min-height:42px;">
+							<rich:messages id="msgErrorCajaChica" showDetail="true" showSummary="false" />
+						</h:panelGroup>
+						
+						<h:panelGroup style="float:right; vertical-align:top; position:relative; min-height:42px;">
+							<a4j:status for="loadNuevoEditarCajaChica">
+								<f:facet name="start"><h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;" /></f:facet>
+								<f:facet name="stop"><h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: middle; position:relative;" /></f:facet>
+							</a4j:status>
+							
+							<a4j:commandButton id="cmdSalvar" style="cursor:pointer; margin:0 5px;"
+								image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+								onclick="#{rich:element('cmdSalvar')}.disabled = true;" 
+								action="#{cajaChicaAction.guardar}" 
+								oncomplete="#{rich:element('cmdSalvar')}.disabled = false; salvar(#{cajaChicaAction.encontroMismoGrupo}, 'pnlCajaChica', 'pnlMensajes', #{rich:element('msgErrorCajaChica')})"
+								reRender="dtResults,pnlMensajes,msgErrorCajaChica,LabelClave"
+								limitToList="true" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</div>
+				
+				<rich:tabPanel switchType="client" style="min-height: 280px;">
+					<rich:tab label="#{msg['datosGenerales']}" styleClass="Titulo">
+						<h:panelGrid id="pnlDatos2" columns="2" columnClasses="tygCompGtosColIzq, tygCompGtosColDer" 
+							style="display:block; position:relative; margin-top:5px; margin-left:10px;">
+							<h:outputText value="#{msg['id']}:" styleClass="Titulo" />
+							<h:panelGroup>
+								<h:panelGrid columns="2" columnClasses="tygCompGtosColDer, tygCompGtosColDer">
+									<h:outputText id="LabelClave" styleClass="Titulo" 
+										value="#{cajaChicaAction.pagosGastosId}" />
+									
+									<h:panelGroup style="float:right; text-align:right;">
+										<h:outputText styleClass="Titulo" for="chkVoBo" 
+											rendered="#{cajaChicaAction.permiteVoBo}" 
+											value="#{msg['vobo']}:" /> 
+										<h:selectBooleanCheckbox id="chkVoBo" 
+											rendered="#{cajaChicaAction.permiteVoBo}" 
+											value="#{cajaChicaAction.vobo}" />
+										
+										<h:outputText styleClass="Titulo" for="chkAutorizar" style="margin-left: 20px;"
+											rendered="#{cajaChicaAction.permiteAutorizar}" 
+											value="#{msg['autorizar']}:" />
+										<h:selectBooleanCheckbox id="chkAutorizar"
+											rendered="#{cajaChicaAction.permiteAutorizar}" 
+											value="#{cajaChicaAction.autorizado}" />
+									</h:panelGroup>
+								</h:panelGrid>
+							</h:panelGroup>
+
+							<h:outputText value="#{msg['navegacion.label.fecha']}:" styleClass="Titulo" />
+							<h:panelGroup>
+								<rich:calendar id="cmbFecha" inputSize="18" zindex="100" enableManualInput="true"
+									datePattern="dd/MMM/yyyy" showWeekDaysBar="false" showWeeksBar="false"
+									value="#{cajaChicaAction.fecha}"
+									required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+									requiredMessage="#{msg['navegacion.label.fecha']} #{msg['mensaje.error.requerido']}">
+									<f:validateLength minimum="1" />
+								</rich:calendar>
+								
+								<rich:message for="cmbFecha" showSummary="false" showDetail="false" style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage style="margin:0 5px;" 
+											value="#{msg['cancelar16.img']}" 
+											title="#{msg['mensaje.error.requerido']}" />
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo" 
+								rendered="#{cajaChicaAction.perfilRequiereObra == 'S' ? true : false}" />
+							<h:panelGroup id="pnlTipoCajaChica" 
+								rendered="#{cajaChicaAction.perfilRequiereObra == 'S' ? true : false}">
+								<h:selectOneRadio value="#{cajaChicaAction.tipoCajaChica}" styleClass="Titulo"> 
+									<f:selectItem itemLabel="#{msg['obra']}" itemValue="0" />
+									<f:selectItem itemLabel="#{msg['oficina']}" itemValue="1" />
+									<a4j:support event="onchange" 
+										reRender="pnlCajaChicaObraDatos,txtCajaChicaObra" />
+								</h:selectOneRadio>
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['obra']}:" styleClass="Titulo"
+								rendered="#{cajaChicaAction.perfilRequiereObra == 'S' ? true : false}" />
+							<h:panelGroup id="pnlCajaChicaObraDatos" style="font-size:12px"
+								rendered="#{cajaChicaAction.perfilRequiereObra == 'S' ? true : false}">
+								<h:panelGrid columns="2">
+									<h:outputText id="txtCajaChicaObra" styleClass="Titulo" 
+										rendered="#{cajaChicaAction.perfilRequiereObra == 'S' ? true : false}"
+										value="#{cajaChicaAction.obraNombre}" />
+									<h:panelGroup>
+										<a4j:commandLink id="linkCajaChicaSeleccionarObra" 
+											onclick="#{rich:element('linkCajaChicaSeleccionarObra')}.disabled = true;"
+											value="#{cajaChicaAction.obraNombre == '' ? msg['seleccionar'] : msg['cambiar']}"
+											action="#{cajaChicaAction.nuevaBusquedaObras}"
+											oncomplete="#{rich:element('linkCajaChicaSeleccionarObra')}.disabled = false; nuevaBusqueda(#{cajaChicaAction.encontroMismoGrupo},'pnlMensajes','pnlBusquedaObras')"
+											reRender="pnlMensajes,pnlBusquedaObras" />
+											
+										<!-- Este input es solo con propósito de que se permita hacer validator al proyecto -->
+										<h:inputText id="txtCajaChicaObraHidden" style="text-align:left; display:none;"
+											value="#{cajaChicaAction.obraNombre}"
+											required="#{cajaChicaAction.tipoCajaChica == 0 ? !empty param[rich:clientId('cmdSalvar')] : false}"
+											requiredMessage="#{msg['obra']} #{msg['mensaje.error.requerido']}" />
+										
+										<rich:message for="txtCajaChicaObraHidden" showSummary="false" showDetail="false" style="color:red">
+											<f:facet name="errorMarker">
+												<h:graphicImage style="margin:0 5px;" 
+													value="#{msg['cancelar16.img']}" 
+													title="#{msg['mensaje.error.requerido']}" />
+											</f:facet>
+										</rich:message>
+									</h:panelGroup>
+								</h:panelGrid>
+							</h:panelGroup>
+					
+							<h:outputText value="#{msg['sucursal']}:" styleClass="Titulo" />
+							<h:panelGroup>
+								<h:selectOneMenu id="txtSucursal" styleClass="Titulo" style="width:216px;"
+									value="#{cajaChicaAction.sucursal}" 
+									required="#{!empty param[rich:clientId('cmdSalvar')] || !empty param[rich:clientId('cmdAgregar')]}" 
+									requiredMessage="#{msg['sucursal']} #{msg['mensaje.error.requerido']}">
+									<f:selectItem itemLabel="#{msg['seleccione']}" />
+									<f:selectItems value="#{cajaChicaAction.listSucursalesItems}" />
+								</h:selectOneMenu>
+								
+								<rich:message for="txtSucursal" showSummary="false" showDetail="false" style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage style="margin:0 5px;" 
+											value="#{msg['cancelar16.img']}" 
+											title="#{msg['mensaje.validacion.selectItem']}" />
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['navegacion.label.operacion']}:" styleClass="Titulo"
+								rendered="#{cajaChicaAction.permiteAsignarCuentaBancaria}" />
+							<h:panelGroup rendered="#{cajaChicaAction.permiteAsignarCuentaBancaria}">
+								<h:selectOneMenu id="optionOpera" styleClass="Titulo" style="width:216px;"
+									value="#{cajaChicaAction.varOper}" 
+									required="#{!empty param[rich:clientId('cmdSalvar')]}"
+									requiredMessage="#{msg['navegacion.label.operacion']} #{msg['mensaje.error.requerido']}">
+									<f:selectItem itemLabel="#{msg['seleccione']}" />
+									<f:selectItems value="#{cajaChicaAction.listFormasPagoItems}" />
+								</h:selectOneMenu>
+								
+								<rich:message for="optionOpera" showSummary="false" showDetail="false" style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage style="margin:0 5px;" 
+											value="#{msg['cancelar16.img']}" 
+											title="#{msg['mensaje.validacion.selectItem']}" />
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>	
+							
+							<h:outputText value="#{msg['navegacion.label.ctaOrigen']}:" styleClass="Titulo"
+								rendered="#{cajaChicaAction.permiteAsignarCuentaBancaria}" />
+							<h:panelGroup rendered="#{cajaChicaAction.permiteAsignarCuentaBancaria}">
+								<h:selectOneMenu id="txtCta" styleClass="Titulo" style="width:316px;"
+									value="#{cajaChicaAction.cuenta}" 
+									required="#{cajaChicaAction.operacion != 'G' ? !empty param[rich:clientId('cmdSalvar')] : false}" 
+									requiredMessage="#{msg['navegacion.label.ctaOrigen']} #{msg['mensaje.error.requerido']}">
+									<f:selectItem itemLabel="#{msg['seleccione']}" />
+									<f:selectItems value="#{cajaChicaAction.listCuentasItems}" />
+								</h:selectOneMenu>
+								
+								<rich:message for="txtCta" showSummary="false" showDetail="false" style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage style="margin:0 5px;" 
+											value="#{msg['cancelar16.img']}" 
+											title="#{msg['mensaje.validacion.selectItem']}" />
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['referencia']}:" styleClass="Titulo" rendered="#{cajaChicaAction.reqReferencia ? cajaChicaAction.permiteAsignarCuentaBancaria : false}" />
+							<h:panelGroup rendered="#{cajaChicaAction.reqReferencia ? cajaChicaAction.permiteAsignarCuentaBancaria : false}">
+								<h:inputText id="txtCheque" maxlength="10" size="36"
+									value="#{cajaChicaAction.noCheque}" 
+									required="#{cajaChicaAction.reqReferencia ? !empty param[rich:clientId('cmdSalvar')] : false}"
+									requiredMessage="#{msg['referencia']} #{msg['mensaje.error.requerido']}">
+									<f:validator validatorId="SoloNum" />
+								</h:inputText>
+								
+								<rich:message for="txtCheque" showSummary="false" showDetail="false" style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage style="margin:0 5px;" 
+											value="#{msg['cancelar16.img']}" 
+											title="#{msg['mensaje.error.requerido']}. #{msg['mensajes.error.reqSoloNum']}" />
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+		
+							<h:outputText value="#{msg['navegacion.label.monto']}:" styleClass="Titulo" />
+							<h:panelGroup>
+								<h:inputText id="txtMonto" maxlength="15" 
+									disabled="#{cajaChicaAction.perfilRequiereObra == 'S' ? true : false}"
+									value="#{cajaChicaAction.monto}" 
+									required="#{cajaChicaAction.perfilRequiereObra == 'S' ? false : !empty param[rich:clientId('cmdSalvar')]}"
+									requiredMessage="#{msg['navegacion.label.monto']} #{msg['mensaje.error.requerido']}">
+									<f:converter converterId="javax.faces.Double" />
+								</h:inputText>
+								
+								<rich:message for="txtMonto" showSummary="false" showDetail="false" style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage style="margin:0 5px;" 
+											value="#{msg['cancelar16.img']}" 
+											title="#{msg['mensaje.error.requerido']}" />
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>	
+							
+							<h:outputText value="#{msg['navegacion.label.beneficiario']}:" styleClass="Titulo" />
+							<h:panelGroup>
+								<h:inputText id="txtBene" maxlength="100" size="36"
+									value="#{cajaChicaAction.beneficiario}" title="Presione F9"
+									required="#{!empty param[rich:clientId('cmdSalvar')] || !empty param[rich:clientId('cmdAgregar')]}" 
+									requiredMessage="#{msg['navegacion.label.beneficiario']} #{msg['mensaje.error.requerido']}"
+									onkeypress="keyF9(event, #{rich:component('suggBenes')})">
+									<f:validator validatorId="valClaveValor" />
+								</h:inputText>
+		
+								<h:graphicImage style="margin-left:0px; vertical-align:bottom; cursor:pointer;" 
+									value="#{msg['despliega.img']}" 
+									onclick="#{rich:component('suggBenes')}.callSuggestion(true)" alt="" />
+		
+								<rich:suggestionbox id="suggBenes" height="100" width="238" eventsQueue="suggQRepCaja" minChars="2" 
+									suggestionAction="#{cajaChicaAction.autoacompletaBeneficiario}" 
+									var="ben" fetchValue="#{ben.id} - #{ben.nombre}" for="txtBene">
+									<h:column><h:outputText value="#{ben.id}" /></h:column>
+									<h:column><h:outputText value="#{ben.nombre}" /></h:column>
+								</rich:suggestionbox>
+		
+								<rich:message for="txtBene" showSummary="false" showDetail="false" style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage style="margin:0 5px;" 
+											value="#{msg['cancelar16.img']}" 
+											title="#{msg['mensaje.validacion.selectItem']}" />
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>	
+						</h:panelGrid>
+					</rich:tab>
+					
+					<rich:tab label="#{msg['navegacion.label.comprobado']}" styleClass="Titulo">
+						<h:panelGroup id="pnlAgregar" style="display: block; width:100%; margin:5px 0; text-align:left;">
+							<h:panelGrid columns="2" columnClasses="panelLeft, panelRight">
+								<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+								
+								<a4j:commandButton id="cmdAgregar" style="cursor:pointer; float:right; margin-right:5px;"
+									image="#{msg['agregar22.img']}" title="#{msg['agregar.e']}"
+									onclick="#{rich:element('cmdAgregar')}.disabled = true;" 
+									action="#{cajaChicaAction.agregar}" 
+									oncomplete="msgRevisando(#{rich:element('msgErrorCajaChica')},'pnlMensajes','pnlFactura',#{cajaChicaAction.comprobacionGenerada},'agregar','#{cajaChicaAction.mensaje}'); #{rich:element('cmdAgregar')}.disabled = false;"
+									reRender="pnlFactura,pnlMensajes" />
+							</h:panelGrid>
+						</h:panelGroup>
+		
+						<rich:dataTable id="dtResultsComprobado" value="#{cajaChicaAction.listFacturaConImpuestos}" var="comprobado"
+							rowClasses="Row1, Row2" rows="10" cellpadding="0" cellspacing="0" border="0" style="min-width:700px;">
+							<f:facet name="header">
+								<rich:columnGroup>
+									<rich:column colspan="7" styleClass="tygCompGtosTit">
+										<h:outputText value="#{msg['navegacion.label.comprobado']}" />
+									</rich:column>
+									
+									<rich:column breakBefore="true" style="text-align:center;" styleClass="tygCompGtosTit">
+										<h:outputText value="#{msg['navegacion.label.concepto']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center; margin-left:10px;" styleClass="tygCompGtosTit">
+										<h:outputText value="#{msg['proveedor']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center; margin-left:10px;" styleClass="tygCompGtosTit">
+										<h:outputText value="#{msg['folioDocumento']}" />
+									</rich:column>
+		
+									<rich:column style="text-align:center; margin-left:10px;" styleClass="tygCompGtosTit">
+										<h:outputText value="#{msg['navegacion.label.montoIva']}" />
+									</rich:column>
+		
+									<rich:column colspan="3" style="text-align:center; margin-left:10px;" styleClass="tygCompGtosTit" />
+								</rich:columnGroup>
+							</f:facet>
+							
+							<rich:column style="text-align:left;" styleClass="tygCompGtosDesc">
+								<h:outputText value="#{comprobado.pojoFactura.idConcepto.descripcion}" />
+							</rich:column>
+							
+							<rich:column style="text-align:left;" styleClass="tygCompGtosDesc">
+								<h:outputText value="#{comprobado.pojoFactura.idProveedor.nombre}" rendered="#{comprobado.pojoFactura.facturaRazonSocial == '' ? true : false}" />
+								<h:outputText value="#{comprobado.pojoFactura.facturaRazonSocial}" rendered="#{comprobado.pojoFactura.facturaRazonSocial == '' ? false : true}" />
+							</rich:column>
+							
+							<rich:column width="80" style="text-align:center;" styleClass="tygCompGtosDesc">
+								<h:outputText value="#{comprobado.pojoFactura.referencia}" />
+							</rich:column>
+							
+							<rich:column width="100" style="text-align:right;" styleClass="tygCompGtosDesc">
+								<h:outputText value="#{comprobado.pojoFactura.subtotal + comprobado.pojoFactura.totalImpuestos-comprobado.pojoFactura.totalRetenciones}">
+									<f:convertNumber pattern="$###,###.00" /> 
+								</h:outputText>
+							</rich:column>
+
+							<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;" styleClass="tygCompGtosDesc">
+								<a4j:commandButton image="#{msg['detalles16.img']}" title="#{msg['descargar.e']}"
+									rendered="#{comprobado.pojoFactura.idXml > 0}"
+									action="#{cajaChicaAction.descargarArchivo}"
+									oncomplete="descargar(#{cajaChicaAction.encontroMismoGrupo}, '#{msg['urlapp']}', '#{rich:clientId('pnlMensajes')}');" 
+									reRender="pnlMensajes">
+									<f:setPropertyActionListener target="#{cajaChicaAction.reg}" value="#{comprobado}" />
+								</a4j:commandButton>
+							</rich:column>
+
+							<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;" styleClass="tygCompGtosDesc">
+								<a4j:commandButton image="#{msg['editar22.img']}" title="#{msg['editar.e']}"
+									action="#{cajaChicaAction.evaluaEditar}"
+									oncomplete="msgRevisando(#{rich:element('msgErrorCajaChica')},'pnlMensajes','pnlFactura',#{cajaChicaAction.facturaConLlave},'editar','#{cajaChicaAction.mensaje}')"
+									reRender="pnlMensajes,pnlFactura,dtDesgloseImpuestos,txtTotalImpto,txtSubtotal,txtMonto,msgErrorCajaChica">
+									<f:setPropertyActionListener target="#{cajaChicaAction.reg}" value="#{comprobado}" />
+								</a4j:commandButton>
+							</rich:column>
+		
+							<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;" styleClass="tygCompGtosDesc">
+								<a4j:commandButton image="#{msg['eliminar22.img']}" title="#{msg['eliminar.e']}"
+									action="#{cajaChicaAction.evaluarFactura}" 
+									oncomplete="msgRevisando(#{rich:element('msgErrorCajaChica')},'pnlMensajes','pnlEliminarcomprobado',#{cajaChicaAction.facturaConLlave},'eliminar','#{cajaChicaAction.mensaje}')"
+									reRender="pnlMensajes, pnlEliminarcomprobado, dtResultsComprobado, txtMonto">
+									<f:setPropertyActionListener target="#{cajaChicaAction.reg}" value="#{comprobado}" />	
+								</a4j:commandButton>
+							</rich:column>
+
+							<f:facet name="footer">
+								<rich:columnGroup>
+									<rich:column colspan="3" style="text-align:right;">
+										<h:outputText value="#{msg['navegacion.label.totalComprobado']}" />
+									</rich:column>
+									
+									<rich:column width="100" style="text-align:right;">
+										<h:outputText value="#{cajaChicaAction.totalFacturasReportadas}"> 
+											<f:convertNumber pattern="$###,###.00" />
+										</h:outputText>
+									</rich:column>
+									
+									<rich:column width="60" colspan="3" style="text-align:center;" />
+									
+									<rich:column breakBefore="true" colspan="7">
+										<rich:datascroller id="dScrollFact" for="dtResultsComprobado" page="#{cajaChicaAction.numPaginaFact}" 
+											align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+									</rich:column>
+								</rich:columnGroup>
+							</f:facet>
+						</rich:dataTable>
+					</rich:tab>
+				</rich:tabPanel>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

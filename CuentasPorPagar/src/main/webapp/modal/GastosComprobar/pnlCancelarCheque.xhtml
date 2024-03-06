@@ -1,0 +1,36 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlCancelarCheque" autosized="true"
+		onshow="document.getElementById('#{rich:clientId('btnCancelarChequeNo')}').focus();">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo"/>
+		</f:facet>
+		
+		<a4j:form id="frmCancelarCheque" style="display:block; text-align:center; min-width:300px; max-width:500px;">
+			<a4j:region id="regCancelarCheque">
+				<h:outputText value="#{gastosComprobarAction.mensaje}" styleClass="Descripcion" rendered="#{gastosComprobarAction.tipoMensaje == 2}" />
+				<h:panelGrid columns="2" style="margin:10px auto 0; text-align:center; display:block;" cellspacing="5" cellpadding="0">
+					<a4j:commandButton id="btnCancelarChequeSi" style="width:100px; margin:0 auto"
+						value="#{msg['navegacion.label.aceptar']}"
+						onclick="#{rich:element('btnCancelarChequeSi')}.disabled = true;" 
+						action="#{gastosComprobarAction.cancelarCheques}" 
+						oncomplete="msgRevisando(#{rich:element('msgErrorGastosComprobar')},'pnlCancelarCheque','pnlMensajes',#{gastosComprobarAction.band},'boton3','#{gastosComprobarAction.mensaje}'); #{rich:element('btnCancelarChequeSi')}.disabled = false;" 
+						reRender="pnlMensajes,dtResults" />
+						
+					<a4j:commandButton id="btnCancelarChequeNo" style="width:90px; margin:0 auto"
+						value="#{msg['cancelar.e']}" 
+						onclick="#{rich:component('pnlCancelarCheque')}.hide()" />
+				</h:panelGrid>
+				
+				<a4j:status for="regCancelarCheque">
+					<f:facet name="start"><h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" /></f:facet>
+				</a4j:status>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

@@ -1,0 +1,32 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlEliminar" modal="true" autosized="true" domElementAttachment="form"
+		onshow="document.getElementById('#{rich:clientId('pnlEliminarNo')}').focus();">
+		<f:facet name="header">
+			<h:outputText value="#{msg['atencion']}" styleClass="Descripcion" />
+		</f:facet>
+		
+		<h:panelGrid columns="1" style="min-width:300px; width:auto; text-align:center;">
+			<h:outputText value="#{msg['confirmacionEliminar']}" style="display:block;" styleClass="Descripcion" />
+		
+			<h:panelGrid columns="2" style="width:200px; margin:10px auto 0; text-align:center;" cellpadding="0" cellspacing="0">
+				<a4j:commandButton id="pnlEliminarSi" style="margin:0 auto; width:100px;"
+					value="#{msg['aceptar']}"
+					action="#{comAction.eliminar}" 
+					oncomplete="eliminar(#{comAction.operacion}, '#{rich:clientId('pnlEliminar')}', '#{rich:clientId('pnlMensajes')}')"
+					render="dtComparativas"
+					limitRender="true" />
+					
+				<a4j:commandButton id="pnlEliminarNo" style="margin:0 auto; width:90px;"
+					value="#{msg['cancelar.e']}" 
+					onclick="#{rich:component('pnlEliminar')}.hide()" />
+			</h:panelGrid>
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

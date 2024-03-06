@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:jboss:module:1.1" name="net.giro.logica.$1">
+  <resources>
+    <resource-root path="Logica_$1.jar" />
+  </resources>
+  <dependencies>
+    <module name="net.giro.comun"  export="true" />
+    <module name="com.enterprisedt.edtFTPj"  export="true" />
+    <module name="com.google.code.gson"  export="true"/>
+    <module name="org.beanshell.bsh"  export="true"/>
+    <module name="org.apache.commons.beanutils"  export="true"/>
+    <module name="commons-httpclient"  export="true"/>
+  </dependencies>
+</module>

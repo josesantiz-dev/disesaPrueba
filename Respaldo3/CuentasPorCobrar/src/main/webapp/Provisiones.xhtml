@@ -1,0 +1,161 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="Provisiones"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+				action="#{provAction.buscar}" 
+				oncomplete="buscar(#{provAction.operacion}, '#{rich:clientId('pnlMensajes')}')"
+				render="pnlMensajes dtResults" limitRender="true" />
+		</rich:toolbarGroup>
+		 
+		<rich:toolbarGroup id="tbgNuevo" location="right" rendered="#{provAction.debugging}">
+			<a4j:commandButton id="cmdNuevo" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['nuevo22.img']}" title="#{msg['nuevo.e']}"
+				action="#{provAction.nuevo}" 
+				oncomplete="#{rich:component('pnlProvision')}.show()"
+				render="pnlProvision" limitRender="true" />
+		</rich:toolbarGroup>
+		 
+		<rich:toolbarGroup id="tbgProvisionMensual" location="right" rendered="#{provAction.debugging}">
+			<a4j:commandButton id="cmdProvisionMensual" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['nuevo22.img']}" title="#{msg['provision']} #{msg['mensual']}"
+				action="#{provAction.provisionMensual}" 
+				oncomplete="#{rich:component('pnlMensajes')}.show()"
+				render="pnlMensajes" limitRender="true" />
+		</rich:toolbarGroup>
+		
+		 <rich:toolbarGroup id="tbgProvisionRetroactiva" location="right" rendered="#{provAction.debugging}">
+			<a4j:commandButton id="cmdProvisionRetroactiva" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['nuevo22.img']}" title="#{msg['provision']} #{msg['retroactiva']}"
+				action="#{provAction.provisionRetroactiva}" 
+				oncomplete="#{rich:component('pnlMensajes')}.show()"
+				render="pnlMensajes" limitRender="true" />
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="cxc.css" />
+		<h:outputScript library="scripts" name="cxc.js" />
+		
+		<div class="div_titulo" style="margin: 50px auto 0;">
+			<h:outputText value="#{msg['provisiones']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina" style="margin: 5px auto;">
+			<rich:dataTable id="dtResults" var="var" value="#{provAction.listProvisiones}"
+				cellpadding="0" cellspacing="0" rows="100" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" style="margin:0 auto 20px; width: 100%;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column styleClass="Titulo" style="text-align:center; width:90px;">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; width:100px;">
+							<h:outputText value="#{msg['fecha']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; width:100px;">
+							<h:outputText value="#{msg['factura']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center;">
+							<h:outputText value="#{msg['cliente']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; width:100px;">
+							<h:outputText value="#{msg['total']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; width:100px;">
+							<h:outputText value="#{msg['provision']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center;">
+							<h:outputText value="#{msg['observaciones']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; width:40px;" colspan="2" />
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align:center; padding:5px; width:90px;">
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding:5px; width:100px;">
+					<h:outputText value="#{var.idFactura.fechaEmision}">
+						<f:convertDateTime type="date" pattern="dd-MMM-yyyy"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding:5px; width:100px;">
+					<h:outputText value="#{var.idFactura.folioFactura}" />
+				</rich:column>
+
+				<rich:column style="text-align:left; padding:5px;">
+					<h:outputText value="#{var.idFactura.cliente}" />
+				</rich:column>
+				
+				<rich:column style="text-align:right; padding:5px; width:100px;">
+					<h:outputText value="#{var.idFactura.total}">
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:right; padding:5px; width:100px;">
+					<h:outputText value="#{var.monto}">
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:outputText>
+				</rich:column>
+
+				<rich:column style="text-align:left; padding:5px; max-width:500px;">
+					<h:outputText value="#{var.observaciones}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding:5px; width:20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEditar" 
+						image="#{msg['editar16.img']}" title="#{msg['editar']}"
+						action="#{provAction.editar}" execute="@this"
+						oncomplete="verEditar(#{provAction.operacion}, '#{rich:clientId('pnlProvision')}', '#{rich:clientId('pnlMensajes')}')"
+						render="pnlProvision,pnlMensajes" limitRender="true">
+						<f:setPropertyActionListener for="cmdEditar" target="#{provAction.idProvision}" value="#{var.id}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding:5px; width:20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEliminar" 
+						image="#{msg['cancelar16.img']}" title="#{msg['cancelar']}"
+						oncomplete="#{rich:component('pnlEliminar')}.show()"
+						render="pnlEliminar" limitRender="true">
+						<f:setPropertyActionListener for="cmdEliminar" target="#{provAction.idProvision}" value="#{var.id}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<f:facet name="footer">
+					<rich:dataScroller for="dtResults" page="#{provAction.paginacionProvisiones}" renderIfSinglePage="false" 
+						styleClass="Titulo" maxPages="10" fastStep="10" align="center" ajaxSingle="true" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modal/provisiones/pnlMensajes.xhtml" /> 
+		<ui:include src="/modal/provisiones/pnlEliminar.xhtml" /> 
+		<ui:include src="/modal/provisiones/pnlProvision.xhtml" />
+		<ui:include src="/modal/provisiones/pnlBusquedaFacturas.xhtml" />
+		<ui:include src="/modal/provisiones/pnlEliminarDetalle.xhtml" />
+	</ui:define>
+</ui:composition>

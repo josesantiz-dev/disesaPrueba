@@ -1,0 +1,142 @@
+<!DOCTYPE composition>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich"
+	template="/layout/template.xhtml">
+
+	<ui:define name="title">
+		<h:outputText value="#{msg['navegacion.modulo']} - Movimientos a Cuentas" />
+	</ui:define>
+
+	<ui:define name="menuFrag">
+		<rich:toolBarGroup location="right" style="padding:0 2px 0 2px;" >
+			<a4j:commandButton id="cmdBuscar" image="#{msg['buscar22.img']}" style="vertical-align: middle; position:relative;cursor:pointer;"
+				onclick="#{rich:element('cmdBuscar')}.disabled = true;" 
+				action="#{movCuentasAction.buscar}" 
+				oncomplete="msgRevisando(#{rich:element('msgErrorMovimientos')},'pnlMovimiento','pnlMensajes',#{movCuentasAction.band},'buscar'); #{rich:element('cmdBuscar')}.disabled = false;" 
+				reRender="dtResults,pnlMensajes" />
+			<h:outputLabel for="cmdBuscar" 
+				value="#{msg['buscar.e']}" 
+				style="cursor:pointer; font-weight: bold; font-family: Arial, Verdana, sans-serif; font-size: 11px;" 
+				styleClass="Titulo" />
+		</rich:toolBarGroup>
+		
+		<rich:toolBarGroup location="right" style="padding:0 2px 0 2px;" >
+			<a4j:commandButton id="cmdNuevo" image="#{msg['nuevo22.img']}" style="cursor: pointer;" 
+				onclick="#{rich:element('cmdNuevo')}.disabled = true;" 
+				action="#{movCuentasAction.nuevo}"
+				oncomplete="Richfaces.showModalPanel('pnlMovimiento'); #{rich:element('cmdNuevo')}.disabled = false;" 
+				reRender="pnlMovimiento" />
+			<h:outputLabel for="cmdNuevo" 
+				value="#{msg['nuevo.e']}" 
+				style="cursor:pointer;" 
+				styleClass="Titulo" />
+		</rich:toolBarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<a4j:keepAlive beanName="movCuentasAction" />
+		<a4j:queue id="suggQMovCtas" name="suggQMovCtas" sizeExceededBehavior="fireNew" ignoreDupResponses="true" size="1"/>
+		<a4j:loadStyle src="resource:///resources/css/cxp.css" />
+		<a4j:loadScript src="resource:///resources/scripts/cxp.js"/>
+		<a4j:loadScript src="resource:///resources/scripts/movimientosCuentas.js"/>
+		<br/>
+		
+		<h:panelGrid id="panel_busqueda" columns="2" style="margin: 10px auto; display:block;" width="700">
+			<h:outputText value="#{msg['navegacion.label.tipoBusqueda']}:" styleClass="Titulo" />	
+			<rich:comboBox id="cmbTipoBusqueda" width="180" listStyle="text-align:left;" enableManualInput="false"
+				value="#{movCuentasAction.valTipoBusqueda}" 
+				suggestionValues="#{movCuentasAction.tipoBusqueda}" />
+			
+			<h:outputText value="#{msg['navegacion.label.valor']}:" styleClass="Titulo"/>
+			<h:inputText id="txtvalor" size="50" maxlength="35" 
+				value="#{movCuentasAction.campoBusqueda}" />
+		</h:panelGrid>
+		
+		<rich:dataTable id="dtResults" var="mov" value="#{movCuentasAction.listMovCtas}" 
+			rows="100" cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" style="margin: 10px auto 20px; min-width:720px; width:100%;" >
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column colspan="6" styleClass="tygMovCtaTit">
+						<h:outputText value="#{msg['movimientosCuentas']}"/>
+					</rich:column>
+					
+					<rich:column breakBefore="true" style="text-align:center;" styleClass="tygMovCtaTit">
+						<h:outputText value="#{msg['navegacion.label.clave']}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; margin-left:10px;" styleClass="tygMovCtaTit">
+						<h:outputText value="#{msg['navegacion.label.fecha']}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; margin-left:10px;" styleClass="tygMovCtaTit">
+						<h:outputText value="#{msg['navegacion.label.cuenta']}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; margin-left:10px;" styleClass="tygMovCtaTit">
+						<h:outputText value="#{msg['tipoMovimiento']}" />
+					</rich:column> 
+					 
+					<rich:column style="text-align:center; margin-left:10px;" styleClass="tygMovCtaTit"/>		                        
+					<rich:column style="text-align:center; margin-left:10px;" styleClass="tygMovCtaTit"/>		                                                           
+				</rich:columnGroup>
+			</f:facet>
+			
+			<rich:column width="50" style="text-align:center;" >
+				<h:outputText value="#{mov.id}" rendered="#{mov.estatus == 'G'}"/>
+				<h:outputText value="#{mov.id}" rendered="#{mov.estatus == 'X'}" styleClass="tygMovCtaCancelado" />
+			</rich:column>
+			
+			<rich:column width="50" style="text-align:center;">
+				<h:outputText value="#{mov.fecha}" rendered="#{mov.estatus == 'G'}"><f:convertDateTime pattern="dd, MMM yyyy" /></h:outputText>
+				<h:outputText value="#{mov.fecha}" rendered="#{mov.estatus == 'X'}" styleClass="tygMovCtaCancelado"><f:convertDateTime pattern="dd, MMM yyyy" /></h:outputText>
+			</rich:column>
+			
+			<rich:column width="110" style="text-align:center;" >
+				<h:outputText value="#{mov.idCuentaOrigen.institucionBancaria.nombreCorto} #{mov.idCuentaOrigen.numeroDeCuenta}" rendered="#{mov.estatus == 'G'}" />
+				<h:outputText value="#{mov.idCuentaOrigen.institucionBancaria.nombreCorto} #{mov.idCuentaOrigen.numeroDeCuenta}" rendered="#{mov.estatus == 'X'}" styleClass="tygMovCtaCancelado" />
+			</rich:column>
+			
+			<rich:column  width="110" style="text-align:center;" >
+				<h:outputText value="#{mov.idTiposMovimiento.descripcion}" rendered="#{mov.estatus == 'G'}" />
+				<h:outputText value="#{mov.idTiposMovimiento.descripcion}" rendered="#{mov.estatus == 'X'}" styleClass="tygMovCtaCancelado" />
+			</rich:column>
+			
+			<rich:column width="20" style="text-align:center;" >
+				<a4j:commandButton image="#{msg['detalles16.img']}"
+					action="#{movCuentasAction.editar}" 
+					oncomplete="Richfaces.showModalPanel('pnlMovimiento')" 
+					reRender="pnlMovimiento">
+					<f:setPropertyActionListener target="#{movCuentasAction.pojoMovCtas}" value="#{mov}" />
+					<rich:toolTip showDelay="300"><h:outputText value="#{msg['detalles']}" styleClass="Descripcion" /></rich:toolTip>	
+				</a4j:commandButton>
+			</rich:column>
+
+			<rich:column width="20" style="text-align:center;">
+				<a4j:commandButton image="#{msg['cancelar16.img']}" 
+					action="#{movCuentasAction.evaluaCancelar}" 
+					oncomplete="msgRevisando(#{rich:element('msgErrorMovimientos')},'pnlMensajes','pnlCancelar',#{movCuentasAction.movCtaCancelado},'cancelar')" 
+					reRender="pnlMensajes,pnlCancelar">
+					<f:setPropertyActionListener target="#{movCuentasAction.pojoMovCtas}" value="#{mov}" />
+					<rich:toolTip showDelay="300"><h:outputText value="#{msg['cancelar.e']}" styleClass="Descripcion" /></rich:toolTip>	
+				</a4j:commandButton>
+			</rich:column>
+			
+			<f:facet name="footer" >
+				<rich:datascroller id="dScroll" for="dtResults" page="#{movCuentasAction.numPagina}" 
+					maxPages="10" ajaxSingle="true" styleClass="tygMovCtaTit" align="center" />
+			</f:facet>
+		</rich:dataTable>
+		
+		<rich:messages id="msgErrorFactura" showDetail="false" showSummary="false" />
+	</ui:define>
+
+	<ui:define name="modals">
+		<ui:include src="/modal/movimientos/pnlMensajes.xhtml" />
+		<ui:include src="/modal/movimientos/pnlCancelar.xhtml" />
+		<ui:include src="/modal/movimientos/pnlMovimiento.xhtml" /> 
+	</ui:define>
+</ui:composition>

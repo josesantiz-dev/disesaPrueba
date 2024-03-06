@@ -1,0 +1,93 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlBusquedaResponsables" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+		<f:facet name="header">
+			<h:outputText value="#{msg['buscar.e']} #{msg['empleados']}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlBusquedaResponsables')}.hide()" />
+		</f:facet>
+		
+		<a4j:region id="loadBusquedaPersonas">
+			<div style="display: block; min-width:500px; height: 22px;">
+				<a4j:commandButton id="cmdBuscarResponsables" 
+					action="#{obrasAction.buscarResponsables}"
+					image="#{msg['buscar22.img']}"
+					style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+					oncomplete="buscarResponsables(#{obrasAction.band}, '#{rich:clientId('pnlBusquedaResponsables')}');" 
+					render="dtResponsables">
+					<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarPersonas"/>
+				</a4j:commandButton>
+			</div>
+	
+			<div class="div_pagina" style="margin-top: 10px;">
+				<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin-left:10px; margin-bottom:20px; display:block;">
+					<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+					<h:selectOneMenu value="#{obrasAction.campoBusquedaResponsables}" styleClass="Titulo" style="width: 216px;">
+						<f:selectItems value="#{obrasAction.tiposBusquedaResponsables}" />
+					</h:selectOneMenu>
+
+					<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+					<h:inputText maxlength="50" value="#{obrasAction.valorBusquedaResponsables}" style="width: 210px;" />
+				</h:panelGrid>
+	
+				<rich:dataTable id="dtResponsables" value="#{obrasAction.listResponsablesGrid}" var="var" styleClass="tabla_pagina"
+					cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column style="width:100px; text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['id']}" />
+							</rich:column>
+							
+							<rich:column style="width:100px; text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['clave']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['nombre']}" />
+							</rich:column>
+
+							<rich:column style="width: 30px; text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['seleccionar']}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column styleClass="Descripcion" style="width:100px; text-align:center; padding-left: 5px;">
+						<h:outputText value="#{var.id}" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="width:100px; text-align:left; padding-left: 5px;">
+						<h:outputText value="#{var.clave}" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+						<h:outputText value="#{var.nombre}" />
+					</rich:column>
+					
+					<rich:column style="width: 30px; text-align:center;" styleClass="Descripcion">
+					   <a4j:commandButton id="cmdSeleccionarResponsable" image="#{msg['agregar16.img']}" 
+							action="#{obrasAction.seleccionarResponsable}"  
+							onclick="#{rich:component('pnlBusquedaResponsables')}.hide();" 
+							render="pnlObraResponsableDatos, cmdSeleccionarResponsable">
+							<rich:tooltip showDelay="300" value="#{msg['agregar.e']}" for="cmdSeleccionarResponsable" />	
+							<f:setPropertyActionListener target="#{obrasAction.pojoResponsable}" value="#{var}" for="cmdSeleccionarResponsable" />
+					   </a4j:commandButton>
+					</rich:column>
+	
+					<f:facet name="footer">
+						<rich:dataScroller id="dScrollResponsables" align="center" for="dtResponsables" maxPages="10"
+							ajaxSingle="true" page="#{obrasAction.numPaginaResponsables}" styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</div>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

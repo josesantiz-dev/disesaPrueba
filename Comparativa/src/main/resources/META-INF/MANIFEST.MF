@@ -1,0 +1,6 @@
+Manifest-Version: 1.0 
+Class-Path: 
+Dependencies: org.apache.poi,
+ org.apache.log4j, 
+ org.postgresql
+ 

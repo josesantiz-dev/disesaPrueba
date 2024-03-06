@@ -1,0 +1,12 @@
+<jms-topic name="INVENTARIOS">
+    <entry name="topic/INVENTARIOS"/>
+    <entry name="java:jboss/exported/jms/topic/INVENTARIOS"/>
+</jms-topic>
+<jms-topic name="TRANSACCIONES">
+    <entry name="topic/TRANSACCIONES"/>
+    <entry name="java:jboss/exported/jms/topic/TRANSACCIONES"/>
+</jms-topic>
+<jms-topic name="CONTABILIZAR">
+    <entry name="topic/CONTABILIZAR"/>
+    <entry name="java:jboss/exported/jms/topic/CONTABILIZAR"/>
+</jms-topic>

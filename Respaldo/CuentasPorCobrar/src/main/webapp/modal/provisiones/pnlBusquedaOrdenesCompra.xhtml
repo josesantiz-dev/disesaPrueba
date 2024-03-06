@@ -1,0 +1,126 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlBusquedaOrdenesCompra" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+		<f:facet name="header">
+			<h:outputText style="margin:0 auto;" value="#{msg['busqueda']} #{msg['ordenesCompra']}" styleClass="Titulo"/>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlBusquedaOrdenesCompra')}.hide()" />
+		</f:facet>
+		
+		<h:panelGroup style="display: block; min-width:500px; height: 22px;">
+			<a4j:commandButton id="cmdBuscarOrdenesCompra" 
+				image="#{msg['buscar22.img']}" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+				action="#{provAction.buscarOrdenesCompra}"
+				oncomplete="buscar(#{provAction.operacion}, '#{rich:clientId('pnlMensajes')}');" 
+				render="dtOrdenesCompra,pnlMensajes"
+				limitRender="true">
+				<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarOrdenesCompra"/>
+			</a4j:commandButton>
+		</h:panelGroup>
+		
+		<h:panelGroup class="div_pagina" style="margin:0 auto;">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin:0 auto 5px; display:block;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+				<h:selectOneMenu style="width: 216px"
+					value="#{provAction.campoBusquedaOrdenesCompra}">
+					<f:selectItems value="#{provAction.opcionesBusquedaOrdenesCompra}" />
+				</h:selectOneMenu>
+	        
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText maxlength="50" style="width: 210px"
+					value="#{provAction.valorBusquedaOrdenesCompra}" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtOrdenesCompra" value="#{provAction.listOrdenesCompra}" var="var" rows="5" 
+				cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column colspan="7" style="text-align:center; font-weight: bold;">
+							<h:outputText value="#{msg['ordenesCompra']}" />
+						</rich:column>
+						
+						<rich:column breakRowBefore="true" style="text-align:center; font-weight: bold;">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; font-weight: bold;">
+							<h:outputText value="#{msg['folio']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; font-weight: bold;">
+							<h:outputText value="#{msg['obra']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; font-weight: bold;">
+							<h:outputText value="#{msg['proveedor']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; font-weight: bold;">
+							<h:outputText value="#{msg['solicita']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; font-weight: bold;">
+							<h:outputText value="#{msg['total']}" />
+						</rich:column>
+
+						<rich:column style="text-align:center; font-weight: bold;">
+							<h:outputText value="#{msg['seleccionar']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="width:90px; text-align:center; padding:5px;">
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="width:100px; text-align:center; padding:5px;">
+					<h:outputText value="#{var.folio}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding:5px;">
+					<h:outputText value="#{var.nombreObra}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding:5px;">
+					<h:outputText value="#{var.nombreProveedor}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding:5px;">
+					<h:outputText value="#{var.nombreSolicita}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="width:90px; text-align:right; padding: 5px;">
+					<h:outputText value="#{var.total}">
+						<f:convertNumber pattern="###,###,##0.00" /> 
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="width:60px; text-align:center;" styleClass="Descripcion">
+				   <a4j:commandButton id="btnSeleccionarOrdenCompra" 
+				   		image="#{msg['agregar16.img']}" 
+						action="#{provAction.seleccionarOrdenCompra}"
+						oncomplete="seleccionar(#{provAction.operacion}, '#{rich:clientId('pnlBusquedaOrdenesCompra')}', '#{rich:clientId('pnlMensajes')}')"
+						render="pnlMensajes pnlOrdenCompraDatos">
+						<rich:tooltip showDelay="300" value="#{msg['agregar.e']}" for="btnSeleccionarOrdenCompra" />	
+						<f:setPropertyActionListener target="#{provAction.pojoOrdenCompraSeleccionada}" value="#{var}" />
+				   </a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller page="#{provAction.paginacionBusquedaOrdenesCompra}" for="dtOrdenesCompra" 
+						maxPages="10" align="center" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

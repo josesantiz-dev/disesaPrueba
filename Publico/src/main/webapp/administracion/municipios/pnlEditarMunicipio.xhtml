@@ -1,0 +1,57 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlEditarMunicipio" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['municipio']}" styleClass="Titulo" />
+		</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlEditarMunicipio')}.hide()"/>
+		</f:facet>
+		<a4j:form id="frmModalMunicipio">
+			
+	   		<div style = "display: block; width: 450px; height: 22px;">
+				<a4j:commandButton id="cmdSalvarMunicipio"
+					action="#{localidadesAction.guardarMunicipio}"
+					style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+					image="#{msg['salvar22.img']}"
+					oncomplete="guardar('#{localidadesAction.resOperacion}', '#{rich:clientId('pnlEditarMunicipio')}', '#{rich:clientId('pnlMsgGralMunicipios')}', #{rich:element('msgErrorMunicipio')});"
+					reRender="dtBuscarMunicipios,pnlMsgGralLocalidades">
+					<rich:toolTip value="#{msg['salvar.e']}" styleClass="Descripcion" />
+				</a4j:commandButton>
+			</div>
+			
+			<rich:messages id="msgErrorMunicipio" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!">
+				<f:facet name="errorMarker">
+					<h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;"/>   
+				</f:facet>
+			</rich:messages>	
+			
+			<fieldset style="margin-top: 5px;">
+				<legend>
+					<h:outputText value="#{msg['municipio']}"/>
+				</legend>
+				
+				<h:panelGrid id="pnlDatosMunicipio" columns="2" columnClasses="pgColIzq,pgColDer" style="margin-bottom:10px; margin-top:10px; display:block;" width="400">
+					<h:outputText value="#{msg['estado']}:" styleClass="Titulo"/>
+					<h:selectOneMenu value="#{localidadesAction.pojoEstadoMunicipioAux}" styleClass="Titulo" style="margin-left:5px;">
+						<f:selectItems value="#{localidadesAction.listTmpEstados}"/>
+					</h:selectOneMenu>
+				
+					<h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+					<h:inputText id="txtNombreMunicipio" 
+	           			value="#{localidadesAction.pojoMunicipio.nombre}"
+	           			required="#{!empty param[rich:clientId('cmdSalvarMunicipio')]}"		           			
+	           			requiredMessage="#{msg['nombre']} #{msg['mensaje.error.requerido']}"/>
+				</h:panelGrid>
+			</fieldset>
+		</a4j:form>
+	</rich:modalPanel>
+    
+</ui:composition>

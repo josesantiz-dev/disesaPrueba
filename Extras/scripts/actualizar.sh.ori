@@ -1,0 +1,38 @@
+#!/bin/bash
+### ----------------------------------------------------------------------------
+### Javaz0 #!
+### ----------------------------------------------------------------------------
+### Rutina de actualizacion de empaquetados java
+###
+### Formato de Instrucciones --> YYYY-MM-DD,HH:MM,SCRIPT,PARAMETROS [actualizar]
+### Ejemplo: 2019-12-11,16:14,air-updater.sh,parametro1
+
+fechaActual=`date +"%Y-%m-%d"`
+horaActual=`date +"%H:%M"`
+completo=0
+if [ -f ./actualizar ]; then
+	oldIFS=$IFS # conserva el separador de campo
+	IFS=$','
+	while read fechaProg horaProg script parametros; do 
+		if [ "$fechaActual" = "$fechaProg" ] && [ "$horaActual" = "$horaProg" ]; then
+			./$script $parametros
+			completo=$?
+			if [ $completo -eq 0 ]; then
+				# Rutina de reinicio de AIR
+				pkill java
+				sleep 10
+				pkill java
+				rm -rf /opt/jboss-as-7.1.1/standalone/tmp/*
+				sleep 20
+				su - jboss7 -c "sh bin/standalone.sh -b disesa.condese.net -c standalone-full.xml &"
+				sleep 60
+				su - rsproceso -c "sh bin/startup.sh &"
+				sleep 60
+			fi
+		fi
+	done < ./actualizar
+
+	IFS=$old_IFS # restablece el separador de campo predeterminado
+fi
+
+return $completo

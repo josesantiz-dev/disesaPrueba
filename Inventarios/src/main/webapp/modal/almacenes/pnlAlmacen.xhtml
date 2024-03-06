@@ -1,0 +1,109 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlAlmacen" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="15">
+		<f:facet name="header">
+			<h:outputText value="#{almacenAction.pojoAlmacen.id==null ? 'Nuevo Almacen' : 'Almacen'}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlAlmacen')}.hide()" />
+		</f:facet>
+		
+		<!-- BOTONERA -->
+		<h:panelGrid id="botonera" columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+			<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+				<rich:messages id="validadorAlmacenes" rendered="#{true}" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" /></f:facet>
+				</rich:messages>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdSalvar" style="float:right; margin-left: 5px; vertical-align:top; position:relative;" 
+					image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+					action="#{almacenAction.guardar}" 
+					oncomplete="validateToSave(#{almacenAction.band}, '#{rich:clientId('pnlAlmacen')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorAlmacenes')})"
+					render="dtAlmacenes,pnlMensajes,validadorAlmacenes" />
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<h:panelGroup id="grupoEncAlmacen" styleClass="encabezado">
+			<h:panelGrid width="100%">
+				<h:panelGroup>
+					<h:outputText
+						value="#{almacenAction.pojoAlmacen.id==null ? '' : almacenAction.pojoAlmacen.id  }"
+						style="text-align: center;" />
+						
+					<h:outputText
+						value=" - #{almacenAction.pojoAlmacen.id==null ? '' : almacenAction.pojoAlmacen.nombre  }"
+						style="text-align: center;" />
+				</h:panelGroup>
+			</h:panelGrid>
+		</h:panelGroup>
+		
+		<h:panelGroup id="grupoDatos">
+			<h:panelGrid id="pnlAlmacenDatos" columns="2" columnClasses="colTitulo,colDato" style="text-align:left; min-width:400px; width:100%;">
+				<h:outputLabel value="#{msg['nombre']}:" styleClass="Titulo" />
+				<h:inputText id="txtNombre" style="width:310px;" 
+					value="#{almacenAction.pojoAlmacen.nombre}"
+	            	required="#{!empty param[rich:clientId('cmdSalvar')]}"
+					requiredMessage="#{msg['nombre']} #{msg['mensaje.error.requerido']}" />
+				
+				<h:outputLabel value="#{msg['almacen.identificador']}:" styleClass="Titulo" />
+				<h:inputText id="txtIdentificador" style="width:150px;" 
+					value="#{almacenAction.pojoAlmacen.identificador}"
+	            	required="#{!empty param[rich:clientId('cmdSalvar')]}"
+					requiredMessage="#{msg['almacen.identificador']} #{msg['mensaje.error.requerido']}" />
+				
+				<h:outputLabel value="#{msg['tipo']}:" styleClass="Titulo" />
+				<h:selectOneRadio id="ckGeneral" style="min-width: 100px; margin:5px auto 5px 0;"
+					value="#{almacenAction.tipoAlmacen}"
+	            	required="#{!empty param[rich:clientId('cmdSalvar')]}"
+					requiredMessage="#{msg['tipo']} #{msg['mensaje.error.requerido']}">
+					<f:selectItems value="#{almacenAction.tiposAlmacenes}" />
+					<!--h:panelGroup>
+					<h:selectBooleanCheckbox id="ckGeneral" style="float:center; margin-right:2px;"
+						value="#{almacenAction.tipoAlmacen}" />
+					</h:panelGroup-->
+					<!--a4j:ajax event="change" 
+						listener="#{entradasAlmacenAction.filtrarAlmacenes}"
+						render="txtFolioFactura,cboAlmacen,pdataOC,pdataTraspaso,pdataSalida,dtOrdenCompra,labelEntrega,cboEntrega"
+						limitRender="true" /-->
+				</h:selectOneRadio>
+				
+				<h:outputText value="#{msg['sucursal']}:" styleClass="Titulo" />
+				<h:selectOneMenu id="cbSucursales" style="width:316px;"
+					value="#{almacenAction.idSucursal}"
+	            	required="#{!empty param[rich:clientId('cmdSalvar')]}"
+					requiredMessage="#{msg['sucursal']} #{msg['mensaje.error.requerido']}">
+					<f:selectItem itemLabel="#{msg['seleccione']}"/>
+					<f:selectItems value="#{almacenAction.listaCboSucursales}"/>
+					<a4j:ajax event="change" execute="@this"
+						listener="#{almacenAction.filtrarEmpleados}"
+						render="cbEmpleados" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['encargado']}:" styleClass="Titulo" />
+				<h:selectOneMenu id="cbEmpleados" style="width:316px;"
+					value="#{almacenAction.idEncargado}">
+					<f:selectItem itemLabel="#{msg['seleccione']}"/>	
+					<f:selectItems value="#{almacenAction.listEmpleadosItems}"/>				
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['domicilio']}:" styleClass="Titulo" />
+				<a4j:commandLink id="cmdSeleccionarDomicilio" 
+					value="#{almacenAction.domicilio == '' ? msg['seleccionar'] : almacenAction.pojoAlmacen.domicilio}" 
+					action="#{almacenAction.nuevoDomicilio}"
+					oncomplete="#{rich:component('pnlDomicilio')}.show();"  
+					render="pnlDomicilio, grpDomiDom0, grpDomiDom"/>
+			</h:panelGrid>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

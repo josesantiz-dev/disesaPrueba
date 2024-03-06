@@ -1,0 +1,35 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlMensajes" autosized="true">
+		<f:facet name="header">
+			<h:outputText value="#{gastosAction.band ? msg['navegacion.label.atencion'] : msg['navegacion.label.informacion']}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage id="imgCerrarMsgGto" style="cursor:pointer;" 
+					value="#{msg['navegacion.panel.cerrar.img']}" />
+				<rich:componentControl event="onclick" attachTo="imgCerrarMsgGto" 
+					for="pnlMensajes" operation="hide" />
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="frmMsgGralesGto">
+			<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+				<h:outputText rendered="#{gastosAction.tipoMensaje == 0}" value="#{msg['mensaje.info.infoReg']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{gastosAction.tipoMensaje == 1}" value="#{msg['mensaje.error.inesperado']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{gastosAction.tipoMensaje == 2}" value="#{msg['mensaje.info.busquedaVacia']}" styleClass="Descripcion" />
+				
+				<a4j:commandButton value="#{msg['navegacion.label.aceptar']}"
+					onclick="#{rich:component('pnlMensajes')}.hide()" />
+				<!-- oncomplete="msgRevisando(#{rich:element('msgErrorGto')},'pnlGasto','pnlMensajes',#{gastosAction.band},'boton')" -->
+			</h:panelGrid>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

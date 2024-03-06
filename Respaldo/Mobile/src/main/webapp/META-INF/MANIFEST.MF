@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Class-Path: 
+Dependencies: 
+ net.giro.comun export,
+ net.giro.model.compras export,
+ net.giro.logica.compras export,
+ net.giro.logica.gestionproyectos export,
+ net.giro.model.gestionproyectos export,
+ net.giro.logica.publico export,
+ net.giro.model.publico export,
+ net.giro.logica.publico export,
+ org.apache.log4j export
+

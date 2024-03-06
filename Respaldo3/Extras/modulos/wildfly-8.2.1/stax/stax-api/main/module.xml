@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:jboss:module:1.1" name="stax.stax-api">
+    <resources>
+        <resource-root path="stax-api-1.0.1.jar"/>
+    </resources> 
+</module>

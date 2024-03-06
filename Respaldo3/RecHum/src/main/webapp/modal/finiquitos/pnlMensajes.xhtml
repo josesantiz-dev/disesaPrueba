@@ -1,0 +1,25 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlMensajes" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['atencion']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<h:panelGroup id="groupResOperacion" style="display:block; min-width:300px; max-width:500px; float:center; text-align:center;">
+			<h:outputText value="#{finiquitoAction.resOperacion}" 		rendered="#{finiquitoAction.tipoMensaje ==-1}" styleClass="Descripcion" escape="false" />
+			<h:outputText value="#{msg['mensaje.info.infoReg']}" 		rendered="#{finiquitoAction.tipoMensaje == 0}" styleClass="Descripcion" />       			
+			<h:outputText value="#{msg['mensaje.error.inesperado']}" 	rendered="#{finiquitoAction.tipoMensaje == 1}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['mensaje.info.busquedaVacia']}" 	rendered="#{finiquitoAction.tipoMensaje == 2}" styleClass="Descripcion" />
+		</h:panelGroup>
+			
+		<a4j:commandButton style="margin:10px auto 0; width:100px; cursor:pointer;"
+			value="#{msg['aceptar']}" 
+			onclick="#{rich:component('pnlMensajes')}.hide()" />
+	</rich:popupPanel>
+</ui:composition>

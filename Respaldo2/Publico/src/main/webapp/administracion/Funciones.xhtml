@@ -1,0 +1,304 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+
+
+<ui:define name="menuFrag" >
+	
+	<rich:toolBarGroup id="tbgBuscar" location="right">
+		<a4j:commandButton id="cmdBuscar" action="#{FuncionesAction.buscar}" image="#{msg['buscar22.img']}"
+			oncomplete="checaResultado('#{FuncionesAction.resOperacion}', '', 'pnlMsgFunc', 'buscar', #{rich:element('msgErrorFunc')});" reRender="dtFunciones, pnlMsgFunc" styleClass="Titulo" style="cursor:pointer;">
+			<rich:toolTip id="ttBuscar" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscar"/>
+		 </a4j:commandButton>
+	</rich:toolBarGroup>
+
+	<rich:toolBarGroup id="tbgNuevo" location="right">
+		<a4j:commandButton id="cmdNuevo" action="#{FuncionesAction.nuevo}" image="#{msg['nuevo22.img']}"
+			oncomplete="Richfaces.showModalPanel('pnlEditarFunc');" reRender="pnlEditarFunc" styleClass="Titulo" style="cursor:pointer;">
+			<rich:toolTip id="ttNuevo" showDelay="300" value="#{msg['nuevo.e']}" for="cmdNuevo"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>
+	
+</ui:define>
+
+<ui:define name="body">
+	<a4j:keepAlive beanName="FuncionesAction" />
+		<a4j:loadStyle src="resource:///resources/css/adm/adm.css" />
+		<a4j:loadStyle src="resource:///resources/css/adm/admFunciones.css" />
+		<a4j:loadScript src="resource:///resources/scripts/adm/funcion.js"/>
+		
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText value="#{msg['funciones']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+	 		
+	 		<div class="div_pagina">
+		        <h:panelGrid id="pnlResponsabil" columns="2" style="margin-bottom:10px; margin-top:10px; display:block;" width="740">
+		        	<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+		 			<h:selectOneMenu value="#{FuncionesAction.campoBusqueda}" styleClass="Titulo" style="margin-left:5px;">
+						<f:selectItem itemLabel="#{msg['nombre']}" itemValue="nombre"/>
+						<f:selectItem itemLabel="#{msg['descripcion']}" itemValue="descripcion"/>
+					</h:selectOneMenu>
+			        
+			        <h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+					<h:inputText id="txtvalor" value="#{FuncionesAction.valTipoBusqueda}" maxlength="45" size="45"/>
+	  			</h:panelGrid>
+	           		
+		 		
+		 		<rich:dataTable id="dtFunciones" cellpadding="0" cellspacing="0"  rows="20" 
+	               border="0" var="fun" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+	               value="#{FuncionesAction.listFunciones}">
+	      
+	               <f:facet name="header">
+	                   <rich:columnGroup>
+	                       <rich:column colspan="10" styleClass="Titulo">
+	                       
+	                           <h:outputText value="#{msg['funciones']}"/>
+	                       </rich:column>
+	                       <rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['id']}" />
+	                       </rich:column>
+	                       <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['nombre']}" />
+	                       </rich:column>
+	                       <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['forma']}" />
+	                       </rich:column>
+	                       <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['aplicacion']}" />
+	                       </rich:column>
+	                           <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['parametro']}" />
+	                       </rich:column>
+	                       <rich:column colspan="4" style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['descripcion']}" />
+	                       </rich:column>
+	                   </rich:columnGroup>
+	               </f:facet>
+	               <rich:column width="30" style="text-align:center;" styleClass="Descripcion">
+	                   <h:outputText value="#{fun.id}"/>
+	               </rich:column>
+	               <rich:column width="180" styleClass="Descripcion">
+	               		<div style="overflow:hidden; text-overflow: ellipsis; white-space:nowrap; width: 180px;">
+	                   		<h:outputText value="#{fun.nombre}" />
+	                   </div>
+	               </rich:column>
+	               <rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+	                   	<h:outputText value="#{fun.forma}" />
+	               </rich:column>
+	               
+	                <rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+	                   	<h:outputText value="#{fun.aplicacion.aplicacion}" />
+	               </rich:column>
+	                
+	                 <rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+	                   	<h:outputText value="#{fun.parametros}"/>
+	               </rich:column>
+	          
+	                 <rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+	                   	<h:outputText value="#{fun.descripcion}" />
+	               </rich:column>
+	             <!--   <rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+	                   	<h:outputText value="#{not empty fun.aplicacion ? fun.aplicacion : msg['sinAplicacion']}" />
+	               </rich:column> -->
+	              
+	         
+	               
+	               <rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+	                   <a4j:commandButton id="cmdEditarFunc" image="#{msg['editar16.img']}" action="#{FuncionesAction.editar}" oncomplete="Richfaces.showModalPanel('pnlEditarFunc')" reRender="pnlEditarFunc">
+	                   		<rich:toolTip showDelay="300" value="#{msg['editar.e']}" for="cmdEditarFunc"/>	
+	                   		<f:setPropertyActionListener target="#{FuncionesAction.pojoFuncion}" value="#{fun}" />
+	                   </a4j:commandButton>
+	               </rich:column>
+	               <rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+	                   <a4j:commandButton id="cmdEliminarFunc" image="#{msg['eliminar16.img']}" oncomplete="Richfaces.showModalPanel('pnlEliminarFunc')">
+	                   		<rich:toolTip showDelay="300" value="#{msg['eliminar.e']}" for="cmdEliminarFunc"/>
+	                   		<f:setPropertyActionListener target="#{FuncionesAction.pojoFuncion}" value="#{fun}" />
+	                   </a4j:commandButton>
+	               </rich:column>
+	               <f:facet name="footer" >
+		               	<rich:datascroller align="center" for="dtFunciones" maxPages="10" ajaxSingle="true"
+		            		page="#{FuncionesAction.numPagina}" id="dScroll" styleClass="Titulo"/>
+	               </f:facet>
+	           </rich:dataTable>
+           </div>
+</ui:define>
+
+<ui:define name="modals">
+	 <!-- ####### MODAL NUEVO Y EDITAR  ######### -->
+	 <rich:modalPanel id="pnlEditarFunc" autosized="true">
+		<f:facet name="header">
+			<h:outputText id="lblTitulo" value="#{FuncionesAction.pojoFuncion.id != null ? FuncionesAction.nombre : msg['registroNuevo']}" styleClass="Titulo" style="margin-left:10px"/>
+		</f:facet>
+		
+		<f:facet name="controls">
+           <h:panelGroup>
+               <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor: pointer;" id="imgCerrarEditar"/>
+               	<rich:componentControl for="pnlEditarFunc" attachTo="imgCerrarEditar" operation="hide" event="onclick"/>
+            </h:panelGroup>
+        </f:facet>
+        
+         <a4j:form id="frmEditarFunc">
+         	<div style = "display: block; width: 440px; height: 22px;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">						
+ 					<h:panelGroup style="vertical-align: middle; position:relative;">
+          				<a4j:commandButton id="cmdSalvar" action="#{FuncionesAction.guardar}" image="#{msg['salvar22.img']}" style="vertical-align: middle; margin-right:5px; cursor: pointer;" reRender="lblTitulo, lblId, dtFunciones, pnlMsgFunc"
+          					oncomplete="checaResultado('#{FuncionesAction.resOperacion}', 'pnlEditarFunc', 'pnlMsgFunc', 'salvar', #{rich:element('msgErrorFunc')})"/>
+          				<h:outputLabel for="cmdSalvar" value="#{msg['salvar.e']}" style="vertical-align: middle; cursor:pointer; margin-right:5px;" styleClass="Titulo"/>
+         			</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			
+			<rich:messages id="msgFunciones" showDetail="false" showSummary="true" globalOnly="false" ajaxRendered="false">
+				<f:facet name="errorMarker">
+	            	<h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;"/>   
+	            </f:facet>
+			</rich:messages>
+			
+			<h:panelGroup id="lblId" styleClass="encabezado">
+            	<h:outputText value="#{FuncionesAction.pojoFuncion.id != null ? FuncionesAction.pojoFuncion.id : ' '} "/>
+		    	<h:outputText value="#{FuncionesAction.pojoFuncion.nombre}"/>
+	       	</h:panelGroup>
+	       	
+	       	<h:panelGrid id="pnlDatos2" columns="2" columnClasses="pgColIzq, pgColDer" cellpadding="3"  style = "display: block; position:relative; margin-top:20px;" width="100%">					
+
+           	<h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+          	<h:panelGroup>
+           		<h:inputText id="txtNombre" value="#{FuncionesAction.pojoFuncion.nombre}" required="#{!empty param[rich:clientId('cmdSalvar')]}" size="40">
+           			<f:validateLength minimum="1"/>
+           		</h:inputText>
+           		<rich:message for="txtNombre" showSummary="false" showDetail="false"  style="color:red">
+				      <f:facet name="errorMarker">
+				      		<h:panelGroup>
+						        <h:graphicImage value="#{msg['cancelar16.img']}"/>
+						        <h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+			        		</h:panelGroup>
+				      </f:facet>
+				</rich:message>
+			</h:panelGroup>
+          		<h:outputText value="#{msg['forma']}:" styleClass="Titulo"/>
+          		<h:panelGroup>
+           		<h:inputText id="txtForma" value="#{FuncionesAction.pojoFuncion.forma}" required="#{!empty param[rich:clientId('cmdSalvar')]}" size="40">
+           			<f:validateLength minimum="1"/>
+           		</h:inputText>
+           		<rich:message for="txtForma" showSummary="false" showDetail="false"  style="color:red">
+				      <f:facet name="errorMarker">
+				      		<h:panelGroup>
+						        <h:graphicImage value="#{msg['cancelar16.img']}"/>
+						        <h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+			        		</h:panelGroup>
+				      </f:facet>
+				</rich:message>
+			</h:panelGroup>
+				
+           		<h:outputText value="#{msg['aplicacion']}:" styleClass="Titulo"/>
+           		<h:panelGroup>
+           			<a4j:region>
+	           	
+	               <!--   <h:graphicImage style="margin-left:0px;  vertical-align:bottom; cursor:pointer;" value="#{msg['despliega.img']}" onclick="#{rich:component('suggApp')}.callSuggestion(true)"/>
+	                -->
+	           
+		           			           		
+		           		 <h:selectOneMenu value="#{FuncionesAction.suggAplicacion}"  styleClass="Titulo" style="width:130px;">
+							<f:selectItems value="#{FuncionesAction.listAplicaciones}"/>
+						</h:selectOneMenu>
+					      		
+	               <!--  <rich:suggestionbox height="150" width="225" usingSuggestObjects="true" 
+			            suggestionAction="#{FuncionesAction.listFunciones}" var="app" minChars="2"
+			            id="suggApp" for="txtApp" fetchValue="#{app.aplicacionId} - #{app.aplicacion}">
+			            <h:column>
+			                <h:outputText value="#{app.aplicacionId}"/>
+			            </h:column>
+			            <h:column>
+			                <h:outputText value="#{app.aplicacion}"/>
+			            </h:column>
+			        </rich:suggestionbox>-->
+			        <rich:message for="txtApp" showSummary="false" showDetail="false"  style="color:red">
+					      <f:facet name="errorMarker">
+					      		<h:panelGroup>	
+							        <h:graphicImage value="#{msg['cancelar16.img']}"/>
+							        <h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+				        		</h:panelGroup>
+					      </f:facet>
+					</rich:message>
+					</a4j:region>
+		        </h:panelGroup>
+				<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+				<rich:comboBox value="#{FuncionesAction.tipoFuncion}" suggestionValues="#{FuncionesAction.tiposFunciones}" width="226" enableManualInput="false"/>
+				<h:outputText value="#{msg['parametros']}:" styleClass="Titulo"/>
+				<h:inputText value="#{FuncionesAction.pojoFuncion.parametros}" size="65"/>
+				<h:outputText value="#{msg['descripcion']}:" styleClass="Titulo" style="display:block; position:relative; top:-25;"/>
+           		<h:panelGroup>
+	           		<h:inputTextarea id="txtDescripcion" value="#{FuncionesAction.pojoFuncion.descripcion}" required="true" rows="3" style="width:350px;">
+	           			<f:validateLength minimum="1"/>
+	           		</h:inputTextarea>
+	           		<rich:message for="txtDescripcion" showSummary="false" showDetail="false"  style="color:red">
+					      <f:facet name="errorMarker">
+					      		<h:panelGroup>
+							        <h:graphicImage value="#{msg['cancelar16.img']}"/>
+							        <h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}"/>
+				        		</h:panelGroup>
+					      </f:facet>
+					</rich:message>
+				</h:panelGroup>
+           </h:panelGrid>
+           <!-- utilizo esta lista de mensajes de errores para conocer si debo seguir en el proceso en js -->
+		  <rich:messages id="msgErrorFunc" showDetail="false" showSummary="false">
+		  </rich:messages>
+		</a4j:form>
+	</rich:modalPanel>
+	
+	<!-- Panel Eliminar -->		
+    <rich:modalPanel id="pnlEliminarFunc" autosized="true">
+	 <f:facet name="header">
+		<h:outputText value="#{msg['atencion']}" styleClass="Titulo"/>
+	 </f:facet>
+	 <f:facet name="controls">
+         <h:panelGroup>
+             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor:pointer;" id="imgCerrarEval"/>
+             	<rich:componentControl for="pnlEliminarFunc" attachTo="imgCerrarEval" operation="hide" event="onclick"/>
+          </h:panelGroup>
+       </f:facet>
+       <a4j:form id="frmEliminarFun">
+       		<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+       			<h:outputText value="#{msg['deseaEliminar']}" style="display:block;"  styleClass="Descripcion"/>
+	       		<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+		       		<a4j:commandButton id="cmdEliminar" action="#{FuncionesAction.eliminar}" value="#{msg['aceptar']}" reRender="dtFunciones, pnlMsgFunc"
+		       			oncomplete = "eliminar('#{FuncionesAction.resOperacion}', 'pnlEliminarFunc', 'pnlMsgFunc');"/>
+		       		<a4j:commandButton onclick="#{rich:component('pnlEliminarFunc')}.hide()" value="#{msg['cancelar']}" style="margin-left:10px;"/>
+	       		</h:panelGroup>
+       		</h:panelGrid>
+       </a4j:form>
+     </rich:modalPanel>		 
+	<!--  Fin Panel Eliminar-->
+	
+	<!-- #### Panel MsgLayout #### -->		
+	    <rich:modalPanel id="pnlMsgFunc" autosized="true" width="350">
+		 <f:facet name="header">
+		 	<h:panelGroup>
+				<h:outputText value="#{FuncionesAction.resOperacion == '' ? msg['informacion'] : msg['atencion']}" styleClass="Titulo" />
+			</h:panelGroup>
+		 </f:facet>
+		 <f:facet name="controls">
+	         <h:panelGroup>
+	             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="imgCerrarMsgFunc"/>
+	             	<rich:componentControl for="pnlMsgFunc" attachTo="imgCerrarMsgFunc" operation="hide" event="onclick"/>
+	          </h:panelGroup>
+	       </f:facet>
+	       <a4j:form id="frmMsgFunc" style="text-align:center;" >
+	       		<h:panelGroup style="display:block; width:300px; float:center;">
+		       		<h:outputText value="#{FuncionesAction.resOperacion != '' ? FuncionesAction.resOperacion : msg['mensaje.info.infoReg']}" style="display:block;" styleClass="Descripcion"/>
+	       		</h:panelGroup>
+	       		<a4j:commandButton value="#{msg['aceptar']}" onclick="#{rich:component('pnlMsgFunc')}.hide()" style="margin-top:10px; cursor:pointer;"/>
+	       </a4j:form>
+	     </rich:modalPanel>		 
+		<!--  Fin Panel Msg-->
+</ui:define>
+
+</ui:composition>

@@ -1,0 +1,292 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="menuFrag">
+    	<rich:toolbarGroup id="tbgBuscar" location="right">
+	    	<a4j:commandButton id="cmdBuscar" action="#{estructuraPagoAction.cargarEstructurasImportacion}" image="#{msg['buscar22.img']}"
+				oncomplete="buscar('#{estructuraPagoAction.resOperacion}','#{rich:clientId('pnlMsgGralEstructura')}');"
+				render="dtEstructuras	,pnlMsgGralEstructura"  styleClass="Titulo" style="cursor:pointer;">
+	 			<rich:tooltip id="ttBuscar" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscar"/> 
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+		
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" action="#{estructuraPagoAction.nuevoEstructura}" image="#{msg['nuevo22.img']}"
+				oncomplete="#{rich:component('pnlEditarEstructura')}.show()" 
+				render="pnlEditarEstructura" styleClass="Titulo" style="cursor:pointer;">
+				<rich:tooltip id="ttNuevo" showDelay="300" value="#{msg['nuevo.e']}" for="cmdNuevo"/>
+			</a4j:commandButton>
+		</rich:toolbarGroup>	
+    </ui:define>
+    
+    <ui:define name="body">
+		<h:outputStylesheet library="css/pagos" name="estructuraPago.css" />
+		<h:outputScript library="scripts/pagos" name="estructuraPago.js" />
+		
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText value="#{msg['estructuraImportacionPagos']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+
+		<div class="div_pagina">
+			<rich:dataTable id="dtEstructuras" cellpadding="0" cellspacing="0"
+				rows="12" border="0" var="var" rowClasses="Row1, Row2"
+				styleClass="tabla_pagina" value="#{estructuraPagoAction.listEstructuras}">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="text-align:center; width: 90px;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['cuentaBancaria']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 20px;" styleClass="Titulo">
+							<h:outputText value="#{msg['editar']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 20px;" styleClass="Titulo">
+							<h:outputText value="#{msg['eliminar']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column styleClass="Descripcion" style="text-align: center; padding-left: 5px; width: 90px;">
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align: left; padding-left: 5px;">
+					<h:outputText value="#{var.idCuenta.institucionBancaria.nombreCorto} #{var.idCuenta.numeroDeCuenta}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align: center; width: 20px;">
+					<a4j:commandButton id="cmdEditarEstructura" image="#{msg['editar16.img']}"
+						oncomplete="#{rich:component('pnlEditarEstructura')}.show()"
+						action="#{estructuraPagoAction.editarEstructura}" render="pnlEditarEstructura">
+						<rich:tooltip showDelay="300" value="#{msg['editar']}" for="cmdEditarEstructura" />
+						<f:setPropertyActionListener target="#{estructuraPagoAction.pojoEstructuraImportacion}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align: center; width: 20px;">
+					<a4j:commandButton id="cmdEliminarEstructura"
+						image="#{msg['eliminar16.img']}"
+						oncomplete="#{rich:component('pnlEliminarEstructura')}.show()"
+						render="pnlEliminarEstructura">
+						<rich:tooltip showDelay="300" value="#{msg['eliminar']}" for="cmdCancelar"/>
+						<f:setPropertyActionListener target="#{estructuraPagoAction.pojoEstructuraImportacion}" value="#{var}"/>
+					</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller align="center" for="dtEstructuras" maxPages="10"
+						ajaxSingle="true" page="#{estructuraPagoAction.numPagina}" id="dScroll"
+						styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<!-- #### MODAL MENSAJES GENERALES #### -->
+		<rich:popupPanel id="pnlMsgGralEstructura" autosized="true"
+			domElementAttachment="form">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText
+						value="#{estructuraPagoAction.resOperacion == '' ? msg['informacion'] : msg['atencion']}"
+						styleClass="Titulo" />
+				</h:panelGroup>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}"
+					style="cursor:pointer;"
+					onclick="#{rich:component('pnlMsgGralEstructura')}.hide()" />
+			</f:facet>
+			<h:panelGroup id="groupResOperacion"
+				style="display:block; width:300px; float:center;">
+				<h:outputText
+					value="#{estructuraPagoAction.resOperacion != '' ? estructuraPagoAction.resOperacion : msg['mensaje.info.infoReg']}"
+					style="display:block;" styleClass="Descripcion" />
+			</h:panelGroup>
+			<a4j:commandButton value="#{msg['aceptar']}"
+				onclick="#{rich:component('pnlMsgGralEstructura')}.hide()"
+				style="margin-top:10px; cursor:pointer;" />
+		</rich:popupPanel>
+		<!--  Fin Panel MsgGenerales-->
+		
+		<!-- #### MODAL PANEL CALCULO INTERES #### -->
+		<rich:popupPanel id="pnlEditarEstructura" autosized="true"
+			domElementAttachment="form">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText value="#{msg['estructuraImportacionPagos']}" styleClass="Titulo" />
+				</h:panelGroup>
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}"
+					style="cursor:pointer;"
+					onclick="#{rich:component('pnlEditarEstructura')}.hide()" />
+			</f:facet>
+
+			<rich:messages id="msgErrorEstructura" showDetail="false"
+				showSummary="true" globalOnly="false" title="Campos requeridos!">
+				<f:facet name="errorMarker">
+					<h:graphicImage value="#{msg['alert16.img']}"
+						style="margin-right:1em;" />
+				</f:facet>
+			</rich:messages>
+			
+			<a4j:commandButton id="cmdSalvarEstructura" image="#{msg['salvar22.img']}"  style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+				action="#{estructuraPagoAction.guardarEstructuraImportacion}"  
+				oncomplete="salvar('#{estructuraPagoAction.resOperacion}', '#{rich:clientId('pnlEditarEstructura')}', '#{rich:clientId('pnlMsgGralEstructura')}', #{rich:element('msgErrorEstructura')});" 
+				render="dtEstructuras,pnlMsgGralEstructura,msgErrorEstructura">
+				<rich:tooltip value="#{msg['salvar.e']}" styleClass="Descripcion"/>
+			</a4j:commandButton>
+
+			<a4j:commandButton id="cmdRegresarEstructura"
+				image="#{msg['regresar22.img']}"
+				style="float: right; margin-right: 5px; vertical-align: middle; cursor: pointer;"
+				oncomplete="#{rich:component('pnlEditarEstructura')}.hide()"
+				render="dtEstructuras">
+				<rich:tooltip value="#{msg['regresar.e']}" styleClass="Descripcion" />
+			</a4j:commandButton>
+
+			<fieldset style="margin-top: 40px; margin-bottom: 10px">
+				<legend>
+					<h:outputText value="#{msg['cuentaBancaria']}" styleClass="datos" />
+				</legend>
+				<h:panelGrid columns="3" width="100%" columnClasses="colTitulo,colTitulo,colTitulo" style="margin-top: 10px;">
+					<h:outputText value="#{msg['cuenta']}:" styleClass="Titulo" />
+					<rich:column colspan="2">
+						<h:selectOneMenu value="#{estructuraPagoAction.pojoEstructuraImportacion.idCuenta.id}" styleClas="Titulo" style ="width: 200px;">
+							<f:selectItems value="#{estructuraPagoAction.listTmpCuentasBanco}"/>					  					
+						</h:selectOneMenu>
+					</rich:column>
+					<h:outputText value=" " styleClass="Titulo" />
+				</h:panelGrid>
+			</fieldset>
+			
+			<fieldset style="margin-top: 10px; margin-bottom: 10px">
+				<legend>
+					<h:outputText value="#{msg['estructura']}" styleClass="datos" />
+				</legend>
+				<h:panelGrid columns="3" width="100%" columnClasses="colTitulo,colNada,colNada" style="margin-top: 10px;">			
+					<h:outputText value=" " styleClass="Titulo" />
+					<h:outputText value="#{msg['posicion']}" styleClass="Titulo" style="text-align: center;"/>
+					<h:outputText value="#{msg['longitud']}" styleClass="Titulo" style="text-align: center;"/>
+					 
+					<h:outputText value="#{msg['referencia']}:" styleClass="Titulo" style="text-align: right;"/>
+					<h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.posicionReferencia}" required="#{!empty param[rich:clientId('cmdSalvarEstructura')]}" requiredMessage="#{msg['referencia']} #{msg['posicion']} #{msg['mensaje.error.requerido']}"/>
+					<h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.longitudReferencia}"/>
+					<!-- <h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.longitudReferencia}" required="#{!empty param[rich:clientId('cmdSalvarEstructura')]}" requiredMessage="#{msg['referencia']} #{msg['longitud']} #{msg['mensaje.error.requerido']}"/> -->
+					
+					<h:outputText value="#{msg['monto']}:" styleClass="Titulo" style="text-align: right;"/>
+					<h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.posicionMonto}" required="#{!empty param[rich:clientId('cmdSalvarEstructura')]}" requiredMessage="#{msg['monto']} #{msg['posicion']} #{msg['mensaje.error.requerido']}"/>
+					<h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.longitudMonto}"/>
+					<!--  <h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.longitudMonto}" required="#{!empty param[rich:clientId('cmdSalvarEstructura')]}" requiredMessage="#{msg['monto']} #{msg['longitud']} #{msg['mensaje.error.requerido']}"/>   -->
+				
+					<h:outputText value="#{msg['fecha2']}:" styleClass="Titulo" style="text-align: right;"/>
+					<h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.posicionFecha}"/>
+					<h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.longitudFecha}"/>
+					<!-- 
+					<h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.posicionFecha}" required="#{!empty param[rich:clientId('cmdSalvarEstructura')]}" requiredMessage="#{msg['fecha2']} #{msg['posicion']} #{msg['mensaje.error.requerido']}"/>
+					<h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.longitudFecha}" required="#{!empty param[rich:clientId('cmdSalvarEstructura')]}" requiredMessage="#{msg['fecha2']} #{msg['longitud']} #{msg['mensaje.error.requerido']}"/>
+					-->
+					
+					<h:outputText value="#{msg['identificador']}:" styleClass="Titulo" />
+					<h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.posicionIdentificador}"/>		
+					<h:outputText maxlength="30" value=" "/>
+					<!-- 
+						<h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.posicionIdentificador}" required="#{!empty param[rich:clientId('cmdSalvarEstructura')]}" requiredMessage="#{msg['identificador']} #{msg['posicion']} #{msg['mensaje.error.requerido']}"/>		
+						<h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.longitudIdentificador}" required="#{!empty param[rich:clientId('cmdSalvarEstructura')]}" requiredMessage="#{msg['identificador']} #{msg['longitud']} #{msg['mensaje.error.requerido']}"/>
+					 -->
+				
+					<h:outputText value="#{msg['cabecera']}:" styleClass="Titulo" style="text-align: right;"/>
+					<h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.posicionCabecera}"/>
+					<h:outputText maxlength="30" value=" " />
+					<!-- <h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.posicionCabecera}" required="#{!empty param[rich:clientId('cmdSalvarEstructura')]}" requiredMessage="#{msg['identificador']} #{msg['mensaje.error.requerido']}"/> -->
+					
+					<h:outputText value="#{msg['resumen']}:" styleClass="Titulo" style="text-align: right;"/>
+					<h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.posicionResumen}"/>
+					<h:outputText maxlength="30" value=" " />
+					<!-- <h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.posicionResumen}" required="#{!empty param[rich:clientId('cmdSalvarEstructura')]}" requiredMessage="#{msg['identificador']} #{msg['mensaje.error.requerido']}"/> -->
+				
+					<h:outputText value="#{msg['valorIdentificador']}:" styleClass="Titulo" style="text-align: right;"/>
+					<h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.valorIdentificador}"/>
+					<h:outputText maxlength="30" value=" " />
+					<!-- <h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.valorIdentificador}" required="#{!empty param[rich:clientId('cmdSalvarEstructura')]}" requiredMessage="#{msg['identificador']} #{msg['mensaje.error.requerido']}"/> -->
+				
+					<h:outputText value="#{msg['formatoFecha2']}:" styleClass="Titulo" style="text-align: right;"/>
+					<h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.formatoFecha}"/>
+					<h:outputText maxlength="30" value=" " />
+					<!-- <h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.formatoFecha} required="#{!empty param[rich:clientId('cmdSalvarEstructura')]}" requiredMessage="#{msg['formatoFecha2']} #{msg['mensaje.error.requerido']}"/> -->
+					
+
+					<h:outputText value="#{msg['separador']}:" styleClass="Titulo" style="text-align: right;"/>
+					<h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.separador}"/>
+					<h:outputText maxlength="30" value=" "/>
+					<!-- <h:inputText maxlength="30" value="#{estructuraPagoAction.pojoEstructuraImportacion.separador}" required="#{!empty param[rich:clientId('cmdSalvarEstructura')]}" requiredMessage="#{msg['separador']} #{msg['mensaje.error.requerido']}"/> -->
+				</h:panelGrid>
+			</fieldset>
+
+		</rich:popupPanel>
+		<!-- #### FIN PANEL CALCULO INTERES #### -->
+		
+		<!-- #### MODAL MENSAJE CONFIRMACION CANCELAR DOCUMENTO#### -->		
+		<rich:popupPanel id="pnlEliminarEstructura" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText value="#{estructuraPagoAction.resOperacion == '' ? msg['confirmacion'] : msg['error']}" styleClass="Titulo" />
+				</h:panelGroup>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlEliminarEstructura')}.hide()"/>
+			</f:facet>
+			<h:panelGroup style="display:block; width:300px; float:center;">
+				<h:outputText value="#{estructuraPagoAction.resOperacion != '' ? estructuraPagoAction.resOperacion : msg['confirmarEliminar']}" style="display:block;" styleClass="Descripcion"/>
+			</h:panelGroup>
+			<h:panelGrid columns="2" width="100%" columnClasses="colDato, colDato">
+				<a4j:commandButton value="#{msg['si']}" 
+				oncomplete="eliminar2('#{rich:clientId('pnlEliminarEstructura')}', '#{rich:clientId('pnlMsgEliminar')}')"
+				action="#{estructuraPagoAction.eliminarEstructuraImportacion}" style="margin-top:10px; cursor:pointer; margin-left: 40%;"
+				render="dtEstructuras, pnlMsgEliminar"/>
+				<a4j:commandButton value="#{msg['no']}" onclick="#{rich:component('pnlEliminarEstructura')}.hide()" style="margin-top:10px; cursor:pointer; margin-left: 40%;"/>
+			</h:panelGrid>
+		</rich:popupPanel> 
+		<!--  FIN MODAL MENSAJE CONFIRMACION CANCELAR DOCUMENTO-->
+		
+		<!-- #### MODAL MENSAJES GENERALES #### -->
+		<rich:popupPanel id="pnlMsgEliminar" autosized="true"
+			domElementAttachment="form">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText
+						value="#{msg['informacion']}"
+						styleClass="Titulo" />
+				</h:panelGroup>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}"
+					style="cursor:pointer;"
+					onclick="#{rich:component('pnlMsgEliminar')}.hide()" />
+			</f:facet>
+			<h:panelGroup style="display:block; width:300px; float:center;">
+				<h:outputText
+					value="#{msg['mensaje.info.regEliminado']}"
+					style="display:block;" styleClass="Descripcion" />
+			</h:panelGroup>
+			<a4j:commandButton value="#{msg['aceptar']}"
+				onclick="#{rich:component('pnlMsgEliminar')}.hide()"
+				style="margin-top:10px; cursor:pointer;" />
+		</rich:popupPanel>
+		<!--  Fin Panel MsgGenerales-->
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,75 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlLocalidades" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+		<f:facet name="header">
+			<h:outputText style="margin-left:10px" value="#{msg['seleccionarLocalidad']}" styleClass="Titulo"/>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlLocalidades')}.hide()"/>			
+		</f:facet>
+
+		<div style = "display: block; width: 450px; height: 22px;">
+			<h:panelGrid columns="1" style="position:relative; float:right; margin-right:5px;">	
+				<h:panelGroup style="padding:0 2px 0 2px; float:right;">
+					<a4j:commandButton id="cmdBuscarLocalidades" image="#{msg['buscar22.img']}"	
+						action="#{almacenAction.buscarLocalidades}" render="dtLocalidades">
+						<rich:tooltip value="#{msg['buscar.e']}" styleClass="Descripcion" style="cursor:pointer;" />
+					</a4j:commandButton>
+				</h:panelGroup>
+			</h:panelGrid>
+		</div>
+		
+		<h:panelGroup styleClass="encabezado">
+			<h:outputText value="#{almacenAction.pojoMunicipio != null ? almacenAction.pojoMunicipio.nombre : ' '}" />
+		</h:panelGroup>
+		
+		<h:panelGroup style="display:block;">
+			<h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+			<h:inputText value="#{almacenAction.busquedaLocalidad}" style="margin-left:5px;"/>
+		</h:panelGroup>
+		
+		<rich:dataTable id="dtLocalidades" cellpadding="0" cellspacing="0"
+			rows="5" border="0" var="loc" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+			value="#{almacenAction.listLocalidades}">
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['id']}" />
+					</rich:column>
+
+					<rich:column colspan="2" style="text-align:center;" styleClass="Titulo">
+						<h:outputText value="#{msg['nombre']}" />
+					</rich:column>
+				</rich:columnGroup>
+			</f:facet>
+
+			<rich:column width="30" styleClass="Descripcion">
+				<h:outputText value="#{loc.id}" />
+			</rich:column>
+
+			<rich:column styleClass="Descripcion">
+				<h:outputText value="#{loc.nombre}" />
+			</rich:column>
+
+			<rich:column width="20" style="text-align:center;">
+				<a4j:commandButton image="#{msg['drag16.img']}" 
+					oncomplete="#{rich:component('pnlLocalidades')}.hide()" 
+					render="pnlPersonaGral, grpDomiDom" ajaxSingle="true">
+					<f:setPropertyActionListener target="#{almacenAction.pojoLocalidad}" value="#{loc}" />
+				</a4j:commandButton>
+			</rich:column>
+
+			<f:facet name="footer">
+				<rich:dataScroller id="dScrollLocalidades" align="center" for="dtLocalidades" maxPages="10"
+					ajaxSingle="true" page="#{almacenAction.numPaginaLocalidad}" styleClass="Titulo" />
+			</f:facet>
+		</rich:dataTable>
+	</rich:popupPanel>
+</ui:composition>

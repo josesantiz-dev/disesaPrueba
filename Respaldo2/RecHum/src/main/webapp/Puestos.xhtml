@@ -1,0 +1,118 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    <p/>
+    <ui:define name="title">
+		<h:outputText value="PUESTOS"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" action="#{puestoAction.buscar}" render="dtPuestos,pnlMsgGralPuestos"
+				oncomplete="buscar('#{puestoAction.resOperacion}','#{rich:clientId('pnlMsgGralPuestos')}');"
+				image="#{msg['buscar22.img']}" styleClass="Titulo" style="cursor:pointer;">
+				<rich:tooltip id="ttBuscar" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscar" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+		
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" action="#{puestoAction.nuevo}" render="pnlNuevoEditarPuesto"
+				oncomplete="#{rich:component('pnlNuevoEditarPuesto')}.show()"
+				image="#{msg['nuevo22.img']}" styleClass="Titulo" style="cursor:pointer;">
+				<rich:tooltip id="ttNuevo" showDelay="300" value="#{msg['nuevo.e']}" for="cmdNuevo" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css/acc" name="acc.css" />
+		<h:outputStylesheet library="css/acc" name="cuentasporcobrar.css" />
+		<h:outputScript library="scripts/puestos" name="puestos.js" />
+			
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText value="#{msg['puestos']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		<div class="div_pagina" style=" text-align: left; ">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="display:block; width: 720px; text-align: left;">
+				<h:outputText value="#{msg['descripcion']}:" styleClass="Titulo" />
+				<h:inputText id="txtvalor" maxlength="50" value="#{puestoAction.valorBusqueda}" size="30" />
+			</h:panelGrid>
+		</div>
+		
+		<div class="div_pagina" style="margin-top: 20px;">
+			
+			<rich:dataTable id="dtPuestos" cellpadding="0" cellspacing="0" rows="100"  border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+				var="var" value="#{puestoAction.listaPuestosGrid}" style="margin:10px auto 20px; width: 100%;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['descripcion']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['estatus']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="" />
+						</rich:column>
+						
+						<!--rich:column colspan="2" style="text-align:center; width:40px" styleClass="Titulo" /-->
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align: center; width: 60px;">
+					<h:outputText value="#{var.id}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding-left: 5px; width: 60px;">
+					<h:outputText value="#{var.descripcion}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding-left: 5px; width: 60px;">
+					<h:outputText value="#{var.estatus == 0 ? 'Activo' : 'Cancelado'}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEditar" image="#{msg['editar16.img']}" rendered="#{var.estatus == 0}"
+						oncomplete="#{rich:component('pnlNuevoEditarPuesto')}.show() " reRender="pnlNuevoEditarPuesto"
+						action="#{puestoAction.editar}" render="pnlNuevoEditarPuesto,dtPuestos"  >
+						<f:setPropertyActionListener target="#{puestoAction.pojoPuesto}" value="#{var}" />
+						<rich:tooltip showDelay="300" value="#{msg['editar']}" for="cmdEditar" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEliminar" image="#{msg['cancelar16.img']}" render="pnlMsgConfElimPuesto" rendered="#{var.estatus == 0}"
+						oncomplete="#{rich:component('pnlMsgConfElimPuesto')}.show()">
+						<rich:tooltip showDelay="300" value="#{msg['cancelar']}" for="cmdEliminar" />
+						<f:setPropertyActionListener target="#{puestoAction.pojoPuesto}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+ 				
+				<f:facet name="footer">
+					<rich:dataScroller align="center" for="dtPuestos" maxPages="10" ajaxSingle="true" page="#{puestoAction.numPagina}" id="dScroll" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">		
+		<ui:include src="/modal/puestos/pnlMsgGralPuestos.xhtml" />  
+		<ui:include src="/modal/puestos/pnlNuevoEditarPuesto.xhtml" /> 
+		<ui:include src="/modal/puestos/pnlMsgConfElimPuesto.xhtml" />  
+	</ui:define>
+	
+</ui:composition>

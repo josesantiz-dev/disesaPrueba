@@ -1,0 +1,39 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlConfirmaOrigen" modal="true" autosized="true" top="50"
+		onshow="document.getElementById('#{rich:clientId('cmdOrigenRequisicion')}').focus();"
+		header="#{msg['navegacion.label.atencion']}">
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlConfirmaOrigen')}.hide()" />
+		</f:facet>
+		
+		<h:panelGrid columns="1" cellpadding="0" cellspacing="0" style="text-align:center; margin:0 auto; min-width:450px;">
+			<h:outputText value="#{msg['indiqueOrigenCotizacion']}" styleClass="Titulo" />
+			
+			<h:panelGrid id="groupOrigenes" columns="2" cellpadding="0" cellspacing="0" style="text-align:center; margin:10px auto 0; width:420px;">
+				<a4j:commandButton id="cmdOrigenRequisicion" style="margin:5px auto 0; width:200px;"
+					value="#{msg['requisicion']}" 
+					onclick="#{rich:component('pnlConfirmaOrigen')}.hide()"
+					action="#{cotizacionAction.nuevaPorRequisicion}"
+					oncomplete="verEditar(#{cotizacionAction.operacion},'#{rich:clientId('pnlBusquedaRequisiciones')}', '#{rich:clientId('pnlMensajes')}');"
+					render="pnlMensajes,pnlBusquedaRequisiciones" limitRender="true" />
+				
+				<a4j:commandButton id="cmdOrigenExplosionInsumos" style="margin:5px auto 0; width:200px;" disabled="#{cotizacionAction.deshabilitarExplosionInsumos}"
+					value="#{msg['explosionInsumos']}" title="#{cotizacionAction.estatusExplosionInsumos}"
+					onclick="#{rich:component('pnlConfirmaOrigen')}.hide();"
+					action="#{cotizacionAction.nuevaPorExplosionInsumos}"
+					oncomplete="comprobarOperacion(#{cotizacionAction.operacion}, #{cotizacionAction.tipoMensaje}, '#{rich:clientId('pnlConfirmaSolicitud')}', '#{rich:clientId('pnlCotizacion')}', '#{rich:clientId('pnlMensajes')}'); #{rich:component('tabCotizacion')}.switchToItem('@first');" 
+					render="pnlMensajes,pnlConfirmaSolicitud,pnlCotizacion" limitRender="true" />
+			</h:panelGrid>
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

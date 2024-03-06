@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:jboss:module:1.1" name="net.giro.model.compras">
+  <resources>
+    <resource-root path="Model_Compras.jar" />
+  </resources>
+  <dependencies>
+    <module name="net.giro.comun"  export="true" />
+    <module name="org.hibernate"  export="true"/>
+  </dependencies>
+</module>

@@ -1,0 +1,182 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['formaPago']}" />
+	</ui:define>
+	
+	<ui:define name="menuFrag" >		
+		<rich:toolBarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" action="#{formasDePagoAction.buscar}" image="#{msgTyg['navegacion.boton.buscar.img']}"
+				oncomplete="buscar('#{formasDePagoAction.resOperacion}','pnlMsgFormasDePago');"
+				reRender="dtFormasDePago, pnlMsgFormasDePago" styleClass="Titulo" style="cursor:pointer;">
+				<rich:toolTip id="ttBuscar" showDelay="300" value="#{msgTyg['navegacion.boton.buscar.e']}" for="cmdBuscar"/>
+			</a4j:commandButton>
+		</rich:toolBarGroup>
+	
+		<rich:toolBarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" action="#{formasDePagoAction.nuevo}" image="#{msgTyg['navegacion.boton.nuevo.img']}"
+				oncomplete="Richfaces.showModalPanel('pnlEditarFormasDePago');" reRender="pnlEditarFormasDePago" styleClass="Titulo" style="cursor:pointer;">
+				<rich:toolTip id="ttNuevo" showDelay="300" value="#{msgTyg['navegacion.boton.nuevo.e']}" for="cmdNuevo"/>
+			</a4j:commandButton>
+		</rich:toolBarGroup>
+		
+	</ui:define>
+
+<ui:define name="body" >
+	<a4j:loadStyle src="resource:///resources/css/tyg/tyg.css" />
+	<a4j:loadStyle src="resource:///resources/css/tyg/FormasDePago.css" />
+	<a4j:loadScript src="resource:///resources/scripts/tyg/FormasDePago.js"/>
+	
+	<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+		<h:outputText value="#{msg['formaPago']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+	</div>
+	
+	<div class="div_pagina" >
+		<h:outputText value="#{msgTyg['navegacion.label.formaPago']}:" styleClass="Titulo" style="margin-left:15px;"/>
+		<h:inputText id="txtFormasDePago" value="#{formasDePagoAction.valorBusqueda}" size="36" style="margin-left:15px;"/>
+		
+		<rich:dataTable id="dtFormasDePago" cellpadding="0" cellspacing="0"  rows="20" 
+	               border="0" var="FormasDePago" rowClasses="Row1, Row2" styleClass="tabla_pagina" 
+	               value="#{formasDePagoAction.listValores}">
+	           		
+	               <f:facet name="header">
+	                   <rich:columnGroup>
+	                       <rich:column colspan="4" styleClass="Titulo">
+	                           <h:outputText value="#{msgTyg['navegacion.label.formasPagos']}"/>
+	                       </rich:column>
+	                       <rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msgTyg['navegacion.label.id']}" />
+	                       </rich:column>	                       
+	                       <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msgTyg['navegacion.label.formaPago']}" />
+	                       </rich:column>	                       
+	                       <rich:column colspan="2"/>
+	                   </rich:columnGroup>
+	               </f:facet>
+	               <rich:column width="30" style="text-align:center;" styleClass="Descripcion">
+	                   <h:outputText value="#{FormasDePago.id} "/>
+	               </rich:column>
+	               <rich:column styleClass="Descripcion">
+	                   		<h:outputText value="#{FormasDePago.formaPago} " />
+	               </rich:column>	               
+	               <rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+	                   <a4j:commandButton id="cmdEditar" image="#{msgTyg['navegacion.boton.editar.img']}" action="#{formasDePagoAction.editar}" oncomplete="Richfaces.showModalPanel('pnlEditarFormasDePago')" reRender="pnlEditarFormasDePago" >
+	                   		<f:setPropertyActionListener target="#{formasDePagoAction.pojoFormasDePago}" value="#{FormasDePago}"/>
+	                   		<rich:toolTip showDelay="300" value="#{msgTyg['navegacion.boton.editar.e']}" for="cmdEditar" styleClass="Titulo"/>	
+	                   </a4j:commandButton>
+	               </rich:column>
+	               <rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+	                   <a4j:commandButton image="#{msgTyg['navegacion.boton.eliminar.img']}" oncomplete="Richfaces.showModalPanel('pnlEliminarFormasDePago')">
+	                   		<f:setPropertyActionListener target="#{formasDePagoAction.pojoFormasDePago}" value="#{FormasDePago}" />
+	                   		<rich:toolTip showDelay="300" value="#{msgTyg['navegacion.boton.eliminar.e']}" styleClass="Titulo"/>
+	                   </a4j:commandButton>
+	               </rich:column>
+	               <f:facet name="footer" >
+		               	<rich:datascroller align="center" for="dtFormasDePago" maxPages="10" ajaxSingle="true" renderIfSinglePage="false"
+		            		page="#{formasDePagoAction.numPagina}" id="dScroll" styleClass="Titulo"/>
+	               </f:facet>	               
+	           </rich:dataTable>		               
+	</div>	
+</ui:define>
+
+<ui:define name="modals">
+	 <!-- ####### MODAL NUEVO Y EDITAR  ######### -->
+	 <rich:modalPanel id="pnlEditarFormasDePago" autosized="true">
+		<f:facet name="header">
+			<h:outputText id="lblTitulo" value="#{not empty formasDePagoAction.pojoFormasDePago.id ? formasDePagoAction.pojoFormasDePago.formaPago : msgTyg['navegacion.label.registroNuevo']}" styleClass="Titulo" style="margin-left:10px"/>
+		</f:facet>
+		<f:facet name="controls">
+           <h:panelGroup>
+               <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor: pointer;" id="imgCerrarEditar"/>
+               	<rich:componentControl for="pnlEditarFormasDePago" attachTo="imgCerrarEditar" operation="hide" event="onclick"/>
+            </h:panelGroup>
+         </f:facet>
+         <a4j:form id="frmEditarFormasDePago">
+         	<div style = "display: block; width: 440px; height: 22px;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">						
+ 					<h:panelGroup style="vertical-align: middle; position:relative;">
+          				<a4j:commandButton id="cmdSalvar" action="#{formasDePagoAction.guardar}" image="#{msgTyg['navegacion.boton.salvar.img']}" style="vertical-align: middle; margin-right:5px; cursor: pointer;" 
+					    oncomplete="guardar('#{formasDePagoAction.resOperacion}', 'pnlEditarFormasDePago', 'pnlMsgFormasDePago', #{rich:element('msgErrorFormasDePago')});"   reRender="dtFormasDePago, pnlMsgFormasDePago">
+					    <rich:toolTip id="ttSalvarr" showDelay="300" value="#{msgTyg['navegacion.boton.salvar.e']}" for="cmdSalvar"/>
+					    </a4j:commandButton>  
+         			</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			
+			<rich:messages id="msgErrorFormasDePago" showDetail="false" showSummary="true" title="Campos requeridos!">
+				<f:facet name="errorMarker">
+                    <h:graphicImage value="#{msgTyg['navegacion.boton.alert.img']}" style="margin-right:1em;"/>   
+                </f:facet>
+			</rich:messages>
+			
+			<h:panelGrid columns="2" columnClasses="colModalIzq, colModalCent">
+           		<h:outputText value="#{msgTyg['navegacion.label.id']}:" styleClass="Titulo"/>
+	           	<h:outputText id="lblId" value="#{formasDePagoAction.pojoFormasDePago.id}" styleClass="Descripcion"/>	           		
+           		<h:outputText value="#{msgTyg['navegacion.label.formaPago']}:" styleClass="Titulo"/>
+	           	<h:inputText id="txtFormaPago" value="#{formasDePagoAction.pojoFormasDePago.formaPago}" required="#{!empty param[rich:clientId('cmdSalvar')]}" requiredMessage="#{msgTyg['navegacion.label.formaPago']} #{msg['mensaje.error.requerido']}" size="40" />          		
+           </h:panelGrid>
+		   </a4j:form>
+     </rich:modalPanel>	
+		  
+		  
+		 <!-- Panel Eliminar -->		
+    <rich:modalPanel id="pnlEliminarFormasDePago" autosized="true">
+	 <f:facet name="header">
+		<h:outputText value="#{msgTyg['navegacion.label.atencion']}" styleClass="Titulo"/>
+	 </f:facet>
+	 <f:facet name="controls">
+         <h:panelGroup>
+             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor:pointer;" id="imgCerrarDelFormasDePago"/>
+             	<rich:componentControl for="pnlEliminarFormasDePago" attachTo="imgCerrarDelFormasDePago" operation="hide" event="onclick"/>
+          </h:panelGroup>
+       </f:facet>
+       <a4j:form id="frmEliminarFormasDePago">
+       		<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+       			<h:outputText value="#{msgTyg['navegacion.label.deseaEliminar']}" style="display:block;"  styleClass="Descripcion"/>
+	       		<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+		       		<a4j:commandButton id="cmdEliminar" action="#{formasDePagoAction.eliminar}" value="#{msgTyg['navegacion.label.aceptar']}" reRender="dtFormasDePago, pnlMsgFormasDePago"
+		       			oncomplete = "eliminar('#{formasDePagoAction.resOperacion}', 'pnlEliminarFormasDePago', 'pnlMsgFormasDePago');"/>
+		       		<a4j:commandButton onclick="#{rich:component('pnlEliminarFormasDePago')}.hide()" value="#{msgTyg['navegacion.label.cancelar']}" style="margin-left:10px;"/>
+	       		</h:panelGroup>
+       		</h:panelGrid>
+       </a4j:form>
+     </rich:modalPanel>		 
+	<!--  Fin Panel Eliminar-->
+	
+
+	
+	<!-- #### Panel MsgLayout #### -->		
+	    <rich:modalPanel id="pnlMsgFormasDePago" autosized="true" width="350">
+		 <f:facet name="header">
+		 	<h:panelGroup>
+				<h:outputText value="#{formasDePagoAction.resOperacion == '' ? msgTyg['navegacion.label.informacion'] : msgTyg['navegacion.label.atencion']}" styleClass="Titulo" />
+			</h:panelGroup>
+		 </f:facet>
+		 <f:facet name="controls">
+	         <h:panelGroup>
+	             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="imgCerrarMsgFormasDePago"/>
+	             	<rich:componentControl for="pnlMsgFormasDePago" attachTo="imgCerrarMsgFormasDePago" operation="hide" event="onclick"/>
+	          </h:panelGroup>
+	       </f:facet>
+	       <a4j:form id="frmMsgFormasDePago" style="text-align:center;" >
+	       		<h:panelGroup style="display:block; width:300px; float:center;">
+		       		<h:outputText value="#{formasDePagoAction.resOperacion == '' ? msg['mensaje.info.infoReg'] : formasDePagoAction.resOperacion}" style="display:block;" styleClass="Descripcion"/>
+	       		</h:panelGroup>
+	       		<a4j:commandButton value="#{msgTyg['navegacion.label.aceptar']}" onclick="#{rich:component('pnlMsgFormasDePago')}.hide()" style="margin-top:10px; cursor:pointer;"/>
+	       </a4j:form>
+	     </rich:modalPanel>		 
+		<!--  Fin Panel Msg-->
+		
+</ui:define>
+	
+    
+</ui:composition>

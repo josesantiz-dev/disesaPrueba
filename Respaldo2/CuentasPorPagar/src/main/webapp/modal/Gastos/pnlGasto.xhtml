@@ -1,0 +1,152 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlGasto" autosized="true" top="20">
+		<f:facet name="header">
+			<h:outputText value="#{gastosAction.titulo == '' ? msg['nuevo'] : ''} #{msg['navegacion.label.gto']} #{gastosAction.titulo}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" id="btnCerrarNuevoGto"/>
+				<rich:componentControl for="pnlGasto" attachTo="btnCerrarNuevoGto" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmNuevoEditarGasto">
+			<a4j:region id="loadNuevoEditarGto">
+				<h:panelGrid id="botonera" columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+					<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+						<rich:messages id="msgErrorGto" showDetail="false" showSummary="true" />
+					</h:panelGroup>
+					
+					<h:panelGroup id="grupoBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+						<h:panelGrid columns="2" style="float:right; margin-right:5px;" >
+							<h:panelGroup style="vertical-align: middle; position:relative;">
+								<a4j:commandButton id="cmdSalvar" style="float:right; margin-left: 5px; vertical-align:top; position:relative;"
+									image="#{msg['salvar22.img']}" title="#{masg['salvar.e']}"
+									onclick="#{rich:element('cmdSalvar')}.disabled = true;"  
+									action="#{gastosAction.guardar}"
+									oncomplete="salvar(#{gastosAction.band}, 'pnlGasto', 'pnlMensajes', #{rich:element('msgErrorGto')}); #{rich:element('cmdSalvar')}.disabled = false;"
+									reRender="dtResults,LabelClave,pnlMensajes,msgErrorGto" />
+							</h:panelGroup>
+							
+							<h:panelGroup style="vertical-align: middle; position:relative;">
+								<a4j:status for="loadNuevoEditarGto">
+									<f:facet name="start"><h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;"/></f:facet>
+									<f:facet name="stop"><h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: middle; position:relative;"/></f:facet>
+								</a4j:status>
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGroup>
+				</h:panelGrid>
+				
+				<rich:tabPanel switchType="client" style="min-height: 280px;">
+					<rich:tab label="#{msg['datosGenerales']}" styleClass="Titulo">
+						<div style="margin:0 auto; min-width:600px; width:100%; height:auto; min-height:200px;">
+							<h:panelGrid id="pnlDatos1" columns="2" cellpadding="3" columnClasses="Observacion" style = "display: block; width: 400px; position:relative; margin-right:25px; margin-bottom:10px;">						
+								<h:outputText value="*" />
+								<h:outputText value="#{ gastosAction.pojoValores.id != 0 ? msg['navegacion.label.noeditar'] : msg['navegacion.label.generaAuto']}" />
+								<h:outputText value="" />
+								<h:outputText value="#{ gastosAction.pojoValores.id != 0 ? msg['navegacion.label.vacio'] : msg['navegacion.label.cuandoSalve']}"  />						
+							</h:panelGrid>
+							
+							<h:panelGrid id="pnlDatos2" columns="2" cellpadding="3" columnClasses="tygImpColIzq, tygImpColDer" style="display: block; width: 550px; position:relative; margin-top:15px; margin-left:10px;" >					
+								<h:outputText value="#{msg['navegacion.label.id']}:" styleClass="Titulo"/>					
+								<h:outputText id="LabelClave" value="#{gastosAction.pojoValores.id}" styleClass="Titulo" />
+								
+								<h:outputText value="#{msg['navegacion.label.gto']}:" styleClass="Titulo" />
+								<h:panelGroup>
+									<h:inputText id="txtGasto" style="width:310px;"
+										value="#{gastosAction.descripcion}" 
+										required="#{!empty param[rich:clientId('cmdSalvar')]}"
+										requiredMessage="#{msg['navegacion.label.gto']} #{msg['mensaje.error.requerido']}">
+										<f:validateLength minimum="1"/>
+									</h:inputText>
+									
+									<rich:message for="txtGasto" showSummary="false" showDetail="false" style="color:red">
+										<f:facet name="errorMarker"><h:graphicImage  value="#{msg['cancelar16.img']}"/></f:facet>
+									</rich:message>
+								</h:panelGroup>
+								
+								<h:outputText value="#{msg['tipoEgreso']}:" styleClass="Titulo" />
+								<h:panelGroup>
+									<h:selectOneMenu id="txtTipoEgreso" styleClass="Titulo" style="width:316px;"
+										value="#{gastosAction.idTipoEgreso}" 
+										required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+										requiredMessage="#{msg['tipoEgreso']} #{msg['mensaje.error.requerido']}">
+										<f:selectItem itemLabel="#{msg['seleccione']}" />
+										<f:selectItems value="#{gastosAction.listTipoEgresosItems}" />
+									</h:selectOneMenu>
+									
+									<rich:message for="txtTipoEgreso" showSummary="false" showDetail="false" style="color:red">
+										<f:facet name="errorMarker"><h:graphicImage value="#{msg['cancelar16.img']}" /></f:facet>
+									</rich:message>
+								</h:panelGroup>
+							</h:panelGrid> 
+						</div>
+					</rich:tab>
+					
+					<rich:tab label="#{msg['impuestos']}" styleClass="Titulo">
+						<div style="margin:0 auto; min-width:600px; width:100%; height:auto; min-height:200px; text-align:center;">
+							<h:panelGrid columns="3" columnClasses="tygImpColIzq,tygImpColDer,tygImpColDer" style="margin:0 auto; width:100%; text-align:center;">
+								<h:outputText value="#{msg['impuesto']}:" styleClass="Titulo"/>	
+								<h:panelGroup>
+									<h:selectOneMenu id="txtImpuesto" styleClass="Titulo" style="width:316px;"
+										value="#{gastosAction.idImpuesto}" 
+										required="#{!empty param[rich:clientId('cmdAgregar')]}" 
+										requiredMessage="#{msg['impuesto']} #{msg['mensaje.error.requerido']}">
+										<f:selectItem itemLabel="#{msg['seleccione']}" />
+										<f:selectItems value="#{gastosAction.listImpuestosItems}" />
+									</h:selectOneMenu>
+									
+									<rich:message for="txtImpuesto" showSummary="false" showDetail="false" style="color:red">
+										<f:facet name="errorMarker"><h:graphicImage value="#{msg['cancelar16.img']}" /></f:facet>
+									</rich:message>	
+								</h:panelGroup>
+								
+								<a4j:commandButton id="cmdAgregar" style="cursor: pointer; margin:0; vertical-align: top;"
+									image="#{msg['agregar16.img']}" title="#{msg['agregar.e']}"
+									action="#{gastosAction.agregarImpuesto}" 
+									reRender="dtImpuestos,txtImpuesto" />
+							</h:panelGrid>
+											
+							<rich:dataTable id="dtImpuestos" value="#{gastosAction.listImpuestosGrid}" var="impuesto" 
+								style="max-width:400px; width:100%; margin:10px auto 0;" rows="6" cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2">
+								<f:facet name="header">
+									<rich:columnGroup>
+										<rich:column breakBefore="true" colspan="2" style="text-align:center;" styleClass="tygImpTit">
+											<h:outputText value="#{msg['impuesto']}" />
+										</rich:column>
+									</rich:columnGroup>
+								</f:facet>
+							  
+								<rich:column width="360" style="text-align:center;" styleClass="tygImpDesc">
+									<h:outputText value="#{impuesto.impuestoId.descripcion}"/>
+								</rich:column>
+	
+								<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;">
+									<a4j:commandButton image="#{msg['eliminar16.img']}" title="#{msg['eliminar.e']}"
+										action="#{gastosAction.eliminarImpuesto}" 
+										reRender="dtImpuestos">
+										<f:setPropertyActionListener target="#{gastosAction.pojoGastoImpuesto}" value="#{impuesto}" />
+									</a4j:commandButton>
+								</rich:column>
+	
+							   <f:facet name="footer" >
+									<rich:datascroller id="dScroll" page="#{gastosAction.numPaginaImpuesto}" for="dtImpuestos" 
+										align="center" maxPages="10" ajaxSingle="true" styleClass="tygImpTit"/>
+							   </f:facet>
+						   </rich:dataTable>
+						</div>
+					</rich:tab>
+				</rich:tabPanel>
+			 </a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

@@ -1,0 +1,69 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlDetalleAut" autosized="true"  >
+		<f:facet name="header">
+			<h:panelGroup>			       
+				<h:outputText style="margin-left:10px" value="#{msg['navegacion.label.autPendientes']}" styleClass="Titulo"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" styleClass="cursor:pointer;" id="btnCerrarDetalleAut"/>
+				<rich:componentControl for="pnlDetalleAut" attachTo="btnCerrarDetalleAut" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+				
+		<a4j:form id="frmautReembolsoAction">
+			<a4j:region id="loadautReembolsoAction">
+			<rich:dataTable id="dtResultsAutorizaciones" rows="10" cellpadding="0" cellspacing="0" width="780" border="0" var="reembolso" rowClasses="Row1, Row2" value="#{autReembolsoAction.listMovCtas}" >
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column colspan="6" styleClass="Titulo">
+							<h:outputText value="#{msg['navegacion.label.autPendientes']}"/>
+						</rich:column>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['navegacion.label.clave']}"/>
+						</rich:column>
+						<rich:column  style="text-align:center; margin-left:10px;" styleClass="Titulo">
+							<h:outputText value="#{msg['navegacion.label.monto']}" />
+						</rich:column>
+						<rich:column   style="text-align:center; margin-left:10px;" styleClass="Titulo">
+							<h:outputText value="#{msg['navegacion.label.beneficiario']}" />
+						</rich:column> 
+						<rich:column   style="text-align:center; margin-left:10px;"  styleClass="Titulo"/>	
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column width="100" style="text-align:center;" styleClass="Descripcion">
+					<h:outputText  value="#{reembolso.id}"/>
+				</rich:column>
+				<rich:column width="100" style="text-align:center;" styleClass="Descripcion">
+					<h:outputText  value="#{reembolso.monto}" >
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:outputText>
+				</rich:column>
+				<rich:column  width="320" style="text-align:center;"  styleClass="Descripcion">
+					<h:outputText value="#{reembolso.idBeneficiario.nombre} "/>
+				</rich:column>	
+				<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;" styleClass="Descripcion">
+					<a4j:commandButton image="#{msg['comprobado16.img']}" oncomplete="Richfaces.showModalPanel('pnlNuevoAut')" reRender="pnlNuevoAut">
+						<f:setPropertyActionListener target="#{autReembolsoAction.pojoMovCtas}" value="#{reembolso}"/>
+						<rich:toolTip showDelay="300">
+							<h:outputText value="#{msg['autorizar.e']}" styleClass="Descripcion"/>
+						</rich:toolTip>	
+					</a4j:commandButton>			              			         		
+				</rich:column>			                     
+				<f:facet name="footer" >
+					<rich:datascroller align="center" for="dtResultsAutorizaciones" maxPages="10" ajaxSingle="true" page="#{autReembolsoAction.numPaginaSec}" id="dScroll" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

@@ -1,0 +1,164 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="Salidas de Almacen"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+				action="#{salidasAlmacenAction.buscar}" 
+				oncomplete="buscar(#{salidasAlmacenAction.band},'#{rich:clientId('pnlMsgGralSalida')}');"
+				render="dtSalidas,pnlMsgGralSalida" 
+				limitRender="true" />
+		</rich:toolbarGroup>
+		
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['nuevo22.img']}" title="#{msg['nuevo.e']}"
+				action="#{salidasAlmacenAction.nuevoMovimiento}" 
+				oncomplete="#{rich:component('pnlNuevoEditarSalida')}.show()"
+				render="pnlNuevoEditarSalida" />
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css/acc" name="acc.css" />
+		<h:outputStylesheet library="css/movimientos" name="salidas.css" />
+		<h:outputScript library="scripts/movimientos" name="salidas.js" />
+		
+		<div class="div_titulo" style="margin:50px auto 0;">
+			<h:outputText value="#{msg['salidasAlmacen']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina" style="margin:0 auto; padding:0; text-align:left;">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin:10px auto 0; display:block;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+				<h:selectOneMenu value="#{salidasAlmacenAction.campoBusqueda}" style="width:210px;">
+					<f:selectItems value="#{salidasAlmacenAction.listaCampoBusqueda}" />
+				</h:selectOneMenu>
+	        
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText value="#{salidasAlmacenAction.valorBusqueda}" maxlength="50" style="width:216px;" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtSalidas" value="#{salidasAlmacenAction.listaMovimientosGrid}" var="var" 
+				cellpadding="0" cellspacing="0" rows="100" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" 
+				style="margin:10px auto 20px; width: 100%;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="text-align:center; width:90px;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:100px;" styleClass="Titulo">
+							<h:outputText value="#{msg['fecha']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['salida']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:150px;" styleClass="Titulo">
+							<h:outputText value="#{msg['almacen']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['obra']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:90px;" styleClass="Titulo">
+							<h:outputText value="#{msg['entrega']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:90px;" styleClass="Titulo">
+							<h:outputText value="#{msg['recibe']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:20px;" styleClass="Titulo" colspan="2" />
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align:center; padding:5px; width:90px;">
+					<h:outputText value="#{var.id}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center;  padding:5px; width:100px;">
+					<h:outputText value="#{var.fecha}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}">
+						<f:convertDateTime type="date" pattern="dd-MMM-yyyy"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding:5px; width:100px;">
+					<h:outputText value="Traspaso" rendered="#{var.tipoEntrada == 'TR'}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+					<h:outputText value="Devolucion" rendered="#{var.tipoEntrada == 'DE'}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+					<h:outputText value="Obra" rendered="#{var.tipoEntrada == 'SO'}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding:5px; width:150px;">
+					<h:outputText value="#{var.almacen.nombre}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding:5px;">
+					<h:outputText value="#{var.nombreObra}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding:5px; width:150px;">
+					<h:outputText value="#{var.entrega.nombre}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding:5px; width:150px;">
+					<h:outputText value="#{var.recibe.nombre}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+						
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="btnReporte"
+						image="#{msg['imprimir16.img']}" title="#{msg['imprimir.e']}"
+						action="#{salidasAlmacenAction.reporte}" 
+						oncomplete="reporte(#{salidasAlmacenAction.band}, '#{rich:clientId('pnlMsgGralSalida')}')"
+						render="pnlMsgGralSalida"
+						limitRender="true">
+						<f:setPropertyActionListener target="#{salidasAlmacenAction.pojoMovimiento}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding:5px; width:20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEditar" 
+						image="#{msg['consultarMovimiento22.img']}" title="#{msg['editar']}"
+						rendered="#{var.estatus == 0}"
+						action="#{salidasAlmacenAction.editar}" 
+						oncomplete="verSalida(#{salidasAlmacenAction.band}, #{salidasAlmacenAction.baseTraspaso}, '#{rich:clientId('pnlNuevoEditarSalida')}', '#{rich:clientId('pnlTraspaso')}', '#{rich:clientId('pnlMsgGralSalida')}')"
+						render="pnlNuevoEditarSalida,pnlTraspaso,grupoBotonesDerechos">
+						<!-- oncomplete="#{rich:component('pnlNuevoEditarSalida')}.show()" -->
+						<f:setPropertyActionListener target="#{salidasAlmacenAction.pojoMovimiento}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<f:facet name="footer">
+					<rich:dataScroller id="dScroll" page="#{salidasAlmacenAction.numPagina}" for="dtSalidas" 
+						maxPages="10" fastStep="10" ajaxSingle="true" align="center" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modal/movimientos_almacen/salidas/pnlNuevoEditarSalida.xhtml"/>
+		<ui:include src="/modal/movimientos_almacen/salidas/pnlTraspaso.xhtml" />
+		<ui:include src="/modal/movimientos_almacen/salidas/pnlBusquedaObras.xhtml"/>
+		<ui:include src="/modal/movimientos_almacen/salidas/pnlBusquedaProductos.xhtml"/>
+		<ui:include src="/modal/movimientos_almacen/salidas/pnlMsgGralSalida.xhtml" />
+		<ui:include src="/modal/movimientos_almacen/salidas/pnlMsgConfElimSalida.xhtml"/>
+		<ui:include src="/modal/movimientos_almacen/salidas/pnlAvisoCambioAlmacen.xhtml"/>
+		<ui:include src="/modal/movimientos_almacen/salidas/pnlAvisoCantidad.xhtml"/>
+		<ui:include src="/modal/movimientos_almacen/salidas/pnlAvisoCantidadCero.xhtml"/>
+	</ui:define>
+</ui:composition>

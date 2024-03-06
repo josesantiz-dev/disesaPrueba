@@ -1,0 +1,51 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlEliminar" autosized="true">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo"/>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage id="imgCerrarEliminarGto" style="cursor:pointer;"
+					value="#{msg['navegacion.panel.cerrar.img']}" />
+				<rich:componentControl for="pnlEliminar" attachTo="imgCerrarEliminarGto" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="frmEliminarGto">
+			<a4j:region id="loadEliminarGto">
+				<h:panelGroup style="margin:5px auto 10px; text-align:center; display:block;">
+					<h:outputText value="#{msg['navegacion.label.deseaEliminar']}" styleClass="Descripcion" />
+				</h:panelGroup>
+				
+				<h:panelGrid columns="2" width="300" style="text-align:center;">
+					<a4j:commandButton id="cmdEliminar" 
+						value="#{msg['navegacion.label.aceptar']}" 
+						onclick="#{rich:element('cmdEliminar')}.disabled = true;" 
+						action="#{gastosAction.eliminar}" 
+						oncomplete="eliminar(#{gastosAction.band}, 'pnlEliminar', 'pnlMensajes'); #{rich:element('cmdEliminar')}.disabled = false;" 
+						reRender="dtResults" />
+						
+					<a4j:commandButton style="margin-left:10px;"
+						value="#{msg['cancelar.e']}"
+						onclick="#{rich:component('pnlEliminar')}.hide()" />
+				</h:panelGrid>
+				
+				<h:panelGroup style="margin:5px auto 0; text-align:center; display:block;">
+					<a4j:status for="loadEliminarGto">
+						<f:facet name="start">
+							<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}"/>
+						</f:facet>
+					</a4j:status>
+				</h:panelGroup>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

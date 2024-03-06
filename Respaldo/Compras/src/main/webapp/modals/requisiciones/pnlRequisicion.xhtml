@@ -1,0 +1,220 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlRequisicion" modal="true" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+		<f:facet name="header">
+			<h:outputText value="#{reqAction.pojoRequisicion.id == null ? msg['nueva'] : ''} #{msg['requisicion']} #{reqAction.requisicionTitulo}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" onclick="#{rich:component('pnlRequisicion')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+		
+		<h:panelGrid columns="2" style="padding:0; width:100%; min-width:700px; min-height: 22px; text-align: left;">
+			<h:panelGroup id="grupoCotizacionBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+				<rich:messages id="msgErrores" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+				</rich:messages>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoCotizacionBotonesDerechos" style="width:100%; vertical-align:middle; position:relative; ">
+				<a4j:commandButton id="cmdSalvar" 
+					style="float:right; margin:0 5px auto; vertical-align:top; position:relative;"
+					image="#{msg['salvar22.img']}" 
+					rendered="#{reqAction.permiteEditar}"
+					action="#{reqAction.guardar}" 
+					oncomplete="salvarSinCerrar(#{reqAction.operacion}, '#{rich:clientId('pnlRequisicion')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrores')});"
+					render="dtResults,msgErrores,pnlMensajes" 
+					limitRender="true">
+					<rich:tooltip id="ttSalvar" showDelay="300" value="#{msg['salvar.e']}" for="cmdSalvar" />
+				</a4j:commandButton>
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<a4j:region>
+		<div style="display: block; margin: 10px auto; padding: 0; text-align: left; background-color: none;">
+			<h:panelGroup id="grupoDatosGenerales">
+				<fieldset style="margin-top: 10px; margin-bottom: 10px">
+					<legend><h:outputText value="#{msg['datosGenerales']}" styleClass="Titulo" /></legend>
+					
+					<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+						<h:outputText value="#{reqAction.esAdministrativo ? msg['obraAlt'] : msg['obra']}:" styleClass="Titulo" />
+						<h:panelGroup id="pnlObraDatos">
+							<h:panelGrid columns="2">
+								<h:outputText id="txtObra" value="#{reqAction.requisicionObra}" style="text-align:left; display:block;" />
+								<h:panelGroup>
+									<a4j:commandLink id="cmdSeleccionarObra" styleClass="linkColor" 
+										rendered="#{reqAction.permiteEditar}"
+										action="#{reqAction.nuevaBusquedaObras}" 
+										value="#{reqAction.pojoRequisicion.idObra == null ? msg['seleccionar'] : msg['cambiar'] }"
+										oncomplete="#{rich:component('pnlBusquedaObras')}.show()"
+										render="pnlBusquedaObras, pnlBusquedaObrasPrincipal, dtObras" />
+										
+									<h:inputText id="txtObraHidden" style="text-align:left; display:none;"
+										value="#{reqAction.requisicionObra}"
+										required="#{!empty param[rich:clientId('cmdSalvar')] || !empty param[rich:clientId('cmdSeleccionarProducto')]}" 
+										requiredMessage="#{msg['obra']} #{msg['mensaje.error.requerido']}" />
+								</h:panelGroup>
+							</h:panelGrid>
+						</h:panelGroup>
+							
+						<h:outputLabel value="#{msg['fecha']}:" styleClass="Titulo" />
+						<rich:calendar id="txtFecha" enableManualInput="true" datePattern="dd/MM/yyyy"
+							disabled="#{!reqAction.permiteEditar}"
+							value="#{reqAction.pojoRequisicion.fecha}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['fecha']} #{msg['mensaje.error.requerido']}">
+							<rich:placeholder value="dd/MM/yyyy" />
+						</rich:calendar>
+						
+						<h:outputText value="#{msg['comprador']}:" styleClass="Titulo" /> 
+						<h:selectOneMenu id="cmbCompradores" style="width: 316px"
+							disabled="#{!reqAction.permiteEditar}"
+							value="#{reqAction.valComprador}"
+							required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+							requiredMessage="#{msg['comprador']} #{msg['mensaje.error.requerido']}">
+				            <f:selectItem itemLabel="#{msg['seleccionar']}" />
+				            <f:selectItems value="#{reqAction.listEmpleadosItems}" />
+				        </h:selectOneMenu>
+						
+						<h:outputText value="#{msg['moneda']}:" styleClass="Titulo" /> 
+						<h:selectOneMenu id="cmbMonedas" style="width: 316px"
+							disabled="#{!reqAction.permiteEditar}"
+							value="#{reqAction.idMoneda}"
+							required="#{!empty param[rich:clientId('cmdSalvar')] || !empty param[rich:clientId('cmdSeleccionarProducto')]}" 
+							requiredMessage="#{msg['moneda']} #{msg['mensaje.error.requerido']}">
+				            <f:selectItem itemLabel="#{msg['seleccionar']}"  />
+				            <f:selectItems value="#{reqAction.listMonedasItems}" />
+				        </h:selectOneMenu>
+					</h:panelGrid>
+				</fieldset>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoDetalles">
+				<fieldset style="margin-top: 10px; margin-bottom: 10px">
+					<legend><h:outputText value="#{msg['detalles']}" styleClass="Titulo" /></legend>
+					
+						<h:panelGrid id="groupProductoDatos" columns="2" columnClasses="colTitulo, colDato"
+							rendered="#{reqAction.permiteEditar}">
+							<h:outputText value="#{msg['producto']}:" styleClass="Titulo" />
+							<h:panelGroup id="pnlProductoDatos">
+								<h:panelGrid columns="2">
+									<h:outputText id="txtProducto" value="#{reqAction.producto}" style="text-align:left; display:block;" />
+									<h:panelGroup>
+										<a4j:commandLink id="cmdSeleccionarProducto" styleClass="linkColor" 
+											rendered="#{reqAction.permiteEditar}"
+											value="#{reqAction.pojoProducto == null ? msg['seleccionar'] : msg['cambiar'] }"
+											action="#{reqAction.nuevaBusquedaProductos}" 
+											oncomplete="nuevaBusquedaProductos(#{reqAction.operacion}, '#{rich:clientId('pnlBusquedaProductos')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrores')});"
+											render="msgErrores, pnlBusquedaProductos, pnlMensajes, pnlBusquedaProductosPrincipal, dtProductos" 
+											limitRender="true" />
+											
+										<h:inputText id="txtProductoHidden" style="text-align:left;  display:none;"
+											value="#{reqAction.producto}"
+											required="#{!empty param[rich:clientId('cmdAgregarReqDetalle')]}" 
+											requiredMessage="#{msg['producto']} #{msg['mensaje.error.requerido']}" />
+									</h:panelGroup>
+								</h:panelGrid>
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['cantidad']}:" styleClass="Titulo" />
+							<h:panelGrid columns="2">
+								<h:inputText id="txtCantidadProducto" style="text-align:right;" 
+									disabled="#{!reqAction.permiteEditar}"
+									value="#{reqAction.cantidadProducto}"
+									required="#{!empty param[rich:clientId('cmdAgregarReqDetalle')]}" 
+									requiredMessage="#{msg['cantidad']} #{msg['mensaje.error.requerido']}"
+									onkeypress="return soloDecimales(event, this.value, 6, 2);">
+								</h:inputText>
+								
+								<a4j:commandButton id="cmdAgregarReqDetalle" style="margin-left: 5px; vertical-align: middle; position:relative;"
+									image="#{msg['agregar22.img']}" 
+									rendered="#{reqAction.permiteEditar}"
+									action="#{reqAction.agregarReqDetalle}"
+									execute="@region" 
+									oncomplete="agregarReqDetalle(#{reqAction.operacion}, '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrores')});"
+									render="dtReqDetalles,pnlMensajes,groupProductoDatos,msgErrores" 
+									limitRender="true">
+									<rich:tooltip id="ttAgregarReqDetalle" showDelay="300" value="#{msg['agregar.e']}" for="cmdAgregarReqDetalle" />
+								</a4j:commandButton>
+							</h:panelGrid>
+						</h:panelGrid>
+					
+					<rich:dataTable id="dtReqDetalles" value="#{reqAction.listReqDetalles}" var="var" rows="5"  
+						cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" style="margin:0 auto;">
+						<f:facet name="header">
+							<rich:columnGroup>
+								<rich:column colspan="6" style="text-align:center;" styleClass="Titulo">
+									<h:outputText value="#{msg['productos']}" />
+								</rich:column>
+								
+								<rich:column breakRowBefore="true" style="text-align:center; width:80px" styleClass="Titulo">
+									<h:outputText value="#{msg['clave']}" /> 
+								</rich:column>
+								
+								<rich:column style="text-align:center;" styleClass="Titulo">
+									<h:outputText value="#{msg['descripcion']}" /> 
+								</rich:column>
+								
+								<rich:column style="text-align:center; min-width:80px; max-width:150px;" styleClass="Titulo">
+									<h:outputText value="#{msg['um']}" title="#{msg['unidadMedida']}" />
+								</rich:column>
+					
+								<rich:column style="text-align:center; min-width:80px; max-width:150px;" styleClass="Titulo">
+									<h:outputText value="#{msg['familia']}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:80px" styleClass="Titulo">
+									<h:outputText value="#{msg['cantidad']}" title="#{msg['cantidadSolicitada']}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width: 20px;" styleClass="Titulo" />
+							</rich:columnGroup>
+						</f:facet>
+		
+						<rich:column style="text-align: center; width: 80px; font-weight: bold;">
+							<h:outputText value="#{var.productoClave}" styleClass="Descripcion" title="var.cotizacionFolio" />
+						</rich:column>
+		
+						<rich:column style="text-align: left; ">
+							<h:outputText value="#{var.productoNombre}" styleClass="Descripcion" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; padding-left: 5px; min-width:80px; max-width:150px;">
+							<h:outputText value="#{var.productoUnidad}" styleClass="Descripcion" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; padding-left: 5px; min-width:80px; max-width:150px;">
+							<h:outputText value="#{var.familia}" styleClass="Descripcion" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; padding-left: 5px; width:80px">
+							<h:outputText value="#{var.cantidad}" styleClass="Descripcion" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+							<a4j:commandButton id="cmdEliminarDetalle" image="#{msg['eliminar16.img']}"
+								rendered="#{reqAction.permiteEditar}"
+								oncomplete="#{rich:component('pnlEliminarDetalle')}.show()" 
+								render="pnlEliminarDetalle" limitRender="true">
+								<rich:tooltip showDelay="300" value="#{msg['eliminar']}" for="cmdEliminarDetalle" />
+								<f:setPropertyActionListener value="#{var}" target="#{reqAction.pojoReqDetalleBorrar}" for="cmdEliminarDetalle" />
+							</a4j:commandButton>
+						</rich:column>
+		
+						<f:facet name="footer">
+							<rich:dataScroller id="dScrollProductos" page="#{reqAction.numPaginaProductos}" for="dtReqDetalles" 
+								align="center" maxPages="10" ajaxSingle="true" styleClass="Titulo" />
+						</f:facet>
+					</rich:dataTable>
+				</fieldset>
+			</h:panelGroup>
+		</div>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

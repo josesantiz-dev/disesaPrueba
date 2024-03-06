@@ -1,0 +1,126 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['cobranza']} - #{msg['modulo']}"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" image="#{msg['buscar22.img']}" styleClass="Titulo" style="cursor:pointer;"
+				action="#{cobranzaAction.buscar}" 
+				oncomplete="buscar(#{cobranzaAction.operacion},'#{rich:clientId('pnlMensajes')}');"
+				render="dtResults, pnlMensajes"
+				limitRender="true">
+				<rich:tooltip showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscar" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="obras.css" />
+		<h:outputScript library="scripts" name="obras_almacenes.js" />
+			
+		<div class="div_titulo" style="margin: 50px auto 0;">
+			<h:outputText value="#{msg['cobranza']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina" style="margin: 0 auto;">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin: 10px; display:block; width: 720px;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo" />
+				<h:selectOneMenu id="cmbTipoBusqueda" style="width: 216px"
+					value="#{cobranzaAction.busquedaCampo}">
+		            <f:selectItems value="#{cobranzaAction.busquedaOpciones}" />
+		        </h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText id="txtvalor" maxlength="50" style="width: 210px" 
+					value="#{cobranzaAction.busquedaValor}" />
+			</h:panelGrid>
+			
+			<rich:dataTable id="dtResults" value="#{cobranzaAction.listObras}" var="var" style="margin:0 auto 20px;" 
+				cellpadding="0" cellspacing="0" rows="100" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column colspan="6" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['obras']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:80px" styleClass="Titulo" breakRowBefore="true">
+							<h:outputText value="#{msg['id']}" /> 
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['obra']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['cliente']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['contrato']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:120px" styleClass="Titulo">
+							<h:outputText value="#{msg['tipo']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 20px;" styleClass="Titulo" />
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align: center; width: 80px;">
+					<h:outputText value="#{var.id}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left: 5px;"> 
+					<h:outputText value="#{var.nombre}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.nombreCliente}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.nombreContrato}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:120px; padding-left: 5px;">
+					<h:outputText rendered="#{var.tipoObra == 1}" styleClass="Descripcion" value="Obra" />
+					<h:outputText rendered="#{var.tipoObra == 2}" styleClass="Descripcion" value="Proyecto" />
+					<h:outputText rendered="#{var.tipoObra == 3}" styleClass="Descripcion" value="Orden Trabajo" />
+				</rich:column> 
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdVer" image="#{msg['detalles16.img']}" 
+						action="#{cobranzaAction.ver}" 
+						oncomplete="#{rich:component('pnlObrasCobranza')}.show();"
+						render="pnlObrasCobranza"
+						limitRender="true">
+						<f:setPropertyActionListener value="#{var}" target="#{cobranzaAction.pojoObra}" for="cmdVer" />
+						<rich:tooltip showDelay="300" value="#{msg['detalles']}" for="cmdVer" />
+					</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller page="#{cobranzaAction.busquedaPaginas}" for="dtResults" 
+						align="center" maxPages="10" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+		
+		<a4j:log rendered="#{cobranzaAction.debugging}" popup="false" level="ALL" style="margin:0 auto; min-width:800px; max-height:500px;" />
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modals/obras/obraCobranza/pnlMensajes.xhtml" />
+		<ui:include src="/modals/obras/obraCobranza/pnlObrasCobranza.xhtml" />
+	</ui:define>
+</ui:composition>

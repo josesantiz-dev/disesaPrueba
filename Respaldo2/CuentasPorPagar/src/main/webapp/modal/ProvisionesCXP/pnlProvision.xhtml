@@ -1,0 +1,324 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlProvision" autosized="true" top="20">
+		<f:facet name="header">
+			<h:outputText styleClass="Titulo" value="#{provAction.titulo}" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage id="btnCerrarNuevoGasto" style="cursor:pointer;" 
+					value="#{msg['navegacion.gral.cerrar.img']}" />
+				<rich:componentControl event="onclick" 
+					for="pnlProvision" 
+					attachTo="btnCerrarNuevoGasto" 
+					operation="hide" />
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmNuevoEditarGasto">
+			<a4j:region id="loadNuevoEditarGasto">
+				<h:panelGrid id="botonera" columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+					<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+						<rich:messages id="validadorProvisiones" showDetail="true" showSummary="false" />
+					</h:panelGroup>
+					
+					<h:panelGroup id="grupoBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+						<h:panelGrid columns="2" style="float:right; vertical-align:top; position:relative; min-height:42px;">
+							<a4j:status for="loadNuevoEditarGasto">
+								<f:facet name="start"><h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;" /></f:facet>
+								<f:facet name="stop" ><h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: middle; position:relative;" /></f:facet>
+							</a4j:status>
+
+							<a4j:commandButton id="cmdSalvar" style="float:right; margin-left: 5px; vertical-align:top; position:relative;" 
+								image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+								onclick="#{rich:element('cmdSalvar')}.disabled = true;" 
+								action="#{provAction.guardar}"
+								oncomplete="#{rich:element('cmdSalvar')}.disabled = false; guardar(#{provAction.encontroMismoGrupo}, 'pnlProvision', 'pnlMensajes', #{rich:element('validadorProvisiones')})"
+								reRender="pnlDatos2,pnlMensajes,pnlCancelarCheque,LabelClave,dtResultsGastos,validadorProvisiones"
+								limitToList="true" />
+						</h:panelGrid>
+					</h:panelGroup>
+				</h:panelGrid>
+
+				<rich:tabPanel switchType="client" style="min-height: 280px;">
+					<rich:tab label="#{msg['datosGenerales']}" styleClass="Titulo">
+						<h:panelGrid  columns="2" cellpadding="3" columnClasses="Observacion" style = "display: block; width: 700px; position:relative;margin-left:10px;">
+							<h:outputText value="*" />
+							<h:outputText value="#{ provAction.pagosGastosId != 0 ? msg['navegacion.label.noeditar'] : msg['navegacion.label.generaAuto']}" />
+							<h:outputText value="" />
+							<h:outputText value="#{ provAction.pagosGastosId != 0 ? msg['navegacion.label.vacio'] : msg['navegacion.label.cuandoSalve']}" />
+						</h:panelGrid>
+						
+						<h:panelGrid id="pnlDatos2" columns="2" cellpadding="3" columnClasses="tygCompGtosColIzq, tygCompGtosColDer" 
+							disabled="#{provAction.bloqueado}" style="display:block; position:relative; margin:10px auto 0;">
+							<h:outputText value="#{msg['navegacion.label.clave']}:" styleClass="Titulo"/>
+							<h:outputText id="LabelClave" value="#{provAction.pagosGastosId}" styleClass="Titulo" />
+							
+							<h:outputText value="#{msg['navegacion.label.fecha']}:" styleClass="Titulo"/>
+							<h:panelGroup>
+								<rich:calendar id="cmbFecha" inputSize="18" zindex="100" showWeekDaysBar="false" showWeeksBar="false" 
+									datePattern="dd/MMM/yyyy"
+									value="#{provAction.fecha}"  
+									required="#{!empty param[rich:clientId('cmdSalvar')]}"
+						           	requiredMessage="#{msg['navegacion.label.fecha']} #{msg['mensaje.error.requerido']}" />
+								
+								<rich:message for="cmbFecha" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage style="margin:0 5px;" 
+											value="#{msg['cancelar16.img']}" 
+											title="#{msg['mensaje.error.requerido']}" />
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+					
+							<h:outputText value="#{msg['sucursal']}:" styleClass="Titulo"/>
+							<h:panelGroup>
+								<h:selectOneMenu id="txtSucursal" styleClass="Titulo" style="width:216px;"
+									value="#{provAction.sucursal}" 
+				                   	required="#{!empty param[rich:clientId('cmdSalvar')] || !empty param[rich:clientId('cmdAgregar')]}" 
+						           	requiredMessage="#{msg['sucursal']} #{msg['mensaje.error.requerido']}">
+									<f:selectItem itemLabel="#{msg['seleccione']}" />
+									<f:selectItems value="#{provAction.listSucursalesItems}" />
+								</h:selectOneMenu>
+								
+								<rich:message for="txtSucursal" showSummary="false" showDetail="false" style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage style="margin:0 5px;" 
+											value="#{msg['cancelar16.img']}" 
+											title="#{msg['mensaje.validacion.selectItem']}" />
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+		
+							<h:outputText value="#{msg['operacion']}:" styleClass="Titulo"/>
+							<h:panelGroup>
+								<h:selectOneMenu id="optionOpera" styleClass="Titulo" style="width:216px;"
+									value="#{provAction.operacion}"> 
+									<f:selectItem itemLabel="#{msg['seleccione']}" />
+									<f:selectItems value="#{provAction.listFormasPagoItems}" />
+								</h:selectOneMenu>
+								
+								<rich:message for="optionOpera" showSummary="false" showDetail="false" style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage style="margin:0 5px;" 
+											value="#{msg['cancelar16.img']}" 
+											title="#{msg['mensaje.error.requerido']}" />
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['navegacion.label.cuenta']}:" styleClass="Titulo"/>
+							<h:panelGroup>
+								<h:selectOneMenu id="txtCta" styleClass="Titulo" style="width:316px;"
+									value="#{provAction.cuenta}"> 
+									<f:selectItem itemLabel="#{msg['seleccione']}" />
+									<f:selectItems value="#{provAction.listCuentasItems}" />
+								</h:selectOneMenu>
+								
+								<rich:message for="txtCta" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage style="margin:0 5px;" 
+											value="#{msg['cancelar16.img']}" 
+											title="#{msg['mensaje.error.requerido']}" />
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['referencia']}:" styleClass="Titulo" rendered="#{provAction.reqReferencia}" />
+							<h:panelGroup rendered="#{provAction.reqReferencia}">
+								<h:inputText id="txtReferenciaOperacion" maxlength="10" size="36"
+									value="#{provAction.referenciaOperacion}"> 
+									<f:validator validatorId="SoloNum" />
+								</h:inputText>
+								
+								<rich:message for="txtReferenciaOperacion" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage style="margin:0 5px;" 
+											value="#{msg['cancelar16.img']}" 
+											title="#{msg['mensaje.error.requerido']}. #{msg['mensajes.error.reqSoloNum']}" />
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+							<h:panelGroup >
+								<h:selectOneRadio value="#{provAction.tipoPersona}" styleClass="Titulo">
+									<f:selectItem itemValue="P" itemLabel="#{msg['persona']}" />
+									<f:selectItem itemValue="N" itemLabel="#{msg['negocio.e']}" />
+									<a4j:support event="onchange" 
+										action="#{provAction.cambioBeneficiario}" 
+										reRender="txtBene,suggBenes" />
+								</h:selectOneRadio>
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['navegacion.label.beneficiario']}:" styleClass="Titulo" />
+							<h:panelGroup>
+								<h:inputText id="txtBene" maxlength="100" size="35" title="Presione F9"
+									value="#{provAction.beneficiario}" 
+									onkeypress="keyF9(event, #{rich:component('suggBenes')})" 
+									required="#{!empty param[rich:clientId('cmdSalvar')] || !empty param[rich:clientId('cmdAgregar')]}"
+						           	requiredMessage="#{msg['navegacion.label.beneficiario']} #{msg['mensaje.error.requerido']}">
+									<f:validator validatorId="valClaveValor"/>
+									<a4j:support event="onblur" 
+										action="#{provAction.cambioTerceros}" 
+										oncomplete="msgRevisando(#{rich:element('validadorProvisiones')},'','pnlMensajes', null, 'aceptar','#{provAction.resOperacion}')" 
+										reRender="pnlMensajes" />
+								</h:inputText>
+								
+								<h:graphicImage style="margin-left:0px; vertical-align:bottom; cursor:pointer;" value="#{msg['despliega.img']}" onclick="#{rich:component('suggBenes')}.callSuggestion(true)" alt=""/>
+								
+								<rich:suggestionbox id="suggBenes" for="txtBene" height="100" width="230" eventsQueue="suggQRegGto"
+									suggestionAction="#{provAction.autoacompletaBeneficiario}" var="ben" minChars="2"
+									fetchValue="#{ben.id} - #{ben.nombre}">
+									<h:column><h:outputText value="#{ben.id}" /></h:column>
+									<h:column><h:outputText value="#{ben.nombre}" /></h:column>
+								</rich:suggestionbox>
+								
+								<rich:message for="txtBene" showSummary="false" showDetail="false" style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage style="margin:0 5px;" 
+											value="#{msg['cancelar16.img']}" 
+											title="#{msg['mensaje.error.requerido']}. #{msg['mensaje.validacion.selectItem']}" />
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>	
+		
+							<h:outputText value="#{msg['navegacion.label.concepto']}:" style="position:relative;top:-22px" styleClass="Titulo"/>
+							<h:panelGroup>
+								<h:inputTextarea id="txtConcepto" style="width:470px; height:60px; resize:none;" 
+									value="#{provAction.concepto}" /> 
+								<rich:message for="txtConcepto" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage style="margin:0 5px;" 
+											value="#{msg['cancelar16.img']}" 
+											title="#{msg['mensaje.error.requerido']}. #{msg['mensaje.validacion.selectItem']}" />
+								  	</f:facet>
+								</rich:message>
+							</h:panelGroup>
+						</h:panelGrid>
+					</rich:tab>
+					
+					<rich:tab label="#{msg['navegacion.label.comprobado']}" styleClass="Titulo">
+						<div style="display:block; width:700px; height:22px; margin-bottom:10px;">
+							<h:panelGroup style="vertical-align:middle; position:relative; float:right; margin-right:5px;">
+								<a4j:commandButton id="cmdAgregar" style="vertical-align: middle; position:relative; cursor: pointer;"
+									image="#{msg['agregar16.img']}" title="#{msg['agregar.e']}"
+									action="#{provAction.agregar}" 
+									oncomplete="msgRevisando(#{rich:element('validadorProvisiones')},'pnlMensajes','pnlFactura',#{provAction.facturaConLlave},'agregar','#{provAction.resOperacion}')" 
+									reRender="pnlFactura,pnlMensajes,validadorProvisiones"
+									limitToList="true" />
+							</h:panelGroup>
+						</div>
+						
+						<rich:dataTable id="dtResultsComprobado" value="#{provAction.listFacturaConImpuestos}" var="comprobado" 
+							rows="20" cellpadding="0" cellspacing="0" width="780" border="0" rowClasses="Row1, Row2">
+							<f:facet name="header">
+								<rich:columnGroup>
+									<rich:column colspan="8" styleClass="tygCompGtosTit">
+										<h:outputText value="#{msg['navegacion.label.comprobado']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="tygCompGtosTit" breakBefore="true">
+										<h:outputText value="#{msg['navegacion.label.concepto']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+										<h:outputText value="#{msg['descripcion']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+										<h:outputText value="#{msg['proveedor']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+										<h:outputText value="#{msg['folioDocumento']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+										<h:outputText value="#{msg['ordenCompra']}" />
+									</rich:column> 
+									
+									<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+										<h:outputText value="#{msg['navegacion.label.monto']}" />
+									</rich:column>
+		
+									<rich:column style="text-align:center;" styleClass="tygCompGtosTit" colspan="2" />	
+								</rich:columnGroup>
+							</f:facet>
+							
+							<rich:column style="text-align:left; min-width:90px; max-width:100px; width:auto;" styleClass="tygCompGtosDesc">
+								<h:outputText value="#{comprobado.pojoFactura.idConcepto.id}" />
+							</rich:column>
+							
+							<rich:column style="text-align:left; min-width:100px; max-width:300px; width:auto;" styleClass="tygCompGtosDesc">
+								<h:outputText value="#{comprobado.pojoFactura.idConcepto.descripcion}" />
+							</rich:column>
+							
+							<rich:column style="text-align:left; min-width:100px; max-width:300px; width:auto;" styleClass="tygCompGtosDesc">
+								<h:outputText value="#{comprobado.pojoFactura.idProveedor.nombre}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; min-width:90px; max-width:120px; width:auto;" styleClass="tygCompGtosDesc">
+								<h:outputText value="#{comprobado.pojoFactura.referencia}"/>
+							</rich:column>
+							
+							<rich:column style="text-align:center; min-width:90px; max-width:120px; width:auto;" styleClass="tygCompGtosDesc">
+								<h:outputText value="#{comprobado.pojoFactura.idOrdenCompra.folio}" />
+							</rich:column>
+							
+							<rich:column style="text-align:right; min-width:90px; max-width:120px; width:auto;" styleClass="tygCompGtosDesc">
+								<h:outputText value="#{(comprobado.pojoFactura.subtotal + comprobado.pojoFactura.totalImpuestos)- comprobado.pojoFactura.totalRetenciones}">
+									<f:convertNumber pattern="$###,###.00" /> 
+								</h:outputText>
+							</rich:column>
+							
+							<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;" styleClass="tygCompGtosDesc">
+								<a4j:commandButton style="cursor: pointer;"
+									image="#{msg['editar16.img']}" title="#{msg['editar.e']}"
+									action="#{provAction.evaluaEditar}" 
+									oncomplete="editar(#{provAction.encontroMismoGrupo},'pnlFactura','pnlMensajes')"
+									reRender="pnlMensajes,pnlFactura,txtSubtotal,txtTotalImpto,txtTotalRet,txtTotal,dtDesgloseImpuestos"> 
+									<f:setPropertyActionListener target="#{provAction.reg}" value="#{comprobado}" />
+								</a4j:commandButton>
+							</rich:column>
+							
+							<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;" styleClass="tygCompGtosDesc">
+								<a4j:commandButton style="cursor: pointer;"
+									image="#{msg['eliminar16.img']}" title="#{msg['eliminar.e']}"
+									action="#{provAction.evaluaEliminar}"
+									oncomplete="msgRevisando(#{rich:element('validadorProvisiones')},'pnlMensajes','pnlEliminar',#{provAction.facturaConLlave},'eliminar','#{provAction.resOperacion}')"
+									reRender="pnlMensajes,pnlEliminar,dtResultsComprobado">
+									<f:setPropertyActionListener target="#{provAction.reg}" value="#{comprobado}" />
+								</a4j:commandButton>
+							</rich:column>
+		
+							<f:facet name="footer">
+								<rich:columnGroup>
+									<rich:column colspan="5" style="text-align:right;">
+										<h:outputText value="#{msg['navegacion.label.totalComprobado']}" />
+									</rich:column>
+									
+									<rich:column style="text-align:right;">
+										<h:outputText value="#{provAction.totalFacturasReportadas}">
+											<f:convertNumber pattern="$###,###.00" />
+										</h:outputText>
+									</rich:column>
+									
+									<rich:column colspan="2" style="text-align:center;"/>
+								</rich:columnGroup>
+							</f:facet>
+						</rich:dataTable>
+					</rich:tab>
+				</rich:tabPanel>
+				
+				<a4j:log rendered="false" popup="false" level="ALL" mode="inline" style="max-height:150px; max-width: 500px;" />
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

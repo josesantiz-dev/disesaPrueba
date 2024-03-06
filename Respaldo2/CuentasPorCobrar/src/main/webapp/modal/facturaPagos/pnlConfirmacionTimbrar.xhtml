@@ -1,0 +1,49 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlConfirmacionTimbrar" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['timbrar']} #{msg['pago']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<h:panelGroup styleClass="encabezado" style="min-height: 1em;">
+			<h:outputText value="#{facPagosAction.tituloFactura}" />
+		</h:panelGroup>
+		
+		<h:panelGrid columns="1" style="min-width:360px; text-align:center; margin:0; padding:0;" cellpadding="0" cellspacing="0">
+			<h:outputText value="#{msg['confirmacionTimbrar']}" rendered="#{! facPagosAction.multiPago}" styleClass="Titulo" />
+			<h:outputText value="#{msg['confirmacionTimbrarMultiple']}" rendered="#{facPagosAction.multiPago}" styleClass="Titulo" />
+			
+			<h:panelGrid columns="2" width="100%" style="margin:10px auto 0;" columnClasses="colTitulo,colDato">
+				<h:outputText value="#{msg['version']}:" styleClass="Descripcion" />
+				<h:outputText value="#{facPagosAction.pagoVersion}" styleClass="Descripcion" />
+				
+				<h:outputText value="#{msg['parcialidad']}:" styleClass="Descripcion" />
+				<h:outputText value="#{facPagosAction.pagoParcialidad}" styleClass="Descripcion" />
+				
+				<h:outputText value="#{msg['serie']}:" styleClass="Descripcion" />
+				<h:outputText value="#{facPagosAction.pagoSerie}" styleClass="Descripcion" />
+				
+				<h:outputText value="#{msg['folio']}:" styleClass="Descripcion" />
+				<h:outputText value="#{facPagosAction.pagoFolio}" styleClass="Descripcion" />
+			</h:panelGrid>
+		
+			<h:panelGrid columns="2" style="margin:10px auto 0; text-align:center; min-width:200px;" cellpadding="0" cellspacing="0">
+				<a4j:commandButton style="margin:0 auto; cursor:pointer; min-width:100px;"
+					value="#{msg['timbrar']}" 
+					action="#{facPagosAction.timbrarPago}" 
+					oncomplete="timbrar(#{facPagosAction.band}, '#{rich:clientId('pnlConfirmacionTimbrar')}', '#{rich:clientId('pnlMensajes')}')"
+					render="pnlMensajes,dtResults,regPago" />
+				
+				<a4j:commandButton style="margin:0 auto; cursor:pointer; min-width:90px;"
+					value="#{msg['cancelar.e']}" 
+					onclick="#{rich:component('pnlConfirmacionTimbrar')}.hide()" />
+			</h:panelGrid>
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

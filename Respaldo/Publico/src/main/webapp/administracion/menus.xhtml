@@ -1,0 +1,433 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+
+
+<ui:define name="menuFrag" >
+	
+	<rich:toolBarGroup id="tbgBuscar" location="right">
+		<a4j:commandButton id="cmdBuscar" action="#{MenusAction.buscar}" image="#{msg['buscar22.img']}" styleClass="Titulo" oncomplete="buscar('#{MenusAction.resOperacion}', 'pnlMsgMenu');" reRender="dtResultsMenu" style="cursor: pointer;">
+			<rich:toolTip id="ttBuscar" showDelay="300" value="#{msg['buscar.e']}" styleClass="Descripcion"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>
+
+	<rich:toolBarGroup id="tbgNuevo" location="right">
+		<a4j:commandButton id="cmdNuevo" action="#{MenusAction.nuevo}" image="#{msg['nuevo22.img']}" styleClass="Titulo" style="cursor: pointer;" oncomplete="Richfaces.showModalPanel('pnlEditarMenu')"  reRender="pnlEditarMenu">
+			<rich:toolTip id="ttNuevo" showDelay="300" value="#{msg['nuevo.e']}" styleClass="Descripcion"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>
+
+</ui:define>
+
+<ui:define name="body">
+		<a4j:keepAlive beanName="MenusAction" />
+		<a4j:loadStyle src="resource:///resources/css/adm/adm.css" />
+		<a4j:loadStyle src="resource:///resources/css/adm/admMenus.css" />
+		<a4j:loadScript src="resource:///resources/scripts/adm/menu.js"/>
+		
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText value="#{msg['menus']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina">
+			<h:panelGrid id="panel_busqueda" columns="2" style="margin-left:15px; margin-bottom:10px; display:block;" width="700">
+		    	<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+		        <h:selectOneMenu value="#{MenusAction.campoBusqueda}" styleClass="Titulo" style="margin-left:5px;">
+					<f:selectItem itemLabel="#{msg['nombre']}" itemValue="menu"/>
+					<f:selectItem itemLabel="#{msg['descripcion']}" itemValue="descripcion"/>
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+				<h:inputText id="txtvalor" value="#{MenusAction.valTipoBusqueda}" maxlength="45" size="45"/>
+	
+			</h:panelGrid>	
+			  	
+			<rich:dataTable id="dtResultsMenu" rows="20" cellpadding="0" cellspacing="0" border="0" var="menu" rowClasses="Row1, Row2"
+               		        value="#{MenusAction.listMenus}" styleClass="tabla_pagina">
+               		        
+               <f:facet name="header">
+                   <rich:columnGroup>
+                       <rich:column colspan="5" styleClass="Titulo">
+                           <h:outputText value="#{msg['menus']}"/>
+                       </rich:column>
+                       <rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+                           <h:outputText value="#{msg['id']}" />
+                       </rich:column>
+                       <rich:column  style="text-align:left; padding-left:10px;" styleClass="Titulo">
+                           <h:outputText value="#{msg['nombre']}" />
+                       </rich:column>
+                        <rich:column style="text-align:center; margin-left:10px;" styleClass="Titulo">
+                           <h:outputText value="#{msg['descripcion']}" />
+                       </rich:column>
+                       <rich:column style="text-align:center; margin-left:10px;" styleClass="Titulo">
+                           <h:outputText value="#{msg['editar']}" />
+                       </rich:column>
+                       <rich:column style="text-align:center; margin-left:10px;" styleClass="Titulo">
+                           <h:outputText value="#{msg['eliminar']}" />
+                       </rich:column>
+                   </rich:columnGroup>
+               </f:facet>
+               
+               <rich:column width="100" style="text-align:center;" styleClass="Descripcion">
+               	  <h:outputText value="#{menu.id}"/>                 
+               </rich:column>
+               
+               <rich:column width="170" style="text-align:left; padding-left:10px;" styleClass="Descripcion">
+                  <h:outputText value="#{menu.menu}"/>
+               </rich:column>
+               
+               <rich:column style="text-align:center;" styleClass="Descripcion">
+                  <h:outputText value="#{menu.descripcion}"/>
+               </rich:column>
+               
+               <rich:column width="20" style="text-align:center; ">
+                   <a4j:commandButton image="#{msg['editar16.img']}" oncomplete="Richfaces.showModalPanel('pnlEditarMenu')"  reRender="pnlEditarMenu">
+	                   	<f:setPropertyActionListener target="#{MenusAction.pojoMenu}" value="#{menu}" />
+	                   	<rich:toolTip showDelay="300">
+	                   		<h:outputText value="#{msg['editar.e']}" styleClass="Descripcion"/>
+	                   	</rich:toolTip>	
+                   </a4j:commandButton>
+               </rich:column>
+               
+               <rich:column width="20" style="text-align:center;">
+               		<a4j:commandButton image="#{msg['eliminar16.img']}"  oncomplete="Richfaces.showModalPanel('pnlEliminarMenu')" style="cursor:pointer;" reRender="pnlEliminarMenu">
+                  		<f:setPropertyActionListener target="#{MenusAction.pojoMenu}" value="#{menu}"/>
+                  		<rich:toolTip showDelay="300">
+                   			<h:outputText value="#{msg['eliminar.e']}" styleClass="Descripcion"/>
+                   		</rich:toolTip>
+                    </a4j:commandButton>
+               </rich:column>
+                  
+               <f:facet name="footer" >
+	               	<rich:datascroller align="center" for="dtResultsMenu" maxPages="10" ajaxSingle="true" page="#{MenusAction.numPagina}" id="dScroll"/>
+               </f:facet>
+               
+           </rich:dataTable>
+		</div>
+</ui:define>
+
+<ui:define name="modals">
+
+		<!--  ######### MODAL NUEVO Y EDITAR MENU ########  -->	
+		<rich:modalPanel id="pnlEditarMenu" autosized="true" width="450">
+		   <f:facet name="header">
+	           <h:panelGroup>	             
+	               <h:outputText style="margin-left:10px; text-align: center;" value="#{msg['menu']}" styleClass="Titulo"/>
+	           </h:panelGroup>
+	        </f:facet>
+	        
+		    <f:facet name="controls">
+		       <h:panelGroup>
+		       	  <h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" id="btnCerrarEditarMenu"/>
+		          <rich:componentControl for="pnlEditarMenu" attachTo="btnCerrarEditarMenu" operation="hide" event="onclick"/>
+		       </h:panelGroup>
+		    </f:facet>
+		    
+			   <a4j:form id="frmMenuEditar">
+				   	<div style = "display:block; width:450px; height:22px;">
+						<a4j:commandButton id="cmdSalvar" action="#{MenusAction.guardar}" image="#{msg['salvar22.img']}" oncomplete="guardar('#{MenusAction.resOperacion}', 'pnlEditarMenu', 'pnlMsgMenu', #{rich:element('msgErrorMenus')});"  reRender="dtResultsMenu, msgErrorMenus, pnlMsgMenu" 
+							style="cursor:pointer; vertical-align: middle; position:relative; float:right; margin-right:15px;" styleClass="Titulo">
+		 					<rich:toolTip value="#{msg['salvar.e']}" styleClass="Descripcion" showDelay="300"/>
+		 				</a4j:commandButton>			 					
+					</div>
+					
+					<rich:messages id="msgErrorMenus" showDetail="false" showSummary="true" globalOnly="false" ajaxRendered="false">
+						<f:facet name="errorMarker">
+		                    <h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;"/>   
+		                </f:facet>
+					</rich:messages>
+					
+					<h:panelGroup styleClass="encabezado">
+			        	<h:outputText value="#{MenusAction.pojoMenu.id != null ? MenusAction.pojoMenu.id : ' '} - "/>
+			        	<h:outputText value="#{MenusAction.pojoMenu.menu}"/>
+		       		</h:panelGroup>	
+					
+					<h:panelGrid columns="2" columnClasses="grp_colIzq, grp_colDer" style="display:block;">
+					
+                      
+						<h:outputText  value="#{msg['nombre']}:" styleClass="Titulo"/>
+                        <h:inputText id="txtNombre" value="#{MenusAction.pojoMenu.menu}"  required="#{!empty param[rich:clientId('cmdSalvar')]}" requiredMessage="#{msg['nombre']} #{msg['mensaje.error.requerido']}" size="40" maxlength="30"/>
+                        
+                        <h:outputText value="#{msg['aplicacion']}:" styleClass="Titulo"/>
+                        <h:selectOneMenu value="#{MenusAction.suggAplicacion}" style="width:252px">
+                        	<f:selectItems value="#{MenusAction.listTmpAplicacion}"/>
+                        </h:selectOneMenu>
+                        
+                      	<h:outputText value="#{msg['descripcion']}:" styleClass="Titulo" style="display:block; position:relative; top:-20;"/>
+                        <h:inputTextarea id="txtDescripcion" value="#{MenusAction.pojoMenu.descripcion}" required="#{!empty param[rich:clientId('cmdSalvar')]}" requiredMessage="#{msg['descripcion']} #{msg['mensaje.error.requerido']}" style="width:100%"/>
+					</h:panelGrid> 
+					
+					 <h:panelGrid columns="1" id="pgArbol" style="width:435px;" cellspacing="0" cellpadding="0">
+						<rich:toolBar itemSeparator="none" style="width:100%; padding-top:2px; padding-right:5px;" id="mnuEditor" width="300">
+						
+							<rich:toolBarGroup location="left" style="padding:0 2px 0 2px;">
+									<a4j:commandButton id="cmdSelecMenu" image="#{msg['navegacion.menu.folder22.img']}" oncomplete ="Richfaces.showModalPanel('pnlMenuSel')" style="cursor: pointer; vertical-align:middle;"/>
+									<h:outputLabel for="cmdSelecMenu" value="#{msg['anadirMenu']}" style="cursor:pointer; vertical-align:middle; margin-left:5px;" styleClass="Titulo" />
+							</rich:toolBarGroup>
+							
+							<rich:toolBarGroup location="left" style="padding:0 2px 0 2px;">
+									<a4j:commandButton id="cmdSelecEjec" image="#{msg['navegacion.panel.nuevaPantalla22.img']}" oncomplete ="Richfaces.showModalPanel('pnlFunciones')" style="cursor: pointer; vertical-align:middle;"/>
+									<h:outputLabel for="cmdSelecEjec" value="#{msg['anadirFuncion']}" style="cursor:pointer; vertical-align:middle; margin-left:5px;" styleClass="Titulo" />
+							</rich:toolBarGroup>
+							
+						</rich:toolBar>
+						
+						<rich:contextMenu id="menuNodo" attached="false" submitMode="ajax">
+							<rich:menuItem ajaxSingle="true" style="cursor: pointer;">
+								<a4j:commandLink action="#{MenusAction.editarNodo()}" oncomplete="Richfaces.showModalPanel('pnlEditarNodo')" value="#{msg['editar']}" styleClass="Titulo" reRender="pnlEditarNodo"/>
+							</rich:menuItem>
+							<rich:menuItem ajaxSingle="true" style="cursor: pointer;">
+								<a4j:commandLink action="#{MenusAction.eliminarNodoSelect}" value="#{msg['eliminar']}" styleClass="Titulo" reRender="pgArbol" />
+							</rich:menuItem>
+						</rich:contextMenu>
+						
+						<rich:tree id="treeGpoRep" switchType="client" var="nodoMenu"
+							value="#{MenusAction.arbolMenu}" style="height:435px; overflow:auto;">
+							<rich:treeNode icon="#{msg['navegacion.menu.folder22.img']}"
+								iconLeaf="#{nodoMenu.esNodo ? msg['navegacion.menu.catalogo22.img'] : msg['navegacion.menu.folder22.img']}">
+								
+								<a4j:commandLink value="#{nodoMenu.promt}" styleClass="Titulo" style="display:block;">
+									<f:setPropertyActionListener target="#{MenusAction.nodoActual}" value="#{nodoMenu}"/>
+									<rich:componentControl event="oncomplete" for="menuNodo" operation="show" />
+								</a4j:commandLink>
+							</rich:treeNode>
+						</rich:tree>
+					</h:panelGrid>
+					                        
+		       </a4j:form> 
+		</rich:modalPanel>
+		
+		<!-- #### PANEL ELIMINAR  #### -->		
+	    <rich:modalPanel id="pnlEliminarMenu" autosized="true">
+		 <f:facet name="header">
+			<h:outputText value="#{msg['atencion']}" styleClass="Titulo"/>
+		 </f:facet>
+		 <f:facet name="controls">
+	         <h:panelGroup>
+	             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor:pointer;" id="imgCerrarEliminar"/>
+	             	<rich:componentControl for="pnlEliminarMenu" attachTo="imgCerrarEliminar" operation="hide" event="onclick"/>
+	          </h:panelGroup>
+	       </f:facet>
+	       <a4j:form id="frmMenuEliminar">
+	       		<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+	       			<h:outputText value="#{msg['deseaEliminar']}" style="display:block;" styleClass="Descripcion"/>
+		       		<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+			       		<a4j:commandButton action="#{MenusAction.eliminar}" oncomplete="eliminar('#{MenusAction.resOperacion}', 'pnlEliminarMenu', 'pnlMsgMenu');" value="#{msg['aceptar']}" reRender="dtResultsMenu, pnlMsgMenu"/>
+			       		<a4j:commandButton onclick="#{rich:component('pnlEliminarMenu')}.hide()" value="#{msg['cancelar']}" style="margin-left:10px;"/>
+		       		</h:panelGroup>
+	       		</h:panelGrid>
+	       </a4j:form>
+	     </rich:modalPanel>		 
+		<!--  Fin Panel Eliminar-->
+		
+		<rich:modalPanel id="pnlEditarNodo" width="250" autosized="true">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText value="#{msg['renombrar']}" />
+				</h:panelGroup>
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" id="btnCerrarModalEditar" style="cursor:pointer;" />
+					<rich:componentControl for="pnlEditarNodo" attachTo="btnCerrarModalEditar" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<a4j:form id="frmEditarNodo">
+					<h:panelGrid columns="2">
+						<h:outputText value="#{msg['nombre']}:" styleClass="Titulo" />
+						<h:panelGroup>
+							<h:inputText id="txtRenombrar" value="#{MenusAction.cambiaNombre}" required="#{!empty param[rich:clientId('cmdRenombrar')]}" maxlength="50">
+								<f:validateLength minimum="1" />
+							</h:inputText>
+							<rich:message for="txtRenombrar" showSummary="false" showDetail="false" style="color:red">
+								<f:facet name="errorMarker">
+									<h:panelGroup>
+										<h:graphicImage value="#{msg['cancelar16.img']}" />
+										<h:outputLabel styleClass="Err" value="#{msg['mensaje.error.requerido']}" />
+									</h:panelGroup>
+								</f:facet>
+							</rich:message>
+						</h:panelGroup>
+					</h:panelGrid>
+					<h:panelGroup style="display:block; text-align:center; margin-top:10px;">
+						<a4j:commandButton id="cmdRenombrar" action="#{MenusAction.renombrar}" value="#{msg['salvar.e']}" oncomplete="Richfaces.hideModalPanel('pnlEditarNodo')" style="display:block;" reRender="pgArbol" />
+					</h:panelGroup>
+			</a4j:form>
+		</rich:modalPanel>
+		
+		<rich:modalPanel id="pnlMenuSel" autosized="true">
+		   <f:facet name="header">
+	               <h:outputText style="margin-left:10px" value="#{msg['menus']}" styleClass="Titulo"/>
+	        </f:facet>
+		    <f:facet name="controls">
+		       <h:panelGroup>
+		       	  <h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;">
+		          		<rich:componentControl for="pnlMenuSel" operation="hide" event="onclick"/>
+		          </h:graphicImage>
+		       </h:panelGroup>
+		    </f:facet>
+			   <a4j:form id="frmMenuSel">
+			   		<h:panelGrid columns="1">
+			   			<div style = "display: block; width: 600px;">
+			 				<a4j:commandButton id="cmdBuscarMenu" action="#{MenusAction.buscarMenus}" image="#{msg['buscar22.img']}" style="float:right; margin-right:15px;"  reRender="dtMenusSelec">
+			 					<rich:toolTip value="#{msg['buscar.e']}" styleClass="Descripcion" style="cursor:pointer;" showDelay="300"/>
+			 				</a4j:commandButton>
+						</div>
+						
+						<h:panelGroup style="display:block; width:100%; margin-top:20px;">
+							<h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+							<h:inputText value="#{MenusAction.busquedaMenu}" style="margin-left:5px;"/>
+						</h:panelGroup>
+						
+						<rich:dataTable id="dtMenusSelec" cellpadding="0" cellspacing="0"
+							rows="15" border="0" var="MenuBus" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+							value="#{MenusAction.listMenusSelec}">
+			
+							<f:facet name="header">
+			                   <rich:columnGroup>
+			                       <rich:column colspan="4" styleClass="Titulo">
+			                           <h:outputText value="#{msg['menus']}"/>
+			                       </rich:column>
+			                       <rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+			                           <h:outputText value="#{msg['id']}" />
+			                       </rich:column>
+			                       <rich:column  style="text-align:left; padding-left:10px;" styleClass="Titulo">
+			                           <h:outputText value="#{msg['nombre']}" />
+			                       </rich:column>
+			                        <rich:column  style="text-align:center; margin-left:10px;" styleClass="Titulo">
+			                           <h:outputText value="#{msg['descripcion']}" />
+			                       </rich:column>
+			                       <rich:column/>
+			                   </rich:columnGroup>
+			               </f:facet>
+			               <rich:column width="50" style="text-align:center;" styleClass="Descripcion">
+			               	  <h:outputText value="#{MenuBus.id}"/>                 
+			               </rich:column>
+			               <rich:column width="200" style="text-align:left; padding-left:10px;" styleClass="Descripcion">
+			                  <h:outputText value="#{MenuBus.menu}"/>
+			               </rich:column>
+			               <rich:column style="text-align:center;" styleClass="Descripcion">
+			                  <h:outputText value="#{MenuBus.descripcion}"/>
+			               </rich:column>
+			               <rich:column width="20" style="text-align:center; ">
+			                   <a4j:commandButton image="#{msg['drag16.img']}" oncomplete="Richfaces.hideModalPanel('pnlMenuSel')"  reRender="pgArbol">
+				                   	<f:setPropertyActionListener target="#{MenusAction.pojoMenuSelect}" value="#{MenuBus}" />
+				                   	<rich:toolTip showDelay="300">
+				                   		<h:outputText value="#{msg['seleccionar']}" styleClass="Descripcion"/>
+				                   	</rich:toolTip>	
+			                   </a4j:commandButton>
+			               </rich:column>
+			               <f:facet name="footer" >
+				               	<rich:datascroller align="center" for="dtMenusSelec" maxPages="10" ajaxSingle="true"
+				            		page="#{MenusAction.numPaginaMenu}" id="dScrollMenu"/>
+			               </f:facet>
+			           </rich:dataTable>
+			   		</h:panelGrid>
+		       </a4j:form>
+		</rich:modalPanel>
+		
+		<rich:modalPanel id="pnlFunciones" autosized="true">
+		   <f:facet name="header">
+	               <h:outputText style="margin-left:10px" value="#{msg['funciones']}" styleClass="Titulo"/>
+	        </f:facet>
+		    <f:facet name="controls">
+		       <h:panelGroup>
+		       	  <h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" id="btnCerrarFunciones"/>
+		          <rich:componentControl for="pnlFunciones" attachTo="btnCerrarFunciones" operation="hide" event="onclick"/>
+		       </h:panelGroup>
+		    </f:facet>
+			   <a4j:form id="frmModalFunciones">
+			   		<h:panelGrid columns="1">
+			   			<div style="display:block; width:700px;">
+			 				<a4j:commandButton id="cmdBuscarFunc" action="#{MenusAction.buscarFuncion}" image="#{msg['buscar22.img']}" style="float:right; margin-right:15px;"  reRender="dtResultsFunc">
+			 					<rich:toolTip value="#{msg['buscar.e']}" styleClass="Descripcion" style="cursor:pointer;" showDelay="300"/>
+			 				</a4j:commandButton>
+						</div>
+						
+						<h:panelGrid columns="2" style="display:block; width:100%; margin-top:20px;">
+							<h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+							<h:inputText value="#{MenusAction.busquedaFuncion}"/>
+							<h:outputText value="#{msg['aplicacion']}:" styleClass="Titulo"/>
+							<h:selectOneMenu value="#{MenusAction.pojoAplicacion.id}" styleClass="Titulo">
+								<f:selectItems value="#{MenusAction.listTmpAplicacion}"/>
+							</h:selectOneMenu>
+						</h:panelGrid>
+						
+						<rich:dataTable id="dtResultsFunc" cellpadding="0" cellspacing="0"
+							rows="12" border="0" var="fun" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+							value="#{MenusAction.listFunciones}">
+			
+							<f:facet name="header">
+			                   <rich:columnGroup>
+			                       <rich:column colspan="4" styleClass="Titulo">
+			                           <h:outputText value="#{msg['funciones']}"/>
+			                       </rich:column>
+			                       <rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+			                           <h:outputText value="#{msg['id']}" />
+			                       </rich:column>
+			                       <rich:column  style="text-align:center;" styleClass="Titulo">
+			                           <h:outputText value="#{msg['nombre']}" />
+			                       </rich:column>
+			                        <rich:column  style="text-align:center;" styleClass="Titulo">
+			                           <h:outputText value="#{msg['forma']}" />
+			                       </rich:column>
+			                       <rich:column />
+			                   </rich:columnGroup>
+			               </f:facet>
+			               <rich:column width="70" style="text-align:center;" styleClass="Descripcion">
+			               	  <h:outputText value="#{fun.id}"/>                 
+			               </rich:column>
+			               <rich:column style="text-align:center" styleClass="Descripcion">
+			                  <h:outputText value="#{fun.nombre}"/>
+			               </rich:column>
+			               <rich:column style="text-align:center;" styleClass="Descripcion">
+			                  <h:outputText value="#{fun.forma}"/>
+			               </rich:column>
+			               <rich:column width="20" style="text-align:center; ">
+			                   <a4j:commandButton image="#{msg['drag16.img']}" oncomplete="Richfaces.hideModalPanel('pnlFunciones')"  reRender="pgArbol">
+				                   	<f:setPropertyActionListener target="#{MenusAction.pojoFuncion}" value="#{fun}" />
+				                   	<rich:toolTip showDelay="300">
+				                   		<h:outputText value="#{msg['seleccionar']}" styleClass="Descripcion"/>
+				                   	</rich:toolTip>	
+			                   </a4j:commandButton>
+			               </rich:column>
+			               <f:facet name="footer" >
+				               	<rich:datascroller align="center" for="dtResultsFunc" maxPages="10" ajaxSingle="true"
+				            		page="#{MenusAction.numPaginaFuncion}" id="dScrollFunc"/>
+			               </f:facet>
+			           </rich:dataTable>
+			   		</h:panelGrid>
+		       </a4j:form>
+		</rich:modalPanel>
+		
+		<!-- #### Panel MsgLayout #### -->		
+	    <rich:modalPanel id="pnlMsgMenu" autosized="true" width="350">
+		 <f:facet name="header">
+		 	<h:panelGroup>
+				<h:outputText value="#{MenusAction.resOperacion == '' ? msg['informacion'] : msg['atencion']}" styleClass="Titulo" />
+			</h:panelGroup>
+		 </f:facet>
+		 <f:facet name="controls">
+	         <h:panelGroup>
+	             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="imgCerrarMsgMenu"/>
+	             	<rich:componentControl for="pnlMsgMenu" attachTo="imgCerrarMsgMenu" operation="hide" event="onclick"/>
+	          </h:panelGroup>
+	       </f:facet>
+	       <a4j:form id="frmMsgMenu" style="text-align:center;" >
+	       		<h:panelGroup style="display:block; width:300px; float:center;">
+		       		<h:outputText value="#{MenusAction.resOperacion == '' ? msg['mensaje.info.infoReg'] : MenusAction.resOperacion}" style="display:block;" styleClass="Descripcion"/>
+	       		</h:panelGroup>
+	       		<a4j:commandButton value="#{msg['aceptar']}" onclick="#{rich:component('pnlMsgMenu')}.hide()" style="margin-top:10px; cursor:pointer;"/>
+	       </a4j:form>
+	     </rich:modalPanel>		 
+		<!--  Fin Panel Msg-->
+		
+</ui:define>
+</ui:composition>

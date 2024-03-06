@@ -1,0 +1,203 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+
+
+<ui:define name="menuFrag" >
+	
+	<rich:toolBarGroup id="tbgBuscar" location="right">
+		<a4j:commandButton id="cmdBuscar" image="#{msg['buscar22.img']}"
+			action="#{admAplicacionesAction.buscar}"
+			oncomplete="buscar('#{admAplicacionesAction.resOperacion}', 'pnlMsgApp');" reRender="dtAplicaciones, pnlMsgApp" styleClass="Titulo" style="cursor:pointer;">
+			<rich:toolTip id="ttBuscar" showDelay="300" value="#{msg['buscar.e']}" style="Descripcion"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>
+
+	<rich:toolBarGroup id="tbgNuevo" location="right">
+		<a4j:commandButton id="cmdNuevo" image="#{msg['nuevo22.img']}"
+			action="#{admAplicacionesAction.nuevo}"
+			oncomplete="Richfaces.showModalPanel('pnlEditarApp');" reRender="pnlEditarApp" styleClass="Titulo" style="cursor:pointer;">
+			<rich:toolTip id="ttNuevo" showDelay="300" value="#{msg['nuevo.e']}" style="Descripcion"/>
+		</a4j:commandButton>
+	</rich:toolBarGroup>
+	
+</ui:define>
+
+<ui:define name="body">
+	<a4j:keepAlive beanName="admAplicacionesAction" />
+		<a4j:loadStyle src="resource:///css/adm/adm.css" />
+		<a4j:loadStyle src="resource:///css/adm/admAplicaciones.css"/>
+		<a4j:loadScript src="resource:///scripts/adm/aplicacion.js"/>
+	 		
+	 		<div class="div_pagina">
+	 			<h:panelGrid columns="2" style="width:100%;" columnClasses="colLabel, colDato">
+		            <h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+					<h:inputText value="#{admAplicacionesAction.valorBusqueda}" maxlength="20" size="20"/>
+			  	</h:panelGrid>
+		 		
+		 		<rich:dataTable id="dtAplicaciones" cellpadding="0" cellspacing="0" rows="20" 
+	               border="0" var="app" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+	               value="#{admAplicacionesAction.listAplicaciones}">
+	           		
+	               <f:facet name="header">
+	                   <rich:columnGroup>
+	                       <rich:column colspan="6" styleClass="Titulo">
+	                           <h:outputText value="#{msg['aplicaciones']}"/>
+	                       </rich:column>
+	                       <rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['id']}" />
+	                       </rich:column>
+	                       <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['nombre']}" />
+	                       </rich:column>
+	                       <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['ruta']}" />
+	                       </rich:column>
+	                       <rich:column style="text-align:center;" styleClass="Titulo">
+	                           <h:outputText value="#{msg['reportes']}" />
+	                       </rich:column>
+	                       <rich:column colspan="2"/>
+	                   </rich:columnGroup>
+	               </f:facet>
+	               <rich:column width="30" style="text-align:center;" styleClass="Descripcion">
+	                   <h:outputText value="#{app.aplicacionId}"/>
+	               </rich:column>
+	               <rich:column styleClass="Descripcion" width="50em">
+	                   	<h:outputText value="#{app.aplicacion}" />
+	               </rich:column>
+	               <rich:column styleClass="Descripcion" style="text-align:center;">
+	                   	<h:outputText value="#{app.ruta}" />
+	               </rich:column>
+	               <rich:column styleClass="Descripcion" style="text-align:center;">
+	                   	<h:outputText value="#{app.reportes}"/>
+	               </rich:column>
+	               <rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+	                   <a4j:commandButton image="#{msg['editar16.img']}" oncomplete="Richfaces.showModalPanel('pnlEditarApp')" reRender="pnlEditarApp">
+	                   		<rich:toolTip showDelay="300" value="#{msg['editar.e']}"/>	
+	                   		<f:setPropertyActionListener target="#{admAplicacionesAction.pojoAplicacion}" value="#{app}"/>
+	                   </a4j:commandButton>
+	               </rich:column>
+	               <rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+	                   <a4j:commandButton image="#{msg['eliminar16.img']}" 
+	                   		oncomplete="Richfaces.showModalPanel('pnlEliminarApp')">
+	                   		<rich:toolTip showDelay="300" value="#{msg['eliminar.e']}"/>
+	                   		<f:setPropertyActionListener target="#{admAplicacionesAction.pojoAplicacion}" value="#{app}" />
+	                   </a4j:commandButton>
+	               </rich:column>
+	               <f:facet name="footer" >
+		               	<rich:datascroller align="center" for="dtAplicaciones" maxPages="10" ajaxSingle="true"
+		            		page="#{admAplicacionesAction.numPagina}" id="dScroll" styleClass="Titulo"/>
+	               </f:facet>
+	           </rich:dataTable>
+           </div>
+</ui:define>
+
+<ui:define name="modals">
+	 <!-- ####### MODAL NUEVO Y EDITAR  ######### -->
+	 <rich:modalPanel id="pnlEditarApp" autosized="true">
+		<f:facet name="header">
+			<h:outputText value="#{msg['aplicacion']}" styleClass="Titulo" style="margin-left:10px"/>
+		</f:facet>
+		<f:facet name="controls">
+           <h:panelGroup>
+               <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor: pointer;" >
+               		<rich:componentControl for="pnlEditarApp" operation="hide" event="onclick"/>
+               </h:graphicImage>
+            </h:panelGroup>
+         </f:facet>
+         <a4j:form id="frmEditarApp">
+         	<div style = "display: block; width: 550px; height: 22px;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">						
+ 					<h:panelGroup style="vertical-align: middle; position:relative;">
+          				<a4j:commandButton id="cmdSalvar" image="#{msg['salvar22.img']}" style="vertical-align: middle; margin-right:5px; cursor: pointer;"
+          					action="#{admAplicacionesAction.guardar}" 
+          					reRender="dtAplicaciones, pnlMsgApp, msgErrorApp"
+          					oncomplete="guardar('#{admAplicacionesAction.resOperacion}', 'pnlEditarApp', 'pnlMsgApp', #{rich:element('msgErrorApp')});">
+          					<rich:toolTip value="#{msg['salvar.e']}" styleClass="Descripcion"/>
+          				</a4j:commandButton>
+         			</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			
+			<rich:messages id="msgErrorApp" showDetail="false" showSummary="true" globalOnly="false" ajaxRendered="false">
+				<f:facet name="errorMarker">
+                    <h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;"/>   
+                </f:facet>
+			</rich:messages>
+			
+			<h:panelGrid columns="2" columnClasses="colLabel, colDato">
+           		<h:outputText value="#{msg['id']}:" styleClass="Titulo"/>
+	           	<h:outputText id="lblId" value="#{admAplicacionesAction.pojoAplicacion.aplicacionId}" styleClass="Descripcion"/>
+           		<h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+           		<h:inputText value="#{admAplicacionesAction.pojoAplicacion.aplicacion}" converter="upperCase" requiredMessage="#{msg['nombre']} #{msg['mensajes.error.requerido']}" required="true" size="40" maxlength="30"/>
+           		<h:outputText value="#{msg['ruta']}:" styleClass="Titulo"/>
+           		<h:inputText value="#{admAplicacionesAction.pojoAplicacion.ruta}" converter="upperCase" requiredMessage="#{msg['ruta']} #{msg['mensajes.error.requerido']}" size="70" maxlength="255"/>
+           		<h:outputText value="#{msg['reportes']}:" styleClass="Titulo"/>
+           		<h:inputText value="#{admAplicacionesAction.pojoAplicacion.reportes}" converter="upperCase" requiredMessage="#{msg['reportes']} #{msg['mensajes.error.requerido']}" size="70" maxlength="255"/>
+           		<h:outputText value="#{msg['imagenes']}:" styleClass="Titulo"/> 
+           		<h:inputText value="#{admAplicacionesAction.pojoAplicacion.imagenes}" converter="upperCase" requiredMessage="#{msg['imagenes']} #{msg['mensajes.error.requerido']}" size="70" maxlength="255"/>
+           		<h:outputText value="#{msg['binarios']}:" styleClass="Titulo"/>
+           		<h:inputText value="#{admAplicacionesAction.pojoAplicacion.binarios}" converter="upperCase" requiredMessage="#{msg['binarios']} #{msg['mensajes.error.requerido']}" size="70" maxlength="255"/>
+           </h:panelGrid>
+		</a4j:form>
+	</rich:modalPanel>
+	
+	<!-- Panel Eliminar -->		
+    <rich:modalPanel id="pnlEliminarApp" autosized="true">
+	 <f:facet name="header">
+		<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo"/>
+	 </f:facet>
+	 <f:facet name="controls">
+         <h:panelGroup>
+             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor:pointer;">
+             	<rich:componentControl for="pnlEliminarApp" operation="hide" event="onclick"/>
+             </h:graphicImage>
+          </h:panelGroup>
+       </f:facet>
+       <a4j:form id="frmEliminarApp">
+       		<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+       			<h:outputText value="#{msg['navegacion.label.deseaEliminar']}" style="display:block;"  styleClass="Descripcion"/>
+	       		<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+		       		<a4j:commandButton id="cmdEliminar" 
+		       			value="#{msg['navegacion.label.aceptar']}" 
+		       			action="#{admAplicacionesAction.eliminar}" 
+		       			oncomplete = "eliminar('#{admAplicacionesAction.resOperacion}', 'pnlEliminarApp', 'pnlMsgApp');"
+		       			reRender="dtAplicaciones, pnlMsgApp" />
+		       		<a4j:commandButton onclick="#{rich:component('pnlEliminarApp')}.hide()" value="#{msg['cancelar']}" style="margin-left:10px;"/>
+	       		</h:panelGroup>
+       		</h:panelGrid>
+       </a4j:form>
+     </rich:modalPanel>		 
+	<!--  Fin Panel Eliminar-->
+	
+	<!-- #### Panel MsgLayout #### -->		
+	    <rich:modalPanel id="pnlMsgApp" autosized="true" width="350">
+		 <f:facet name="header">
+		 	<h:panelGroup>
+				<h:outputText value="#{admAplicacionesAction.resOperacion == '' ? msg['informacion'] : msg['navegacion.label.atencion']}" styleClass="Titulo" />
+			</h:panelGroup>
+		 </f:facet>
+		 <f:facet name="controls">
+	         <h:panelGroup>
+	             <h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="imgCerrarMsgFunc"/>
+	             	<rich:componentControl for="pnlMsgApp" attachTo="imgCerrarMsgFunc" operation="hide" event="onclick"/>
+	          </h:panelGroup>
+	       </f:facet>
+	       <a4j:form id="frmMsgEjec" style="text-align:center;" >
+	       		<h:panelGroup style="display:block; width:300px; float:center;">
+		       		<h:outputText value="#{admAplicacionesAction.resOperacion != '' ? admAplicacionesAction.resOperacion : msg['mensaje.info.infoReg']}" style="display:block;" styleClass="Descripcion"/>
+	       		</h:panelGroup>
+	       		<a4j:commandButton value="#{msg['navegacion.label.aceptar']}" onclick="#{rich:component('pnlMsgApp')}.hide()" style="margin-top:10px; cursor:pointer;"/>
+	       </a4j:form>
+	     </rich:modalPanel>		 
+		<!--  Fin Panel Msg-->
+</ui:define>
+
+</ui:composition>

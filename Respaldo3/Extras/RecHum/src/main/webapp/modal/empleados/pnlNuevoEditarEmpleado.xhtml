@@ -1,0 +1,177 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlNuevoEditarEmpleado" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText id="lblTitulo" value="#{empleadoAction.pojoEmpleado.id==null ? 'Recursos Humanos: Nuevo Empleado' : 'Recursos Humanos: Editar Empleado'}" styleClass="Titulo" style="margin-left:10px" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlNuevoEditarEmpleado')}.hide()" />
+		</f:facet>
+		
+		<!-- BOTONERA -->
+		<div id="botonera" style="display: block; width: 100%; height: 22px; margin-bottom: 1em;">
+			<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%">
+				<a4j:commandButton id="cmdFamiliares" rendered="#{empleadoAction.pojoEmpleado.id!=null}"
+					image="#{msg['personas22.img']}"
+					style="float:left; margin-left:5px; vertical-align: middle; cursor: pointer;"
+					action="#{empleadoAction.cargarFamiliares}"
+					oncomplete="#{rich:component('pnlFamiliares')}.show();"
+					render="txtNombreEmpleado002, dtListaFamiliares">
+					<rich:tooltip value="#{msg['familiares']}"
+						styleClass="Descripcion" />
+				</a4j:commandButton>
+				
+				<a4j:commandButton id="cmdContrato" rendered="#{empleadoAction.pojoEmpleado.id!=null}"
+					image="#{msg['estudios22.img']}"
+					style="float:left; margin-left:5px; vertical-align: middle; cursor: pointer;"
+					action="#{empleadoAction.cargarContratos}"
+					oncomplete="#{rich:component('pnlContratos')}.show();"
+					render="grupoEncListaContrato, dtListaContratos">
+					<rich:tooltip value="#{msg['contrato']}" styleClass="Descripcion" />
+				</a4j:commandButton>
+				
+				<a4j:commandButton id="cmdBeneficiarios"
+					image="#{msg['agregarPersona22.img']}"
+					style="float:left; margin-left:5px; vertical-align: middle; cursor: pointer;"
+					action="#{empleadoAction.cargarBeneficiarios}"
+					oncomplete="#{rich:component('pnlBeneficiarios')}.show();"
+					rendered="#{empleadoAction.pojoEmpleado.id!=null}"
+					render="txtNombreEmpleado003, dtListaBeneficiarios">
+					<rich:tooltip value="#{msg['beneficiarios']}" styleClass="Descripcion" />
+				</a4j:commandButton>
+				
+				
+			</h:panelGroup>
+			<h:panelGroup id="grupoBotonesDerechos" style="width:100%">
+				<h:panelGrid columns="2" style="float:right; margin-right:5px;" >
+					<h:panelGroup style="vertical-align: middle; position:relative; ">
+						<a4j:commandButton id="cmdSalvar" onclick="#{rich:element('cmdSalvar')}.disabled = true;" image="#{msg['salvar22.img']}" style="vertical-align: right; position:relative;" 
+							action="#{empleadoAction.guardar}" 
+							oncomplete="msgRevisando(#{rich:element('msgErrorEmpleado')},'#{rich:clientId('pnlNuevoEditarEmpleado')}','#{rich:clientId('pnlMsgGralEmpleado')}',#{empleadoAction.band},'guardar', '#{empleadoAction.resOperacion}'); #{rich:element('cmdSalvar')}.disabled = false;"
+							render="dtEmpleados, pnlMsgGralEmpleado, msgErrorEmpleado"/>
+					</h:panelGroup>
+					
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:status>
+							<f:facet name="start">
+								<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;"/>
+							</f:facet>
+							
+							<f:facet name="stop">
+								<h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: middle; position:relative;"/>
+							</f:facet>
+						</a4j:status>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+		</div>
+		
+		<h:panelGroup id="grupoEncabezado" />
+		
+		<rich:messages id="msgErrorEmpleado" ajaxRendered="true" title="Campos requeridos!" >
+			<f:facet name="errorMarker">
+				<h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" />
+			</f:facet>
+		</rich:messages>
+		
+		<h:panelGroup id="grupoDatos">
+			<fieldset style="margin-top: 10px; margin-bottom: 10px">
+				<legend><h:outputText value="#{msg['empleado']}" styleClass="Titulo"/></legend>
+				
+				<h:panelGrid id="pnlPersonaDatos" columns="2" width="700" columnClasses="colTitulo,colDato" style="text-align:left;">
+					<h:outputText value="#{msg['persona']}:" styleClass="Titulo"/>
+					<a4j:commandLink id="cmdSeleccionarPersona" 
+						onclick="#{rich:component('pnlBusquedaPersonas')}.show();"
+						value="#{empleadoAction.pojoEmpleado.persona.id == null ? msg['seleccionar'] : empleadoAction.pojoEmpleado.persona.nombre }" 
+						oncomplete="#{rich:component('pnlBusquedaPersonas')}.show();"  
+						rendered="#{true}">
+						<a4j:ajax execute="@form" render="pnlPersonaDatos" />
+					</a4j:commandLink>
+				</h:panelGrid>
+				
+				<h:panelGrid id="pnlEmpleadoDatos" columns="4" width="700" columnClasses="colTitulo,colDato, colTitulo,colDato" style="text-align:left;">
+					<h:outputText value="#{msg['clave']}:" style="margin-left: 10px; margin-right: 0px" styleClass="Titulo"/>
+		 			<h:inputText maxlength="50" style="width: 130px;" 
+		 				value="#{empleadoAction.clave}" size="50" />
+		            
+					<!-- Seleccionar Puesto -->
+					<h:outputText value="#{msg['puesto']}:" style="margin-left: 10px; margin-right: 0px" styleClass="Titulo" />
+					<h:selectOneMenu style="width:200px;"
+						value="#{empleadoAction.idPuesto}"
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+		            	requiredMessage="#{msg['puesto']} #{msg['mensaje.error.requerido']}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{empleadoAction.listaCboPuestos}" />		
+						<f:ajax event="valueChange" 
+							listener="#{empleadoAction.cargaCategorias}" 
+							render="cboCategorias"
+							limitRender="true" />
+					</h:selectOneMenu>
+					
+					<!-- Seleccionar Sucursal -->
+					<h:outputText value="#{msg['sucursal']}:" style="margin-left: 10px; margin-right: 0px" styleClass="Titulo"/>
+					<h:selectOneMenu style="width:200px;"
+						value="#{empleadoAction.idSucursal}"
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+		            	requiredMessage="#{msg['sucursal']} #{msg['mensaje.error.requerido']}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{empleadoAction.listaCboSucursales}"/>	  					
+					</h:selectOneMenu>
+		            
+		            <h:outputLabel value="#{msg['persona.nss']}:" style="margin-left: 10px; margin-right: 0px" styleClass="Titulo" />
+					<h:inputText id="txtNSS" maxlength="50"  style="width: 194px;" 
+						value="#{empleadoAction.numeroSeguridadSocial}"
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+		            	requiredMessage="#{msg['persona.nss']} #{msg['mensaje.error.requerido']}" />
+					
+					<!-- Seleccionar Área -->
+					<h:outputText value="#{msg['area']}:" style="margin-left: 10px; margin-right: 0px" styleClass="Titulo"/>
+					<h:selectOneMenu style="width:200px;"
+						value="#{empleadoAction.idArea}"
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+		            	requiredMessage="#{msg['area']} #{msg['mensaje.error.requerido']}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{empleadoAction.listaCboAreas}"/>			
+					</h:selectOneMenu>
+					
+					<h:outputLabel value="#{msg['fechaIngreso']}:" styleClass="Titulo" style="margin-left: 10px; margin-right: 0px"/>
+		            <rich:calendar id="dtFechaIngreso" enableManualInput="true" datePattern="dd/MMM/yyyy"
+		            	value="#{empleadoAction.fechaIngreso}" 
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+		            	requiredMessage="#{msg['fecha']} #{msg['mensaje.error.requerido']}">
+		                <rich:placeholder value="dd/MMM/yyyy" />
+		            </rich:calendar>
+		            
+					<!-- Seleccionar Categoria -->
+					<h:outputText value="#{msg['categoria']}:" style="margin-left: 10px; margin-right: 0px" styleClass="Titulo"/>
+					<h:selectOneMenu id="cboCategorias" style="width:200px;"
+						value="#{empleadoAction.idCategoria}"
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+		            	requiredMessage="#{msg['categoria']} #{msg['mensaje.error.requerido']}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{empleadoAction.listaCboCategorias}"/>	  					
+					</h:selectOneMenu>
+					
+		            <h:outputLabel value="#{msg['emergencia']}:" style="margin-left: 10px; margin-right: 0px" styleClass="Titulo" />
+					<h:inputText id="txtEmergencia" minlength="10" maxlength="10" style="width: 194px;" 
+						value="#{empleadoAction.emergencia}" 
+						onkeypress="return soloNumeros(event, this.value);" />
+					
+					<h:outputText value="#{msg['externo']}:" style="margin-left: 10px; margin-right: 0px" styleClass="Titulo"/>
+		 			<h:selectBooleanCheckbox value="#{empleadoAction.externo}" />
+		 			
+		 			<h:outputText value="#{msg['correo']}:" style="margin-left: 10px; margin-right: 0px" styleClass="Titulo"/>
+		 			<h:inputText maxlength="50" style="width: 194px;" 
+		 				value="#{empleadoAction.email}" />
+				</h:panelGrid>
+			</fieldset>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

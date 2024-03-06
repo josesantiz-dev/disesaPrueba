@@ -1,0 +1,133 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlObraAvances" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+    	<f:facet name="header">
+			<h:outputText value="#{msg['avancesDeObra']}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" onclick="#{rich:component('pnlObraAvances')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+		
+		<div style="display: block; min-width:500px; overflow: auto;">
+			<a4j:commandButton id="cmdSalvarObraAvance" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+				image="#{msg['salvar22.img']}" 
+				action="#{avanceAction.guardar}"
+				oncomplete="salvar(#{avanceAction.operacion}, '#{rich:clientId('pnlObraAvances')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrorObraAvance')})"
+				render="pnlMensajes, msgErrorObraAvance"
+				limitRender="true">
+				<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['salvar.e']}" for="cmdSalvarObraAvance"/>
+			</a4j:commandButton>
+		</div>
+
+		<div style="margin: 10px auto 0;">
+			<h:panelGroup styleClass="encabezado" style="min-height: 1em;">
+				<h:outputText value="#{avanceAction.pojoObra.id != null ? avanceAction.pojoObra.id : '0'} "/>
+				<h:outputText value="#{avanceAction.pojoObra.nombre}" />
+			</h:panelGroup>
+		
+			<rich:messages id="msgErrorObraAvance" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+				<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+			</rich:messages>
+			
+			<h:panelGroup id="divAgregarObraAvance">
+				<fieldset>
+					<legend><h:outputText value="#{msg['agregar.e']}" styleClass="Titulo" /></legend>
+					
+					<a4j:region>
+						<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+							<h:outputText value="#{msg['fecha']}:" />
+							<rich:calendar id="txtObraAvanceFecha" enableManualInput="true" datePattern="dd/MM/yyyy"
+								value="#{avanceAction.pojoObraAvance.fecha}"
+								required="#{!empty param[rich:clientId('cmdAgregarObraAvance')]}" 
+								requiredMessage="#{msg['fecha']} #{msg['mensaje.error.requerido']}">
+								<rich:placeholder value="dd/MM/yyyy" />
+							</rich:calendar>
+												
+							<h:outputText value="#{msg['%']} #{msg['avanceObra']}:" />
+							<h:panelGroup>
+								<h:inputText id="txtObraAvancePorcentaje" style="width: 50px; text-align: right"
+									value="#{avanceAction.pojoObraAvance.porcentaje}"
+									onkeydown="return soloNumeros(event);"
+									required="#{!empty param[rich:clientId('cmdAgregarObraAvance')]}" 
+									requiredMessage="#{msg['%']} #{msg['avanceObra']} #{msg['mensaje.error.requerido']}"
+									validatorMessage="#{msg['%']} #{msg['avanceObra']}: #{msg['mensaje.validacion.valorCeroCien']}">
+									<f:convertNumber pattern="###,###,##0" for="txtObraAvancePorcentaje" />
+									<f:validateLongRange minimum="0" maximum="100" for="txtObraAvancePorcentaje" />
+									<a4j:ajax event="blur" execute="@this" render="txtObraAvancePorcentaje" immediate="true" limitRender="true" />
+								</h:inputText>
+								
+								<a4j:commandButton id="cmdAgregarObraAvance" 
+									image="#{msg['agregar22.img']}" 
+									style="margin: 0 5px; vertical-align: middle; cursor: pointer;" 
+									action="#{avanceAction.agregar}"
+									oncomplete="agregar(#{avanceAction.operacion}, '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrorObraAvance')})"
+									render="pnlMensajes, msgErrorObraAvance, divAgregarObraAvance, dtObraAvances"
+									limitRender="true" execute="@region">
+									<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['agregar.e']}" for="cmdAgregarObraAvance" />
+								</a4j:commandButton>
+							</h:panelGroup>
+						</h:panelGrid>
+					</a4j:region>
+				</fieldset>
+			</h:panelGroup>
+
+			<fieldset style="margin: 10px 0 0;">
+				<legend><h:outputText value="#{msg['avancesDeObra']}" styleClass="Titulo" /></legend>
+				
+				<div style="margin: 0 auto; width: 300px;">
+					<rich:dataTable id="dtObraAvances" value="#{avanceAction.listObraAvances}" var="var" cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+						<f:facet name="header">
+							<rich:columnGroup>
+								<rich:column colspan="3" style="text-align:center;" styleClass="Titulo">
+									<h:outputText value="#{msg['porcentajesAvance']}" />
+								</rich:column>
+								
+								<rich:column style="width: 80px; text-align:center;" styleClass="Titulo" breakRowBefore="true">
+									<h:outputText value="#{msg['fecha']}" />
+								</rich:column>
+								
+								<rich:column style="width: 80px; text-align:center;" styleClass="Titulo">
+									<h:outputText value="#{msg['porcentaje']}" />
+								</rich:column>
+		
+								<rich:column style="width: 20px; text-align:center;" styleClass="Titulo" />
+							</rich:columnGroup>
+						</f:facet>
+						
+						<rich:column styleClass="Descripcion" style="width: 80px; text-align:center;">
+							<h:outputText value="#{var.fecha}"><f:convertDateTime type="date" pattern="dd-MM-yyyy" /></h:outputText>
+						</rich:column>
+						
+						<rich:column styleClass="Descripcion" style="width: 80px; text-align:center; padding-left: 5px;">
+							<h:outputText value="#{var.porcentaje}"><f:convertNumber pattern="###,###,##0" /></h:outputText>
+						</rich:column>
+						
+						<rich:column style="width: 20px; text-align:center;" styleClass="Descripcion">
+						   	<a4j:commandButton id="cmdBorrarObraAvance" 
+						   		image="#{msg['eliminar16.img']}" 
+								oncomplete="#{rich:component('pnlEliminar')}.show()" 
+								render="pnlEliminar"
+								limitRender="true">
+								<rich:tooltip showDelay="300" value="#{msg['eliminar']}" for="cmdBorrarObraAvance" />	
+								<f:setPropertyActionListener target="#{avanceAction.pojoObraAvanceBorrar}" value="#{var}" for="cmdBorrarObraAvance" />
+						   	</a4j:commandButton>
+						</rich:column>
+		
+						<f:facet name="footer">
+							<rich:dataScroller id="dScrollObraAvances" align="center" for="dtObraAvances" maxPages="10"
+								ajaxSingle="true" page="#{avanceAction.paginaObraAvance}"
+								styleClass="Titulo" />
+						</f:facet>
+					</rich:dataTable>
+				</div>
+			</fieldset>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

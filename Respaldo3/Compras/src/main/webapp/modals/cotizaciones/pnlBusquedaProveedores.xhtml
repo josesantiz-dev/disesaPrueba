@@ -1,0 +1,101 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlBusquedaProveedores" modal="true" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20"
+		onshow="document.getElementById('#{rich:clientId('txtValorBusquedaProveedores')}').focus();">
+    	<f:facet name="header">
+    		<h:outputText value="#{msg['buscar.e']} #{msg['proveedor']}" styleClass="Titulo"/>
+    	</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.panel.cerrar.img']}" 
+				onclick="#{rich:component('pnlBusquedaProveedores')}.hide()" />
+		</f:facet>
+		
+		<rich:hotKey id="richHotKeyProv" enabledInInput="true" preventDefault="true" 
+			selector="#txtValorBusquedaProveedores" key="return"
+			onkeydown="#{rich:element('frmPrincipal:cmdBuscarProveedores')}.click()" />
+		
+		<div style = "display: block; min-width:500px; width: 100%; height: 22px;">
+			<a4j:commandButton id="cmdBuscarProveedores" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+				action="#{cotizaAction.buscarProveedores}" 
+				oncomplete="buscarPersonas(#{cotizaAction.operacion}, '#{rich:clientId('pnlMensajes')}');" 
+				render="dtProveedores, pnlMensajes" execute="@region"
+				limitRender="true" />
+		</div>
+
+		<div style="margin: 10px auto 0;">
+			<h:panelGrid id="pnlBusquedaProveedoresPrincipal" columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin-left:10px; margin-bottom:20px; display:block;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+				
+				<h:selectOneMenu value="#{cotizaAction.campoBusquedaProveedores}" styleClass="Titulo" style="width: 216px;">
+					<f:selectItems value="#{cotizaAction.tiposBusquedaProveedores}" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText id="txtValorBusquedaProveedores" maxlength="50" style="width: 210px;"
+					value="#{cotizaAction.valorBusquedaProveedores}" />
+
+				<h:outputText value="#{msg['tipo']}:" styleClass="Titulo" />
+				<h:selectOneRadio value="#{cotizaAction.valorBusquedaTipoProveedor}">
+					<f:selectItem itemLabel="#{msg['persona']}" itemValue="P" />
+					<f:selectItem itemLabel="#{msg['negocio']}" itemValue="N" />
+				</h:selectOneRadio>
+			</h:panelGrid>
+
+			<rich:dataTable id="dtProveedores" value="#{cotizaAction.listProveedores}" var="var" 
+				cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:80px;">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:120px;">
+							<h:outputText value="#{msg['rfc']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; min-width:100px;">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:20px;" />
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText value="#{var.rfc}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left;">
+					<h:outputText value="#{var.nombre}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+				   <a4j:commandButton id="cmdAgregarProveedor" image="#{msg['agregar16.img']}" 
+						action="#{cotizaAction.seleccionarProveedor}" title="#{msg['seleccionar']}"
+						oncomplete="agregarPersona(#{cotizaAction.operacion}, '#{rich:clientId('pnlBusquedaProveedores')}', '#{rich:clientId('pnlMensajes')}')"
+						render="pnlProveedorDatos, pnlContactoDatos">
+						<f:setPropertyActionListener target="#{cotizaAction.pojoCotizacion.idProveedor}" value="#{var}" />
+				   </a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller page="#{cotizaAction.numPaginaProveedores}" for="dtProveedores" 
+						maxPages="10" ajaxSingle="true" align="center" styleClass="Titulo" renderIfSinglePage="false" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

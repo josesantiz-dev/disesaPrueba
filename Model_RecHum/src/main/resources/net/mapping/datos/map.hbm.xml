@@ -1,0 +1,367 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC '-//Hibernate/Hibernate Mapping DTD 3.0//EN' 'http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd'>
+<hibernate-mapping>
+	<class name="net.giro.co.beans.Correlativo" table="bbb4420d88">
+		<composite-id class="net.giro.co.beans.CorrelativoId" name="id" unsaved-value="none">
+			<key-property column="c_codemp" name="codigoEmpresa" type="long"/>
+			<key-property column="c_nomtab" name="nombreTabla" type="string"/>
+		</composite-id>
+		<property column="c_codemp" insert="false" name="cbEmpresa" update="false"/>
+		<property column="c_destab" name="descriTabla"/>
+		<property column="a_fecins" name="fechaInsercion"/>
+		<property column="a_fecmod" name="fechaModificacion"/>
+		<property column="a_ipeins" name="ipInsercion"/>
+		<property column="a_ipemod" name="ipModificacion"/>
+		<property column="n_numcor" name="numeroCorrelativo"/>
+		<property column="a_terins" name="terminalInsercion"/>
+		<property column="a_termod" name="terminalModificacion"/>
+		<property column="a_usuins" name="usuarioInsercion"/>
+		<property column="a_usumod" name="usuarioModificacion"/>
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.Empleado" table="c5f822917f">
+		<id column="aa" name="id"/>
+		<property column="af" name="idPersona"/>
+		<property column="clave" name="clave"/>
+		<property column="nombre" name="nombre"/>
+		<property column="primer_nombre" name="primerNombre"/>
+		<property column="segundo_nombre" name="segundoNombre"/>
+		<property column="nombres_propios" name="nombresPropios"/>
+		<property column="primer_apellido" name="primerApellido"/>
+		<property column="segundo_apellido" name="segundoApellido"/>
+		<property column="id_sucursal" name="idSucursal"/>
+		<property column="nombre_sucursal" name="nombreSucursal" />
+		<property column="aj" name="idArea"/>
+		<property column="area_descripcion" name="areaDescripcion" />
+		<property column="ak" name="idPuestoCategoria"/>
+		<property column="puesto_descripcion" name="puestoDescripcion" />
+		<property column="categoria_descripcion" name="categoriaDescripcion" />
+		<property column="an" name="nombreCasoEmergencia"/>
+		<property column="ap" name="externo"/>
+		<property column="homonimo" name="homonimo"/>
+		<property column="am" name="numeroSeguridadSocial"/>
+		<property column="alta_ss" name="altaSeguroSocial"/>
+		<property column="fecha_alta_ss" name="fechaAltaSeguroSocial"/>
+		<property column="email" name="email"/>
+		<property column="email_clave" name="emailClave"/>
+		<property column="al" name="fechaIngreso"/>
+		<property column="id_empresa" name="idEmpresa"/>
+		<property column="estatus" name="estatus"/> <!-- 0:Activo, 1:Baja/Eliminado, 2:Finiquito, 3:Incapacitado -->
+		<property column="ab" name="creadoPor"/>
+		<property column="ac" name="fechaCreacion"/>
+		<property column="ad" name="modificadoPor"/>
+		<property column="ae" name="fechaModificacion"/>
+		<property column="sistema" name="sistema"/>
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.EmpleadoContrato" table="empleado_contrato">
+		<id column="id" name="id"/>
+		<many-to-one column="id_empleado" name="idEmpleado" class="net.giro.rh.admon.beans.Empleado" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="fecha_inicio" name="fechaInicio"/>
+		<property column="fecha_fin" name="fechaFin"/>
+		<property column="sueldo" name="sueldo"/>
+		<property column="descuento_infonavit" name="descuentoInfonavit"/>
+		<property column="peridiocidad_pago" name="periodicidadPago"/>
+		<property column="dia_descanso" name="diaDescanso"/>
+		<property column="centro_trabajo" name="centroTrabajo"/>
+		<property column="determinado" name="determinado"/>
+		<property column="estatus" name="estatus"/>
+		<property column="hora_entrada" name="horaEntrada"/>
+		<property column="hora_salida" name="horaSalida"/>
+		<property column="hora_entrada_complemento" name="horaEntradaComplemento"/>
+		<property column="hora_salida_complemento" name="horaSalidaComplemento"/>
+		<property column="forma_pago" name="formaPago"/>
+		<property column="tipo_horario" name="tipoHorario"/>
+		<property column="sueldo_hora" name="sueldoHora"/>
+		<property column="sueldo_hora_extra" name="sueldoHoraExtra"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.EmpleadoFiniquito" table="empleado_finiquito">
+		<id column="id" name="id"/>
+		<many-to-one column="id_empleado" name="idEmpleado" class="net.giro.rh.admon.beans.Empleado" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="id_contrato" name="idContrato" />
+		<property column="fecha_ingreso" name="fechaIngreso"/>
+		<property column="monto" name="monto"/>
+		<property column="fecha_solicitud_baja" name="fechaSolicitudBaja"/>
+		<property column="solicitado_por" name="solicitadoPor"/>
+		<property column="fecha_elaboracion_envio" name="fechaElaboracionEnvio"/>
+		<property column="firma_renuncia" name="firmaRenuncia"/>
+		<property column="vobo_rh" name="voBoRh"/>
+		<property column="vobo_rh_por" name="voBoRhPor"/>
+		<property column="fecha_vobo_rh" name="voBoRhFecha"/>
+		<property column="aprobacion" name="aprobacion"/>
+		<property column="aprobado_por" name="aprobacionPor"/>
+		<property column="fecha_aprobacion" name="aprobacionFecha"/>
+		<property column="observaciones" name="observaciones"/>
+		<!-- 0:en proceso, 1:cancelado, 2:aprobado -->
+		<property column="estatus" name="estatus"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.EmpleadoDescuento" table="empleado_descuento">
+		<id column="id" name="id"/>
+		<many-to-one column="id_empleado" name="idEmpleado" class="net.giro.rh.admon.beans.Empleado" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="id_descuento" name="idDescuento"/>
+		<property column="numero_pagos" name="numeroPagos"/>
+		<property column="id_periodo" name="idPeriodo"/>
+		<property column="fecha" name="fecha"/>
+		<property column="monto" name="monto"/>
+		<property column="observaciones" name="observaciones"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+		<property column="estatus" name="estatus"/><!-- 1 - Activo, 0 - Cancelado/Eliminado -->
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.EmpleadoInfonavit" table="empleado_infonavit">
+		<id column="id" name="id"/>
+		<many-to-one column="id_empleado" name="idEmpleado" class="net.giro.rh.admon.beans.Empleado" fetch="join" insert="true" lazy="false" not-found="ignore" update="true"/>
+		<property column="fecha_desde" name="fechaDesde"/>
+		<property column="fecha_hasta" name="fechaHasta"/>
+		<property column="monto" name="monto"/>
+		<property column="observaciones" name="observaciones"/>
+		<property column="estatus" name="estatus"/> <!-- 0 - Activo, 1 - Cancelado/Eliminado -->
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.EmpleadoNomina" table="empleado_nomina">
+		<id column="id" name="id" />
+		<property column="tipo" name="tipo" /><!-- 0-Semanal, 1-Quincenal -->
+		<many-to-one column="id_empleado" name="idEmpleado" class="net.giro.rh.admon.beans.Empleado" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="id_contrato" name="idContrato" />
+		<property column="id_periodicidad" name="idPeriodicidad" />
+		<property column="id_obra" name="idObra" />
+		<property column="fecha" name="fecha" />
+		<property column="dia_descanso" name="diaDescanso" /> <!-- Indica si es dia de descanso -->
+		<property column="dia_festivo" name="diaFestivo" /> <!-- Indica si es dia festivo -->
+		<property column="factor" name="factor" /> <!-- Factor multiplicador dia festivo/descanso -->
+		<property column="horas_trabajadas" name="horasTrabajadas" />
+		<property column="horas_extras" name="horasExtras" />
+		<property column="pago_normal" name="pagoNormal" />
+		<property column="septimo_dia" name="septimoDia" />
+		<property column="pago_extra" name="pagoExtra" />
+		<property column="descuento" name="descuento" />
+		<property column="infonavit" name="infonavit" />
+		<property column="pago_neto" name="pagoNeto" />
+		<property column="id_empresa" name="idEmpresa"/>
+		<property column="observaciones" name="observaciones" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.EmpleadoNominaPreliminar" table="empleado_nomina_preliminar">
+		<id column="id" name="id" />
+		<property column="tipo" name="tipo" /><!-- 0-Semanal, 1-Quincenal -->
+		<many-to-one column="id_empleado" name="idEmpleado" class="net.giro.rh.admon.beans.Empleado" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="id_contrato" name="idContrato" />
+		<property column="id_periodicidad" name="idPeriodicidad" />
+		<property column="id_obra" name="idObra" />
+		<property column="fecha" name="fecha" />
+		<property column="dia_descanso" name="diaDescanso" /> <!-- Indica si es dia de descanso -->
+		<property column="dia_festivo" name="diaFestivo" /> <!-- Indica si es dia festivo -->
+		<property column="factor" name="factor" /> <!-- Factor multiplicador dia festivo/descanso -->
+		<property column="horas_trabajadas" name="horasTrabajadas" />
+		<property column="horas_extras" name="horasExtras" />
+		<property column="pago_normal" name="pagoNormal" />
+		<property column="septimo_dia" name="septimoDia" />
+		<property column="pago_extra" name="pagoExtra" />
+		<property column="descuento" name="descuento" />
+		<property column="infonavit" name="infonavit" />
+		<property column="pago_neto" name="pagoNeto" />
+		<property column="id_empresa" name="idEmpresa"/>
+		<property column="observaciones" name="observaciones" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.EmpleadoNominaEstatus" table="empleado_nomina_estatus">
+		<id column="id" name="id"/>
+		<property column="fecha_desde" name="fechaDesde"/>
+		<property column="fecha_hasta" name="fechaHasta"/>
+		<property column="preliminar" name="preliminar"/>
+		<property column="id_empresa" name="idEmpresa"/>
+		<property column="estatus" name="estatus"/> <!-- 0-Activo, 1-Cancelado, 2-Completo -->
+		<property column="mensaje" name="mensaje"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.EmpleadoIncapacidad" table="empleado_incapacidad">
+		<id column="id" name="id"/>
+		<many-to-one column="id_empleado" name="idEmpleado" class="net.giro.rh.admon.beans.Empleado" fetch="join" insert="true" lazy="false" not-found="ignore" update="true"/>
+		<property column="fecha_desde" name="fechaDesde"/>
+		<property column="fecha_hasta" name="fechaHasta"/>
+		<property column="observaciones" name="observaciones"/>
+		<property column="estatus" name="estatus"/> <!-- 0 - Activo, 1 - Cancelado/Eliminado -->
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.EmpleadoBeneficiario" table="a0bf10ff1f">
+		<id column="aa" name="id"/>
+		<property column="ab" name="creadoPor"/>
+		<property column="ac" name="fechaCreacion"/>
+		<property column="ad" name="modificadoPor"/>
+		<property column="ae" name="fechaModificacion"/>
+		<many-to-one column="af" name="idEmpleado" class="net.giro.rh.admon.beans.Empleado" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<!--property column="af" name="idEmpleado"/-->
+		<property column="ag" name="idPersona"/>
+		<property column="ah" name="porcentaje"/>
+		<property column="ai" name="idRelacion"/>
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.EmpleadoPariente" table="b24721448a">
+		<id column="aa" name="id"/>
+		<property column="ab" name="creadoPor"/>
+		<property column="ac" name="fechaCreacion"/>
+		<property column="ad" name="modificadoPor"/>
+		<property column="ae" name="fechaModificacion"/>
+		<many-to-one column="af" name="idEmpleado" class="net.giro.rh.admon.beans.Empleado" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<!--property column="af" name="idEmpleado"/-->
+		<property column="ag" name="idPersona"/>
+		<property column="ah" name="idRelacion"/>
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.EmpleadoReferencia" table="d76eb5cbd9">
+		<id column="aa" name="id"/>
+		<property column="ab" name="creadoPor"/>
+		<property column="ac" name="fechaCreacion"/>
+		<property column="ad" name="modificadoPor"/>
+		<property column="ae" name="fechaModificacion"/>
+		<many-to-one column="af" name="idEmpleado" class="net.giro.rh.admon.beans.Empleado" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<!--property column="af" name="idEmpleado"/-->
+		<property column="ag" name="idPersona"/>
+		<property column="ah" name="tiempoDeConocerlo"/>
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.EmpleadoTrabajoAnterior" table="b9f40cc9ea">
+		<id column="aa" name="id"/>
+		<property column="ab" name="creadoPor"/>
+		<property column="ac" name="fechaCreacion"/>
+		<property column="ad" name="modificadoPor"/>
+		<property column="ae" name="fechaModificacion"/>
+		<many-to-one column="af" name="idEmpleado" class="net.giro.rh.admon.beans.Empleado" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<!--property column="af" name="idEmpleado"/-->
+		<property column="ag" name="tiempo"/>
+		<property column="ah" name="compania"/>
+		<property column="ai" name="direccion"/>
+		<property column="aj" name="puesto"/>
+		<property column="ak" name="telefono"/>
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.Area" table="aec729bd13">
+		<id column="aa" name="id"/>
+		<property column="af" name="descripcion"/>
+		<property column="ab" name="creadoPor"/>
+		<property column="ac" name="fechaCreacion"/>
+		<property column="ad" name="modificadoPor"/>
+		<property column="ae" name="fechaModificacion"/>
+		<property column="ag" name="idResponsable"/>
+		<!-- estatus = 1 cancelado -->
+		<property column="estatus" name="estatus"/>
+		<property column="id_empresa" name="idEmpresa"/>
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.Categoria" table="e8b04fb0e3">
+		<id column="aa" name="id"/>
+		<property column="ab" name="creadoPor"/>
+		<property column="ac" name="fechaCreacion"/>
+		<property column="ad" name="modificadoPor"/>
+		<property column="ae" name="fechaModificacion"/>
+		<property column="af" name="descripcion"/>
+		<!-- estatus = 1 cancelado -->
+		<property column="estatus" name="estatus"/>
+		<property column="id_empresa" name="idEmpresa"/>
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.Puesto" table="fecc606324">
+		<id column="aa" name="id"/>
+		<property column="ab" name="creadoPor"/>
+		<property column="ac" name="fechaCreacion"/>
+		<property column="ad" name="modificadoPor"/>
+		<property column="ae" name="fechaModificacion"/>
+		<property column="af" name="descripcion"/>
+		<property column="ag" name="correoPermisos"/>
+		<property column="ah" name="correoPrestamos"/>
+		<property column="ai" name="correoVacaciones"/>
+		<property column="aj" name="correoViaticos"/>
+		<property column="ak" name="correoIncidencias"/>
+		<property column="al" name="correoActas"/>
+		<!-- estatus = 1 cancelado -->
+		<property column="estatus" name="estatus"/>
+		<property column="id_empresa" name="idEmpresa"/>
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.PuestoCategoria" table="bb72d4c5be">
+		<id column="aa" name="id"/>
+		<property column="ab" name="creadoPor"/>
+		<property column="ac" name="fechaCreacion"/>
+		<property column="ad" name="modificadoPor"/>
+		<property column="ae" name="fechaModificacion"/>
+		<many-to-one column="af" name="idPuesto" class="net.giro.rh.admon.beans.Puesto" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<many-to-one column="ag" name="idCategoria" class="net.giro.rh.admon.beans.Categoria" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<!--property column="af" name="idPuesto"/-->
+		<!--property column="ag" name="idCategoria"/-->
+		<property column="estatus" name="estatus"/>
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.Checador" table="checador">
+		<id column="id" name="id"/>
+		<property column="id_obra" name="idObra"/>
+		<property column="nombre_obra" name="nombreObra"/>
+		<property column="nombre_archivo" name="nombreArchivo"/>
+		<property column="fecha" name="fecha"/>
+		<property column="estatus" name="estatus"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+		<property column="id_empresa" name="idEmpresa"/>
+	</class>
+	
+	<class name="net.giro.rh.admon.beans.ChecadorDetalle" table="checador_detalle">
+		<id column="id" name="id"/>
+		<many-to-one column="id_checador" name="idChecador" class="net.giro.rh.admon.beans.Checador" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<!--property column="id_checador" name="idChecador"/-->
+		<!--many-to-one column="id_empleado" name="idEmpleado" class="net.giro.rh.admon.beans.Empleado" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" /-->
+		<property column="id_empleado" name="idEmpleado"/> <!-- no se mapea por el proceso de carga de empleados -->
+		<property column="nombre_empleado" name="nombreEmpleado"/>
+		<property column="fecha" name="fecha"/>
+		<property column="hora_entrada" name="horaEntrada"/>
+		<property column="hora_salida" name="horaSalida"/>
+		<property column="hora_entrada_complemento" name="horaEntradaComplemento"/>
+		<property column="hora_salida_complemento" name="horaSalidaComplemento"/>
+		<property column="hora_entrada_marcada" name="horaEntradaMarcada"/>
+		<property column="hora_salida_marcada" name="horaSalidaMarcada"/>
+		<property column="hora_entrada_marcada_complemento" name="horaEntradaMarcadaComplemento"/>
+		<property column="hora_salida_marcada_complemento" name="horaSalidaMarcadaComplemento"/>
+		<property column="tiempo_asistido" name="tiempoAsistido"/>
+		<property column="horas_trabajadas" name="horasTrabajadas"/>
+		<property column="horas_extra" name="horasExtra"/>
+		<property column="horas_extra_autorizadas" name="horasExtraAutorizadas"/>
+		<property column="usuario_autoriza" name="usuarioAutoriza"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,39 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlRecalcularNomina" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{nominaAction.operacion ? msg['navegacion.label.atencion'] : msg['navegacion.label.informacion']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" onclick="#{rich:component('pnlRecalcularNomina')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+
+		<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+			<h:outputText value="#{msg['existeNominaPeriodo']}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Descripcion" />
+			<h:outputText value="#{msg['recalcularNomina?']}" styleClass="Descripcion" />
+		</h:panelGrid>
+		
+		<!--h:panelGrid columns="2" width="100%" columnClasses="colDato, colDato" style="text-align: center;"-->
+		<h:panelGroup>
+			<a4j:commandButton style="margin:0 4px; cursor:pointer; min-width: 80px;" 
+				value="#{msg['si']}"
+				onclick="#{rich:component('pnlRecalcularNomina')}.hide()"
+				action="#{nominaAction.confirmaRecalculo}" 
+				oncomplete="salvar(#{nominaAction.operacion}, '', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrores')});"
+				render="panelFechas msgErrores pnlMensajes"
+				limitRender="true" />
+	
+			<a4j:commandButton style="margin:0 4px; cursor:pointer; min-width: 80px;" 
+				value="#{msg['no']}"
+				onclick="#{rich:component('pnlRecalcularNomina')}.hide()" />
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

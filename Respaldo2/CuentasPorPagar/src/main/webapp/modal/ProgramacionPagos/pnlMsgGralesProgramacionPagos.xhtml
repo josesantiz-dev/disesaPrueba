@@ -1,0 +1,28 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlMsgGralesProgramacionPagos" autosized="true" >
+		<f:facet name="header">
+			<h:outputText value="#{progPagosAction.resOperacion != '' ? msg['navegacion.label.atencion'] : msg['navegacion.label.informacion']}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor:pointer;" id="imgCerrarMsgProgGtos"/>
+				<rich:componentControl for="pnlMsgGralesProgramacionPagos" attachTo="imgCerrarMsgProgGtos" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+		<a4j:form id="frmMsgGralesProgramacionPagos">
+			<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+					<h:outputText value="#{msg['mensaje.info.infoReg']}" rendered="#{progPagosAction.resOperacion == ''}" style="display:block;" styleClass="Descripcion"/>
+					<h:outputText value="#{progPagosAction.resOperacion}" rendered="#{progPagosAction.resOperacion != ''}" style="display:block;" styleClass="Descripcion"/>
+					<a4j:commandButton value="#{msg['navegacion.label.aceptar']}" onclick="#{rich:component('pnlMsgGralesProgramacionPagos')}.hide()" style="margin-top:10px; cursor:pointer;"/>
+			</h:panelGrid>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

@@ -1,0 +1,43 @@
+### Instalacion de paquetes para SUBVERSION
+apt install apache2 subversion subversion-tools libapache2-mod-svn libapache2-svn libsvn-dev
+
+### habilito le modulo SVN por WEB (http)
+a2enmod dav_svn
+
+### Creamos directorio para alojar SVN
+mkdir -r /opt/svn
+chown -R www-data:www-data /opt/svn
+chmod -R 775 /opt/svn
+
+### Creamos directorio para alojar las fuentes
+svnadmin create /opt/svn/air
+svn mkdir -message="Directorios base del subversion" file:///opt/svn/air/trunk file:///opt/svn/air/tags file:///opt/svn/air/branches
+chown -R www-data:www-data /opt/svn/air
+chmod -R 775 /opt/svn/air
+
+### Creamos directorio para alojar los reportes
+svnadmin create /opt/svn/reports
+svn mkdir -message="Directorios base del subversion" file:///opt/svn/reports/trunk file:///opt/svn/reports/tags file:///opt/svn/reports/branches
+chown -R www-data:www-data /opt/svn/reports
+chmod -R 775 /opt/svn/reports
+
+### Creamos directorio para alojar el servidor de reportes
+svnadmin create /opt/svn/rs_procesos
+svn mkdir -message="Directorios base del subversion" file:///opt/svn/rs_procesos/trunk file:///opt/svn/rs_procesos/tags file:///opt/svn/rs_procesos/branches
+chown -R www-data:www-data /opt/svn/rs_procesos
+chmod -R 775 /opt/svn/rs_procesos
+
+### Creamos usuarios para el acceso a los repositorios
+htpasswd -cm /etc/apache2/dav_svn.passwd admin >> admindisesa
+htpasswd -m /etc/apache2/dav_svn.passwd javier >> :)
+htpasswd -m /etc/apache2/dav_svn.passwd israel >> igomez
+htpasswd -m /etc/apache2/dav_svn.passwd jose >> jsosa
+
+### Configuracion para el acceso WEB de los repositorios
+chown -R www-data:www-data /var/www/
+nano /etc/apache2/mods-enabled/dav_svn.conf 
+systemctl restart apache2
+systemctl status apache2
+
+
+### Acceso a repo: http://62.151.182.250/svn/air/

@@ -1,0 +1,229 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlComprobacionConFactura" autosized="true" top="20">
+		<f:facet name="header">
+			<h:outputText value="#{registroGastosAction.pagosGastosDetId != 0 ? registroGastosAction.descripcionFactura :msg['registroNuevo']}" styleClass="Titulo" />
+	    </f:facet>
+		
+	    <f:facet name="controls">
+       		<h:graphicImage style="cursor:pointer;"
+       	  		value="#{msg['navegacion.gral.cerrar.img']}"
+       	  		onclick="#{rich:component('pnlComprobacionConFactura')}.hide()" />
+	    </f:facet>
+		
+		<a4j:form id="frmComprobacionConFactura" style="padding:0; width:auto; min-width:700px; max-width:1024px; min-height:22px; text-align: left;">
+			<a4j:region id="loadComprobacionConFactura">
+				<h:panelGrid columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+					<h:panelGroup style="width:100%; vertical-align:middle; position:relative;">
+						<rich:messages id="validadorConFactura" showDetail="true" showSummary="false" />
+					</h:panelGroup>
+					
+					<h:panelGroup style="width:100%; vertical-align:middle; position:relative;">
+						<a4j:commandButton id="cmdSalvarConFactura" style="float:right; margin-left: 5px; vertical-align:top; position:relative;" 
+							image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+							action="#{registroGastosAction.guardarFactura}"
+							oncomplete="guardar(#{registroGastosAction.encontroMismoGrupo}, '#{rich:clientId('pnlComprobacionConFactura')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorFactura')});"
+							reRender="validadorConFactura,pnlMensajes,dtResultsComprobado"
+							limitToList="true" />
+					</h:panelGroup>
+				</h:panelGrid>
+
+				<h:panelGrid id="txtComprobacionData" columns="4" columnClasses="tygCompGtosColIzq,tygCompGtosColDer,tygCompGtosColIzq,tygCompGtosColDer" 
+					style="display:block; position:relative; margin:10px auto 0;" cellpadding="0" cellspacing="0">
+					<h:outputText value="#{msg['uuid']}:" styleClass="Titulo"/>					
+					<h:outputText value="#{registroGastosAction.pagosGastosDetId}" styleClass="Titulo" />
+					
+					<h:outputText value="#{msg['navegacion.label.fecha']}:" styleClass="Titulo"/>
+					<h:panelGroup>
+						<rich:calendar id="txtFacturaFecha" datePattern="dd/MMM/yyyy" showWeekDaysBar="false" showWeeksBar="false" 
+							value="#{registroGastosAction.fechaCompruebaGto}" 
+				    		required="#{!empty param[rich:clientId('cmdSalvarConFactura')]}"
+						    requiredMessage="#{msg['navegacion.label.fecha']} #{msg['mensaje.error.requerido']}" />
+				    	
+				    	<rich:message for="txtFacturaFecha" showSummary="false" showDetail="false"  style="color:red">
+				      		<f:facet name="errorMarker">
+								<h:graphicImage style="margin:0 5px;" 
+									value="#{msg['cancelar16.img']}" 
+									title="#{msg['mensaje.error.requerido']}" />
+				      		</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['tipoComprobante']}:" styleClass="Titulo"/>					
+					<h:outputText value="#{registroGastosAction.pagosGastosDetId}" styleClass="Titulo" />
+					
+					<h:outputText value="#{msg['facturado']}:" styleClass="Titulo"/>					
+					<h:outputText value="#{registroGastosAction.pagosGastosDetId}" styleClass="Titulo" />
+					
+					<h:outputText value="#{msg['factura']}:" styleClass="Titulo"/>
+					<h:panelGroup>
+						<h:inputText id="txtFacturaFolio" maxlength="20" style="width:150px;"
+							disabled="#{registroGastosAction.facturado ? false : (registroGastosAction.referencia == '' ? false : true)}"
+							value="#{registroGastosAction.referencia}" 
+							required="#{!empty param[rich:clientId('cmdSalvarConFactura')]}"
+						    requiredMessage="#{msg['folioDocumento']} #{msg['mensaje.error.requerido']}" />	
+						
+						<rich:message for="txtFacturaFolio" showSummary="false" showDetail="false"  style="color:red">
+					    	<f:facet name="errorMarker">
+								<h:graphicImage style="margin:0 5px;" 
+									value="#{msg['cancelar16.img']}" 
+									title="#{msg['mensaje.error.requerido']}" />
+					      	</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['moneda']}:" styleClass="Titulo"/>					
+					<h:outputText value="#{registroGastosAction.pagosGastosDetId}" styleClass="Titulo" />
+					
+					<h:outputText value="#{msg['rfc']}:" styleClass="Titulo"/>					
+					<h:outputText value="#{registroGastosAction.pagosGastosDetId}" styleClass="Titulo" />
+					
+					<h:outputText value="#{msg['tipoCambio']}:" styleClass="Titulo"/>					
+					<h:outputText value="#{registroGastosAction.pagosGastosDetId}" styleClass="Titulo" />
+				</h:panelGrid>
+				
+				<h:panelGrid columns="2" columnClasses="tygCompGtosColIzq,tygCompGtosColDer" 
+					style="display:block; position:relative; margin:5px auto 0;" cellpadding="0" cellspacing="0">
+					<h:outputText value="#{msg['emisor']}:" styleClass="Titulo" />	
+					<h:panelGroup>
+						<h:inputText id="txtFacturaEmisor" maxlength="20" style="width:384px;" 
+							disabled="#{registroGastosAction.facturado ? false : (registroGastosAction.facturaEmisor == '' ? false : true)}"
+							value="#{registroGastosAction.facturaEmisor}" 
+							required="#{!empty param[rich:clientId('cmdSalvarConFactura')]}"
+							requiredMessage="#{msg['emisor']} #{msg['mensaje.error.requerido']}" />
+						
+						<rich:message for="txtFacturaEmisor" showSummary="false" showDetail="false" style="color:red">
+							<f:facet name="errorMarker">
+								<h:graphicImage style="margin:0 5px;" 
+									value="#{msg['cancelar16.img']}" 
+									title="#{msg['mensaje.error.requerido']}" />
+							</f:facet>
+						</rich:message>
+					</h:panelGroup>
+				</h:panelGrid>
+				
+				<rich:dataTable id="dtFacturaComprobacion" value="#{registroGastosAction.listFacturaConceptos}" var="var" 
+					rows="100" cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" style="width:100%; margin:0 auto;">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['gasto']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['descripcion']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['importe']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['impuestos']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['total']}" />
+							</rich:column> 
+							
+							<rich:column style="text-align:center;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['observaciones']}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column style="text-align:left; min-width:90px; max-width:100px; width:auto;" styleClass="tygCompGtosDesc">
+						<h:panelGroup>
+							<a4j:commandLink id="btnBusquedaConceptos" 
+								onclick="#{rich:element('btnBusquedaConceptos')}.disabled = true;"
+								value="#{registroGastosAction.conceptoGasto == '' ? msg['seleccionar'] : msg['cambiar']}"
+								action="#{registroGastosAction.nuevaBusquedaConceptos}"
+								oncomplete="#{rich:element('btnBusquedaConceptos')}.disabled = false; nuevaBusqueda(#{registroGastosAction.encontroMismoGrupo},'pnlBusquedaConceptos','pnlMensajes')"
+								reRender="pnlMensajes,pnlBusquedaConceptos" />
+							
+							<!-- Este input es solo con propósito de que se permita hacer validator al proyecto -->
+							<h:inputText id="txtConceptoGtoHidden" style="text-align:left; display:none;"
+								value="#{registroGastosAction.conceptoGasto}"
+								required="#{!empty param[rich:clientId('cmdSalvarFactura')]}"
+								requiredMessage="#{msg['navegacion.label.concepto']} #{msg['mensaje.error.requerido']}" />
+							
+							<rich:message for="txtConceptoGtoHidden" showSummary="false" showDetail="false" style="color:red">
+								<f:facet name="errorMarker">
+									<h:graphicImage style="margin:0 5px;" 
+										value="#{msg['cancelar16.img']}" 
+										title="#{msg['mensaje.error.requerido']}. #{msg['mensaje.validacion.selectItem']}" />
+								</f:facet>
+							</rich:message>
+						</h:panelGroup>
+					</rich:column>
+					
+					<rich:column style="text-align:left; min-width:100px; max-width:300px; width:auto;" styleClass="tygCompGtosDesc">
+						<h:outputText value="#{var.descripcion}" />
+					</rich:column>
+					
+					<rich:column style="text-align:left; min-width:100px; max-width:300px; width:auto;" styleClass="tygCompGtosDesc">
+						<h:outputText value="#{var.importe}" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; min-width:90px; max-width:120px; width:auto;" styleClass="tygCompGtosDesc">
+						<h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+							<h:outputText value="#{var.descImpuesto}:" title="#{var.porImpuesto} %" />
+							<h:outputText value="#{var.impuesto}"/>
+							
+							<h:outputText value="#{var.descRetencion}:" title="#{var.porRetencion} %" />
+							<h:outputText value="#{var.retencion}"/>
+						</h:panelGrid>
+					</rich:column>
+					
+					<rich:column style="text-align:center; min-width:90px; max-width:120px; width:auto;" styleClass="tygCompGtosDesc">
+						<h:outputText value="#{var.total}" />
+					</rich:column>
+					
+					<rich:column style="text-align:right; min-width:90px; max-width:120px; width:auto;" styleClass="tygCompGtosDesc">
+						<h:inputText maxlength="10" style="text-align:right; width:90px;"
+							title="#{msg['navegacion.label.editable']}"
+							value="#{var.observacion}" />
+					</rich:column>
+
+					<f:facet name="footer">
+						<rich:columnGroup>
+							<rich:column colspan="2" style="text-align:right;">
+								<h:outputText value="#{msg['totales']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:right;">
+								<h:outputText value="#{registroGastosAction.conceptosTotalImportes}">
+									<f:convertNumber pattern="$###,###.00" />
+								</h:outputText>
+							</rich:column>
+							
+							<rich:column style="text-align:right;">
+								<h:outputText value="#{registroGastosAction.conceptosTotalImpuestos}">
+									<f:convertNumber pattern="$###,###.00" />
+								</h:outputText>
+							</rich:column>
+							
+							<rich:column style="text-align:right;">
+								<h:outputText value="#{registroGastosAction.conceptosTotal}">
+									<f:convertNumber pattern="$###,###.00" />
+								</h:outputText>
+							</rich:column>
+							
+							<rich:column style="text-align:center;"/>
+							
+							<rich:column breakBefore="true" colspan="6">
+								<rich:datascroller for="dtFacturaComprobacion" page="#{registroGastosAction.paginaFacturaComprobacion}" 
+									align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" renderIfSinglePage="false"  />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+				</rich:dataTable>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

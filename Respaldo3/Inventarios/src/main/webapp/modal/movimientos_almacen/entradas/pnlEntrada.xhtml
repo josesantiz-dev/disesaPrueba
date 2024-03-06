@@ -1,0 +1,308 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlEntrada" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1044px;" top="10">
+		<f:facet name="header">
+			<h:outputText value="#{entradasAction.titulo}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlEntrada')}.hide()" />
+		</f:facet>
+		
+		<h:panelGrid id="botonera" columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align:left;">
+			<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative; text-align:left;">
+				<rich:messages id="validadorEntradas" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!">
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" /></f:facet>
+				</rich:messages>
+				
+				<h:panelGroup style="float:left; margin:0 5px 0 0;">
+					<h:outputText styleClass="Titulo" rendered="#{! entradasAction.puedeEditar}"
+						value="#{entradasAction.fecha}"><f:convertDateTime type="date" pattern="dd-MMM-yyyy"/></h:outputText>
+				</h:panelGroup>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdSalvar" style="float:right; margin-left: 5px; vertical-align:top; position:relative;"
+					image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+					rendered="#{entradasAction.puedeEditar ? true : entradasAction.debugging }" 
+					onclick="#{rich:element('cmdSalvar')}.disabled = true;" 
+					action="#{entradasAction.guardar}" 
+					oncomplete="#{rich:element('cmdSalvar')}.disabled = false; guardar(#{entradasAction.operacionCompleta}, '#{rich:clientId('pnlEntrada')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorEntradas')})"
+					render="dtEntradas,pnlMensajes,validadorEntradas"
+					limitRender="true" />
+					
+				<a4j:commandButton id="cmdImprimir" style="float:right; margin-left: 5px; vertical-align:top; position:relative;"
+					image="#{msg['imprimir22.img']}" title="#{msg['imprimir.e']}"
+					rendered="#{! entradasAction.puedeEditar}"
+					onclick="#{rich:element('cmdImprimir')}.disabled = true;" 
+					action="#{entradasAction.reporte}" 
+					oncomplete="#{rich:element('cmdImprimir')}.disabled = false; reporte(#{entradasAction.operacionCompleta}, '#{rich:clientId('pnlMensajes')}')"
+					render="pnlMensajes"
+					limitRender="true" />
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<h:panelGroup styleClass="encabezado" style="min-height:1em; margin:5px auto 0;">
+			<h:outputText value="#{entradasAction.almacenMovimiento}" />
+		</h:panelGroup>
+		
+		<h:panelGroup id="grupoSelectores" style="display:block; width:100%; margin:5px auto 0; text-align:left;">
+			<h:panelGrid columns="2" style="width:100%; margin:0 auto; text-align:left;">
+				<h:panelGroup id="panelOrigen">
+					<fieldset style="margin:0 auto 0 0; padding:2px; width:480px; min-height:100px;">
+						<legend><h:outputText value="#{msg['origen']}" /></legend>
+						
+						<h:panelGrid id="selectorOrdenCompra" rendered="#{entradasAction.tipoEntrada == 'OC' || entradasAction.tipoEntrada == 'CB'}"
+							columns="2" columnClasses="colTitulo,colDato" style="width:100%; margin:0 auto; text-align:left;">
+							<h:outputText value="#{msg['ordenCompra']}:" styleClass="Titulo" />
+				        	<h:panelGroup>
+					        	<h:outputText value="#{entradasAction.ordenCompra}" style="margin:0 5px 0 0;" escape="false" />
+						       	<a4j:commandLink id="btnSelectorOrdenCompra" style="vertical-align:middle; cursor:pointer; margin:0 auto;"
+									value="#{entradasAction.ordenCompra == '' ? msg['seleccione'] : msg['cambiar']}"
+									rendered="#{entradasAction.puedeEditar}"
+									action="#{entradasAction.nuevaBusquedaOrdenCompra}" 
+									oncomplete="#{rich:component('pnlBusquedaOrdenCompra')}.show();"
+									render="pnlBusquedaOrdenCompra"
+									limitRender="true" />
+								<h:inputText style="display:none;"
+									value="#{entradasAction.ordenCompra}"
+									required="#{entradasAction.tipoEntrada == 'OC' || entradasAction.tipoEntrada == 'CB' ? !empty param[rich:clientId('cmdSalvar')] : false}"
+									requiredMessage="#{msg['ordenCompra']} #{msg['mensaje.error.requerido']}" />
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['obra']}:" styleClass="Titulo" />
+							<h:outputText value="#{entradasAction.obra}" escape="false" />
+							
+							<h:outputText value="#{msg['folioFactura']}:" styleClass="Titulo" />
+							<h:inputText id="txtFolioFactura" style="width:200px;" 
+								disabled="#{! entradasAction.puedeEditar ? (entradasAction.debugging ? false : true) : (entradasAction.tipoEntrada == 'OC' || entradasAction.tipoEntrada == 'CB' ? false : true)}"
+								value="#{entradasAction.folioFactura}"
+				            	required="#{entradasAction.tipoEntrada == 'OC' || entradasAction.tipoEntrada == 'CB' ? !empty param[rich:clientId('cmdSalvar')] : false}"
+								requiredMessage="#{msg['folioFactura']} #{msg['mensaje.error.requerido']}" />
+						</h:panelGrid>
+						
+						<h:panelGrid id="selectorTraspaso" 	  rendered="#{entradasAction.tipoEntrada == 'TR' || entradasAction.tipoEntrada == 'TX'}"
+							columns="2" columnClasses="colTitulo,colDato" style="width:100%; margin:0 auto; text-align:left;">
+							<h:outputText value="#{msg['traspaso']}:" styleClass="Titulo" />
+					    	<h:panelGroup>
+								<h:outputText value="#{entradasAction.traspaso}" style="margin:0 5px 0 0;" escape="false" />
+							    <a4j:commandLink id="btnSelectorTraspaso" style="vertical-align: middle; cursor: pointer; margin:0 auto;"
+									value="#{entradasAction.traspaso == '' ? msg['seleccione'] : msg['cambiar']}"
+									rendered="#{entradasAction.puedeEditar}"
+									action="#{entradasAction.nuevaBusquedaTraspaso}" 
+									oncomplete="#{rich:component('pnlBusquedaTraspasos')}.show();"
+									render="pnlBusquedaTraspasos"
+									limitRender="true" />
+								<h:inputText style="display:none;"
+									value="#{entradasAction.traspaso}"
+									required="#{entradasAction.tipoEntrada == 'TR' || entradasAction.tipoEntrada == 'TX' ? !empty param[rich:clientId('cmdSalvar')] : false}"
+									requiredMessage="#{msg['traspaso']} #{msg['mensaje.error.requerido']}" />
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['envia']}:" styleClass="Titulo" />
+							<h:outputText value="#{entradasAction.envia}" escape="false" />
+						
+							<h:outputText value="#{msg['obra']}:" styleClass="Titulo" />
+							<h:outputText value="#{entradasAction.obraOrigen}" escape="false" />
+						</h:panelGrid>
+						
+						<h:panelGrid id="selectorDevolucion"  rendered="#{entradasAction.tipoEntrada == 'DE'}"
+							columns="2" columnClasses="colTitulo,colDato" style="width:100%; margin:0 auto; text-align:left;">
+							<h:outputText value="#{msg['devolucion']}:" styleClass="Titulo" />
+					    	<h:panelGroup>
+								<h:outputText value="#{entradasAction.traspaso}" style="margin:0 5px 0 0;" escape="false" />
+							    <a4j:commandLink id="btnSelectorDevolucion" style="vertical-align: middle; cursor: pointer; margin:0 auto;"
+									value="#{entradasAction.traspaso == '' ? msg['seleccione'] : msg['cambiar']}"
+									rendered="#{entradasAction.puedeEditar}"
+									action="#{entradasAction.nuevaBusquedaTraspaso}" 
+									oncomplete="#{rich:component('pnlBusquedaTraspasos')}.show();"
+									render="pnlBusquedaTraspasos"
+									limitRender="true" />
+								<h:inputText style="display:none;"
+									value="#{entradasAction.traspaso}"
+									required="#{entradasAction.tipoEntrada == 'DE' ? !empty param[rich:clientId('cmdSalvar')] : false}"
+									requiredMessage="#{msg['devolucion']} #{msg['mensaje.error.requerido']}" />
+							</h:panelGroup>
+						
+							<h:outputText value="#{msg['devuelve']}:" styleClass="Titulo" />
+							<h:outputText value="#{entradasAction.envia}" escape="false" />
+						
+							<h:outputText value="#{msg['obra']}:" styleClass="Titulo" />
+							<h:outputText value="#{entradasAction.obra}" escape="false" />
+						</h:panelGrid>
+						
+						<h:panelGrid id="selectorSalida" 	  rendered="#{entradasAction.tipoEntrada == 'SO'}"
+							columns="2" columnClasses="colTitulo,colDato" style="width:100%; margin:0 auto; text-align:left;">
+							<h:outputText value="#{msg['obra']}:"  styleClass="Titulo" />
+							<h:panelGroup>
+								<h:outputText id="txtObra" value="#{entradasAction.obra}" style="margin:0 5px 0 0;" escape="false" />
+								<a4j:commandLink id="cmdSeleccionarObra" styleClass="linkColor" 
+									rendered="#{entradasAction.puedeEditar}"
+									value="#{entradasAction.obra == '' ? msg['seleccionar'] : msg['cambiar']}" title="#{msg['busqueda']}"
+									action="#{entradasAction.nuevaBusquedaObras}" 
+									oncomplete="#{rich:component('pnlBusquedaObras')}.show()"
+									render="pnlBusquedaObras" 
+									limitRender="true" />
+								
+								<h:inputText id="txtObraHidden" style="text-align:left; display:none;"
+									value="#{entradasAction.obra}" 
+									required="#{entradasAction.tipoEntrada == 'SO' ? false : !empty param[rich:clientId('cmdSalvar')]}" 
+									requiredMessage="#{msg['obra']} #{msg['mensaje.error.requerido']}" />
+							</h:panelGroup>
+							
+				            <h:outputText value="#{msg['devuelve']}:" styleClass="Titulo" />
+							<h:selectOneMenu id="cbEmpleadosRecibe" style="width:316px;" 
+								disabled="#{not entradasAction.puedeEditar}"
+								value="#{entradasAction.idEmpleadoRecibe}" 
+				            	required="#{entradasAction.tipoEntrada == 'SO' ? false : !empty param[rich:clientId('cmdSalvar')]}"
+								requiredMessage="#{msg['recibe']} #{msg['mensaje.error.requerido']}">
+								<f:selectItem itemLabel="#{msg['seleccione']}" />
+								<f:selectItems value="#{entradasAction.listEmpleadosItems}" /> 
+							</h:selectOneMenu>
+							
+				            <h:outputText value="#{msg['productos']}:" styleClass="Titulo" />
+							<a4j:commandButton id="cmdAgregarProducto" style="vertical-align: middle; cursor: pointer; margin:0 5px;" 
+								image="#{msg['agregar22.img']}" title="#{msg['agregar.e']} #{msg['producto']}"
+								rendered="#{entradasAction.puedeEditar}"
+								action="#{entradasAction.nuevaBusquedaProductos}" 
+								oncomplete="#{rich:component('pnlBusquedaProductos')}.show()"
+								render="pnlBusquedaProductos" 
+								limitRender="true" />
+						</h:panelGrid>
+					</fieldset>
+				</h:panelGroup>
+				
+				<h:panelGroup id="panelDestino">
+					<fieldset style="margin:0 0 0 auto; padding:2px; width:480px; min-height:100px;">
+						<legend><h:outputText value="#{msg['destino']}" /></legend>
+						<h:panelGrid columns="2" columnClasses="colTitulo" style="width:100%; margin:0 auto; text-align:left;">
+							<h:panelGroup>
+								<h:outputText value="#{msg['almacen']}:" styleClass="Titulo" rendered="#{entradasAction.almacenMovimientoTipo == 'AL'}" />
+								<h:outputText value="#{msg['bodega']}:"  styleClass="Titulo" rendered="#{entradasAction.almacenMovimientoTipo == 'BO'}" />
+							</h:panelGroup>
+							<h:outputText value="#{entradasAction.almacenMovimiento}" />
+							
+							<h:outputText value="#{msg['recibe']}:" styleClass="Titulo" />
+							<h:outputText value="#{entradasAction.recibe}" escape="false" />
+							
+							<h:outputText value="#{msg['obra']}:" styleClass="Titulo" rendered="#{entradasAction.tipoEntrada == 'TR'}" />
+							<h:outputText value="#{entradasAction.obra}" rendered="#{entradasAction.tipoEntrada == 'TR'}" escape="false" />
+						</h:panelGrid>
+					</fieldset>
+				</h:panelGroup>
+			</h:panelGrid>
+		</h:panelGroup>
+		
+		<div class="tableParent" style="display:block; margin:5px auto 0; width:100%; padding:0; height:auto; max-height:360px; overflow-y:auto;">
+			<rich:dataTable id="dtEntradaDetalles" value="#{entradasAction.listaProductosEntrada}" var="var" iterationStatusVar="it"
+				cellpadding="0" cellspacing="0" rows="50" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" style="margin:0 auto;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:20px;">
+							<h:outputText value="#" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:70px;">
+							<h:outputText value="#{msg['productos.id']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+							<h:outputText value="#{msg['productos.codigo']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+							<h:outputText value="#{msg['productos.descripcion']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+							<h:outputText value="#{msg['productos.um']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+							<h:outputText value="#{msg['productos.cantidadSolicitada']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+							<h:outputText value="#{msg['productos.cantidadPendiente']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+							<h:outputText value="#{msg['productos.cantidadRecibida']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:20px;"
+							rendered="#{entradasAction.tipoEntrada == 'SO'}" />
+					</rich:columnGroup>
+				</f:facet>
+	
+				<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+					<h:outputText value="#{it.index + 1}"><f:convertNumber pattern="00" /></h:outputText>
+				</rich:column>
+	
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText value="#{var.producto.id}"/>
+				</rich:column>
+	
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText value="#{var.producto.clave}"/>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left;">
+					<h:outputText value="#{var.producto.descripcion}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center;">
+					<h:outputText value="#{var.producto.unidadMedida.valor}"/>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:right;">
+					<h:outputText value="#{var.cantidadSolicitada}"><f:convertNumber pattern="0.00" /></h:outputText>
+				</rich:column>
+					
+				<rich:column styleClass="Descripcion" style="text-align:right;">				    
+				    <h:outputText value="#{var.cantidad_auxiliar1}"><f:convertNumber pattern="0.00" /></h:outputText>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:right;">
+					<h:outputText value="#{var.cantidad}" rendered="#{! entradasAction.puedeEditar}"><f:convertNumber pattern="0.00" /></h:outputText>
+					<h:inputText id="txtCantidadProducto" style="text-align:right; width:72px;"
+				    	rendered="#{entradasAction.puedeEditar ? true : var.cantidad_auxiliar1 > 0}"
+				    	value="#{var.cantidad}"
+				    	onkeypress="return (soloDecimal(event.which));">
+				    	<f:attribute name="indexProducto" value="#{it.index}" />
+				    	<a4j:ajax event="blur" 
+				    		listener="#{entradasAction.validaCantidadProducto}" execute="@this" 
+				    		oncomplete="validaCantidadProducto(#{var.cantidadSolicitada}, #{var.cantidad}, #{var.cantidad_auxiliar1}, '#{rich:clientId('pnlAvisoCantidad')}');"
+							render="dtEntradaDetalles,pnlMensajes"
+							limitRender="true" />
+				    </h:inputText>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:20px;"
+					rendered="#{entradasAction.tipoEntrada == 'SO'}">
+					<a4j:commandButton id="btnQuitarProducto" rendered="#{entradasAction.puedeEditar}"
+						image="#{msg['eliminar16.img']}" title="#{msg['eliminar.e']}"
+						action="#{entradasAction.quitarProducto}" 
+						oncomplete="quitar(#{entradasAction.band}, '#{rich:clientId('pnlMensajes')}')"
+						render="dtEntradaDetalles,pnlMensajes"
+						limitRender="true">
+						<f:param name="idProductoBorrar" value="#{var.producto.id}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<f:facet name="footer">
+					<rich:dataScroller for="dtEntradaDetalles" page="#{entradasAction.numPaginaDetalles}" renderIfSinglePage="false" 
+						align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

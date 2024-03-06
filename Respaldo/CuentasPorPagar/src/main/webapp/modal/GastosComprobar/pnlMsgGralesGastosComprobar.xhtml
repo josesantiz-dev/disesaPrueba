@@ -1,0 +1,34 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlMsgGralesGastosComprobar" autosized="true" >
+		<f:facet name="header">
+			<h:outputText value="#{gastosComprobarAction.band ? msg['navegacion.label.atencion'] : msg['navegacion.label.informacion']}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor:pointer;" id="imgCerrarMsgImpuestoDuplicado"/>
+				<rich:componentControl for="pnlMsgGralesGastosComprobar" attachTo="imgCerrarMsgImpuestoDuplicado" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="frmMsgGralesGastosComprobar">
+			<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+				<h:outputText value="#{msg['mensaje.info.infoReg']}"  styleClass="Descripcion" rendered="#{gastosComprobarAction.tipoMensaje == 0}" />								
+				<h:outputText value="#{gastosComprobarAction.mensaje}"  styleClass="Descripcion" rendered="#{gastosComprobarAction.tipoMensaje == 1}" />
+				<h:outputText value="#{msg['navegacion.label.montoInvalido']}"  styleClass="Descripcion" rendered="#{gastosComprobarAction.tipoMensaje == 3}" />
+				<h:outputText value="#{msg['mensaje.info.noCancelar']}"  styleClass="Descripcion" rendered="#{gastosComprobarAction.tipoMensaje == 4}" />
+				<h:outputText value="#{msg['mensaje.error.inesperado']}"  styleClass="Descripcion" rendered="#{gastosComprobarAction.tipoMensaje == 5}" />
+				<h:outputText value="#{msg['mensaje.info.busquedaVacia']}"  styleClass="Descripcion" rendered="#{gastosComprobarAction.tipoMensaje == 6}" />
+				<h:outputText value="#{msg['navegacion.label.saldoInsuficiente']}" styleClass="Descripcion" rendered="#{gastosComprobarAction.tipoMensaje == 7}" />
+				<h:outputText value="#{msg['mensaje.info.gastosPen']}" styleClass="Descripcion" rendered="#{gastosComprobarAction.tipoMensaje == 8}" />
+				<a4j:commandButton oncomplete="msgRevisando(#{rich:element('msgErrorGastosComprobar')},'pnlNuevoEditarGastosComprobar','pnlMsgGralesGastosComprobar',#{gastosComprobarAction.band},'boton','#{gastosComprobarAction.mensaje}')" value="#{msg['navegacion.label.aceptar']}"  />
+			</h:panelGrid>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

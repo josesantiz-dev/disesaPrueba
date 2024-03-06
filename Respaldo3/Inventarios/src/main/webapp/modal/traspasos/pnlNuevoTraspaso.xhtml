@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlNuevoTraspaso" autosized="true" domElementAttachment="form" top="15"
+		onshow="document.getElementById('#{rich:clientId('btnTraspasoCancel')}').focus();"
+		header="#{msg['nuevo']} #{msg['traspaso']}">
+		
+		<h:panelGroup styleClass="encabezado" style="min-height:1em; margin:5px auto 0;">
+			<h:outputText value="#{traspasosAction.almacenMovimiento}" />
+		</h:panelGroup>
+		
+		<h:panelGroup style="display:block; min-width:300px; max-width:500px; text-align:center; margin:10px auto 0; vertical-align:top;">
+			<a4j:commandButton id="btnTraspasoAlmacen" style="margin:0 auto; cursor:pointer; width:100px; height:50px; white-space:pre-line; vertical-align:top;"
+				rendered="#{traspasosAction.almacenMovimientoTipo == 'AL'}"
+				value="#{msg['almacen']}"
+				onclick="#{rich:component('pnlNuevoTraspaso')}.hide()"
+				action="#{traspasosAction.nuevoTraspaso}"  execute="@this"
+				oncomplete="#{rich:component('pnlTraspaso')}.show(); delayAutoClick('frmPrincipal:btnSelectorOrdenCompra');"
+				render="pnlTraspaso,grupoDatos,dtDetalles" limitRender="true">
+				<f:param name="origen" value="TX" assignTo="#{traspasosAction.tipoTraspaso}" />
+			</a4j:commandButton>
+			
+			<a4j:commandButton id="btnTraspasoBodegaAL" style="margin:0 auto; cursor:pointer; width:100px; height:50px; white-space:pre-line; vertical-align:top;"
+				rendered="#{traspasosAction.almacenMovimientoTipo == 'AL'}"
+				value="#{msg['bodega']}"
+				onclick="#{rich:component('pnlNuevoTraspaso')}.hide()"
+				action="#{traspasosAction.nuevoTraspaso}"  execute="@this"
+				oncomplete="#{rich:component('pnlTraspaso')}.show();"
+				render="pnlTraspaso,grupoDatos,dtDetalles" limitRender="true">
+				<f:param name="origen" value="TR" assignTo="#{traspasosAction.tipoTraspaso}" />
+			</a4j:commandButton>
+			
+			<a4j:commandButton id="btnTraspasoBodegaBO" style="margin:0 auto; cursor:pointer; width:100px; height:50px; white-space:pre-line; vertical-align:top;"
+				rendered="#{traspasosAction.almacenMovimientoTipo == 'BO'}"
+				value="#{msg['bodega']}"
+				onclick="#{rich:component('pnlNuevoTraspaso')}.hide()"
+				action="#{traspasosAction.nuevoTraspaso}"  execute="@this"
+				oncomplete="#{rich:component('pnlTraspaso')}.show();"
+				render="pnlTraspaso,grupoDatos,dtDetalles" limitRender="true">
+				<f:param name="origen" value="TZ" assignTo="#{traspasosAction.tipoTraspaso}" />
+			</a4j:commandButton>
+			
+			<a4j:commandButton id="btnTraspasoDevolucion" style="margin:0 auto; cursor:pointer; width:100px; height:50px; white-space:pre-line; vertical-align:top;"
+				rendered="#{traspasosAction.almacenMovimientoTipo == 'BO'}"
+				value="#{msg['devolucion']}"
+				onclick="#{rich:component('pnlNuevoTraspaso')}.hide()"
+				action="#{traspasosAction.nuevoTraspaso}"  execute="@this"
+				oncomplete="#{rich:component('pnlTraspaso')}.show();"
+				render="pnlTraspaso,grupoDatos,dtDetalles" limitRender="true">
+				<f:param name="origen" value="DE" assignTo="#{traspasosAction.tipoTraspaso}" />
+			</a4j:commandButton>
+			
+			<a4j:commandButton id="btnTraspasoCancel" style="margin:10px auto 0; cursor:pointer; width:90px; display:block;"
+				value="#{msg['cancelar']}"
+				onclick="#{rich:component('pnlNuevoTraspaso')}.hide()" />
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

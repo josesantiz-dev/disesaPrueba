@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="entrada_almacen" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f5ee1a9c-10e9-4d11-9cd6-746f88c3f831">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ruta_img" class="java.lang.String">
+		<defaultValueExpression><![CDATA["D:/CONDESE/JAVA/DISESA/Desarrollo/Extras/imagen/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idMovimiento" class="java.lang.String">
+		<defaultValueExpression><![CDATA["10000008"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT am.id
+    , am.id_almacen
+    , alm.nombre AS nombre_almacen
+    , DATE(am.fecha) AS fecha_movimiento
+    , 0 AS folio
+    , am.id_orden_compra
+    , am.id_traspaso
+    , COALESCE(o.id_obra, 0) AS id_obra
+    , COALESCE(o.nombre, '') AS nombre_obra
+    , COALESCE(almt.id, 0) AS id_almacen_proviene
+    , COALESCE(almt.nombre, '') AS nombre_almacen_proviene
+    , COALESCE(oc.id_proveedor, 0) AS id_proveedor
+    , COALESCE(per.ag, '') AS nombre_proveedor
+    , CASE
+        WHEN COALESCE(oalm1.id_obra, 0) > 0 THEN 'SOLICITUD A BODEGA: ' || oalm1.id
+        WHEN COALESCE(oalm2.id_obra, 0) > 0 THEN 'SOLICITUD A BODEGA: ' || oalm2.id
+        WHEN COALESCE(am.id_orden_compra, 0) > 0 THEN 'ORDEN DE COMPRA: ' || am.id_orden_compra || ' FACTURA: ' || COALESCE(am.folio_factura, 'NA')
+        ELSE 'NULL' END AS referencia
+    , md.id AS mov_detalle
+    , md.cantidad
+    , pr.id AS producto_id
+    , pr.clave AS codigo
+    , cv_un.af AS unidad_medida
+    , pr.descripcion
+    , COALESCE(emp1.nombre, '') AS nombre_entrega
+    , COALESCE(emp2.ag, '') AS nombre_salida
+    , COALESCE(emp3.nombre, '') AS nombre_responsable
+FROM almacen_movimientos am
+    INNER JOIN movimientos_detalle md ON md.id_almacen_movimiento = am.id
+    INNER JOIN producto pr ON pr.id = md.id_producto
+    INNER JOIN almacen alm ON alm.id = am.id_almacen
+    LEFT  JOIN de7a4d94446 cv_un ON cv_un.aa = pr.unidad_medida
+    LEFT  JOIN orden_compra oc ON oc.id = am.id_orden_compra
+    LEFT  JOIN c81498d458 per ON per.aa = oc.id_proveedor
+    LEFT  JOIN almacen_traspaso atr ON atr.id = am.id_traspaso
+    LEFT  JOIN almacen almt ON almt.id = atr.id_almacen_origen
+    LEFT  JOIN obra_almacenes oalm1 ON oalm1.id_almacen = am.id_almacen
+    LEFT  JOIN obra_almacenes oalm2 ON oalm2.id_almacen = atr.id_almacen_destino
+    LEFT  JOIN obra o ON o.id_obra = CASE
+                WHEN COALESCE(oalm1.id_obra, 0) > 0 THEN oalm1.id_obra
+                WHEN COALESCE(oalm2.id_obra, 0) > 0 THEN oalm2.id_obra
+                WHEN COALESCE(am.id_orden_compra, 0) > 0 THEN oc.id_obra
+                ELSE 0 END
+    LEFT  JOIN c5f822917f emp1 ON emp1.aa = o.id_responsable
+    LEFT  JOIN dc8deac2731 emp2 ON emp2.aa = am.creado_por
+    LEFT  JOIN c5f822917f emp3 ON emp3.aa = am.recibe
+WHERE CAST(am.id AS VARCHAR) = $P{idMovimiento} AND am.tipo = 1
+ORDER BY am.id, pr.descripcion;]]>
+	</queryString>
+	<field name="id" class="java.lang.Integer"/>
+	<field name="id_almacen" class="java.lang.Integer"/>
+	<field name="nombre_almacen" class="java.lang.String"/>
+	<field name="fecha_movimiento" class="java.sql.Date"/>
+	<field name="folio" class="java.lang.Integer"/>
+	<field name="id_orden_compra" class="java.lang.Integer"/>
+	<field name="id_traspaso" class="java.lang.Integer"/>
+	<field name="id_obra" class="java.math.BigDecimal"/>
+	<field name="nombre_obra" class="java.lang.String"/>
+	<field name="id_almacen_proviene" class="java.lang.Integer"/>
+	<field name="nombre_almacen_proviene" class="java.lang.String"/>
+	<field name="id_proveedor" class="java.math.BigDecimal"/>
+	<field name="nombre_proveedor" class="java.lang.String"/>
+	<field name="referencia" class="java.lang.String"/>
+	<field name="mov_detalle" class="java.lang.Integer"/>
+	<field name="cantidad" class="java.math.BigDecimal"/>
+	<field name="producto_id" class="java.lang.Integer"/>
+	<field name="codigo" class="java.lang.String"/>
+	<field name="unidad_medida" class="java.lang.String"/>
+	<field name="descripcion" class="java.lang.String"/>
+	<field name="nombre_entrega" class="java.lang.String"/>
+	<field name="nombre_salida" class="java.lang.String"/>
+	<field name="nombre_responsable" class="java.lang.String"/>
+	<title>
+		<band height="72" splitType="Stretch">
+			<image scaleImage="RealSize" hAlign="Left" vAlign="Middle" onErrorType="Icon">
+				<reportElement x="626" y="0" width="176" height="72" uuid="c1635a7f-bfda-44fa-9280-b75188805007"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<imageExpression><![CDATA[$P{ruta_img} + "logo_disesa.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement mode="Opaque" x="176" y="0" width="450" height="40" backcolor="#CCCCCC" uuid="fc92ea9e-9a97-4853-9a05-b73a5e4a0503"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[SALIDA DE ALMACEN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="144" height="20" backcolor="#CCCCCC" uuid="cfa35940-4f6a-4001-af1e-bd6e040a74cb"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[PLAN DE CALIDAD V-01]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="20" width="176" height="20" backcolor="#CCCCCC" uuid="0f515072-7c93-42db-8eba-86cdc4f176b9"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[BODEGA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="291" y="56" width="335" height="16" uuid="ef1466cd-3748-464e-bc5f-368be487a79d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="5" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[MATERIAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="144" y="0" width="32" height="20" backcolor="#CCCCCC" uuid="6488a3b7-901e-442c-ad89-c3361e9f7c22"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[SA-01]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="291" y="40" width="335" height="16" uuid="dbaade92-7b8b-4ed9-b43c-c17b9cd93616"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="5" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[HERRAMIENTA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="271" y="40" width="20" height="16" uuid="2d5424dd-84f6-43e5-a359-eaf756cd692a"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="271" y="56" width="20" height="16" uuid="3a3447c8-d49b-49ba-bd61-dde1eb4e4e98"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="40" width="176" height="32" uuid="7cf25b47-1adc-4601-9ba7-86b65bcdc1a8"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_almacen}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="106" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="176" height="12" uuid="0c30ed1a-2e72-48fc-b1e4-5b6a3167c57b"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[FECHA:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="12" width="176" height="12" uuid="8782653c-d636-4c4d-8e3e-54e6ff01ecd8"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[FOLIO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="24" width="176" height="12" uuid="fe20ee96-cffe-4c64-a9f0-ed5dc127c724"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[ID OBRA:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="36" width="176" height="12" uuid="5c99a01a-8336-423c-b148-00506bc09d89"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[SUCURSAL QUE REMITE:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="48" width="176" height="12" uuid="39ba5bb4-a318-4c01-8343-546779486412"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[PROVEEDOR:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="60" width="176" height="12" uuid="b3edbb08-b836-4606-b592-96d3685f217d"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[REFERENCIA:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="86" width="50" height="20" backcolor="#CCCCCC" uuid="bb39c163-5f8a-480d-896c-f0f1b5e87366"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[CANTIDAD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="50" y="86" width="94" height="20" backcolor="#CCCCCC" uuid="b79e7958-6e3a-4a01-a629-a9845fd53307"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[CODIGO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="144" y="86" width="32" height="20" backcolor="#CCCCCC" uuid="0ab370e2-e654-44fc-8b4c-443cb7d5bbfa"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[UN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="176" y="86" width="626" height="20" backcolor="#CCCCCC" uuid="8c5a1a87-522c-435b-8359-a51ff0700451"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[DESCRIPCION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="626" y="0" width="176" height="72" uuid="857dc4e1-92f1-468e-8e46-2f645e599411"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[5 de Febrero S/N L-12
+La Paz, B.C.S.
+Col. Pueblo Nuevo
+Tel/Fax. 612 124 1500
+Tel/Fax. 624 146 9610]]></text>
+			</staticText>
+			<textField pattern="dd-MMM-yy" isBlankWhenNull="true">
+				<reportElement x="176" y="0" width="450" height="12" uuid="0ea03e03-3cc4-4a55-8205-32b7b54977c5"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="7"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_movimiento}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="176" y="12" width="450" height="12" uuid="17e8e854-fa41-45c9-99b5-f003cae94170"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="7"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{folio}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="176" y="24" width="450" height="12" uuid="e2cd9b53-4d59-4de9-9d88-9f519112eece"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="7"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_obra}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="176" y="36" width="450" height="12" uuid="8f172709-5d01-4f96-beed-203cb49ec443"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="7"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_almacen_proviene}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="176" y="48" width="450" height="12" uuid="c447f7c0-3f80-4f4f-ac4c-dbbfa4c9034a"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="7"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_proveedor}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="176" y="60" width="450" height="12" uuid="7b5c195b-d0b4-4da1-b28e-f9d82b428ebf"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="7"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{referencia}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="176" y="0" width="626" height="16" uuid="b7342020-6c4e-4b44-8ffe-1f3a37b2d507"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="50" y="0" width="94" height="16" uuid="19ac6e51-a64a-4f4d-85bc-b7322fd12d94"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigo}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="50" height="16" uuid="c16c10ec-406b-41e1-aa40-0e5b54125016"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="144" y="0" width="32" height="16" uuid="e22d9732-0b80-49a6-8f2a-5ffa8a8ac288"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{unidad_medida}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="100">
+			<textField>
+				<reportElement x="0" y="0" width="220" height="80" uuid="10f3cced-6412-4d96-ac4d-148e3e1c48cc"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_entrega}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="80" width="220" height="20" uuid="e9323c5e-b57b-444a-bf68-b9f7ebdfd5f1"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[FIRMA RESPONSABLE DE ENTREGA]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="291" y="0" width="220" height="80" uuid="84bd56f7-6d9a-4865-8792-419f95b22408"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_salida}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="291" y="80" width="220" height="20" uuid="a4015121-47e3-4987-8bc9-6b39bfbbf844"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[FIRMA RESPONSABLE DE SALIDA DE BODEGA]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="582" y="0" width="220" height="80" uuid="303f686a-6846-4ef3-b7d7-33590ffdb9fb"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_responsable}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="582" y="80" width="220" height="20" uuid="eabc3ea3-991b-4966-8e82-5fe2c8ace2b0"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[RESPONSABLE EN OBRA]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

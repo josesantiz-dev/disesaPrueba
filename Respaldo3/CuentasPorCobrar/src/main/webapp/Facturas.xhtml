@@ -1,0 +1,243 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.org/schema/seam/taglib"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['facturas']}"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+				action="#{facturaAction.buscar}" execute="groupValorBusqueda" 
+				oncomplete="buscar(#{facturaAction.band},'#{rich:clientId('pnlMensajes')}');"
+				render="dtFacturas,pnlMensajes,txtOrdenCronologico" limitRender="true" />
+		</rich:toolbarGroup>
+		
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['nuevo22.img']}" title="#{msg['nuevo.e']}"
+				action="#{facturaAction.nuevo}" 
+				oncomplete="#{rich:component('pnlFactura')}.show()"
+				render="pnlFactura,pnlDatosDetalleFactura" limitRender="true" />
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="cxc.css" />
+		<h:outputStylesheet library="css" name="cuentasporcobrar.css" />
+		<h:outputScript library="scripts" name="cxc.js" />
+		
+		<div class="div_titulo" style="margin:50px auto 0;">
+			<h:outputText value="#{msg['facturas']}" style="font-weight:bold; font-size:28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina" style="margin:5px auto 20px;">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin:0 10px; display:block; width: 720px;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo" />
+				<h:selectOneMenu value="#{facturaAction.campoBusqueda}" styleClass="Titulo" style="width: 216px">
+		            <f:selectItems value="#{facturaAction.tiposBusqueda}" />
+		            <a4j:ajax event="change" execute="groupValorBusqueda" 
+		            	render="groupValorBusqueda" limitRender="true" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['busqueda']}:" styleClass="Titulo" />
+				<h:panelGroup>
+					<h:panelGrid columns="2">
+						<h:panelGroup id="groupValorBusqueda">
+							<h:inputText maxlength="50" style="width: 210px" 
+								rendered="#{facturaAction.campoBusqueda == 'fechaEmision' ? false : (facturaAction.campoBusqueda == 'mes' ? false : true)}"
+								value="#{facturaAction.valorBusqueda}" />
+								
+							<rich:calendar id="txtBusquedaFecha" enableManualInput="false"
+								rendered="#{facturaAction.campoBusqueda == 'fechaEmision'}"
+								value="#{facturaAction.busquedaFecha}" 
+								datePattern="dd/MMM/yyyy" />
+								
+							<h:selectOneMenu id="cmbBusquedaMeses" styleClass="Titulo" style="width:216px"
+								rendered="#{facturaAction.campoBusqueda == 'mes'}"
+								value="#{facturaAction.busquedaMes}">
+					            <f:selectItems value="#{facturaAction.listMeses}" />
+					        </h:selectOneMenu>
+					    </h:panelGroup>
+					    
+					    <h:panelGroup>
+					    	<h:selectBooleanCheckbox id="txtOrdenCronologico" 
+					    		rendered="#{facturaAction.permisoAdmin}"
+					    		value="#{facturaAction.ordenCronologico}">
+								<a4j:ajax event="change" execute="@this" />
+					    	</h:selectBooleanCheckbox>
+					    	<h:outputLabel for="txtOrdenCronologico"
+					    		rendered="#{facturaAction.permisoAdmin}" 
+					    		value="Orden cronologico" />
+					    </h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<rich:dataTable id="dtFacturas" value="#{facturaAction.listFacturaGrid}" var="var" style="margin:10px auto 0; width:100%;"
+				cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" rows="100">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:70px;">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+							<h:outputText value="#{msg['folio']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:30px;">
+							<h:outputText value="#{msg['tipo']}" title="#{msg['tipoComprobante']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+							<h:outputText value="#{msg['fecha']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+							<h:outputText value="#{msg['nombreObra']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+							<h:outputText value="#{msg['cliente']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:70px;">
+							<h:outputText value="#{msg['moneda']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:80px;">
+							<h:outputText value="#{msg['total']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:80px;">
+							<h:outputText value="#{msg['saldo']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:70px;">
+							<h:outputText value="#{msg['estatus']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:80px;" colspan="4" />
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align:center;">
+					<h:outputText value="#{var.id}" styleClass="#{var.estatus == 1 ? 'Descripcion' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center;">
+					<h:outputText value="#{var.folioFactura}" styleClass="#{var.estatus == 1 ? 'Descripcion' : 'itemCancelado'}" />
+				</rich:column>
+
+				<rich:column style="text-align:center;">
+					<h:outputText value="#{var.tipoComprobante}" styleClass="#{var.estatus == 1 ? 'Descripcion' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center;">
+					<h:outputText value="#{var.fechaEmision}" styleClass="#{var.estatus == 1 ? 'Descripcion' : 'itemCancelado'}"><f:convertDateTime type="date" pattern="dd-MMM-yyyy"/></h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:left;">
+					<h:outputText value="#{var.idObra} - #{var.nombreObra}" styleClass="#{var.estatus == 1 ? 'Descripcion' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left;">
+					<h:outputText value="#{var.cliente}" title="#{var.idCliente}" styleClass="#{var.estatus == 1 ? 'Descripcion' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center;">
+					<h:outputText value="#{var.descripcionMoneda}" styleClass="#{var.estatus == 1 ? 'Descripcion' : 'itemCancelado'}" />
+					<h:panelGroup style="display:block;" rendered="#{var.tipoCambio gt 1}">
+						<h:outputText value="#{msg['tc']}:"     title="#{msg['tipoCambio']}" styleClass="#{var.estatus == 1 ? 'Descripcion' : 'itemCancelado'}" style="margin:auto 5px auto 0;" />
+						<h:outputText value="#{var.tipoCambio}" title="#{msg['tipoCambio']}" styleClass="#{var.estatus == 1 ? 'Descripcion' : 'itemCancelado'}"><f:convertNumber pattern="#0.0000"/></h:outputText>
+					</h:panelGroup>
+				</rich:column>
+				
+				<rich:column style="text-align:right;">
+					<h:outputText value="#{var.total}" pattern="#0.00" styleClass="#{var.estatus == 1 ? 'Descripcion' : 'itemCancelado'}"><f:convertNumber pattern="###,###,##0.00"/></h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:right;">
+					<h:outputText value="#{var.saldo}" pattern="#0.00" styleClass="#{var.estatus == 1 ? 'Descripcion' : 'itemCancelado'}"><f:convertNumber pattern="###,###,##0.00"/></h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:left;">
+					<h:outputText value="#{var.estatusDescripcion}" rendered="#{var.estatus eq 1}" styleClass="Descripcion" />
+					<h:outputText value="#{var.estatusDescripcion}" rendered="#{var.estatus ne 1}" styleClass="itemCancelado" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:20px;">
+					<a4j:commandButton id="cmdCorreo" rendered="#{var.estatus == 1 ? (var.uuid == null || var.uuid == '' ? false : true) : false}"
+						image="#{msg['mail22.img']}" title="#{msg['enviar']} #{msg['correo']}"
+						action="#{facturaAction.nuevoEnvio}" 
+						oncomplete="#{rich:component('pnlCorreo')}.show()" 
+						render="pnlCorreo" limitRender="true">
+						<f:setPropertyActionListener target="#{facturaAction.pojoFactura}" value="#{var.id}" for="cmdCorreo" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:20px;">
+					<a4j:commandButton id="cmdImprimir" 
+						image="#{msg['pdf16.img']}" title="#{msg['imprimir']} #{msg['factura']} #{msg['pdf']}"
+						onclick="#{rich:element('cmdImprimir')}.disabled = true;"
+						action="#{facturaAction.imprimir}" 
+						oncomplete="#{rich:element('cmdImprimir')}.disabled = false; reporte(#{facturaAction.band},'#{rich:clientId('pnlMensajes')}')" 
+						render="pnlMensajes" limitRender="true">
+						<f:setPropertyActionListener target="#{facturaAction.pojoFactura}" value="#{var.id}" for="cmdImprimir" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:20px;">
+					<a4j:commandButton id="cmdEditar" 
+						image="#{msg['editar16.img']}" title="#{msg['editar']}"
+						action="#{facturaAction.editar}" 
+						oncomplete="verEditar(#{facturaAction.band}, '#{rich:clientId('pnlFactura')}', '#{rich:clientId('pnlMensajes')}');"
+						render="pnlFactura,pnlMensajes" limitRender="true">
+						<f:setPropertyActionListener target="#{facturaAction.pojoFactura}" value="#{var.id}" for="cmdEditar" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:20px;">
+					<a4j:commandButton id="cmdEliminar" rendered="#{var.estatus == 1}"
+						image="#{msg['cancelar16.img']}" title="#{msg['cancelar']}"
+						action="#{facturaAction.evaluaCancelar}" 
+						oncomplete="evaluaCancelar(#{facturaAction.band}, '#{rich:clientId('pnlEliminar')}', '#{rich:clientId('pnlMensajes')}')"
+						render="pnlEliminar,pnlMensajes" limitRender="true">
+						<f:setPropertyActionListener target="#{facturaAction.pojoFactura}" value="#{var.id}" for="cmdEliminar" />
+					</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller for="dtFacturas" page="#{facturaAction.numPagina}" renderIfSinglePage="false" 
+						align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modal/facturas/pnlMensajes.xhtml" /> 
+		<ui:include src="/modal/facturas/pnlEliminar.xhtml" /> 
+		<ui:include src="/modal/facturas/pnlFactura.xhtml" /> 
+		<ui:include src="/modal/facturas/pnlAuditoria.xhtml" /> 
+		<ui:include src="/modal/facturas/pnlEliminarDetalle.xhtml" /> 
+		<ui:include src="/modal/facturas/pnlConcepto.xhtml" /> 
+		<ui:include src="/modal/facturas/pnlCorreo.xhtml" /> 
+		<ui:include src="/modal/facturas/pnlBusquedaObras.xhtml" /> 
+		<ui:include src="/modal/facturas/pnlBusquedaConceptos.xhtml" />
+		<ui:include src="/modal/facturas/pnlBusquedaCFDI.xhtml" />
+		<ui:include src="/modal/facturas/pnlBusquedaFacturas.xhtml" />
+		<ui:include src="/modal/facturas/pnlProvision.xhtml" />
+		<ui:include src="/modal/facturas/pnlFacturaFolio.xhtml" />
+		<ui:include src="/modal/facturas/pnlTimbre.xhtml" /> 
+		<!--ui:include src="/modal/facturas/pnlFacturaPagos.xhtml" /-->
+	</ui:define>
+</ui:composition>

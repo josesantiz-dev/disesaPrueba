@@ -1,0 +1,1895 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/layout/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich">
+
+	<ui:define name="menuFrag" >	
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+				action="#{negociosAction.buscar}"
+				oncomplete="buscar('#{negociosAction.resOperacion}','#{rich:clientId('pnlMsgGralNegocio')}');" 
+				render="dtNegocios,pnlMsgGralNegocio"
+				limitRender="true" />
+		</rich:toolbarGroup>	
+	
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" styleClass="Titulo" style="cursor:pointer;" 
+				image="#{msg['nuevo22.img']}" title="#{msg['nuevo.e']}"
+				action="#{negociosAction.nuevo}"
+				oncomplete="#{rich:component('pnlEditarNegocio')}.show()" 
+				render="pnlEditarNegocio" />
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css/acc" name="acc.css" />
+		<h:outputStylesheet library="css/acc" name="negocios.css" />
+		<h:outputScript library="scripts/acc" name="negocio.js"/>
+		
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText value="#{msg['negocios']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer, colPnlBusqIzq, colPnlBusqDer">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/> 				
+				<h:selectOneMenu id="cmbTipoBusqueda" value="#{negociosAction.tipoBusqueda}" style="width:216px;">	
+					<f:selectItem itemLabel="#{msg['nombreNegocio']}" itemValue="nombre" />
+					<f:selectItem itemLabel="#{msg['rfc']}" itemValue="rfc" />
+				</h:selectOneMenu>	
+							
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo"/>
+				<h:inputText id="txtvalor" maxlength="30" value="#{negociosAction.valorBusqueda}" style="width:210px;" />
+			</h:panelGrid>
+			 		
+			<rich:dataTable id="dtNegocios" cellpadding="0" cellspacing="0"  rows="100" border="0" var="var" rowClasses="Row1, Row2" styleClass="tabla_pagina"	 value="#{negociosAction.listNegocios}">	           		
+			   <f:facet name="header">
+				   <rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center; width: 90px;" styleClass="Titulo">
+						   <h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+						   <h:outputText value="#{msg['nombreORazonSocial']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 120px;" styleClass="Titulo">
+						   <h:outputText value="#{msg['rfc']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 60px;" styleClass="Titulo">
+						   <h:outputText value="#{msg['tipoPersonalidad']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+						   <h:outputText value="#{msg['domicilio']}" />
+						</rich:column>
+						<rich:column style="text-align:center; width: 20px;" styleClass="Titulo" >
+							<h:outputText value="#{msg['editar']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 20px;" styleClass="Titulo">
+							<h:outputText value="#{msg['habilitado']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column style="text-align:center; width: 90px;" styleClass="Descripcion">
+					<h:outputText value="#{var.id}"/>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion">	               		
+					<h:outputText value="#{var.nombre}" />	                   
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion width: 60px;"  style="text-align:center; padding-left: 5px;">
+					<h:outputText value="#{var.rfc}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion"  style="text-align:center; padding-left: 5px; width: 60px;">
+					<h:outputText value="#{var.tipoPersonalidad =='F' ? 'Fisica' : 'Moral'}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.domicilio}" />
+				</rich:column>	
+				           
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEditar" 
+						image="#{msg['editar16.img']}" title="#{msg['editar.e']}"
+						action="#{negociosAction.editarNegocio}"   
+						oncomplete="#{rich:component('pnlEditarNegocio')}.show()" 
+						render="pnlEditarNegocio">
+						<f:setPropertyActionListener target="#{negociosAction.pojoNegocio}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEliminar" 
+						image="#{var.estatus == 2 ? msg['eliminar16.img'] : msg['aplicar16.img']}" title="#{var.estatus == 2 ? msg['habilitar'] : msg['deshabilitar']}"
+						action="#{negociosAction.estatusNegocio}"
+						oncomplete="estatusNegocio(#{negociosAction.preguntaEliminar}, '#{rich:clientId('pnlEliminarNegocio')}')"
+						render="pnlEliminarNegocio,dtNegocios">
+						<f:setPropertyActionListener target="#{negociosAction.pojoNegocioElim}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<f:facet name="footer" >
+					<rich:dataScroller for="dtNegocios" page="#{negociosAction.numPagina}" renderIfSinglePage="false"  
+						align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<!-- ####### MODAL NUEVO/EDITAR  N E G O C I O  ######### -->
+		<rich:popupPanel id="pnlEditarNegocio" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:outputText id="lblTitulo" value="#{msg['negocio']}" styleClass="Titulo" />
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage style="cursor:pointer;" 
+					value="#{msg['navegacion.gral.cerrar.img']}" 
+					onclick="#{rich:component('pnlEditarNegocio')}.hide()"/>
+			</f:facet>         
+			
+			<!-- INICIA MENU MODAL -->	
+			<div style="display: block; width:100%; height: 22px;">		   			  
+				<a4j:commandButton id="cmdDomicilio" style="float:left;  margin-left:5px; vertical-align: middle; cursor: pointer;" 
+					image="#{msg['domicilios22.img']}" title="#{msg['domicilios.e']}"
+					action="#{negociosAction.cargaDomiciliosNegocio()}"
+					rendered="#{negociosAction.pojoNegocio.id > 0}"	
+					oncomplete="#{rich:component('pnlDomicilio')}.show()"
+					render="pnlDomicilio" />
+					
+				<a4j:commandButton id="cmdDirectorio" style="float:left;  margin-left:5px; vertical-align: middle; cursor: pointer;" 	
+					image="#{msg['telefonos22.img']}" title="#{msg['directorioTelefonico.e']}"
+					action="#{negociosAction.cargaDirectorioNegocio()}" 
+					rendered="#{negociosAction.pojoNegocio.id > 0}"	
+					oncomplete="#{rich:component('pnlDirectorio')}.show()"
+					render="pnlDirectorio" />
+					
+				<a4j:commandButton id="cmdPersonas" style="float:left;  margin-left:5px; vertical-align: middle; cursor: pointer;"
+					image="#{msg['personas22.img']}" title="#{msg['participantes.e']}"
+					action="#{negociosAction.cargaPersonasAsociadasNegocio()}" 
+					rendered="#{negociosAction.pojoNegocio.id > 0}"
+					oncomplete="#{rich:component('pnlPersonasListado')}.show()"
+					render="pnlPersonasListado" />
+						 
+				<a4j:commandButton id="cmdCanales" style="float:left;  margin-left:5px; vertical-align: middle; cursor: pointer;"
+					image="#{msg['canales22.img']}"	title="#{msg['canales']}"
+					action="#{negociosAction.cargaCanalesNegocio()}" 
+					rendered="#{negociosAction.pojoNegocio.id > 0}"
+					oncomplete="#{rich:component('pnlCanalesNegocio')}.show()"
+					render="pnlCanalesNegocio" />
+						
+				<a4j:commandButton id="cmdContactos" style="float:left;  margin-left:5px; vertical-align: middle; cursor: pointer;"
+					image="#{msg['contactos22.img']}" title="#{msg['contactos']}"
+					action="#{negociosAction.cargaContactosNegocio()}"
+					rendered="#{negociosAction.pojoNegocio.id > 0}"
+					oncomplete="#{rich:component('pnlContactosNegocio')}.show()"
+					render="pnlContactosNegocio" />
+
+				<a4j:commandButton id="cmdEstadosNegocio" style="float:left;  margin-left:5px; vertical-align: middle; cursor: pointer;"
+					image="#{msg['estados22.img']}"	title="#{msg['estados']}"
+					action="#{negociosAction.cargaEstadosNegocio}" 
+					rendered="#{negociosAction.pojoNegocio.id > 0}"
+					oncomplete="#{rich:component('pnlEstadosNegocio')}.show()"
+					render="pnlEstadosNegocio" />	
+								
+				<!-- botones izquierda ARRIBA.........................botones derecha ABAJO -->  
+				<a4j:commandButton id="cmdSalvar" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+					image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+					action="#{negociosAction.guardar}" 
+					oncomplete="salvar('#{negociosAction.resOperacion}', '#{rich:clientId('pnlEditarNegocio')}', '#{rich:clientId('pnlMsgGralNegocio')}', #{rich:element('msgErrorNegocio')});"
+					render="dtNegocios,pnlMsgGralNegocio,msgErrorNegocio" />          				
+			</div>
+			<!-- FIN MENU MODAL -->	
+			
+			<rich:messages id="msgErrorNegocio" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!">
+				<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;"/></f:facet>
+			</rich:messages>	
+			
+			<h:panelGroup styleClass="encabezado" rendered="#{negociosAction.pojoNegocio.id != null}" >
+				<h:outputText value="#{negociosAction.pojoNegocio.id != null ? negociosAction.pojoNegocio.id : ' '} - "/>
+				<h:outputText value="#{negociosAction.pojoNegocio.nombre}"/>
+			</h:panelGroup>
+			
+			<!--<h:panelGroup styleClass="fondoGeneral" >-->		
+				<h:panelGrid id="pnlGridFormulario"  width="640" columns="4" columnClasses="colTitulo, colDato, colTitulo, colDato">				
+					<h:outputText value="#{msg['persona']}:"  styleClass="Titulo"/>		  				 
+					<a4j:region>
+						<h:selectOneMenu value="#{negociosAction.pojoNegocio.tipoPersonalidad}"  style="width:130px;">				  					
+							<f:selectItem itemLabel="#{msg['fisica']}" itemValue="F"/>
+							<f:selectItem itemLabel="#{msg['moral']}" itemValue="M"/>
+							<a4j:ajax event="change" render="pnlRFCs"/>		  								  								
+						</h:selectOneMenu>			            	
+					</a4j:region>
+						
+					<h:outputText value="#{msg['rfc']}:" styleClass="Titulo" />	
+					<h:panelGroup id="pnlRFCs">
+						<h:inputText id="txtRFC1" maxlength="13" 
+							value="#{negociosAction.pojoNegocio.rfc}" 
+							rendered="#{negociosAction.pojoNegocio.tipoPersonalidad=='F'}" 
+							required="#{negociosAction.pojoNegocio.tipoPersonalidad=='F' ? !empty param[rich:clientId('cmdSalvar')] : false}" 
+							requiredMessage="#{msg['rfc']} #{msg['mensaje.error.requerido']}" />
+							<!--f:validator validatorId="RfcPF" for="txtRFC1"/>
+						</h:inputText-->
+						<h:inputText id="txtRFC2" maxlength="12" 
+							value="#{negociosAction.pojoNegocio.rfc}" 
+							rendered="#{negociosAction.pojoNegocio.tipoPersonalidad=='M'}" 
+							required="#{negociosAction.pojoNegocio.tipoPersonalidad=='M' ? !empty param[rich:clientId('cmdSalvar')] : false}" 
+							requiredMessage="#{msg['rfc']} #{msg['mensaje.error.requerido']}" />
+							<!--f:validator validatorId="RfcPM" for="txtRFC2"/>
+						</h:inputText-->
+					</h:panelGroup>
+				</h:panelGrid>
+				
+				<h:panelGrid id="pnlGridFormulario2"  width="640" columns="2" columnClasses="colTitulo, colDato">
+					<h:outputText value="#{msg['nombreORazonSocial']}:" styleClass="Titulo"/>
+					<h:panelGroup style="position:relative; top:8px;">
+						<h:inputText id="txtNombre" maxlength="255"	size="79"
+							value="#{negociosAction.pojoNegocio.nombre}"  
+							required="#{!empty param[rich:clientId('cmdSalvar')]}"				           			
+							requiredMessage="#{msg['nombreNegocio']} #{msg['mensaje.error.requerido']}">
+						</h:inputText>
+					</h:panelGroup>	           		
+					
+					<h:outputText value="#{msg['domicilio']}:" styleClass="Titulo" title="#{msg['domicilioDefault']}" />		           		
+					<h:outputText id="txtDomicilioNegocio" 
+						value="#{negociosAction.pojoNegocio.domicilio}" />					
+					
+					<h:outputText value="#{msg['telefono']}:" styleClass="Titulo" title="#{msg['telefonoDefault']}" />
+					<h:outputText id="txtTelefonoNegocio" 
+						value="#{negociosAction.pojoNegocio.telefono}" />			
+				</h:panelGrid>
+				
+				<h:panelGrid id="pnlGridFormulario3"  width="640" columns="4" columnClasses="colTitulo, colDato, colTitulo, colDato">
+					<h:outputText value="#{msg['incioOpe_abr']}:" styleClass="Titulo"/>
+					<h:panelGroup>
+						<a4j:region>								
+							<rich:calendar id="cmbFecha" datePattern="dd, MMM yyyy" inputSize="17" zindex="100" showWeekDaysBar="false" showWeeksBar="false" 
+								value="#{negociosAction.inicioOperaciones}"><!-- 
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" -->
+								<a4j:ajax event="change" 
+									action="#{negociosAction.antiguedadNegocio}" 
+									render="labelAntiguedad" />
+								<f:validateLength minimum="1"/>
+							</rich:calendar>
+							
+							<h:outputText id="labelAntiguedad" value="#{negociosAction.etiquetaAntiguedad}"/>									   				
+						</a4j:region>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['formaOperacion']}:" styleClass="Titulo" />					           		
+					<h:selectOneMenu value="#{negociosAction.pojoNegocio.formaOperacion}" style="width:130px;">
+						<f:selectItem itemLabel="#{msg['formal']}" itemValue="F"/>
+						<f:selectItem itemLabel="#{msg['informal']}" itemValue="I"/>
+					</h:selectOneMenu>	
+																	
+					<h:outputText value="#{msg['giro']}:" styleClass="Titulo"/>
+					<h:panelGroup id="groupGiro">
+						<h:outputText id="txtNombreGiro" value="#{negociosAction.pojoGiro.valor}"/>
+						<a4j:commandLink id="cmdLnkGiro" style="font-weight: bold; margin-left: 5px;" 
+							value="#{negociosAction.pojoNegocio.giro > 0 ? msg['cambiar'] : msg['seleccionar']}" 
+							oncomplete="#{rich:component('pnlBuscarGiro')}.show()" 
+							render="pnlBuscarGiro">
+						</a4j:commandLink>
+						<!--  
+						<a4j:region>
+							<h:selectOneMenu value="#{negociosAction.idGiro}"  style="width:150px;">
+								<a4j:ajax event="change" action="#{negociosAction.buscarActividad}" render="labelActividad"/>
+								<f:selectItems value="#{negociosAction.listGiros}"/>					  					
+							</h:selectOneMenu>
+						</a4j:region>
+						-->
+						<!--   <h:outputText id="labelActividad" value="#{negociosAction.etiquetaActividad} " styleClass="Titulo"/>   -->
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['sector']}:" styleClass="Titulo" />
+					<h:selectOneMenu value="#{negociosAction.idSector}" style="width:130px;">
+						<f:selectItems value="#{negociosAction.listSectores}"/>
+					</h:selectOneMenu>
+					
+					<h:outputText value="#{msg['paginaWeb']}:" styleClass="Titulo" />		           		
+					<h:inputText id="txtPaginaWeb" 
+						value="#{negociosAction.pojoNegocio.paginaWeb}" />
+					
+					<h:outputText value="#{msg['numeroEmpleados']}:" styleClass="Titulo" />		           		
+					<h:inputText id="txtNumeroEmpleados" 
+						value="#{negociosAction.pojoNegocio.numeroEmpleados}" />
+				</h:panelGrid>
+				
+				<fieldset style="margin-top:10px;">
+					<legend><h:outputText value="#{msg['datosBancarios']}" styleClass="Titulo" /></legend>
+					<h:panelGrid id="pnlIfoPrincipal" columns="2" width="100%" columnClasses="colTitulo, colDato" >
+						<h:outputText value="#{msg['numeroCuenta']}:"  styleClass="Titulo"/>
+						<h:inputText size="25" style="width: 210px;"
+							value="#{negociosAction.pojoNegocio.numeroCuenta}" />
+						
+						<h:outputText value="#{msg['clabeInterbancaria']}:"  styleClass="Titulo"/>
+						<h:inputText size="25" style="width: 210px;"
+							value="#{negociosAction.pojoNegocio.clabeInterbancaria}" />
+					
+						<h:outputText value="#{msg['banco']}:" styleClass="Titulo"/>
+						<h:selectOneMenu styleClas="Titulo" style="width: 216px;"
+							value="#{negociosAction.pojoNegocio.banco}">
+							<f:selectItems value="#{negociosAction.listTmpBancos}"/>					  					
+						</h:selectOneMenu>
+					</h:panelGrid>
+				</fieldset>
+			<!--</h:panelGroup>	-->	
+		</rich:popupPanel>
+		
+		<!-- ********* LISTA DE DOMICILIOS ************** -->		
+		<rich:popupPanel id="pnlDomicilio" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:outputText value="#{msg['domicilios']}" styleClass="Titulo"/>
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlDomicilio')}.hide()"/>
+			</f:facet>
+			
+		   	<div style="display: block; width:100%; height:22px;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">						
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton id="cmdNuevoDomicilio" action="#{negociosAction.nuevoDomicilio}" image="#{msg['nuevo22.img']}" 
+							oncomplete="#{rich:component('pnlDomicilioNuevo')}.show()" 
+							style="vertical-align: middle; margin-right:5px; cursor: pointer;" render="pnlDomicilioNuevo">
+							<rich:tooltip showDelay="300" value="#{msg['nuevo.e']}" styleClass="Descripcion"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+				
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{negociosAction.pojoNegocio.id != null ? negociosAction.pojoNegocio.id : ' '} - "/>
+				<h:outputText value="#{negociosAction.pojoNegocio.nombre}"/>
+			</h:panelGroup>
+
+			<a4j:region id ="regListDomicilios">
+			<rich:dataTable id="dtDomicilios" cellpadding="0" cellspacing="0"  rows="5" 
+				border="0" var="dom" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+				value="#{negociosAction.listDomicilios}">
+				<f:facet name="header">
+					<rich:columnGroup>			  
+						<rich:column breakBefore="true" style="text-align:center; width: 90px;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:200px;" styleClass="Titulo">
+							<h:outputText value="#{msg['domicilio']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 90px;" styleClass="Titulo">
+							<h:outputText value="#{msg['colonia']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 50px;" styleClass="Titulo">
+							<h:outputText value="#{msg['estatus']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; margin-left:10px width: 50px;" styleClass="Titulo">
+							<h:outputText value="#{msg['principal']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; margin-left:10px width: 30px;" styleClass="Titulo">
+							<h:outputText value="#{msg['editar']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; margin-left:10px" styleClass="Titulo">
+							<h:outputText value="#{msg['habilitarDeshabilitar']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column style="text-align:center; width: 90px;" styleClass="Descripcion">
+					<h:outputText value="#{dom.id}"/>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; width: 200px;">
+					<h:outputText value="#{dom.domicilio}"/>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style=" width: 90px;">
+					<h:outputText value="#{dom.colonia != null ? dom.nombreColonia : ''}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width: 50px;">
+					<h:outputText value="#{dom.estatus ? msg['activo'] : msg['inactivo']}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 50px;" styleClass="Descripcion">
+					<h:selectBooleanCheckbox value="#{dom.principal}" disabled="true"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 30px;" styleClass="Descripcion">
+					<a4j:commandButton image="#{msg['editar16.img']}" action="#{negociosAction.cargaInfoDomicilio}" 
+						oncomplete="#{rich:component('pnlDomicilioNuevo')}.show()"
+						render="pnlDomicilioNuevo">
+						<rich:tooltip showDelay="300" value="#{msg['editar']}" styleClass="Descripcion"/>	
+						<f:setPropertyActionListener target="#{negociosAction.pojoDomicilio}" value="#{dom}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion">
+					<a4j:commandButton image="#{dom.estatus ?  msg['eliminar16.img'] : msg['aplicar16.img']}" 
+						action="#{negociosAction.deshabilitaDom}" 
+						oncomplete="buscar('#{negociosAction.resOperacion}', '#{rich:clientId('pnlMsgGralNegocio')}');"
+						render="dtDomicilios,pnlMsgGralNegocio"
+						limitRender="true" execute="@region">
+						<rich:tooltip showDelay="300" value="#{dom.estatus ? msg['deshabilitar'] : msg['habilitar']}" styleClass="Descripcion"/>	
+						<f:setPropertyActionListener target="#{negociosAction.pojoDomicilio}" value="#{dom}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<f:facet name="footer" >
+					<rich:dataScroller align="center" for="dtDomicilios" maxPages="10" ajaxSingle="true" renderIfSinglePage="false"
+						page="#{negociosAction.numPaginaDomicilio}" id="dScrollDomi" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+			</a4j:region>
+		</rich:popupPanel>
+		
+		<!-- ****************   NUEVO/EDITAR DOMICILIO *********** -->		
+		<rich:popupPanel id="pnlDomicilioNuevo" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:outputText value="#{msg['domicilio']}" styleClass="Titulo"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlDomicilioNuevo')}.hide()"/>
+			</f:facet>
+		   
+			<h:panelGroup style="display: block; width:100%; height:22px; margin-bottom:1em;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">						
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton id="cmdSalvarDomicilio" image="#{msg['salvar22.img']}" style="vertical-align: middle; margin-right:5px; cursor: pointer;" 
+							action="#{negociosAction.guardarDomicilio}"  
+							oncomplete="salvar('#{negociosAction.resOperacion}', '#{rich:clientId('pnlDomicilioNuevo')}', '#{rich:clientId('pnlMsgGralNegocio')}', #{rich:element('msgErrorDomicilio')});"
+							render="dtDomicilios,pnlMsgGralNegocio,msgErrorDomicilio,txtDomicilioNegocio" limitRender="true">
+							<rich:tooltip showDelay="300" value="#{msg['salvar.e']}" styleClass="Descripcion"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+			
+			<rich:messages id="msgErrorDomicilio" showDetail="false"
+				showSummary="true" globalOnly="false" title="Campos requeridos!">
+				<f:facet name="errorMarker">
+					<h:graphicImage value="#{msg['alert16.img']}"
+						style="margin-right:1em;" />
+				</f:facet>
+			</rich:messages>
+				
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{negociosAction.pojoNegocio.id != null ? negociosAction.pojoNegocio.id : ' '} - "/>
+				<h:outputText value="#{negociosAction.pojoNegocio.nombre}"/>
+			</h:panelGroup> 
+				
+			
+			<h:panelGroup style="display:block; margin-top:15px; margin-bottom:10px; width:100%;">
+				<h:outputLabel for="cbDomPrincipal" value="#{msg['principal']}" styleClass="Titulo" style="float:right; margin-right:15px; vertical-align:center;"/>
+				<h:selectBooleanCheckbox id="cbDomPrincipal" value="#{negociosAction.pojoDomicilio.principal}" style="float:right; margin-right:2px;"/>
+				<h:outputLabel for="cbDomActivo" value="#{msg['activo']}" styleClass="Titulo" style="float:right; margin-right:10px; vertical-align:center;" />
+				<h:selectBooleanCheckbox id="cbDomActivo" value="#{negociosAction.pojoDomicilio.estatus}" style="float:right; margin-right:2px;"/>
+			</h:panelGroup>
+			
+			<h:panelGrid columns="3" width="100%" columnClasses="colTituloDom, colDato, colDato">
+				<h:outputText value="#{msg['ubicacion']}1:" styleClass="Titulo"/>
+				<h:selectOneMenu value="#{negociosAction.idDom1 }" styleClass="Titulo" style="width:90%;">
+					<f:selectItems value="#{negociosAction.listCatDomicilios1 }" />
+				</h:selectOneMenu>
+				<h:inputText value="#{negociosAction.pojoDomicilio.descripcionDomicilio1}" style="width:400px;" 
+				required="#{!empty param[rich:clientId('cmdSalvarDomicilio')]}" requiredMessage="#{msg['ubicacion']}1 #{msg['mensaje.error.requerido']}"/>
+						
+				<h:outputText value="#{msg['ubicacion']}2:"  styleClass="Titulo"/>
+				<h:selectOneMenu value="#{negociosAction.idDom2 }" styleClass="Titulo" style="width:90%;">
+					<f:selectItems value="#{negociosAction.listCatDomicilios1 }" />
+				</h:selectOneMenu>
+				<h:inputText value="#{negociosAction.pojoDomicilio.descripcionDomicilio2}" style="width:400px;"/>
+						
+				<h:outputText value="#{msg['ubicacion']}3:"  styleClass="Titulo"/>
+				<h:selectOneMenu value="#{negociosAction.idDom3 }" styleClass="Titulo" style="width:90%;">
+					<f:selectItems value="#{negociosAction.listCatDomicilios1 }" />
+				</h:selectOneMenu>
+				<h:inputText value="#{negociosAction.pojoDomicilio.descripcionDomicilio3}" style="width:400px;"/>
+				
+				<h:outputText value="#{msg['ubicacion']}4:"  styleClass="Titulo"/>
+				<h:selectOneMenu value="#{negociosAction.idDom4 }" styleClass="Titulo" style="width:90%;">
+					<f:selectItems value="#{negociosAction.listCatDomicilios2 }" />
+				</h:selectOneMenu>
+				<h:inputText value="#{negociosAction.pojoDomicilio.descripcionDomicilio4}" style="width:100px;"/>
+				
+				<h:outputText value="#{msg['ubicacion']}5:"  styleClass="Titulo"/>
+				<h:selectOneMenu value="#{negociosAction.idDom5 }" styleClass="Titulo" style="width:90%;">
+					<f:selectItems value="#{negociosAction.listCatDomicilios2 }" />
+				</h:selectOneMenu>
+				<h:inputText value="#{negociosAction.pojoDomicilio.descripcionDomicilio5}" style="width:100px;"/>
+			</h:panelGrid>
+			
+			<h:panelGrid id="grpDomiDom" columns="2" columnClasses="colTituloDom, colDato" width="100%" style="margin-bottom:15px;">
+				<h:outputText value="#{msg['estado']}:"  styleClass="Titulo"/>
+				<a4j:region>
+					<h:selectOneMenu value="#{negociosAction.idEstadoDom}" styleClass="Titulo" disabled="#{negociosAction.puedeEditar}" style="width:170px;">
+						<a4j:ajax event="change" action="#{negociosAction.cambioEstadoDom}" render="cmdLnkMunicipioDom, cmdLnkLocalidadDom, cmdLnkColonia"/>
+						<f:selectItems value="#{negociosAction.listEstado}"/>
+					</h:selectOneMenu>
+				</a4j:region>
+				
+				<h:outputText value="#{msg['municipio']}:"  styleClass="Titulo"/>
+				<a4j:commandLink id="cmdLnkMunicipioDom" value="#{negociosAction.pojoMunicipioDom.id > 0 ? negociosAction.pojoMunicipioDom.nombre : 'Seleccionar'}" 
+					action="#{negociosAction.limpiaMunicipio}" 
+					oncomplete="#{rich:component('pnlMunicipios')}.show()" 
+					style="font-weight: bold;" render="pnlMunicipios">
+					<a4j:param name="paramMunDom" value="#{false}" assignTo="#{negociosAction.editaNacimiento}"/>
+				</a4j:commandLink>
+				
+				<h:outputText value="#{msg['localidad']}:" styleClass="Titulo"/>
+				<a4j:commandLink id="cmdLnkLocalidadDom" value="#{negociosAction.pojoLocalidadDom.id > 0 ? negociosAction.pojoLocalidadDom.nombre : 'Seleccionar'}" 
+					action="#{negociosAction.limpiaLocalidades}" 
+					oncomplete="#{rich:component('pnlLocalidades')}.show()" 
+					style="font-weight: bold;" render="pnlLocalidades">
+					<a4j:param name="paramMunDom" value="#{false}" assignTo="#{negociosAction.editaNacimiento}"/>
+				</a4j:commandLink>
+				
+				<h:outputText value="#{msg['colonia']}:"  styleClass="Titulo"/>
+				<a4j:commandLink id="cmdLnkColonia" value="#{negociosAction.pojoColonia.id > 0 ? negociosAction.pojoColonia.nombre : 'Seleccionar'}" 
+					action="#{negociosAction.limpiaColonias}" 
+					oncomplete="#{rich:component('pnlColonias')}.show()"
+					style="font-weight: bold;" render="pnlColonias">
+				</a4j:commandLink>
+				<h:outputText value="#{msg['observacion']}:"  styleClass="Titulo"/>
+				<h:inputTextarea value="#{negociosAction.pojoDomicilio.observaciones}" rows="3" style="width:98%; margin-right:15px;" styleClass="text_area"/>
+			</h:panelGrid>	
+		</rich:popupPanel>
+			
+		<!-- BUSCAR MUNICIPIOS -->
+		<rich:popupPanel id="pnlMunicipios" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+			   <h:outputText style="margin-left:10px" value="#{msg['seleccionarMunicipio']}" styleClass="Titulo"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlMunicipios')}.hide()"/>
+			</f:facet>
+			
+			<div style="display: block; width: 450px; height: 22px;">
+				<h:panelGrid columns="1" style="position:relative; float:right; margin-right:5px;">		
+					<h:panelGroup style="padding:0 2px 0 2px; float:right;">
+						<a4j:commandButton id="cmdBuscarMunicipios" action="#{negociosAction.buscarMunicipios}" image="#{msg['buscar22.img']}"   render="dtMunicipios">
+							<rich:tooltip value="#{msg['buscar.e']}" styleClass="Descripcion" style="cursor:pointer;"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{negociosAction.pojoEstado != null ? negociosAction.pojoEstado.id : ' '} - "/>
+				<h:outputText value="#{negociosAction.pojoEstado != null ? negociosAction.pojoEstado.nombre : ' '} "/>
+			</h:panelGroup>
+			
+			<h:panelGroup style="display:block;">
+				<h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+				<h:inputText value="#{negociosAction.busquedaMunicipio}" style="margin-left:5px;"/>
+			</h:panelGroup>
+			
+			<rich:dataTable id="dtMunicipios" cellpadding="0" cellspacing="0"
+				rows="5" border="0" var="mun" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+				value="#{negociosAction.listMunicipios}">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						<rich:column colspan="2" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column width="30" styleClass="Descripcion">
+					<h:outputText value="#{mun.id}" />
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{mun.nombre}" />
+				</rich:column>
+				<rich:column width="20" style="text-align:center;">
+					<a4j:commandButton image="#{msg['drag16.img']}" 
+						oncomplete="#{rich:component('pnlMunicipios')}.hide()"
+						render="pnlMsgGralNegocio, grpDomiDom" ajaxSingle="true">
+						<f:setPropertyActionListener target="#{negociosAction.pojoMunicipio}" value="#{mun}" />
+					</a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer">
+					<rich:dataScroller align="center" for="dtMunicipios" maxPages="10"
+						ajaxSingle="true" page="#{negociosAction.numPaginaMunicipio}" id="dScrollMunicipios" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>	
+		</rich:popupPanel>
+		
+		<!-- BUSCAR LOCALIDADES -->
+		<rich:popupPanel id="pnlLocalidades" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:outputText style="margin-left:10px" value="#{msg['seleccionarLocalidad']}" styleClass="Titulo"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlLocalidades')}.hide()"/>
+			</f:facet>
+			   
+			<div style="display: block; width: 450px; height: 22px;">
+				<h:panelGrid columns="1" style="position:relative; float:right; margin-right:5px;">		
+					<h:panelGroup style="padding:0 2px 0 2px; float:right;">
+						<a4j:commandButton id="cmdBuscarLocalidades" action="#{negociosAction.buscarLocalidades}" image="#{msg['buscar22.img']}"   render="dtLocalidades">
+							<rich:tooltip value="#{msg['buscar.e']}" styleClass="Descripcion" style="cursor:pointer;"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+					
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{negociosAction.pojoMunicipio != null ? negociosAction.pojoMunicipio.id : ' '} - "/>
+				<h:outputText value="#{negociosAction.pojoMunicipio != null ? negociosAction.pojoMunicipio.nombre : ' '} "/>
+			</h:panelGroup>
+			
+			<h:panelGroup style="display:block;">
+				<h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+				<h:inputText value="#{negociosAction.busquedaLocalidad}" style="margin-left:5px;"/>
+			</h:panelGroup>
+			
+			<rich:dataTable id="dtLocalidades" cellpadding="0" cellspacing="0"
+				rows="5" border="0" var="loc" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+				value="#{negociosAction.listLocalidades}">
+				<f:facet name="header">
+					<rich:columnGroup>				
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						<rich:column colspan="2" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column width="30" styleClass="Descripcion">
+					<h:outputText value="#{loc.id}" />
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{loc.nombre}" />
+				</rich:column>
+				<rich:column width="20" style="text-align:center;">
+				   <a4j:commandButton image="#{msg['drag16.img']}" 
+						oncomplete="#{rich:component('pnlLocalidades')}.hide()" 
+						render="pnlMsgGralNegocio, grpDomiDom" ajaxSingle="true">
+						<f:setPropertyActionListener target="#{negociosAction.pojoLocalidad}" value="#{loc}" />
+				   </a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer">
+					<rich:dataScroller align="center" for="dtLocalidades" maxPages="10"
+						ajaxSingle="true" page="#{negociosAction.numPaginaLocalidad}" id="dScrollLocalidades" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+		
+		<!-- BUSCAR COLONIAS -->
+		<rich:popupPanel id="pnlColonias" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+			   <h:outputText style="margin-left:10px" value="#{msg['seleccionarColonia']}" styleClass="Titulo"/>
+			</f:facet>
+			<f:facet name="controls">
+			   <h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlColonias')}.hide()"/>
+			</f:facet>
+		
+			<div style="display: block; width: 450px; height: 22px;">
+				<h:panelGrid columns="1" style="position:relative; float:right; margin-right:5px;">		
+					<h:panelGroup style="padding:0 2px 0 2px; float:right;">
+						<a4j:commandButton id="cmdBuscarColonias" action="#{negociosAction.buscarColonias}" image="#{msg['buscar22.img']}"   render="dtColonias">
+							<rich:tooltip value="#{msg['buscar.e']}" styleClass="Descripcion" style="cursor:pointer;"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+					
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{negociosAction.pojoLocalidad != null ? negociosAction.pojoLocalidad.id : ' '} - "/>
+				<h:outputText value="#{negociosAction.pojoLocalidad != null ? negociosAction.pojoLocalidad.nombre : ' '}"/>
+			</h:panelGroup>
+			
+			<h:panelGroup style="display:block;">
+				<h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+				<h:inputText value="#{negociosAction.busquedaColonia}" style="margin-left:5px;"/>
+			</h:panelGroup>
+					
+			<rich:dataTable id="dtColonias" cellpadding="0" cellspacing="0"
+				rows="5" border="0" var="col" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+				value="#{negociosAction.listColonias}">
+				<f:facet name="header">
+					<rich:columnGroup>				
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['codigoPost']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo"/>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column width="30" styleClass="Descripcion">
+					<h:outputText value="#{col.id}" />
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{col.nombre}" />
+				</rich:column>
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{col.cp}" />
+				</rich:column>
+				<rich:column width="20" style="text-align:center;">
+				   <a4j:commandButton image="#{msg['drag16.img']}" 
+						oncomplete="#{rich:component('pnlColonias')}.hide()"
+						render="cmdLnkColonia" ajaxSingle="true">
+						<f:setPropertyActionListener target="#{negociosAction.pojoColonia}" value="#{col}" />
+				   </a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer">
+					<rich:dataScroller align="center" for="dtColonias" maxPages="10"
+						ajaxSingle="true" page="#{negociosAction.numPaginaColonia}" id="dScrollColonias" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+		
+		<!-- *************** LISTADO DE DIRECTORIOS TELEFONICOS **********************-->
+		<rich:popupPanel id="pnlDirectorio" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:outputText value="#{msg['directorioTelefonico']}" styleClass="Titulo"/>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlDirectorio')}.hide()"/>
+			</f:facet>
+		
+			<div style="display: block; width:100%; height:22px;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">						
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton id="cmdNuevoDirectorio" style="vertical-align: middle; margin-right:5px; cursor: pointer;" 
+							image="#{msg['nuevo22.img']}" 
+							action="#{negociosAction.nuevoDirectorio}" 
+							oncomplete="#{rich:component('pnlDirectorioNuevo')}.show()"
+							render="pnlDirectorioNuevo">
+							<rich:tooltip showDelay="300" value="#{msg['nuevo.e']}" styleClass="Descripcion"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</div>
+			
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{negociosAction.pojoNegocio.id != null ? negociosAction.pojoNegocio.id : ' '} - "/>
+				<h:outputText value="#{negociosAction.pojoNegocio.nombre}"/>
+			</h:panelGroup>
+			
+			<rich:dataTable id="dtDirectorio" cellpadding="0" cellspacing="0"  rows="5" 
+			   border="0" var="dir" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+			   value="#{negociosAction.listDirectorio}">		
+				<f:facet name="header">
+				   <rich:columnGroup>			   
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['tipo']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['lada']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['numero']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['ext_abr']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:left; margin-left:10px" styleClass="Titulo">
+							<h:outputText value="#{msg['principal']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:left; margin-left:10px" styleClass="Titulo">
+							<h:outputText value="#{msg['editar']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column width="50" style="text-align:center;" styleClass="Descripcion">
+					<h:outputText value="#{dir.id}"/>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion">
+					<h:outputText value="#{dir.tipoTelefono != null ? dir.tipoTelefonoDesc : ''}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:40px;" styleClass="Descripcion">
+					<h:outputText value="#{dir.lada}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion">
+					<h:outputText value="#{dir.numeroTelefono}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion">
+					<h:outputText value="#{dir.extension}" />
+				</rich:column>
+				
+				<rich:column width="50" style="text-align:center;" styleClass="Descripcion">
+					<h:selectBooleanCheckbox value="#{dir.principal}" disabled="true"/>
+				</rich:column>
+				
+				<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+					<a4j:commandButton image="#{msg['editar16.img']}" 
+						action="#{negociosAction.cargaInfoDirectorio}" 
+						oncomplete="#{rich:component('pnlDirectorioNuevo')}.show()"
+						render="pnlDirectorioNuevo">
+						<rich:tooltip showDelay="300" value="#{msg['editar']}" styleClass="Descripcion"/>	
+						<f:setPropertyActionListener target="#{negociosAction.pojoDirectorio}" value="#{dir}" />
+					</a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer" >
+					<rich:dataScroller align="center" for="dtDirectorio" maxPages="10" ajaxSingle="true" renderIfSinglePage="false"
+						page="#{negociosAction.numPaginaDirectorio}" id="dScrollDir" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+		
+		<!-- ***************   NUEVO/EDITAR DIRECTORIO TELEFONICO ************ -->		
+		<rich:popupPanel id="pnlDirectorioNuevo" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:outputText value="#{msg['telefono']}" styleClass="Titulo"/>
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlDirectorioNuevo')}.hide()"/>
+			</f:facet>
+		
+			<a4j:region id="regDirectorioTelefonico">
+			<h:panelGroup style="display: block; width:100%; height:22px; margin-bottom:1em;">
+				<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">			
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:commandButton id="cmdSalvarDirectorio" style="vertical-align: middle; margin-right:5px; cursor: pointer;" 
+							image="#{msg['salvar22.img']}" 
+							action="#{negociosAction.guardarDirectorio}" 
+							oncomplete="salvar('#{negociosAction.resOperacion}','#{rich:clientId('pnlDirectorioNuevo')}', '#{rich:clientId('pnlMsgGralNegocio')}', #{rich:element('msgErrorDir')});"
+							render="dtDirectorio,pnlMsgGralNegocio,msgErrorDir,txtTelefonoNegocio">
+							<rich:tooltip showDelay="300" value="#{msg['salvar.e']}" styleClass="Descripcion"/>
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+			
+			<rich:messages id="msgErrorDir" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!">
+				<f:facet name="errorMarker">
+					<h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;"/>   
+				</f:facet>
+			</rich:messages>
+			
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{negociosAction.pojoNegocio.id != null ? negociosAction.pojoNegocio.id : ' '} - "/>
+				<h:outputText value="#{negociosAction.pojoNegocio.nombre}"/>
+			</h:panelGroup>
+			
+			
+			<h:panelGroup style="display:block; width:100%; margin-top:15px;">
+				<h:outputLabel for="cbDirPrincipal" value="#{msg['principal']}" styleClass="Titulo" style="float:right; margin-right:15px; vertical-align;"/>
+				<h:selectBooleanCheckbox id="cbDirPrincipal" value="#{negociosAction.pojoDirectorio.principal}" style="float:right; margin-right:2px;"/>
+			</h:panelGroup>
+				
+			<h:panelGrid columns="2" width="100%" columnClasses="colTituloDom, colDato" style="margin-bottom:15px;">
+				<h:outputText value="#{msg['tipo']}:" styleClass="Titulo"/>
+				<h:panelGroup style="width:100%;">
+					<h:selectOneMenu styleClass="Titulo" style="float:left; width:150px;"
+						value="#{negociosAction.idTipoTel}">
+						<f:selectItems value="#{negociosAction.listTiposTelefono}" />
+					</h:selectOneMenu>
+					
+					<h:selectOneMenu styleClass="Titulo" style="float:right; margin-right:15px; width:150px;"
+						value="#{negociosAction.idCompaniaTel}">
+						<f:selectItems value="#{negociosAction.listCompaniaTel}" />
+					</h:selectOneMenu>
+					<h:outputText value="#{msg['compania']}:" style="float:right; margin:0 5px;" styleClass="Titulo"/>
+				</h:panelGroup>
+				
+				<h:outputText value="#{msg['numero']}:" styleClass="Titulo"/>
+				<h:panelGroup style="width:100%">
+					<h:inputText id="inputLada" 
+						value="#{negociosAction.pojoDirectorio.lada}" 
+						size="4" maxlength="4"
+						converter="javax.faces.Integer" 
+						converterMessage="#{msg['lada']} #{msg['mensaje.validacion.soloNumeros']}" 
+						title="#{msg['lada']}" />
+						
+					<h:inputText id="inputTel" style="margin-left:5px;" 
+						value="#{negociosAction.pojoDirectorio.numeroTelefono}" 
+						size="10" maxlength="10"
+						converter="javax.faces.Integer" 
+						converterMessage="#{msg['telefono']} #{msg['mensaje.validacion.soloNumeros']}" 
+						title="#{msg['numero']}" 
+						required="#{!empty param[rich:clientId('cmdSalvarDirectorio')]}" 
+						requiredMessage="#{msg['numero']} #{msg['mensaje.error.requerido']}" />
+						
+					<h:outputText styleClass="Titulo" value="#{msg['ext_abr']}:" style="margin:0 5px;" />
+					<h:inputText id="inputExt" style="margin-left:5px;" 
+						value="#{negociosAction.pojoDirectorio.extension}" 
+						size="5" maxlength="5"
+						converter="javax.faces.Integer" 
+						converterMessage="#{msg['extension']} #{msg['mensaje.validacion.soloNumeros']}" 
+						title="#{msg['extension']}" />
+				</h:panelGroup>
+				
+				<h:outputText value="#{msg['observacion']}:"  styleClass="Titulo"/>
+				<h:inputTextarea value="#{negociosAction.pojoDirectorio.observaciones}" 
+					rows="3" style="width:95%;" styleClass="text_area"/>
+			</h:panelGrid>
+			</a4j:region>
+		</rich:popupPanel>
+		
+		<!-- ####### MODAL LISTADO PERSONAS ASOCIADAS AL NEGOCIO  ######### -->
+		<rich:popupPanel id="pnlPersonasListado" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:outputText  value="#{msg['personasAsociadasNegocio']}" styleClass="Titulo" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlPersonasListado')}.hide()"/>
+			</f:facet>     
+		  
+			<!-- INICIA MENU MODAL -->	
+			<a4j:commandButton id="cmdAgregarPersona"
+				image="#{msg['agregarPersona22.img']}"
+				action="#{negociosAction.nuevaPersona}" 
+				style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+				oncomplete="#{rich:component('pnlEditarRelacionPersonaNegocio')}.show()" 
+				render="pnlEditarRelacionPersonaNegocio">
+				<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['agregarPersona.e']}" for="cmdAgregarPersona"/>
+			</a4j:commandButton>   				       				
+			<!-- FIN MENU MODAL -->	
+			
+			<h:panelGroup styleClass="encabezado" style="margin-top: 30px;">
+				<h:outputText value="#{negociosAction.pojoNegocio.id != null ? negociosAction.pojoNegocio.id : ' '} - "/>
+				<h:outputText value="#{negociosAction.pojoNegocio.nombre}"/>
+			</h:panelGroup>	
+			
+			<rich:dataTable id="dtPersonasAsociadas" cellpadding="0" cellspacing="0"  rows="5" border="0" var="var" rowClasses="Row1, Row2" 
+				styleClass="tabla_pagina" value="#{negociosAction.listPersonasAsociadas}" style="width: 900px;">	           		
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['rfc']}" />
+						</rich:column>	                       
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['domicilio']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['participacion']}%" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['editar']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['eliminar']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column width="50" style="text-align:center;" styleClass="Descripcion">
+					<h:outputText value="#{var.persona.id}"/>
+				</rich:column>
+				<rich:column width="400" styleClass="Descripcion">	               		
+					<h:outputText value="#{var.persona.nombreCompleto}" />	                   
+				</rich:column>
+				<rich:column width="60" styleClass="Descripcion"  style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.persona.rfc}" />
+				</rich:column>	               
+				<rich:column width="360" styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.persona.domicilio}" />
+				</rich:column>	     
+				<rich:column width="60" styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.participacion}" >
+						<f:convertNumber  pattern="###.00"/>
+					</h:outputText>
+				</rich:column>	         
+				<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdRelacion" image="#{msg['editar16.img']}"  
+						action="#{negociosAction.editarPersonaNegocioAsociada}" 
+						oncomplete="#{rich:component('pnlEditarRelacionPersonaNegocio')}.show()"
+						render="pnlEditarRelacionPersonaNegocio">
+						<rich:tooltip showDelay="300" value="#{msg['relacion.e']}" for="cmdRelacion"/>	
+						<f:setPropertyActionListener target="#{negociosAction.pojoPersonaNegocio}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+				<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEliminar" image="#{msg['eliminar16.img']}" 
+						oncomplete="#{rich:component('pnlEliminarPersona')}.show()"
+						render="pnlEliminarPersona">
+						<rich:tooltip showDelay="300" value="#{msg['eliminar.e']}" for="cmdEliminar"/>
+						<f:setPropertyActionListener target="#{negociosAction.pojoPersonaNegocio}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer" >
+					<rich:dataScroller align="center" for="dtPersonasAsociadas" maxPages="10" ajaxSingle="true"	page="#{negociosAction.numPaginaPersonaAsociada}" id="dScroll" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel> 
+		
+		<!-- ####### MODAL BUSQUEDA PERSONAS   ######### -->
+		<rich:popupPanel id="pnlBuscarPersonas" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:outputText  value="#{msg['buscarPersonas']}" styleClass="Titulo" />
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlBuscarPersonas')}.hide()"/>
+			</f:facet> 
+			
+			<!-- INICIA MENU MODAL -->	
+			<div style="display: block; width:900px; height: 22px;">	
+				<!-- botones izquierda ARRIBA.........................botones derecha ABAJO -->  
+				<a4j:commandButton id="cmdBuscarPersona" 
+					action="#{negociosAction.buscarPersonas}" 
+					image="#{msg['buscar22.img']}"
+					style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+					oncomplete="buscar('#{negociosAction.resOperacion}', '#{rich:clientId('pnlMsgGralNegocio')}');" 
+					render="dtBuscarPersonas,pnlMsgGralNegocio">
+					<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarPersona"/>
+				</a4j:commandButton>   				       				
+			</div>					
+			<!-- FIN MENU MODAL -->	
+			
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{negociosAction.pojoNegocio.id != null ? negociosAction.pojoNegocio.id : ' '} - "/>
+				<h:outputText value="#{negociosAction.pojoNegocio.nombre}"/>
+			</h:panelGroup> 
+				
+		   <h:panelGrid columns="2" columnClasses="colPnlBusqIzq,colPnlBusqDer">
+		   		<h:column style="text-align: right;">
+					<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo" style="text-align: right;"/>	  
+		   		</h:column>		
+		   		<h:column style="text-align: left;">
+			   		<h:selectOneMenu value="#{negociosAction.tipoBusquedaPersona}" styleClass="Titulo" style="margin-left:5px; text-align: left; width: 130px;">
+						<f:selectItem itemLabel="#{msg['id']}" itemValue="id"/>
+						<f:selectItem itemLabel="#{msg['nombre']}" itemValue="nombre"/>
+						<f:selectItem itemLabel="#{msg['rfc']}" itemValue="rfc"/>
+					</h:selectOneMenu>
+		   		</h:column>		
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" style="text-align: right;"/>
+				<h:inputText id="txtvalorP" maxlength="30" value="#{negociosAction.valorBusquedaPersonas}" style="text-align: left;"/>
+			</h:panelGrid>	
+								
+			<rich:dataTable id="dtBuscarPersonas" cellpadding="0" cellspacing="0"  rows="5" border="0" var="var" rowClasses="Row1, Row2" styleClass="tabla_pagina"	 value="#{negociosAction.listPersona}" style="width: 900px;">	           		
+				<f:facet name="header">
+					<rich:columnGroup>			  
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['rfc']}" />
+						</rich:column>	                       
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['domicilio']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['seleccionar']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column width="50" style="text-align:center;" styleClass="Descripcion">
+					<h:outputText value="#{var.id}"/>
+				</rich:column>
+				<rich:column width="400" styleClass="Descripcion">	               		
+					<h:outputText value="#{var.nombreCompleto}" />	                   
+				</rich:column>
+				<rich:column width="60" styleClass="Descripcion"  style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.rfc}" />
+				</rich:column>	               
+				<rich:column width="360" styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.domicilio}" />
+				</rich:column>	              
+				<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+				   <a4j:commandButton id="cmdAgregar" image="#{msg['asociarPersona16.img']}"  
+						oncomplete="#{rich:component('pnlBuscarPersonas')}.hide()"
+						render="cmdBuscarPersona2,idPersona,nombrePersona" >
+						<rich:tooltip showDelay="300" value="#{msg['agregar.e']}" for="cmdAgregar" />	
+						<f:setPropertyActionListener target="#{negociosAction.pojoPersonaNegocio.persona}" value="#{var}" />
+				   </a4j:commandButton>
+				</rich:column>	               
+				<f:facet name="footer" >
+					<rich:dataScroller align="center" for="dtBuscarPersonas" maxPages="10" ajaxSingle="true" page="#{negociosAction.numPaginaBuscarPersona}" id="dScroll" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+		
+		<!-- ####### MODAL EDITAR  RELACION PERSONA/NEGOCIO  ######### -->
+		<rich:popupPanel id="pnlEditarRelacionPersonaNegocio" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:outputText  value="#{msg['relacion']}" styleClass="Titulo" />
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlEditarRelacionPersonaNegocio')}.hide()"/>
+			 </f:facet>         
+			
+			<!-- INICIA MENU MODAL -->	
+			<div style="display: block; width:100%; height: 22px;">							
+				<!-- botones izquierda ARRIBA.........................botones derecha ABAJO -->  
+				<a4j:commandButton id="cmdSalvarRelacion" 
+					action="#{negociosAction.guardarRelacionPersonaNegocio}" 
+					image="#{msg['salvar22.img']}" 
+					style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 	   					         					
+					oncomplete="salvar('#{negociosAction.resOperacion}', '#{rich:clientId('pnlEditarRelacionPersonaNegocio')}', '#{rich:clientId('pnlMsgGralNegocio')}', #{rich:element('msgErrorNegocio2')});"
+					render="pnlMsgGralNegocio,dtPersonasAsociadas,msgErrorNegocio2,pnlIfoPrincipal"
+					limitRender="true">   					
+					<rich:tooltip value="#{msg['salvar.e']}" />
+				</a4j:commandButton>          				
+			</div>		
+			<!-- FIN MENU MODAL -->	
+			
+			<rich:messages id="msgErrorNegocio2" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!">
+				<f:facet name="errorMarker">
+					<h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;"/>   
+				</f:facet>
+			</rich:messages>				
+				
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{negociosAction.pojoNegocio.id != null ? negociosAction.pojoNegocio.id : ' '} - "/>
+				<h:outputText value="#{negociosAction.pojoNegocio.nombre}"/>
+			</h:panelGroup> 	
+			
+			<h:panelGroup style="float:right;">
+				<h:selectBooleanCheckbox id="checkRepresentante"  value="#{negociosAction.pojoPersonaNegocio.representante}"  />
+				<h:outputLabel for="checkRepresentante" value="#{msg['representante']}" style="vertical-align: middle; cursor:pointer; position:relative; top:-4px;" styleClass="Titulo"/>
+				
+				<h:selectBooleanCheckbox id="checkFirmaDocto"  value="#{negociosAction.pojoPersonaNegocio.firmaDocumento}"  />
+				<h:outputLabel for="checkFirmaDocto" value="#{msg['firmaDocumento']}" style="vertical-align: middle; cursor:pointer; position:relative; top:-4px;" styleClass="Titulo"/>
+			</h:panelGroup>
+			
+			<h:panelGrid id="pnlGridFormRelacion" columns="2" width="100%" columnClasses="colTitulo,colDato">
+				<h:outputText value="#{msg['persona']}:"  styleClass="Titulo"/>
+				<h:panelGroup style="width:100%">
+					<a4j:commandLink id= "cmdBuscarPersona2" value="#{negociosAction.pojoPersonaNegocio.persona.id == null ? msg['seleccionar'] : (negociosAction.pojoPersonaNegocio.persona.id > 0 ? msg['cambiar'] : msg['seleccionar'])}" oncomplete="#{rich:component('pnlBuscarPersonas')}.show()" style ="font-weight: bold;"/>
+					<h:outputText id="idPersona" value="#{negociosAction.pojoPersonaNegocio.persona!=null ? (negociosAction.pojoPersonaNegocio.persona.id > 0 ? negociosAction.pojoPersonaNegocio.persona.id : '') : ''}" styleClass="Titulo" style="margin-left:10px;"/>
+					<h:outputText id="nombrePersona" value="#{negociosAction.pojoPersonaNegocio.persona!=null ? (negociosAction.pojoPersonaNegocio.persona.id > 0 ? negociosAction.pojoPersonaNegocio.persona.nombreCompleto : '') : ''}" styleClass="Titulo" style="margin-left:10px;"/>
+				</h:panelGroup>
+				
+				<h:outputText value="#{msg['puesto']}:" styleClass="Titulo" style="position:relative; top:8px;"/>
+				<h:panelGroup style="position:relative; top:8px;">
+				 	<!--<h:panelGroup> -->
+						<h:inputText id="txtPuesto" 
+							value="#{negociosAction.pojoPersonaNegocio.puesto}" 
+							maxlength="100" 
+							required="#{!empty param[rich:clientId('cmdSalvarRelacion')]}" 
+							requiredMessage="#{msg['puesto']} #{msg['mensaje.error.requerido']}"
+							size="46">
+							<!--<f:validateLength minimum="1"/>-->
+						</h:inputText>
+					<!--</h:panelGroup>-->
+					
+					<!--<h:panelGroup style="margin-left:32px;">-->
+					<h:outputText value="#{msg['participacion']}:" styleClass="Titulo" />
+						<h:inputText id="txtParticipacion" size="5" 
+							value="#{negociosAction.participacion}" 
+							required="#{!empty param[rich:clientId('cmdSalvarRelacion')]}" 
+							requiredMessage="#{msg['participacion']} #{msg['mensaje.error.requerido']}"
+							converter="javax.faces.BigDecimal" 
+							converterMessage="#{msg['participacion']} #{msg['mensaje.validacion.soloNumeros']}">							           			
+							<f:convertNumber pattern="##0.00" />
+							<f:validateLongRange minimum="0" maximum="100" for="txtParticipacion" />
+							<a4j:ajax event="change" render="txtParticipacion" />
+						</h:inputText>	
+						<h:outputText value="#{msg['%']}" styleClass="Titulo" />										
+				</h:panelGroup>				
+				
+				<h:outputText value="#{msg['personalidad']}:" styleClass="Titulo" style="display:block; position:relative; top:-25;"/>
+				<h:panelGroup style="position:relative; top:8px; margin-right:10px;" >
+						<h:inputTextarea id="txtPersonalidad" 
+							value="#{negociosAction.pojoPersonaNegocio.personalidadJuridica}" 
+							rows="3" 
+							style="width:480px;">
+							<!--<f:validateLength minimum="1"/>-->
+						</h:inputTextarea>				           		
+				</h:panelGroup>
+				
+				<h:outputText value="#{msg['apoderado']}:" styleClass="Titulo" style="position:relative; top:8px;"/>
+				<h:panelGroup id="pnlCommandLink" style="position:relative; top:8px;">
+					 <a4j:commandLink id="cmdAgregarApoderado" value="#{negociosAction.pojoPersonaNegocio.apoderadoId == null ? msg['seleccionar'] : negociosAction.idApoderado}" 
+							oncomplete="#{rich:component('pnlBuscarApoderado')}.show()"
+							render="pnlBuscarApoderado" style=" font-weight: bold;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['seleccionar']}" for="cmdAgregarApoderado"/>
+					 </a4j:commandLink>
+					 <a4j:commandButton id="cmdQuitarApoderado" image="#{msg['eliminar10.img']}" 
+							action="#{negociosAction.quitarApoderado}" rendered="#{negociosAction.pojoPersonaNegocio.apoderadoId != null}" 
+							render="pnlCommandLink" style="margin-left:5px;">
+							<rich:tooltip showDelay="300" styleClass="Descripcion" value="#{msg['eliminar.e']}" for="cmdQuitarApoderado"/>			                   		
+					 </a4j:commandButton>
+				</h:panelGroup>						  
+			</h:panelGrid>
+		</rich:popupPanel>
+		
+		<!-- ####### MODAL BUSQUEDA APODERADO   ######### -->
+		 <rich:popupPanel id="pnlBuscarApoderado" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:outputText  value="#{msg['buscarApoderados']}" styleClass="Titulo" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlBuscarApoderado')}.hide()"/>
+			</f:facet>     
+			
+			<!-- INICIA MENU MODAL -->	
+			<div style="display: block; width:900px; height: 22px;">	
+				<!-- botones izquierda ARRIBA.........................botones derecha ABAJO -->  
+				<a4j:commandButton id="cmdBuscarApoderado" 
+					action="#{negociosAction.buscarPersonas}" 
+					image="#{msg['buscar22.img']}"
+					style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+					oncomplete="buscar('#{negociosAction.resOperacion}', '#{rich:clientId('pnlMsgGralNegocio')}');" 
+					render="dtPersonasBuscarApoderado,pnlMsgGralNegocio">
+					<rich:tooltip showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarApoderado"/>
+				</a4j:commandButton>   				       				
+			</div>			
+			<!-- FIN MENU MODAL -->	
+			
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{negociosAction.pojoPersonaNegocio.persona.id != null ? negociosAction.pojoPersonaNegocio.persona.id: ' '} - "/>
+				<h:outputText value="#{negociosAction.pojoPersonaNegocio.persona.nombreCompleto}"/>
+			</h:panelGroup>	
+			
+		   <h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin-left:10px; margin-bottom:20px; display:block;" >
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>	  				
+				 <h:selectOneMenu value="#{negociosAction.tipoBusquedaApoderado}" styleClass="Titulo" style="margin-left:5px;">
+					<f:selectItem itemLabel="#{msg['nombre']}" itemValue="nombre"/>
+					<f:selectItem itemLabel="#{msg['rfc']}" itemValue="rfc"/>
+				</h:selectOneMenu>	
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo"/>
+				<h:inputText id="txtvalorA" maxlength="30" value="#{negociosAction.valorBusquedaApoderados}"/>
+			</h:panelGrid>	
+									
+			<rich:dataTable id="dtPersonasBuscarApoderado" cellpadding="0" cellspacing="0"  rows="5" border="0" var="var" rowClasses="Row1, Row2" styleClass="tabla_pagina"	 value="#{negociosAction.listPersona}" style="width: 900px;">	           		
+				<f:facet name="header">
+					<rich:columnGroup>				
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+						   <h:outputText value="#{msg['id']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+						   <h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+						   <h:outputText value="#{msg['rfc']}" />
+						</rich:column>	                       
+						<rich:column style="text-align:center;" styleClass="Titulo">
+						   <h:outputText value="#{msg['domicilio']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+						   <h:outputText value="#{msg['seleccionar']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column width="50" style="text-align:center;" styleClass="Descripcion">
+					<h:outputText value="#{var.id}"/>
+				</rich:column>
+				<rich:column width="400" styleClass="Descripcion">	               		
+					<h:outputText value="#{var.nombreCompleto}" />	                   
+				</rich:column>
+				<rich:column width="60" styleClass="Descripcion"  style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.rfc}" />
+				</rich:column>	               
+				<rich:column width="360" styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.domicilio}" />
+				</rich:column>	              
+				<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdAgregar" image="#{msg['agregar16.img']}"  action="#{negociosAction.asociarApoderado}"
+						oncomplete="#{rich:component('pnlBuscarApoderado')}.hide()"  
+						render="pnlGridFormRelacion" >
+						<rich:tooltip showDelay="300" value="#{msg['agregar.e']}" for="cmdAgregar" />	
+						<f:setPropertyActionListener target="#{negociosAction.pojoPersonaNegocio.apoderadoId}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>	               
+				<f:facet name="footer" >
+					<rich:dataScroller align="center" for="dtPersonasBuscarApoderado" maxPages="10" ajaxSingle="true"	page="#{negociosAction.numPaginaBuscarApoderado}" id="dScroll" styleClass="Titulo"/>
+				</f:facet>
+		   </rich:dataTable>
+		</rich:popupPanel>
+		
+		<!-- #### MODAL MENSAJES GENERALES #### -->		
+		<rich:popupPanel id="pnlMsgGralNegocio" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText value="#{negociosAction.resOperacion == '' ? msg['informacion'] : msg['atencion']}" styleClass="Titulo" />
+				</h:panelGroup>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlMsgGralNegocio')}.hide()"/>
+			</f:facet>
+			<h:panelGroup style="display:block; width:300px; float:center;">
+				<h:outputText value="#{negociosAction.resOperacion != '' ? negociosAction.resOperacion : msg['mensaje.info.infoReg']}" style="display:block;" styleClass="Descripcion"/>
+			</h:panelGroup>
+				<a4j:commandButton value="#{msg['aceptar']}" onclick="#{rich:component('pnlMsgGralNegocio')}.hide()" style="margin-top:10px; cursor:pointer;"/>
+		</rich:popupPanel> 
+		<!--  Fin Panel MsgGenerales-->
+		
+		<!-- #### MODAL MENSAJES GENERALES #### -->		
+		<rich:popupPanel id="pnlMsgGralElimNegocio" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText value="#{negociosAction.resOperacion == '' ? msg['informacion'] : msg['atencion']}" styleClass="Titulo" />
+				</h:panelGroup>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlMsgGralElimNegocio')}.hide()"/>
+			</f:facet>
+			<h:panelGroup style="display:block; width:300px; float:center;">
+				<h:outputText value="#{negociosAction.resOperacion != '' ? negociosAction.resOperacion : msg['mensaje.info.regEliminado']}" style="display:block;" styleClass="Descripcion"/>
+			</h:panelGroup>
+				<a4j:commandButton value="#{msg['aceptar']}" onclick="#{rich:component('pnlMsgGralElimNegocio')}.hide()" style="margin-top:10px; cursor:pointer;"/>
+		</rich:popupPanel> 
+		<!--  Fin Panel MsgGenerales-->
+
+		<!-- ####### MODAL LISTADO CANALES NEGOCIO  ######### -->
+		<rich:popupPanel id="pnlCanalesNegocio" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:outputText  value="#{msg['canalesVenta']}" styleClass="Titulo" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlCanalesNegocio')}.hide()"/>
+			</f:facet>     
+			
+			<h:panelGroup styleClass="encabezado" style="width: 500px;">
+				<h:outputText value="#{negociosAction.pojoNegocio.id != null ? negociosAction.pojoNegocio.id : ' '} - "/>
+				<h:outputText value="#{negociosAction.pojoNegocio.nombre}"/>
+			</h:panelGroup>	
+			
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer"
+				style="margin-left:10px; margin-bottom:20px; display:block;">
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:panelGroup>
+					<h:selectOneMenu id="cmbTiposCanal"
+						value="#{negociosAction.pojoCanalesNegocio.idCanal.id}">
+						<f:selectItems value="#{negociosAction.listTmpTiposCanales}" />
+					</h:selectOneMenu>
+	
+					<a4j:commandButton id="cmdAgregarCanal"
+						action="#{negociosAction.guardarCanal()}"
+						image="#{msg['agregar_azul16.img']}"
+						style="vertical-align: middle; cursor: pointer; margin-left: 10px;"
+						oncomplete="buscar('#{negociosAction.resOperacion}','#{rich:clientId('pnlMsgGralNegocio')}');"
+						render="dtCanalesNegocio, pnlMsgGralNegocio">
+						<rich:tooltip value="#{msg['salvar.e']}" styleClass="Descripcion" />
+					</a4j:commandButton>
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<rich:dataTable id="dtCanalesNegocio" cellpadding="0" cellspacing="0"  rows="5" border="0" var="var" rowClasses="Row1, Row2" 
+				styleClass="tabla_pagina"	 value="#{negociosAction.listCanalesNegocio}">	           		
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['canal']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['eliminar']}" />
+						</rich:column>	                       
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column width="50" style="text-align:center;" styleClass="Descripcion">
+					<h:outputText value="#{var.id}"/>
+				</rich:column>
+				<rich:column width="400" styleClass="Descripcion">	               		
+					<h:outputText value="#{var.idCanal.nombre}" />	                   
+				</rich:column>
+				<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEliminarCanal" image="#{msg['eliminar16.img']}" 
+						action="#{negociosAction.eliminarCanal}"
+						oncomplete="#{rich:component('pnlMsgGralElimNegocio')}.show()"
+						render="dtCanalesNegocio, pnlMsgGralElimNegocio">
+						<rich:tooltip showDelay="300" value="#{msg['eliminar.e']}" for="cmdEliminarCanal"/>
+						<f:setPropertyActionListener target="#{negociosAction.pojoCanalesNegocio}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer" >
+					<rich:dataScroller align="center" for="dtCanalesNegocio" maxPages="10" ajaxSingle="true" page="#{negociosAction.numPaginaCanales}" id="dScroll" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel> 
+		
+		<!-- ####### MODAL LISTADO CONTACTOS NEGOCIO  ######### -->
+		<rich:popupPanel id="pnlContactosNegocio" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:outputText  value="#{msg['contactos']}" styleClass="Titulo" />
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlContactosNegocio')}.hide()"/>
+			</f:facet>
+
+			<a4j:region id="regContactosNegocio">
+			<a4j:commandButton id="cmdNuevoContacto" styleClass="Titulo" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+				image="#{msg['nuevo22.img']}"
+				action="#{negociosAction.nuevoContacto}"
+				oncomplete="#{rich:component('pnlEditarContactoNegocio')}.show()"
+				render="pnlEditarContactoNegocio"
+				limitRender="true">
+				<rich:tooltip id="ttNuevoContacto" showDelay="300" value="#{msg['nuevo.e']}" for="cmdNuevoContacto" />
+			</a4j:commandButton> 
+			
+			<a4j:commandButton id="cmdBuscarContactos" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+				image="#{msg['buscar22.img']}"
+				action="#{negociosAction.buscarContactos()}"
+				oncomplete="buscar('#{negocios.resOperacion}','#{rich:clientId('pnlMsgGralNegocio')}');"
+				render="dtContactosNegocio,pnlMsgGralNegocio"
+				limitRender="true">
+				<rich:tooltip id="ttBuscarContacto" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarContactos" />
+			</a4j:commandButton>
+			
+			<h:panelGroup styleClass="encabezado" style="width: 100%; margin-top: 3em;">
+				<h:outputText value="#{negociosAction.pojoNegocio.id != null ? negociosAction.pojoNegocio.id : ' '} - "/>
+				<h:outputText value="#{negociosAction.pojoNegocio.nombre}"/>
+			</h:panelGroup>	
+			
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer"
+				style="margin-left:10px; margin-bottom:20px; display:block;">
+				<h:outputText value="#{msg['estatus']}:" styleClass="Titulo" />
+				<h:selectOneMenu id="cmbEstatusContacto" value="#{negociosAction.valorBusquedaEstatusContacto}">
+					<f:selectItem itemLabel="#{msg['activo']}" itemValue="1"/>
+					<f:selectItem itemLabel="#{msg['inactivo']}" itemValue="2"/>	
+					<f:selectItem itemLabel="#{msg['todos']}" itemValue="0"/>	
+				</h:selectOneMenu>
+			</h:panelGrid>
+			
+			<rich:dataTable id="dtContactosNegocio" cellpadding="0" cellspacing="0"  rows="5" border="0" var="var" rowClasses="Row1, Row2" 
+				styleClass="tabla_pagina" value="#{negociosAction.listContactos}" style="width: 500px;">	           		
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['puesto']}" />
+						</rich:column>	   
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['telefono']}" />
+						</rich:column>	 
+						       
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['estatus']}" />
+						</rich:column>	
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['editar']}" />
+						</rich:column>	
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['activo']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column width="50" style="text-align:center;" styleClass="Descripcion">
+					<h:outputText value="#{var.id}"/>
+				</rich:column>
+				
+				<rich:column width="200" styleClass="Descripcion">	               		
+					<h:outputText value="#{var.idPersonaContacto.nombre}" />	                   
+				</rich:column>
+				
+				<rich:column width="100" styleClass="Descripcion">	               		
+					<h:outputText value="#{var.puesto}" />	                   
+				</rich:column>
+				
+				<rich:column width="50" styleClass="Descripcion">	               		
+					<h:outputText value="#{var.idPersonaContacto.telefono}"/>	                   
+				</rich:column>
+				
+				<rich:column width="50" styleClass="Descripcion">	               		
+					<h:outputText value="#{negociosAction.getEstatusContacto(var.estatusId)}" />
+				</rich:column>
+				
+				<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEditar" 
+						image="#{msg['editar16.img']}" title="#{msg['editar.e']}"
+						oncomplete="#{rich:component('pnlEditarContactoNegocio')}.show()" 
+						render="pnlEditarContactoNegocio">
+						<f:setPropertyActionListener target="#{negociosAction.pojoContactoNegocio}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEliminar" 
+						image="#{var.estatusId == 2 ? msg['eliminar16.img'] : msg['aplicar16.img']}" title="#{var.estatusId == 2 ? msg['habilitar'] : msg['deshabilitar']}"
+						oncomplete="buscar('#{negociosAction.resOperacion}','#{rich:clientId('pnlMsgGralNegocio')}');"
+						action="#{negociosAction.cambiarEstatusContacto()}"
+						render="dtContactosNegocio">
+						<f:setPropertyActionListener target="#{negociosAction.pojoContactoNegocioEst}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<f:facet name="footer" >
+					<rich:dataScroller align="center" for="dtCanalesNegocio" maxPages="10" ajaxSingle="true" page="#{negociosAction.numPaginaContactos}" id="dScroll" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+			</a4j:region>
+		</rich:popupPanel> 
+		
+		<!-- ####### MODAL EDITAR  CONTACTO NEGOCIO  ######### -->
+		<rich:popupPanel id="pnlEditarContactoNegocio" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:outputText  value="#{msg['contactos']}" styleClass="Titulo" />
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlEditarContactoNegocio')}.hide()"/>
+			 </f:facet>         
+			
+			<!-- INICIA MENU MODAL -->	
+			<a4j:region id="regContactoNegocio">
+				<div style="display: block; width:100%; height: 22px;">							
+					<!-- botones izquierda ARRIBA.........................botones derecha ABAJO -->  
+					<a4j:commandButton id="cmdSalvarContacto" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+						image="#{msg['salvar22.img']}"  	   		 
+						action="#{negociosAction.guardarContacto()}"			         					
+						oncomplete="salvar('#{negociosAction.resOperacion}', '#{rich:clientId('pnlEditarContactoNegocio')}', '#{rich:clientId('pnlMsgGralNegocio')}', #{rich:element('msgErrorContactoNegocio')});"
+						render="pnlMsgGralNegocio,dtContactosNegocio,msgErrorContactoNegocio"
+						limitRender="true">   					
+						<rich:tooltip value="#{msg['salvar.e']}" />
+					</a4j:commandButton>
+				</div>
+				<!-- FIN MENU MODAL -->	
+				
+				<rich:messages id="msgErrorContactoNegocio" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!">
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;"/></f:facet>
+				</rich:messages>
+					
+				<h:panelGroup styleClass="encabezado" style="width: 600px;">
+					<h:outputText value="#{negociosAction.pojoNegocio.id != null ? negociosAction.pojoNegocio.id : ' '} - "/>
+					<h:outputText value="#{negociosAction.pojoNegocio.nombre}"/>
+				</h:panelGroup> 	
+				
+				<h:panelGrid columns="2" width="100%" columnClasses="colTitulo,colDato">
+					<h:outputText value="#{msg['nombre']}:"  styleClass="Titulo"/>
+					<h:panelGroup style="width:100%">
+						<h:outputText id="idPersonaContacto" styleClass="Titulo" style="margin-left:10px;"
+							value="#{negociosAction.pojoContactoNegocio.idPersonaContacto != null ? (negociosAction.pojoContactoNegocio.idPersonaContacto.id > 0 ? negociosAction.pojoContactoNegocio.idPersonaContacto.id : '') : ''}" />
+						<h:outputText id="nombrePersonaContacto" styleClass="Titulo" style="margin-left:10px;"
+							value="#{negociosAction.pojoContactoNegocio.idPersonaContacto != null ? (negociosAction.pojoContactoNegocio.idPersonaContacto.id > 0 ? negociosAction.pojoContactoNegocio.idPersonaContacto.nombreCompleto : '') : ''}" />
+						
+						<a4j:commandLink id= "lnkBuscarPersonaContacto" style ="font-weight: bold;"
+							value="#{negociosAction.pojoContactoNegocio.idPersonaContacto == null ? msg['seleccionar'] : (negociosAction.pojoContactoNegocio.idPersonaContacto.id > 0 ? msg['cambiar'] : msg['seleccionar'])}" 
+							oncomplete="#{rich:component('pnlBuscarPersonaContacto')}.show()" />
+									
+						<h:inputText id="nombrePersonaContactoHidden" style="text-align:left;  display:none;" 
+							value="#{negociosAction.personaContactoString}"
+							required="#{!empty param[rich:clientId('cmdSalvarContacto')]}" 
+							requiredMessage="#{msg['nombre']} #{msg['mensaje.error.requerido']}" />
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['puesto']}:" styleClass="Titulo"/>
+					<h:inputText id="txtPuestoContacto" maxlength="100" size="46"
+						value="#{negociosAction.pojoContactoNegocio.puesto}" 
+						required="#{!empty param[rich:clientId('cmdSalvarContacto')]}" 
+						requiredMessage="#{msg['puesto']} #{msg['mensaje.error.requerido']}" />			  
+				</h:panelGrid>
+				
+				<h:panelGrid id="gridDatosContacto" columns="4" width="100%" columnClasses="colTitulo,colDato,colTitulo,colDato">
+					<h:outputText value="#{msg['telefono']}:" styleClass="Titulo"/>
+					<h:outputText value="#{negociosAction.pojoContactoNegocio.idPersonaContacto.telefono}" styleClass="Titulo"/>
+					
+					<h:outputText value="#{msg['correoElectronico']}:" styleClass="Titulo"/>
+					<h:outputText value="#{negociosAction.pojoContactoNegocio.idPersonaContacto.correo}" styleClass="Titulo"/>
+				</h:panelGrid>
+				
+				<h:panelGrid id="gridDatosContacto2" columns="4" width="100%" columnClasses="colTitulo,colDato">
+					<h:outputText value="#{msg['domicilio']}:" styleClass="Titulo"/>
+					<h:outputText value="#{negociosAction.pojoContactoNegocio.idPersonaContacto.domicilio}" styleClass="Titulo"/>
+				</h:panelGrid>
+			</a4j:region>
+		</rich:popupPanel>
+		
+		<!-- ####### MODAL BUSQUEDA PERSONAS  CONTACTO ######### -->
+		<rich:popupPanel id="pnlBuscarPersonaContacto" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:outputText  value="#{msg['buscarPersonas']}" styleClass="Titulo" />
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlBuscarPersonaContacto')}.hide()"/>
+			</f:facet> 
+			
+			<!-- INICIA MENU MODAL -->	
+			<div style="display: block; width:900px; height: 22px;">	
+				<!-- botones izquierda ARRIBA.........................botones derecha ABAJO -->  
+				<a4j:commandButton id="cmdBuscarPersonaContacto" 
+					action="#{negociosAction.buscarPersonasContacto}" 
+					image="#{msg['buscar22.img']}"
+					style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+					oncomplete="buscar('#{negociosAction.resOperacion}', '#{rich:clientId('pnlMsgGralNegocio')}');" 
+					render="dtBuscarPersonasContacto, pnlMsgGralNegocio">
+					<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarPersonasContacto"/>
+				</a4j:commandButton>   				       				
+			</div>					
+			<!-- FIN MENU MODAL -->	
+			
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{negociosAction.pojoNegocio.id != null ? negociosAction.pojoNegocio.id : ' '} - "/>
+				<h:outputText value="#{negociosAction.pojoNegocio.nombre}"/>
+			</h:panelGroup> 
+				
+		   <h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin-left:10px; margin-bottom:20px; display:block;" >
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>	  				
+				 <h:selectOneMenu value="#{negociosAction.tipoBusquedaContacto}" styleClass="Titulo" style="margin-left:5px; width: 130px;">
+					<f:selectItem itemLabel="#{msg['id']}" itemValue="id"/>
+					<f:selectItem itemLabel="#{msg['nombre']}" itemValue="nombre"/>
+					<f:selectItem itemLabel="#{msg['rfc']}" itemValue="rfc"/>
+				</h:selectOneMenu>	
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo"/>
+				<h:inputText maxlength="30" value="#{negociosAction.valorBusquedaPersonasContacto}"/>
+			</h:panelGrid>	
+								
+			<rich:dataTable id="dtBuscarPersonasContacto" cellpadding="0" cellspacing="0"  rows="5" border="0" var="var" rowClasses="Row1, Row2" styleClass="tabla_pagina"	 value="#{negociosAction.listPersonaContacto}" style="width: 900px;">	           		
+				<f:facet name="header">
+					<rich:columnGroup>			  
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['rfc']}" />
+						</rich:column>	                       
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['domicilio']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['seleccionar']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column width="50" style="text-align:center;" styleClass="Descripcion">
+					<h:outputText value="#{var.id}"/>
+				</rich:column>
+				<rich:column width="400" styleClass="Descripcion">	               		
+					<h:outputText value="#{var.nombreCompleto}" />	                   
+				</rich:column>
+				<rich:column width="60" styleClass="Descripcion"  style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.rfc}" />
+				</rich:column>	               
+				<rich:column width="360" styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.domicilio}" />
+				</rich:column>	              
+				<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+				   <a4j:commandButton id="cmdAgregar" image="#{msg['asociarPersona16.img']}"  
+						oncomplete="#{rich:component('pnlBuscarPersonaContacto')}.hide()"
+						render="lnkBuscarPersonaContacto,idPersonaContacto,nombrePersonaContacto,nombrePersonaContactoHidden,gridDatosContacto,gridDatosContacto2"
+						limitRender="true">
+						<rich:tooltip showDelay="300" value="#{msg['agregar.e']}" for="cmdAgregar" />	
+						<f:setPropertyActionListener target="#{negociosAction.pojoContactoNegocio.idPersonaContacto}" value="#{var}" />
+				   </a4j:commandButton>
+				</rich:column>	               
+				<f:facet name="footer" >
+					<rich:dataScroller align="center" for="dtBuscarPersonasContacto" maxPages="10" ajaxSingle="true" page="#{negociosAction.numPaginaPersonasContactos}" id="dScroll" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+		
+		<!-- ####### MODAL BUSQUEDA PERSONAS  CONTACTO ######### -->
+		<rich:popupPanel id="pnlBuscarGiro" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:outputText  value="#{msg['buscarGiro']}" styleClass="Titulo" />
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlBuscarGiro')}.hide()"/>
+			</f:facet> 
+			
+			<!-- INICIA MENU MODAL -->	
+			<div style="display: block; width:500px; height: 22px;">	
+				<!-- botones izquierda ARRIBA.........................botones derecha ABAJO -->  
+				<a4j:commandButton id="cmdBuscarGiro" 
+					action="#{negociosAction.buscarGiro}" 
+					image="#{msg['buscar22.img']}"
+					style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+					oncomplete="buscar('#{negociosAction.resOperacion}', '#{rich:clientId('pnlMsgGralNegocio')}');" 
+					render="dtBuscarGiro, pnlMsgGralNegocio">
+					<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarGiro"/>
+				</a4j:commandButton>   				       				
+			</div>					
+			<!-- FIN MENU MODAL -->	
+			
+			<h:panelGroup styleClass="encabezado">
+				<h:outputText value="#{negociosAction.pojoNegocio.id != null ? negociosAction.pojoNegocio.id : ' '} - "/>
+				<h:outputText value="#{negociosAction.pojoNegocio.nombre}"/>
+			</h:panelGroup> 
+				
+		   <h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin-left:10px; margin-bottom:20px; display:block;" >
+				<h:outputText value="#{msg['nombre']}:" styleClass="Titulo"/>
+				<h:inputText maxlength="50" value="#{negociosAction.valorBusquedaGiro}"/>
+			</h:panelGrid>	
+								
+			<rich:dataTable id="dtBuscarGiro" cellpadding="0" cellspacing="0"  rows="5" border="0" var="var" rowClasses="Row1, Row2" styleClass="tabla_pagina"	 value="#{negociosAction.listGirosC}" style="width: 500px;">	           		
+				<f:facet name="header">
+					<rich:columnGroup>			  
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+						<rich:column/>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column width="50" style="text-align:center;" styleClass="Descripcion">
+					<h:outputText value="#{var.id}"/>
+				</rich:column>
+				<rich:column width="400" styleClass="Descripcion">	               		
+					<h:outputText value="#{var.valor}" />	                   
+				</rich:column>       
+				<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+				   <a4j:commandButton id="cmdAgregarGiro" image="#{msg['agregar16.img']}"  
+						oncomplete="#{rich:component('pnlBuscarGiro')}.hide()"
+						render="lnkBuscarGiro,txtNombreGiro" >
+						<rich:tooltip showDelay="300" value="#{msg['agregar.e']}" for="cmdAgregarGiro"/>	
+						<f:setPropertyActionListener target="#{negociosAction.pojoNegocio.giro}" value="#{var.id}" />
+						<f:setPropertyActionListener target="#{negociosAction.pojoGiro}" value="#{var}"/>
+				   </a4j:commandButton>
+				</rich:column>	               
+				<f:facet name="footer" >
+					<rich:dataScroller align="center" for="dtBuscarGiro" maxPages="10" ajaxSingle="true" page="#{negociosAction.numPaginaGiro}" id="dScroll" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel>
+		
+		<!-- ####### MODAL LISTADO ESTADOS NEGOCIO  ######### -->
+		<rich:popupPanel id="pnlEstadosNegocio" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:outputText  value="#{msg['estadosOperacion']}" styleClass="Titulo" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlEstadosNegocio')}.hide()"/>
+			</f:facet>     
+			
+			<h:panelGroup styleClass="encabezado" style="width: 500px;">
+				<h:outputText value="#{negociosAction.pojoNegocio.id != null ? negociosAction.pojoNegocio.id : ' '} - "/>
+				<h:outputText value="#{negociosAction.pojoNegocio.nombre}"/>
+			</h:panelGroup>	
+			
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer"
+				style="margin-left:10px; margin-bottom:20px; display:block;">
+				<h:outputText value="#{msg['estado']}:" styleClass="Titulo" />
+				<h:panelGroup>
+					<h:selectOneMenu id="cmbEstadoEstadosNegocio"
+						value="#{negociosAction.estadoAEstadosNegocio}">
+						<f:selectItems value="#{negociosAction.listEstado}" />
+					</h:selectOneMenu>
+	
+					<a4j:commandButton id="cmdAgregarEstadosNegocio"
+						action="#{negociosAction.guardarEstadosNegocio()}"
+						image="#{msg['agregar_azul16.img']}"
+						style="vertical-align: middle; cursor: pointer; margin-left: 1em;"
+						oncomplete="buscar('#{negociosAction.resOperacion}','#{rich:clientId('pnlMsgGralNegocio')}');"
+						render="dtEstadosNegocio, pnlMsgGralNegocio">
+						<rich:tooltip value="#{msg['salvar.e']}" styleClass="Descripcion" />
+					</a4j:commandButton>
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<rich:dataTable id="dtEstadosNegocio" cellpadding="0" cellspacing="0"  rows="5" border="0" var="var" rowClasses="Row1, Row2" 
+				styleClass="tabla_pagina"	 value="#{negociosAction.listEstadosNegocio}">	           		
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['estado']}" />
+						</rich:column>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['eliminar']}" />
+						</rich:column>	                       
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column width="50" style="text-align:center;" styleClass="Descripcion">
+					<h:outputText value="#{var.id}"/>
+				</rich:column>
+				<rich:column width="400" styleClass="Descripcion">	               		
+					<h:outputText value="#{var.idEstado.nombre}" />	                   
+				</rich:column>
+				<rich:column width="20" style="text-align:center;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEliminarEstado" image="#{msg['eliminar16.img']}" 
+						action="#{negociosAction.eliminarEstadosNegocio()}"
+						oncomplete="#{rich:component('pnlMsgGralElimNegocio')}.show()"
+						render="dtEstadosNegocio, pnlMsgGralElimNegocio">
+						<rich:tooltip showDelay="300" value="#{msg['eliminar.e']}" for="cmdEliminarCanal"/>
+						<f:setPropertyActionListener target="#{negociosAction.pojoEstadosNegocio}" value="#{var}" />
+					</a4j:commandButton>
+				</rich:column>
+				<f:facet name="footer" >
+					<rich:dataScroller align="center" for="dtEstadosNegocio" maxPages="10" ajaxSingle="true" page="#{negociosAction.numPaginaEstadosNegocio}" id="dScrollEstadosNegocio" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</rich:popupPanel> 
+		
+		<!-- #### MODAL ELIMINAR NEGOCIO#### -->		
+		<rich:popupPanel id="pnlEliminarNegocio" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText value="#{msg['confirmacion']}" styleClass="Titulo" />
+				</h:panelGroup>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlEliminarNegocio')}.hide()"/>
+			</f:facet>
+			<h:panelGroup style="display:block; width:300px; float:center;">
+				<h:outputText value="#{msg['confirmarEliminar']}" style="display:block;" styleClass="Descripcion"/>
+			</h:panelGroup>
+			<h:panelGrid columns="2" width="100%" columnClasses="colDato, colDato">
+				<a4j:commandButton value="#{msg['si']}" 
+				oncomplete="eliminar('#{negociosAction.resOperacion}', '#{rich:clientId('pnlEliminarNegocio')}', '#{rich:clientId('pnlMsgGralNegocio')}');"
+				action="#{negociosAction.eliminarNegocio}" style="margin-top:10px; cursor:pointer; margin-left: 40%;"
+				render="dtNegocios, pnlMsgGralNegocio"/>
+				<a4j:commandButton value="#{msg['no']}" onclick="#{rich:component('pnlEliminarNegocio')}.hide()" style="margin-top:10px; cursor:pointer; margin-left: 40%;"/>
+			</h:panelGrid>
+		</rich:popupPanel> 
+		<!--  FIN MODAL ELIMINAR NEGOCIO-->
+		
+		<!-- #### MODAL ELIMINAR PERSONA #### -->		
+		<rich:popupPanel id="pnlEliminarPersona" autosized="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText value="#{msg['confirmacion']}" styleClass="Titulo" />
+				</h:panelGroup>
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlEliminarPersona')}.hide()"/>
+			</f:facet>
+			
+			<h:panelGroup style="display:block; width:300px; float:center;">
+				<h:outputText value="#{msg['confirmarEliminar']}" style="display:block;" styleClass="Descripcion"/>
+			</h:panelGroup>
+			
+			<h:panelGrid columns="2" width="100%" columnClasses="colDato, colDato">
+				<a4j:commandButton style="margin-top:10px; cursor:pointer; margin-left: 40%;"
+					value="#{msg['si']}" 
+					action="#{negociosAction.quitarPersonaAsociadaNegocio}" 
+					oncomplete="eliminar('#{negociosAction.resOperacion}', '#{rich:clientId('pnlEliminarPersona')}', '#{rich:clientId('pnlMsgGralNegocio')}');"
+					render="dtPersonasAsociadas, pnlMsgGralNegocio"/>
+					
+				<a4j:commandButton style="margin-top:10px; cursor:pointer; margin-left: 40%;"
+					value="#{msg['no']}" 
+					onclick="#{rich:component('pnlEliminarPersona')}.hide()" />
+			</h:panelGrid>
+		</rich:popupPanel> 
+		<!--  FIN MODAL ELIMINAR NEGOCIO-->
+	</ui:define>
+</ui:composition>

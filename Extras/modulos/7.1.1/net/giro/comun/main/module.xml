@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:jboss:module:1.1" name="net.giro.comun">
+  <resources>
+    <resource-root path="Comun.jar" />
+  </resources>
+  <dependencies>
+    <module name="org.apache.commons.lang" export="true"/> 
+    <module name="org.apache.log4j" export="true"/> 
+  </dependencies>
+</module>

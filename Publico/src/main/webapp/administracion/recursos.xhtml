@@ -1,0 +1,455 @@
+<!DOCTYPE composition>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:s="http://jboss.com/products/seam/taglib" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich"
+	template="/layout/template.xhtml">
+	
+	<ui:define name="title">
+		<h:outputText value="Recursos" />
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolBarGroup location="right" style="padding:0 2px;">
+			<a4j:commandButton id="cmdBuscar" style="margin:0 0 0 5px; cursor: pointer;"
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+				onclick="#{rich:element('cmdBuscar')}.disabled = true;" 
+				action="#{recursosAction.buscar}" 
+				oncomplete="#{rich:element('cmdBuscar')}.disabled = false; buscar(#{recursosAction.operacionCancelada},'#{rich:clientId('pnlMensajes')}');"
+				reRender="dtResults,pnlMensajes"
+				limitToList="true" />
+		</rich:toolBarGroup>
+		
+		<rich:toolBarGroup location="right" style="padding:0 2px 0 2px;">
+			<a4j:commandButton id="cmdNuevo" style="margin:0 0 0 5px; cursor: pointer;"
+				image="#{msg['nuevo22.img']}" title="#{msg['nuevo.e']}"
+				onclick="#{rich:element('cmdNuevo')}.disabled = true;" 
+				action="#{recursosAction.nuevo}" 
+				oncomplete="#{rich:element('cmdNuevo')}.disabled = false; Richfaces.showModalPanel('pnlRecurso');" 
+				reRender="pnlRecurso" />
+		</rich:toolBarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<a4j:keepAlive beanName="recursosAction" />
+		<a4j:loadStyle src="resource:///resources/css/adm/adm.css"/>
+		<a4j:loadStyle src="resource:///resources/css/adm/admUsuarios.css"/>
+		<a4j:loadScript src="resource:///resources/scripts/publico.js"/>
+		
+		<div class="div_titulo" style="margin:50px auto 0;">
+			<h:outputText value="Recursos" style="font-weight:bold; font-size:28px; color:#525252;" />
+		</div>
+		
+		<h:panelGrid columns="3" style="margin:30px 5px 5px; display:block; max-width:720px;" cellpadding="0" cellspacing="5">
+			<h:outputText value="#{msg['busqueda']}:" styleClass="Titulo" />
+			<h:selectOneMenu id="cmbTipoBusqueda" styleClass="Titulo" style="width:120px;"
+				value="#{recursosAction.campoBusqueda}">
+				<f:selectItems value="#{recursosAction.tiposBusqueda}" />
+				<a4j:support event="onchange" reRender="panelValores,txtvalor,cbFechaBusqueda" />
+			</h:selectOneMenu>
+			<h:panelGroup id="panelValores">
+				<h:inputText id="txtvalor" rendered="#{recursosAction.campoBusqueda == 'fecha' ? false : true}"
+					value="#{recursosAction.valorBusqueda}" />
+				<rich:calendar id="cbFechaBusqueda" rendered="#{recursosAction.campoBusqueda == 'fecha' ? true : false}"
+					datePattern="dd/MMM/yyyy" inputSize="18" zindex="100" showWeekDaysBar="false" showWeeksBar="false" 
+					value="#{recursosAction.fechaBusqueda}" />
+	        </h:panelGroup>
+		</h:panelGrid>
+		
+		<rich:dataTable id="dtResults" value="#{recursosAction.listRecursos}" var="var" rows="100" styleClass="tabla_pagina" 
+			cellpadding="0" cellspacing="0" border="0" rowClasses="Row1,Row2" style="margin:0 auto 25px; min-width:720px; width:100%;">
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+						<h:outputText value="#{msg['id']}"/>
+					</rich:column>
+					
+					<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:100px;">
+						<h:outputText value="#{msg['tipo']}"/>
+					</rich:column>
+					
+					<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+						<h:outputText value="#{msg['descripcion']}"/>
+					</rich:column>
+					
+					<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+						<h:outputText value="#{msg['fecha']}"/>
+					</rich:column>
+					
+					<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:60px;" colspan="3" />
+				</rich:columnGroup>
+			</f:facet>
+		
+			<rich:column styleClass="Descripcion" style="text-align:center;">
+				<h:outputText value="#{var.id}"/>
+			</rich:column>
+			
+			<rich:column styleClass="Descripcion" style="text-align:left;">
+				<h:outputText rendered="#{var.tipo == 0}" value="Desconocido" />
+				<h:outputText rendered="#{var.tipo == 1}" value="Proceso" />
+				<h:outputText rendered="#{var.tipo == 2}" value="Formato" />
+				<h:outputText rendered="#{var.tipo == 3}" value="DP" />
+			</rich:column>
+			
+			<rich:column styleClass="Descripcion" style="text-align:left;">
+				<h:outputText value="#{var.descripcion}"/>
+			</rich:column>
+			
+			<rich:column styleClass="Descripcion" style="text-align:center;">
+				<h:outputText value="#{var.fechaCreacion}"><f:convertDateTime pattern="dd MMM yyyy"/></h:outputText>
+			</rich:column>
+								
+			<rich:column styleClass="Descripcion" style="text-align:center;" width="20">
+				<a4j:commandButton style="cursor: pointer;" 
+					image="#{msg['descargar16.img']}" title="Descargar Documento"
+					action="#{recursosAction.exportar}" 
+					oncomplete="reporte(#{recursosAction.operacionCancelada}, '#{rich:clientId('pnlMensajes')}');"
+					reRender="pnlMensajes"> 
+					<f:setPropertyActionListener target="#{recursosAction.idRecursoDocumento}" value="#{var.id}" />
+				</a4j:commandButton>
+			</rich:column>
+			
+			
+			<rich:column styleClass="Descripcion" style="text-align:center;" width="20">
+				<a4j:commandButton style="cursor: pointer;" 
+					image="#{msg['editar16.img']}" title="#{msg['editar.e']}"
+					action="#{recursosAction.editar}" 
+					oncomplete="editar(#{recursosAction.operacionCancelada}, '#{rich:clientId('pnlRecurso')}', '#{rich:clientId('pnlMensajes')}');"
+					reRender="pnlMensajes,pnlRecurso"> 
+					<f:setPropertyActionListener target="#{recursosAction.idRecursoDocumento}" value="#{var.id}" />
+				</a4j:commandButton>
+			</rich:column>
+			
+			<rich:column styleClass="Descripcion" style="text-align:center;" width="20">
+				<a4j:commandButton style="cursor: pointer;" 
+					image="#{msg['cancelar16.img']}" title="#{msg['cancelar.e']}"
+					oncomplete="Richfaces.showModalPanel('pnlEliminar');" 
+					reRender="pnlEliminar"> 
+					<f:setPropertyActionListener target="#{recursosAction.idRecursoDocumento}" value="#{var.id}" />
+				</a4j:commandButton>
+			</rich:column>
+			
+			<f:facet name="footer">
+				<rich:datascroller for="dtResults" page="#{recursosAction.paginacion}" renderIfSinglePage="false" 
+					align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="tygCatTit" />
+			</f:facet>
+		</rich:dataTable>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<rich:modalPanel id="pnlRecurso" autosized="true" top="10">
+			<f:facet name="header">
+				<h:outputText id="lblTitulo" styleClass="Titulo" value="#{recursosAction.titulo}" />
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage style="cursor:pointer;" 
+						value="#{msg['navegacion.panel.cerrar.img']}"
+						onclick="Richfaces.hideModalPanel('pnlRecurso');" />
+				</h:panelGroup>
+			</f:facet>
+			
+			<a4j:form id="frmRecurso">
+				<h:panelGrid id="botonera" columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align:left;">
+					<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+						<rich:messages id="validadorRecurso" globalOnly="false" showDetail="false" showSummary="true" title="Campos requeridos!">
+							<f:facet name="errorMarker"><h:graphicImage style="margin-right:1em;" value="#{msg['alert16.img']}"/></f:facet>
+						</rich:messages>
+					</h:panelGroup>
+					
+					<h:panelGroup id="grupoBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+						<a4j:commandButton id="cmdSalvar" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;"
+							image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+							onclick="#{rich:element('cmdSalvar')}.disabled = true;"
+							action="#{recursosAction.guardar}" 
+							oncomplete="#{rich:element('cmdSalvar')}.disabled = false; guardarNoCerrar(#{recursosAction.operacionCancelada}, 'pnlRecurso', 'pnlMensajes', #{rich:element('validadorRecurso')})" 
+							reRender="validadorRecurso,pnlMensajes,tabsData,dtResults,lblTitulo" />
+					</h:panelGroup>
+				</h:panelGrid>
+				
+				<rich:tabPanel id="tabsData" activeItem="@first" switchType="ajax" style="min-height:280px;">
+					<rich:tab id="tabGenerales" label="#{msg['datosGenerales']}" styleClass="Titulo">
+						<h:panelGrid columnClasses="colModalIzq, colModalDer" columns="2" id="pnlGridFormulario" style="margin:10px auto; width:100%;">
+							<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+							<a4j:commandButton style="vertical-align:middle; position:relative; cursor:pointer; margin:auto 0 auto 10px;"
+								image="#{msg['documentoBusqueda24.img']}" title="#{recursosAction.recursoCargado ? 'Cambiar' : 'Cargar'} Documento"
+								action="#{recursosAction.nuevaCarga}"
+								oncomplete="nuevo(#{recursosAction.operacionCancelada}, '#{rich:clientId('pnlCargarRecurso')}', '#{rich:clientId('pnlMensajes')}');" 
+								reRender="pnlCargarRecurso,pnlMensajes"
+								limitToList="true" />
+							
+							<h:outputText value="Documento:" styleClass="Titulo" />
+							<h:panelGroup>
+								<h:inputText maxlength="100" size="50" readonly="true"
+									value="#{recursosAction.pojoRecurso.nombre}"
+									required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+									requiredMessage="#{msg['nombre']} #{msg['mensaje.error.requerido']}" />
+									
+								<a4j:commandButton style="vertical-align:middle; position:relative; cursor:pointer; margin:auto 0 auto 10px;"
+									rendered="#{recursosAction.verModulos}"
+									image="#{msg['descargar22.img']}" title="Descargar Documento"
+									action="#{recursosAction.exportar}"
+									oncomplete="reporte(#{recursosAction.operacionCancelada}, '#{rich:clientId('pnlMensajes')}');" 
+									reRender="pnlMensajes"
+									limitToList="true" />
+							</h:panelGroup>
+							
+							<h:outputText value="#{msg['descripcion']}:" styleClass="Titulo" />
+							<h:inputTextarea row="2" style="width:644px; resize:none;"
+								value="#{recursosAction.pojoRecurso.descripcion}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['descripcion']} #{msg['mensaje.error.requerido']}"/>
+	
+							<h:outputText value="#{msg['tipo']}:" styleClass="Titulo" />
+							<h:selectOneMenu styleClass="Titulo" style="width:220px;"
+								value="#{recursosAction.pojoRecurso.tipo}" 
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['tipo']} #{msg['mensaje.error.requerido']}">
+								<f:selectItems value="#{recursosAction.listTiposRecursos}" />
+							</h:selectOneMenu>
+						</h:panelGrid>
+					</rich:tab>
+					
+					<rich:tab id="tabModulos" label="Modulos" styleClass="Titulo" rendered="#{recursosAction.verModulos}">
+						<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin:5px auto; width:100%; display:block;">
+							<h:selectOneMenu id="cbModulos" styleClass="Titulo" style="width:520px;"
+								value="#{recursosAction.idModulo}" 
+								required="#{!empty param[rich:clientId('cmdAgregarModulo')]}" 
+								requiredMessage="#{msg['empresa']} #{msg['mensaje.error.requerido']}">
+								<f:selectItem itemLabel="#{msg['seleccione']}" />
+								<f:selectItems value="#{recursosAction.listModulosItems}" />
+							</h:selectOneMenu>
+							
+							<a4j:commandButton id="cmdAgregarModulo" style="margin:auto 10px; vertical-align: middle; cursor: pointer;"
+								image="#{msg['agregar16.img']}" title="#{msg['agregar.e']} #{msg['empresa']}"
+								action="#{recursosAction.agregar}" 
+								oncomplete="mensaje(#{recursosAction.operacionCancelada}, '#{rich:clientId('pnlMensajes')}')"
+								reRender="cbModulos,dtRecursoModulos,pnlMensajes" />
+						</h:panelGrid>
+						
+						<div style="display:block; margin:10px auto 0; padding:0; min-width:800px; width:100%; height:auto; max-height:450px; overflow-y:auto;">
+							<rich:dataTable id="dtRecursoModulos" value="#{recursosAction.listRecursoModulos}" var="var" rows="50" styleClass="tabla_pagina"
+								border="0" cellpadding="0" cellspacing="0" rowClasses="Row1,Row2" style="min-width:700px; width:100%; margin:0 auto;">
+								<f:facet name="header">
+									<rich:columnGroup>
+										<rich:column styleClass="Titulo" style="text-align:center; width:90px; padding:auto 2px;">
+											<h:outputText value="#{msg['id']}"/>
+										</rich:column>
+										
+										<rich:column styleClass="Titulo" style="text-align:center; width:auto; padding:auto 2px;">
+											<h:outputText value="#{msg['modulo']}"/>
+										</rich:column>
+										
+										<rich:column styleClass="Titulo" style="text-align:center; width:90px; padding:auto 2px;">
+											<h:outputText value="#{msg['fecha']}"/>
+										</rich:column>
+										
+										<rich:column styleClass="Titulo" style="text-align:center; width:20px; padding:auto 2px;" />
+									</rich:columnGroup>
+								</f:facet>
+								
+								<rich:column styleClass="Descripcion" style="text-align:center; width:90px;">
+									<h:outputText value="#{var.id}"/>
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:left;">
+									<h:outputText value="#{var.moduloNombre}"/>
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:center;">
+									<h:outputText value="#{var.fechaCreacion}"><f:convertDateTime pattern="dd-MMM-yyyy" /></h:outputText>
+								</rich:column>
+								
+								<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+									<a4j:commandButton id="cmdEliminarEmpresa" 
+										image="#{msg['eliminar16.img']}" title="#{msg['eliminar.e']} #{msg['Empresa']}"
+										oncomplete="Richfaces.showModalPanel('pnlEliminarModulo');" 
+										reRender="pnlEliminarModulo">
+										<f:setPropertyActionListener target="#{recursosAction.idModulo}" value="#{var.id}"/>
+									</a4j:commandButton>
+								</rich:column>
+								
+								<f:facet name="footer">
+									<rich:datascroller for="dtRecursoModulos" page="#{recursosAction.paginacionModulos}" renderIfSinglePage="false"
+										ajaxSingle="true" align="center" maxPages="10" fastStep="10" styleClass="Titulo"/>
+								</f:facet>
+							</rich:dataTable>
+						</div>
+					</rich:tab>
+				</rich:tabPanel>
+			</a4j:form>
+		</rich:modalPanel>
+		
+		<rich:modalPanel id="pnlMensajes" autosized="true" domElementAttachment="form" width="300"
+			onshow="document.getElementById('#{rich:clientId('pnlMensajesOk')}').focus();">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText value="#{msg['atencion']}" styleClass="Titulo" />
+				</h:panelGroup>
+			</f:facet>
+			
+			<a4j:form id="frmMensajes" style="text-align:center;">
+				<h:panelGroup style="display:block; min-width:300px; max-width:500px; float:center; text-align:center;">
+					<h:outputText styleClass="Descripcion" value="#{recursosAction.mensaje}" escape="false" />
+					
+					<a4j:commandButton id="pnlMensajesOk" style="margin:10px auto 0; width:100px; cursor:pointer;"
+						value="#{msg['aceptar']}"
+						onclick="#{rich:component('pnlMensajes')}.hide()"  />
+				</h:panelGroup>
+			</a4j:form>
+		</rich:modalPanel>
+		
+		<rich:modalPanel id="pnlEliminar" autosized="true" domElementAttachment="form" width="300"
+			onshow="document.getElementById('#{rich:clientId('btnEliminarNo')}').focus();">
+			<f:facet name="header">
+				<h:outputText value="#{msg['navegacion.label.atencion']}"/>
+			</f:facet>
+			
+			<a4j:form id="frmEliminar" style="text-align:center; margin:0; padding:0; min-width:300px; max-width:500px; width:auto;">
+				<a4j:region id="loadEliminar">
+					<a4j:status for="loadEliminar">
+						<f:facet name="stop">
+							<h:panelGrid columns="1" style="text-align:center; margin:0; padding:0; width:100%;">
+								<h:outputText value="#{msg['navegacion.label.deseaCancelar']}" style="cursor:default; display:block;" styleClass="Descripcion" />
+								
+								<h:panelGroup style="width:200px; margin:10px auto 0; text-align:center; display:block;">
+									<a4j:commandButton id="btnEliminarSi" style="width:100px; margin:0 5px 0 0;" 
+										value="#{msg['navegacion.label.aceptar']}"
+										action="#{recursosAction.eliminar}" 
+										oncomplete="eliminar(#{recursosAction.operacionCancelada}, '#{rich:clientId('pnlEliminar')}', '#{rich:clientId('pnlMensajes')}')"
+										reRender="pnlMensajes,dtResults" />
+										
+									<a4j:commandButton id="btnEliminarNo" style="width:90px; margin:0 0 0 5px;" 
+										value="#{msg['cancelar.e']}"
+										onclick="#{rich:component('pnlEliminar')}.hide()" />
+								</h:panelGroup>
+							</h:panelGrid>
+						</f:facet>
+						
+						<f:facet name="start">
+							<h:panelGrid columns="1" style="text-align:center; margin:0; padding:0; width:100%;">
+								<h:outputText value="#{msg['cancelando']}" style="cursor:default; display:block;" styleClass="Titulo" />
+									
+								<h:panelGroup style="width:200px; margin:10px auto 0; text-align:center; display:block;">
+									<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;" />
+								</h:panelGroup>
+							</h:panelGrid>
+						</f:facet>
+					</a4j:status>
+				</a4j:region>
+			</a4j:form>
+		</rich:modalPanel>
+		
+		<rich:modalPanel id="pnlEliminarModulo" autosized="true" domElementAttachment="form" width="300"
+			onshow="document.getElementById('#{rich:clientId('btnEliminarModuloNo')}').focus();">
+			<f:facet name="header">
+				<h:outputText value="#{msg['navegacion.label.atencion']}"/>
+			</f:facet>
+			
+			<a4j:form id="frmEliminarModulo" style="text-align:center; margin:0; padding:0; min-width:300px; max-width:500px; width:auto;">
+				<a4j:region id="loadEliminarModulo">
+					<a4j:status for="loadEliminarModulo">
+						<f:facet name="stop">
+							<h:panelGrid columns="1" style="text-align:center; margin:0; padding:0; width:100%;">
+								<h:outputText value="#{msg['deseaEliminar']}" style="cursor:default; display:block;" styleClass="Descripcion" />
+								
+								<h:panelGroup style="width:200px; margin:10px auto 0; text-align:center; display:block;">
+									<a4j:commandButton id="btnEliminarModuloSi" style="width:100px; margin:0 5px 0 0;" 
+										value="#{msg['navegacion.label.aceptar']}"
+										action="#{recursosAction.quitar}" 
+										oncomplete="eliminar(#{recursosAction.operacionCancelada}, '#{rich:clientId('pnlEliminarModulo')}', '#{rich:clientId('pnlMensajes')}')"
+										reRender="pnlMensajes,dtRecursoModulos" />
+										
+									<a4j:commandButton id="btnEliminarModuloNo" style="width:90px; margin:0 0 0 5px;" 
+										value="#{msg['cancelar.e']}"
+										onclick="#{rich:component('pnlEliminarModulo')}.hide()" />
+								</h:panelGroup>
+							</h:panelGrid>
+						</f:facet>
+						
+						<f:facet name="start">
+							<h:panelGrid columns="1" style="text-align:center; margin:0; padding:0; width:100%;">
+								<h:outputText value="#{msg['eliminando']}" style="cursor:default; display:block;" styleClass="Titulo" />
+									
+								<h:panelGroup style="width:200px; margin:10px auto 0; text-align:center; display:block;">
+									<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;" />
+								</h:panelGroup>
+							</h:panelGrid>
+						</f:facet>
+					</a4j:status>
+				</a4j:region>
+			</a4j:form>
+		</rich:modalPanel>
+		
+		<rich:modalPanel id="pnlCargarRecurso" autosized="true" top="10">
+			<f:facet name="header">
+				<h:outputText value="Cargar Documento" styleClass="Titulo"/>
+			</f:facet>
+			
+			<f:facet name="controls">
+	       		<h:graphicImage style="cursor:pointer;"
+	       	  		value="#{msg['navegacion.gral.cerrar.img']}"
+	       	  		onclick="#{rich:component('pnlCargarRecurso')}.hide()" />
+			</f:facet>
+			
+			<a4j:form id="frmCargarRecurso">
+				<a4j:region id="regCargarRecurso">
+					<div style="display: block; padding:0; min-width:400px; min-height:22px; text-align: left; background-color:none;">
+						<rich:fileUpload id="loadXML" listWidth="100%" listHeight="64" noDuplicate="true" 
+							acceptedTypes="doc,docx,xls,xlsx,pdf" immediateUpload="true" maxFilesQuantity="1" 
+							addControlLabel="#{msg['navegacion.label.anadirArchivo']}" addLabel="#{msg['agregar.e']}" style="text-align:left;"
+							cancelEntryControlLabel="#{msg['navegacion.boton.eliminar.e']}" 
+							cleanButtonClass="Titulo" clearAllControlLabel="#{msg['borrarTodo']}" clearAllLabel="#{msg['borrarTodo']}" clearLabel="#{msg['borrar']}"
+							fileEntryControlClass="Descripcion" fileUploadListener="#{recursosAction.importar}"
+							onerror="#{rich:element('loadXML')}.clear(); alert('Ocurrio un problema al cargar el Documento.\nIntentelo nuevamente');"
+							ontyperejected="alert('Extensiones permitidas:\ndoc,docx,xls,xlsx,pdf');"
+							progressLabel="#{msg['navegacion.label.enviando']}" doneLabel="#{msg['navegacion.label.archivoEnviado']}" 
+							stopButtonClass="Titulo" stopControlLabel="#{msg['navegacion.label.detener']}"
+							uploadButtonClass="Titulo" uploadButtonClassDisabled="true" uploadControlLabel="#{msg['navegacion.label.enviarArchivo']}">
+							<f:facet name="label"><h:outputText value="{_KB}KB de {KB}KB enviado - {mm}:{ss}" styleClass="Descripcion" /></f:facet>
+							<a4j:support event="onclear" action="#{recursosAction.foolMethodReset('onclear')}" reRender="loadXML,confirmUpload" />
+							<a4j:support event="onerror" action="#{recursosAction.foolMethodReset('onerror')}" reRender="loadXML,confirmUpload" />
+							<a4j:support event="onuploadcanceled" action="#{recursosAction.foolMethodReset('onuploadcanceled')}" reRender="loadXML,confirmUpload" />
+							<a4j:support event="onuploadcomplete" action="#{recursosAction.foolMethodUpload('onuploadcomplete')}" reRender="confirmUpload" />
+							<a4j:support event="onfileuploadcomplete" action="#{recursosAction.foolMethodUpload('onfileuploadcomplete')}" reRender="confirmUpload" />
+				   		</rich:fileUpload>
+						
+						<h:panelGrid id="confirmUpload" columns="2" style="width:100%">
+							<h:panelGroup>
+								<a4j:status for="regCargarRecurso" >
+									<f:facet name="start">
+										<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" />
+										<h:outputLabel value="#{msg['procesando']}" styleClass="Titulo" />
+									</f:facet>
+									
+									<f:facet name="stop">
+										<h:outputLabel value="#{msg['navegacion.label.vacio']}" />
+									</f:facet>
+									
+									<f:facet name="success">
+										<h:graphicImage value="#{msg['aplicar22.img']}" />
+										<h:outputLabel value="Proceso terminado" styleClass="Titulo" />
+									</f:facet>
+								</a4j:status>
+							</h:panelGroup>
+							
+							<h:panelGroup>
+						   		<a4j:commandButton id="cmdAsignarRecurso" style="float:right; margin:5px;" 
+						   			image="#{msg['aplicar22.img']}" title="#{msg['procesarXML']}"
+								   	onclick="#{rich:element('cmdAsignarRecurso')}.disabled = true;"
+									action="#{recursosAction.asignarRecurso}" 
+									oncomplete="#{rich:element('cmdAsignarRecurso')}.disabled = false; eliminar(#{recursosAction.operacionCancelada}, '#{rich:clientId('pnlCargarRecurso')}', '#{rich:clientId('pnlMensajes')}');"
+									reRender="pnlMensajes,tabsData"
+									limitToList="true" />
+							</h:panelGroup>
+						</h:panelGrid>
+					</div>
+				</a4j:region>
+			</a4j:form>
+		</rich:modalPanel>
+	</ui:define>
+</ui:composition>

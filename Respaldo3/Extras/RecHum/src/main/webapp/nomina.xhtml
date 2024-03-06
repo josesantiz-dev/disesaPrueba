@@ -1,0 +1,94 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['modulo']} - #{msg['empleados']} #{msg['nomina']}"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag"></ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="rechum.css" />		
+		<h:outputScript library="scripts" name="rechum.js" />	
+		<h:outputScript library="scripts" name="nomina.js" />
+					
+		<div class="div_titulo" style="margin: 50px auto 30px;">
+			<h:outputText styleClass="Titulo" value="#{msg['empleados']} #{msg['nomina']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina" style="margin: 20px 0 0;">
+			<a4j:region id="regionNomina">
+				<fieldset style="max-width: 300px; margin: 0 auto;">
+					<div style="width: 100%; overflow: auto;">
+						<a4j:commandButton id="cmdSalvar" 
+							style="float:right; margin-left: 5px; vertical-align: middle; position:relative;"
+							image="#{msg['salvar22.img']}" 
+							action="#{nominaAction.salvar}" 
+							oncomplete="salvarNomina(#{nominaAction.operacion}, #{nominaAction.tipoMensaje}, '', '#{rich:clientId('pnlMensajes')}', '#{rich:clientId('pnlRecalcularNomina')}', #{rich:element('msgErrores')});"
+							render="panelFechas msgErrores pnlMensajes pnlRecalcularNomina"
+							limitRender="true">
+							<rich:tooltip id="ttSalvar" showDelay="300" value="#{msg['salvar.e']}" for="cmdSalvar" />
+						</a4j:commandButton>
+					</div>
+				
+					<rich:messages id="msgErrores" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+						<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+					</rich:messages>
+					
+					<fieldset id="panelFechas">
+						<legend><h:outputText value="#{msg['nomina']}" styleClass="Titulo" /></legend>
+						
+						<h:panelGrid id="bandEmpleadoDatos" columns="2" columnClasses="colTitulo, colDato">
+							<h:outputText value="#{msg['fecha']} #{msg['desde']}:" styleClass="Titulo" />
+				            <rich:calendar id="txtFechaDesde" enableManualInput="false"
+				            	value="#{nominaAction.fechaDesde}"
+				            	datePattern="dd/MM/yyyy"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['fecha']} #{msg['desde']} #{msg['mensaje.error.requerido']}">
+				                <rich:placeholder value="dd/MM/yyyy" />
+				            </rich:calendar>
+							
+							<h:outputText value="#{msg['fecha']} #{msg['hasta']}:" styleClass="Titulo" />
+				            <rich:calendar id="txtFechaHasta" enableManualInput="false"
+				            	value="#{nominaAction.fechaHasta}"
+				            	datePattern="dd/MM/yyyy"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['fecha']} #{msg['hasta']}  #{msg['mensaje.error.requerido']}">
+				                <rich:placeholder value="dd/MM/yyyy" />
+				            </rich:calendar>
+						</h:panelGrid>
+					</fieldset>
+					
+					<h:panelGroup>
+						<a4j:status for="regionNomina" >
+							<f:facet name="start">
+								<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;" />
+								<h:outputLabel value="#{msg['procesando']}" style="cursor:pointer;"  styleClass="Titulo" />
+							</f:facet> 
+							
+							<f:facet name="stop">
+								<h:outputLabel value="#{msg['navegacion.label.vacio']}" style="cursor:pointer;"  styleClass="Titulo" />
+							</f:facet>
+							
+							<f:facet name="success">
+								<h:graphicImage value="#{msg['aplicar22.img']}" style="vertical-align: middle; position:relative;" />
+								<h:outputLabel value="Proceso terminado" style="cursor:pointer;"  styleClass="Titulo" />
+							</f:facet>
+						</a4j:status>
+					</h:panelGroup>
+				</fieldset>
+			</a4j:region>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modal/empleados/nomina/pnlMensajes.xhtml" />
+		<ui:include src="/modal/empleados/nomina/pnlRecalcularNomina.xhtml" />
+	</ui:define>
+</ui:composition>

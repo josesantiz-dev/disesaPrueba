@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="net.giro.model.clientes" xmlns="urn:jboss:module:1.1">
+	<resources>
+		<resource-root path="Model_Clientes.jar"/>
+	</resources>
+	<dependencies>
+		<module export="true" name="net.giro.comun"/>
+		<module export="true" name="org.hibernate"/>
+	</dependencies>
+</module>

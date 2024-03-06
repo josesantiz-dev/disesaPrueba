@@ -1,0 +1,229 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC '-//Hibernate/Hibernate Mapping DTD 3.0//EN' 'http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd'>
+<hibernate-mapping>
+	<class name="net.giro.co.beans.Correlativo" table="bbb4420d88">
+		<composite-id class="net.giro.co.beans.CorrelativoId" name="id" unsaved-value="none">
+			<key-property column="c_codemp" name="codigoEmpresa" type="long"/>
+			<key-property column="c_nomtab" name="nombreTabla" type="string"/>
+		</composite-id>
+		<property column="c_codemp" insert="false" name="cbEmpresa" update="false"/>
+		<property column="c_destab" name="descriTabla"/>
+		<property column="a_fecins" name="fechaInsercion"/>
+		<property column="a_fecmod" name="fechaModificacion"/>
+		<property column="a_ipeins" name="ipInsercion"/>
+		<property column="a_ipemod" name="ipModificacion"/>
+		<property column="n_numcor" name="numeroCorrelativo"/>
+		<property column="a_terins" name="terminalInsercion"/>
+		<property column="a_termod" name="terminalModificacion"/>
+		<property column="a_usuins" name="usuarioInsercion"/>
+		<property column="a_usumod" name="usuarioModificacion"/>
+	</class>
+	
+	<class name="net.giro.cxp.beans.PagosGastos" table="pagos_gastos">
+		<id column="pagos_gastos_id" name="id" />
+		<property column="fecha" name="fecha" />
+		<property column="tipo" name="tipo" />
+		<property column="no_beneficiario" name="idBeneficiario" />
+		<property column="beneficiario" name="beneficiario" />
+		<property column="tipo_benef" name="tipoBeneficiario" />
+		<property column="operacion" name="operacion" />
+		<property column="no_cheque" name="noCheque" />
+		<property column="folio_autorizacion" name="folioAutorizacion" />
+		<property column="con_factura" name="conFactura" />
+		<property column="sin_factura" name="sinFactura" />
+		<property column="monto" name="monto" />
+		<property column="pagos_gastos_id_ref" name="idPagosGastosRef" />
+		<property column="pago_multiple_id" name="idPagoMultiple" />
+		<property column="nota" name="nota" />
+		<property column="concepto" name="concepto" />
+		<property column="tipo_cambio" name="tipoCambio" />
+		<property column="segmento" name="segmento" />
+		<property column="id_spei_outgoing" name="idSpeiOutgoing" />
+		<property column="detalle_poliza_id" name="detallePolizaId" />
+		<property column="cuenta_origen" name="idCuentaOrigen" />
+		<property column="numero_cuenta_origen" name="numeroCuentaOrigen" />
+		<property column="cuenta_destino" name="idCuentaDestino" />
+		<property column="cuenta_origen_terceros" name="idCuentaOrigenTerceros" />
+		<property column="cuenta_destino_terceros" name="idCuentaDestinoTerceros" />
+		<property column="agente" name="idSucursal" />
+		<property column="tipos_movto_id" name="idTiposMovimiento" />
+		<property column="id_obra" name="idObra" />
+		<property column="area" name="area" />
+		<property column="consecutivo" name="consecutivo" />
+		<property column="monto_limite" name="montoLimite" />
+		<property column="vobo_por" name="voboPor" />
+		<property column="fecha_vobo" name="fechaVobo" />
+		<property column="autorizado_por" name="autorizadoPor" />
+		<property column="fecha_autorizado" name="fechaAutorizado" />
+		<property column="id_orden_compra" name="idOrdenCompra" />
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="estatus" name="estatus" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.cxp.beans.PagosGastosDet" table="pagos_gastos_det">
+		<id column="pagos_gastos_det_id" name="id"/>
+		<many-to-one column="pagos_gastos_id" name="idPagosGastos" class="net.giro.cxp.beans.PagosGastos" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="fecha" name="fecha"/>
+		<property column="concepto_id" name="idConcepto"/>
+		<property column="descripcion" name="descripcionConcepto"/>
+		<property column="id_obra" name="idObra"/>
+		<property column="nombre_obra" name="nombreObra" />
+		<property column="id_orden_compra" name="idOrdenCompra" />
+		<property column="folio_orden_compra" name="folioOrdenCompra" />
+		<property column="es_credito" name="esCredito" />
+		<property column="mano_obra" name="manoObra"/>
+		<property column="subcontrato" name="subcontrato"/>
+		<property column="facturado" name="facturado"/>
+		<property column="id_xml" name="idCfdi"/>
+		<property column="xml_estatus" name="estatusCfdi"/> <!-- Estatus CFDI: 0 - Sin Comprobar, 1 - Activo, 2 - Cancelado -->
+		<property column="referencia" name="referencia"/>
+		<property column="proveedor_id" name="idProveedor"/>
+		<property column="tipo_persona_proveedor" name="tipoPersonaProveedor"/>
+		<property column="emisor" name="nombreProveedor"/>
+		<property column="emisor_rfc" name="rfcProveedor"/>
+		<property column="emisor_concepto" name="facturaConcepto" />
+		<property column="emisor_concepto_importe" name="importeConcepto" />
+		<property column="subtotal" name="subtotal"/>
+		<property column="total_impuestos" name="totalImpuestos"/>
+		<property column="total_retenciones" name="totalRetenciones"/>
+		<property column="total" name="total" />
+		<property column="observaciones" name="observaciones"/>
+		<property column="estatus" name="estatus" />
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+		<property column="unique_value" name="uniqueValue"/>
+	</class>
+	
+	<class name="net.giro.cxp.beans.PagosGastosDetImpuestos" table="pagos_gastos_det_impuestos">
+		<id column="pagos_gastos_det_impuestos_id" name="id"/>
+		<property column="pagos_gastos_det_id" name="idPagosGastosDet"/>
+		<property column="impuesto_id" name="idImpuesto"/>
+		<property column="porcentaje" name="porcentaje" /> 
+		<property column="base" name="base" />
+		<property column="valor" name="valor"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.cxp.beans.PagosGastosRfcPermitidos" table="pagos_gastos_rfc_permitidos">
+		<id column="id" name="id" />
+		<property column="rfc" name="rfc" />
+		<property column="tipo_pagos_gastos" name="tipoPagosGastos" />
+		<property column="tipo_comprobante" name="tipoComprobante" />
+		<property column="metodo_pago_comprobante" name="metodoPagoComprobante" />
+		<property column="permitido" name="permitido" />
+		<property column="determinado" name="determinado" />
+		<property column="fecha_desde" name="fechaDesde" />
+		<property column="fecha_hasta" name="fechaHasta" />
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="estatus" name="estatus" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.cxp.beans.GastosImpuesto" table="gastos_impuesto">
+		<id column="gastos_impuesto_id" name="id" />
+		<property column="valor_id_gasto" name="gastoId" />
+		<property column="valor_id_impuesto" name="impuestoId" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.cxp.beans.Retenciones" table="retenciones"><!-- ? -->
+		<id column="retencion_id" name="id"/>
+		<property column="impuesto" name="impuesto"/>
+		<property column="retencion" name="retencion"/>
+		<property column="cta_impuesto" name="ctaImpuesto"/>
+		<property column="cta_contable" name="ctaContable"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.cxp.beans.ProgPagos" table="prog_pagos">
+		<id column="prog_pago_id" name="id"/>
+		<property column="agente" name="agente"/>
+		<property column="del" name="del"/>
+		<property column="al" name="al"/>
+		<property column="total" name="total"/>
+		<property column="estatus" name="estatus"/>
+		<property column="transferencia_id" name="transferenciaId"/>
+		<property column="monto_autorizado" name="montoAutorizado"/>
+		<property column="observaciones" name="observaciones"/>
+		<property column="monto_revisado" name="montoRevisado"/>
+		<property column="revisado_por" name="revisadoPor"/>
+		<property column="num_lote" name="numLote"/>
+		<property column="fecha_revision" name="fechaRevision"/>
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="id_beneficiario" name="beneficiarioId"/>
+		<property column="tipo_beneficiario" name="tipoBeneficiario"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<class name="net.giro.cxp.beans.ProgPagosDetalle" table="prog_pagos_detalle">
+		<id column="prog_pago_det_id" name="id"/>
+		<property column="tipo_gasto_id" name="tiposGastos"/>
+		<many-to-one column="prog_pago_id" name="progPagos" class="net.giro.cxp.beans.ProgPagos" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<!--property column="prog_pago_id" name="progPagos"/-->
+		<property column="monto" name="monto"/>
+		<property column="monto_rev" name="montoRev"/>
+		<property column="monto_original" name="montoOriginal"/>
+		<property column="restar" name="restar"/>
+		<property column="control" name="control"/>
+		<property column="pagos_gastos_id" name="pagosGastosId"/>
+		<property column="id_beneficiario" name="idBeneficiario"/>
+		<property column="tipo_beneficiario" name="tipoBeneficiario" />
+		<property column="id_orden_compra" name="idOrdenCompra" />
+		<property column="estatus" name="estatus"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	
+	<!-- sin uso
+	<class name="net.giro.cxp.beans.Factura" table="b004dc7aa3">
+		<id column="aa" name="id"/>
+		<property column="ab" name="creadoPor"/>
+		<property column="ac" name="fechaCreacion"/>
+		<property column="ad" name="modificadoPor"/>
+		<property column="ae" name="fechaModificacion"/>
+		<property column="af" name="idMovimientosCuentas"/>
+		<property column="ag" name="idProveedor"/>
+		<property column="ah" name="referencia"/>
+		<property column="ai" name="fecha"/>
+		<property column="aj" name="subtotal"/>
+		<property column="ak" name="observaciones"/>
+		<property column="al" name="idConcepto"/>
+		<property column="am" name="totalImpuestos"/>
+		<property column="an" name="totalRetenciones"/>
+		<property column="ao" name="estatus"/>
+	</class>
+	
+	<class name="net.giro.cxp.beans.Gastos" table="cat_gastos">
+		<id column="clave" name="id"/>
+		<property column="nombre" name="nombre"/>
+		<property column="cta_cont" name="ctaContable"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="modificado_por" name="modificadoPor"/>
+		<property column="fecha_modificacion" name="fechaModificacion"/>
+	</class>
+	-->
+</hibernate-mapping>

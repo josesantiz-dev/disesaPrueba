@@ -1,0 +1,89 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlBusquedaConceptos" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+    	<f:facet name="header">
+    		<h:outputText value="#{msg['buscar.e']} #{msg['conceptos']}" styleClass="Titulo" />
+    	</f:facet>
+    	
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlBusquedaConceptos')}.hide()" />
+		</f:facet>
+		
+		<div style="display:block; min-width:800px; width:100%; min-height:22px;">
+			<a4j:commandButton id="cmdBuscarConceptos" 
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+				action="#{transAction.buscarConceptos}" 
+				style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+				oncomplete="buscar(#{transAction.operacion}, '#{rich:clientId('pnlMensajes')}');" 
+				render="dtBusquedaConceptos, pnlMensajes" />
+		</div> 
+
+		<div style="margin:10px auto 0; min-width:800px;"> 
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin:0 auto; display:block;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>				
+				<h:selectOneMenu styleClass="Titulo" style="width: 216px;"
+					value="#{transAction.campoBusquedaConceptos}">
+					<f:selectItems value="#{transAction.tiposBusquedaConceptos}" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText maxlength="50" style="width:210px;"
+					value="#{transAction.valorBusquedaConceptos}" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtBusquedaConceptos" value="#{transAction.listConceptos}" var="var" 
+				cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column colspan="3" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['conceptos']}" />
+						</rich:column>
+						
+						<rich:column breakRowBefore="true" style="width: 90px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['clave']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['descripcion']}" />
+						</rich:column>
+
+						<rich:column style="width: 30px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['seleccionar']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="width: 60px; text-align:center;">
+					<h:outputText value="#{var.id}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.descripcion}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column style="width: 30px; text-align:center;">
+					<a4j:commandButton id="cmdSeleccionarConcepto" 
+				   		image="#{msg['agregar16.img']}" title="#{msg['seleccionar']}"
+						action="#{transAction.seleccionarConcepto}"
+						oncomplete="seleccionarConfirmar(#{transAction.operacion}, '#{rich:clientId('pnlBusquedaConceptos')}', '#{rich:clientId('pnlMensajes')}', #{transAction.debugging}, '#{rich:clientId('pnlConfirmarActualizacion')}')"
+						render="dtTransaccionConceptos,pnlMensajes,pnlConfirmarActualizacion">
+						<f:setPropertyActionListener target="#{transAction.pojoTransConcepto.idConcepto}" value="#{var}" for="cmdSeleccionarConcepto" />
+				   	</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller id="dScrollConceptos" page="#{transAction.numPaginaConceptos}" for="dtBusquedaConceptos" 
+						maxPages="10" fastStep="10" ajaxSingle="true" align="center" renderIfSinglePage="false" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

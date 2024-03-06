@@ -1,0 +1,29 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlEliminar" autosized="true" domElementAttachment="form"
+		onshow="document.getElementById('#{rich:clientId('btnEliminarNo')}').focus();"
+		header="#{msg['atencion']}">
+		
+		<h:panelGroup style="display:block; min-width:300px; float:center;">
+			<h:outputText value="#{msg['confirmacionEliminar']}" styleClass="Descripcion" />
+			
+			<h:panelGrid columns="2" style="display:block; margin:10px auto 0; width:200px; cursor:pointer; text-align:center;">
+				<a4j:commandButton id="btnEliminarSi" style="margin:0 auto; width:100px; cursor:pointer;"
+					value="#{msg['si']}, #{msg['cancelar']}"
+					action="#{traspasosAction.eliminar}"
+					oncomplete="eliminarCancelar(#{traspasosAction.band}, '#{rich:clientId('pnlEliminar')}', '#{rich:clientId('pnlMensajes')}')"
+					render="dtTraspasos,pnlMensajes" limitRender="true" />
+				
+				<a4j:commandButton id="btnEliminarNo" style="margin:0 auto; width:90px; cursor:pointer;"
+					value="#{msg['no']}"
+					onclick="#{rich:component('pnlEliminar')}.hide()" />
+			</h:panelGrid>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

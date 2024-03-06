@@ -1,0 +1,145 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    <p/>
+    <ui:define name="title">
+		<h:outputText value="Finiquitos"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" image="#{msg['buscar22.img']}" styleClass="Titulo" style="cursor:pointer;" 
+				action="#{finiquitoAction.buscar}" 
+				oncomplete="buscar(#{finiquitoAction.operacionCompleta},'#{rich:clientId('pnlMsgGralFiniquito')}');"
+				render="dtFiniquitos,pnlMsgGralFiniquito">
+				<rich:tooltip id="ttBuscar" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscar" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+		
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" action="#{finiquitoAction.nuevo}" render="pnlNuevoEditarFiniquito"
+				oncomplete="#{rich:component('pnlNuevoEditarFiniquito')}.show()"
+				image="#{msg['nuevo22.img']}" styleClass="Titulo" style="cursor:pointer;">
+				<rich:tooltip id="ttNuevo" showDelay="300" value="#{msg['nuevo.e']}" for="cmdNuevo" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css/acc" name="acc.css" />
+		<h:outputStylesheet library="css/finiquitos" name="finiquitos.css" />
+		<h:outputScript library="scripts/finiquitos" name="finiquitos.js" />
+			
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText value="#{msg['finiquitos']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+	
+		<div class="div_pagina" style=" text-align: left; ">
+			<h:panelGrid columns="4" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="display:block; width: 720px; text-align: left;">
+				<h:outputText value="#{msg['empleado']}:"  styleClass="Titulo"/>
+				<h:inputText id="txtvalor" maxlength="50" value="#{finiquitoAction.valorBusqueda}" size="30" />
+			</h:panelGrid>
+		</div>
+	
+		<div class="div_pagina" style="margin-top: 10px;">
+			<rich:dataTable id="dtFiniquitos" cellpadding="0" cellspacing="0" rows="20"  border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+				var="var" value="#{finiquitoAction.listaFiniquitosGrid}" style="margin:0 auto; width: 100%;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['puesto']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['fechaIngreso']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['f.fechaBaja']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['observaciones']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['estatus']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="" />
+						</rich:column>
+						
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align: center; width: 60px;">
+					<h:outputText value="#{var.id}"  />
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding-left: 5px; width: 60px;">
+					<h:outputText value="#{var.empleado.nombre}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding-left: 5px; width: 60px;">
+					<h:outputText value="#{var.empleado.puestoCategoria.puesto.descripcion}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding-left: 5px; width: 60px;">
+					
+					<h:outputText value="#{var.empleado.fechaIngreso}" >
+						<f:convertDateTime type="date" pattern="dd MMM yyyy"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding-left: 5px; width: 60px;">
+					<h:outputText value="#{var.fechaSolicitudBaja}" >
+						<f:convertDateTime type="date" pattern="dd MMM yyyy"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding-left: 5px; width: 60px;">
+					<h:outputText value="#{var.observaciones}" >
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:center; padding-left: 5px; width: 60px;">
+					<h:outputText value="#{var.estatus == 0 ? 'EN PROCESO' : 'APROBADO'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEditar" image="#{msg['editar16.img']}" rendered="#{true}"
+						oncomplete="#{ rich:component('pnlNuevoEditarFiniquito')}.show(); validarBotonSalvar( #{finiquitoAction.pojoFiniquito.estatus}, #{rich:element('cmdSalvar')} ); " reRender=""
+						action="#{finiquitoAction.editar}" 
+						render="pnlNuevoEditarFiniquito,pnlFiniquitoDatosIzq, pnlFiniquitoDatosDer, pnlEmpleadoDatos, cmdSalvar"  >
+						<f:setPropertyActionListener target="#{finiquitoAction.pojoFiniquito}" value="#{var}" />
+						<rich:tooltip showDelay="300" value="#{msg['editar']}" for="cmdEditar" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<f:facet name="footer">
+					<rich:dataScroller align="center" for="dtFiniquitos" maxPages="10" ajaxSingle="true" page="#{finiquitoAction.numPagina}" id="dScroll" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">	
+		<ui:include src="/modal/finiquitos/pnlMsgGralFiniquito.xhtml" /> 
+		<ui:include src="/modal/finiquitos/pnlNuevoEditarFiniquito.xhtml" /> 
+		<ui:include src="/modal/finiquitos/pnlBusquedaEmpleados.xhtml" />
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,37 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlMensajes" autosized="true">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText value="#{registroGastosAction.resOperacion != '' ?  msg['navegacion.label.atencion'] : msg['navegacion.label.informacion']}" styleClass="Titulo" />
+			</h:panelGroup>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" styleClass="cursor:pointer;" id="imgCerrarMsg" />
+				<rich:componentControl for="pnlMensajes" attachTo="imgCerrarMsg" operation="hide" event="onclick" />
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmMsgAsig" style="text-align:center;">
+			<h:panelGroup style="display:block; width:300px; float:center;">
+				<h:outputText style="display:block;" styleClass="Descripcion" 
+					value="#{msg['mensaje.info.infoReg']}" 
+					rendered="#{registroGastosAction.resOperacion == '' || registroGastosAction.resOperacion == 'T' || registroGastosAction.resOperacion == 'C'}" />
+				<h:outputText style="display:block;" styleClass="Descripcion"
+					value="#{registroGastosAction.resOperacion}" 
+					rendered="#{registroGastosAction.resOperacion != '' &amp;&amp; registroGastosAction.resOperacion != 'T' &amp;&amp; registroGastosAction.resOperacion != 'C'}" />
+	       	</h:panelGroup>
+	       	
+			<a4j:commandButton style="margin-top:10px; cursor:pointer;" 
+				onclick="#{rich:component('pnlMensajes')}.hide()" 
+				value="#{msg['navegacion.label.aceptar']}" />
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

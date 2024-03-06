@@ -1,0 +1,111 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlGrupo" autosized="true" domElementAttachment="form" header="#{gruposAction.pojoGrupo.id == null ? msg['nuevo'] : ''} #{msg['grupo']}">
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" onclick="#{rich:component('pnlGrupo')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+		
+		<div style="display: block; padding:0 0 10px; min-width:400px; height: 22px; text-align: left; background-color: none;">
+			<h:panelGroup id="botoneraGrupo" style="display: block; width: 100%; height: 22px; margin-bottom: 1em;">
+				<h:panelGroup id="grupoGrupoBotonesDerechos" style="width: 100%; vertical-align: middle; position:relative; ">
+					<a4j:commandButton id="cmdSalvar" 
+						style="float:right; margin-left: 5px; vertical-align: middle; position:relative;"
+						image="#{msg['salvar22.img']}" 
+						action="#{gruposAction.guardar}" 
+						oncomplete="salvar(#{gruposAction.operacion}, '#{rich:clientId('pnlGrupo')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrores')});"
+						render="dtResults, msgErrores, pnlMensajes"
+						limitRender="true">
+						<rich:tooltip id="ttSalvar" showDelay="300" value="#{msg['salvar.e']}" for="cmdSalvar" />
+					</a4j:commandButton>
+				</h:panelGroup>
+			</h:panelGroup>
+		</div>
+		
+		<rich:messages id="msgErrores" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+			<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+		</rich:messages>
+		
+		<div style="display: block; margin: 1px auto; padding: 0; text-align: left; background-color: none;">
+			<fieldset>
+				<legend><h:outputText value="#{msg['datos']}" styleClass="Titulo" /></legend>
+				
+				<h:panelGrid columns="2" columnClasses="colTitulo, colDato">				
+					<h:outputText value="#{msg['grupo']}:" styleClass="Titulo" />
+					<h:inputText id="txtImporte" styleClass="Titulo" style="text-align: left; width: 100%;"
+						value="#{gruposAction.pojoGrupo.descripcion}"
+						required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+						requiredMessage="#{msg['grupo']} #{msg['mensaje.error.requerido']}" />
+				</h:panelGrid>
+			</fieldset>
+			
+			<fieldset>
+				<legend><h:outputText value="#{msg['llaves']} - #{msg['grupo']}" styleClass="Titulo" /></legend>
+				
+				<h:panelGroup id="groupValoresLlaves">
+					<div style="background: none; margin: 0; padding: 5px 0; overflow: auto; width: 100%;">
+						<a4j:commandButton id="cmdBusquedaLlaves"
+							image="#{msg['agregar22.img']}"
+							style="float:right; margin: 0 5px 0 10px; vertical-align: middle;"
+							action="#{gruposAction.nuevaBusquedaLlaves}"
+							oncomplete="#{rich:component('pnlBusquedaLlaves')}.show()"
+							render="pnlBusquedaLlaves">
+							<rich:tooltip id="ttBusquedaLlaves" showDelay="300" value="#{msg['agregar.e']}" for="cmdBusquedaLlaves" />
+						</a4j:commandButton>
+					</div>
+					
+					<rich:dataTable id="dtLlavesGrupo" cellpadding="0" cellspacing="0" rows="12" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+						var="var" value="#{gruposAction.listLlavesGrupo}" style="margin:0 auto;">
+						<f:facet name="header">
+							<rich:columnGroup>
+								<rich:column colspan="5" style="text-align:center;" styleClass="Titulo">
+									<h:outputText value="#{msg['llaves']}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width:80px" styleClass="Titulo" breakRowBefore="true">
+									<h:outputText value="#{msg['id']}" /> 
+								</rich:column>
+								
+								<rich:column style="text-align:center;" styleClass="Titulo">
+									<h:outputText value="#{msg['descripcion']}" />
+								</rich:column>
+								
+								<rich:column style="text-align:center; width: 20px;" styleClass="Titulo" />
+							</rich:columnGroup>
+						</f:facet>
+						
+						<rich:column style="text-align:center; width:80px" styleClass="Titulo">
+							<h:outputText value="#{var.id}" />
+						</rich:column>
+						
+						<rich:column style="text-align:left;" styleClass="Titulo">
+							<h:outputText value="#{var.descripcion}" /> 
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+							<a4j:commandButton id="cmdBorrarLlave" 
+								disabled="#{!gruposAction.permiteBorrarGrupo}"
+								image="#{gruposAction.permiteBorrarGrupo ? msg['eliminar16.img'] : msg['eliminarDisabled16.img']}" 
+								oncomplete="#{rich:component('pnlEliminarLlaveGrupo')}.show()" 
+								render="pnlEliminarLlaveGrupo">
+								<f:setPropertyActionListener value="#{var}" target="#{gruposAction.pojoLlaveBorrar}" for="cmdBorrarLlave" />
+								<rich:tooltip showDelay="300" value="#{gruposAction.permiteBorrarGrupo ? msg['eliminar.e'] : msg['noEliminarGrupoEnUso']}" for="cmdBorrarLlave" />
+							</a4j:commandButton>
+						</rich:column>
+
+						<f:facet name="footer">
+							<rich:dataScroller id="dScrollLlavesGrupo" page="#{gruposAction.numPaginaGrupoLlaves}" for="dtLlavesGrupo" 
+								align="center" maxPages="10" ajaxSingle="true" styleClass="Titulo" />
+						</f:facet>
+					</rich:dataTable>
+				</h:panelGroup>
+			</fieldset>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

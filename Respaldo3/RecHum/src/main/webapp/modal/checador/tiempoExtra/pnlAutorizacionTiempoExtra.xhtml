@@ -1,0 +1,161 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlAutorizacionTiempoExtra" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="10px">
+		<f:facet name="header">
+			<h:outputText value="#{msg['autorizacion']} #{msg['tiempoExtra']}#{extraAction.titulo}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlAutorizacionTiempoExtra')}.hide()" />
+		</f:facet>
+		
+		<h:panelGrid id="botonera" columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;"
+			rendered="#{extraAction.pojoChecador.estatus != 1}">
+			<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+				<rich:messages id="msgErrores" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+				</rich:messages>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdSalvar" style="float:right; margin-left: 5px; vertical-align: top; position:relative;"
+					image="#{msg['aplicar22.img']}" title="#{msg['salvar.e']}"
+					oncomplete="#{rich:component('pnlConfirmar')}.show()"
+					render="pnlConfirmar" 
+					limitRender="true" />
+			</h:panelGroup>
+		</h:panelGrid>
+			
+		<fieldset style="margin:5px auto 0;">
+			<legend><h:outputText value="#{msg['datosGenerales']}" styleClass="Titulo" /></legend>
+			
+			<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+				<h:outputText value="#{msg['obra']}:" styleClass="Titulo" />
+				<h:outputText id="txtObra" style="text-align:left; display:block;" 
+					value="#{extraAction.obraNombre}" />
+				
+				<h:outputLabel value="#{msg['fecha']}:" styleClass="Titulo" />
+				<rich:calendar id="txtFecha" enableManualInput="true" style="width: 90px;"
+					disabled="true" datePattern="dd/MM/yyyy" timeZone="#{extraAction.timeZone}"
+					value="#{extraAction.pojoChecador.fecha}"
+					required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+					requiredMessage="#{msg['fecha']} #{msg['mensaje.error.requerido']}" />
+			</h:panelGrid>
+		</fieldset>
+
+		<div class="tableParent" style="margin:10px auto 0; width:100%; height:auto; max-height:450px; overflow-y:scroll;">
+			<rich:dataTable id="dtDetalles" value="#{extraAction.listDetalles}" var="var" iterationStatusVar="it" style="margin:0 auto;"
+				cellpadding="0" cellspacing="0" rows="100" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:20px;">
+							<h:outputText value="#" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:70px;">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:70px;">
+							<h:outputText value="#{msg['horario']} #{msg['contrato']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:50px;">
+							<h:outputText value="#{msg['horaEntradaMarcada']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:50px;">
+							<h:outputText value="#{msg['horaSalidaMarcada']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:50px;">
+							<h:outputText value="#{msg['tiempoAsistido']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:50px;">
+							<h:outputText value="#{msg['tiempoExtra']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:50px;">
+							<h:outputText value="#{msg['horasExtra']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+					<h:outputText value="#{it.index + 1}"><f:convertNumber pattern="00" /></h:outputText>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:70px;">
+					<h:outputText value="#{var.idEmpleado}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left;">
+					<h:outputText value="#{var.nombreEmpleado}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:70px;">
+					<h:outputText value="#{var.contratoHorario}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:50px;">
+					<h:outputText id="txtHoraEntradaMarcada" value="#{var.horaEntradaMarcada}" style="width:50px; text-align:center;">
+						<f:convertDateTime type="time" pattern="HH:mm" timeZone="#{extraAction.timeZone}" />
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:50px;">
+					<h:outputText id="txtHoraSalidaMarcada" value="#{var.horaSalidaMarcada}" style="width:50px; text-align:center;">
+						<f:convertDateTime type="time" pattern="HH:mm" timeZone="#{extraAction.timeZone}" />
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:50px;">
+					<h:outputText id="txtTiempoAsitido" value="#{var.tiempoAsistido}" style="width: 50px; text-align:center;">
+						<f:convertDateTime type="time" pattern="HH:mm" timeZone="#{extraAction.timeZone}" />
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:50px;">
+					<h:outputText id="txtTiempoExtra" value="#{var.horasExtra}" style="width:50px; text-align:center;">
+						<f:convertDateTime type="time" pattern="HH:mm" timeZone="#{extraAction.timeZone}" />
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:center; width:50px;">
+					<a4j:region>
+						<h:inputText id="txtHoraExtraAutorizacion" style="width:30px; text-align:center;" 
+							title="#{msg['horasExtraParaAutorizar']}"
+							rendered="#{var.usuarioAutoriza == 0}" maxlength="2" 
+							value="#{var.cantidadHorasExtra}"
+							onkeydown="return soloNumeros(event)">
+							<a4j:ajax event="change" render="@this" />
+						</h:inputText>
+						
+						<h:outputText id="txtHoraExtraAutorizadas" 
+							title="#{msg['horasExtraAutorizado']}"
+							rendered="#{var.usuarioAutoriza > 0}" 
+							value="#{var.cantidadHorasExtra}" />
+					</a4j:region>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller for="dtDetalles" page="#{extraAction.numPaginaDetalles}" renderIfSinglePage="false"
+						maxPages="10" fastStep="10" ajaxSingle="true" align="center" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

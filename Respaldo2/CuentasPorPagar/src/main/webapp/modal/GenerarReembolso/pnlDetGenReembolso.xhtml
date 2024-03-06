@@ -1,0 +1,78 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlDetGenReembolso" autosized="true"  >
+		<f:facet name="header">
+			<h:panelGroup>		          
+				<h:outputText style="margin-left:10px" value="#{msg['navegacion.label.reembolsoPend']}" styleClass="Titulo"/>
+			</h:panelGroup>
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" styleClass="cursor:pointer;" id="btnCerrarDetgenReembolsoAction"/>
+				<rich:componentControl for="pnlDetGenReembolso" attachTo="btnCerrarDetgenReembolsoAction" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+				
+		<a4j:form id="frmAutReembolso">
+			<a4j:region id="loadAutReembolso">
+				<rich:dataTable id="dtResultsgenReembolsoAction" rows="10" cellpadding="0" cellspacing="0" width="780" border="0" var="GenReembolso" rowClasses="Row1, Row2" value="#{genReembolsoAction.listMovCtas}" >
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column colspan="6" styleClass="Titulo">
+								<h:outputText value="#{msg['navegacion.label.reembolsoPend']}"/>
+							</rich:column>
+							
+							<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['navegacion.label.clave']}"/>
+							</rich:column>
+							
+							<rich:column style="text-align:center; margin-left:10px;" styleClass="Titulo">
+								<h:outputText value="#{msg['navegacion.label.monto']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; margin-left:10px;" styleClass="Titulo">
+								<h:outputText value="#{msg['navegacion.label.beneficiario']}" />
+							</rich:column> 
+							
+							<rich:column style="text-align:center; margin-left:10px;"  styleClass="Titulo"/>	
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column width="100" style="text-align:center;" styleClass="Descripcion">
+						<h:outputText  value="#{GenReembolso.id}"/>
+					</rich:column>
+					
+					<rich:column width="100" style="text-align:center;" styleClass="Descripcion">
+						<h:outputText  value="#{GenReembolso.monto}" >
+							<f:convertNumber pattern="###,###,##0.00"/>
+						</h:outputText>
+					</rich:column>
+					
+					<rich:column  width="320" style="text-align:center;"  styleClass="Descripcion">
+						<h:outputText value="#{GenReembolso.idBeneficiario.nombre}"/>
+					</rich:column>
+					
+					<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;" styleClass="Descripcion">
+						<a4j:commandButton image="#{msg['comprobado16.img']}" 
+							oncomplete="Richfaces.showModalPanel('pnlNuevoGenerarReem')" 
+							reRender="pnlNuevoGenerarReem">
+							<f:setPropertyActionListener target="#{genReembolsoAction.pojoMovCtas}" value="#{GenReembolso}" />
+							<rich:toolTip showDelay="300"><h:outputText value="#{msg['generar.e']}" styleClass="Descripcion" /></rich:toolTip>	
+						</a4j:commandButton>
+					</rich:column>
+					
+					<f:facet name="footer" >
+						<rich:datascroller align="center" for="dtResultsgenReembolsoAction" maxPages="10" ajaxSingle="true" page="#{genReembolsoAction.numPaginaSec}" id="dScroll" styleClass="Titulo"/>
+					</f:facet>
+				</rich:dataTable>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

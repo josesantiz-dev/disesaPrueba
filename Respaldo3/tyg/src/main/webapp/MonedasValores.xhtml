@@ -1,0 +1,333 @@
+<!DOCTYPE composition>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:rich="http://richfaces.org/rich" 
+	xmlns:s="http://jboss.com/products/seam/taglib" 
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	template="/layout/template.xhtml">
+	
+	<ui:define name="title">
+		<h:outputText value="#{msg['valoresMoneda']}" />
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolBarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" style="cursor:pointer;" styleClass="Titulo"
+				image="#{msgTyg['navegacion.boton.buscar.img']}" title="#{msgTyg['navegacion.boton.buscar.e']}"
+				action="#{monedasValoresAction.buscar}" 
+				oncomplete="buscar('#{monedasValoresAction.resOperacion}', 'pnlMsgMonedaValor');" 
+				reRender="dtMonedaValor, pnlMsgMonedaValor" />
+		</rich:toolBarGroup>
+		
+		<rich:toolBarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" style="cursor:pointer;" styleClass="Titulo"
+				image="#{msgTyg['navegacion.boton.nuevo.img']}" title="#{msgTyg['navegacion.boton.nuevo.e']}"
+				action="#{monedasValoresAction.nuevo}" 
+				oncomplete="Richfaces.showModalPanel('pnlEditarMonedaValor');" 
+				reRender="pnlEditarMonedaValor" />
+		</rich:toolBarGroup>
+		
+		<rich:toolBarGroup id="tbgTC" location="right">
+			<a4j:commandButton id="cmdTipoCambio" style="cursor:pointer;" styleClass="Titulo"
+				image="#{msg['sdoLibros16.img']}" title="Actualizar Tipo Cambio"
+				action="#{monedasValoresAction.validarTC}" 
+				oncomplete="Richfaces.showModalPanel('pnlActualizarMonedaValor');" 
+				reRender="pnlActualizarMonedaValor" />
+		</rich:toolBarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<a4j:loadStyle src="resource:///resources/css/tyg/tyg.css"/>
+		<a4j:loadStyle src="resource:///resources/css/tyg/monedasValor.css"/>
+		<a4j:loadScript src="resource:///resources/scripts/tyg/monedasValor.js"/>
+		
+		<div class="div_titulo" style="margin-top: 50px; margin-bottom: 30px;">
+			<h:outputText style="font-weight: bold; font-size: 28px; color:#525252;" value="#{msg['valoresMoneda']}"/>
+		</div>
+		
+		<div class="div_pagina">
+			<h:panelGrid columnClasses="colLabel, colDato" columns="2" style="width:100%;">
+				<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.MonedaBase']}:"/>
+				<h:selectOneMenu style="width:200px;" 
+					value="#{monedasValoresAction.idMonedaBase}">
+					<!--required="true" 
+					requiredMessage="#{msgTyg['navegacion.label.MonedaBase']} #{msg['mensaje.error.requerido']}"-->
+					<f:selectItem itemLabel="#{msg['seleccione']}" />
+					<f:selectItems value="#{monedasValoresAction.listMonedas}"/>
+					<a4j:support event="onchange" ajaxSingle="true"
+						action="#{monedasValoresAction.monedasDestinoBusqueda}" 
+						reRender="cbMonedasDestino" />
+				</h:selectOneMenu>
+				
+				<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.MonedaDestino']}:"/>
+				<h:selectOneMenu id="cbMonedasDestino" style="width:200px;" 
+					value="#{monedasValoresAction.idMonedaDestino}">
+					<!--required="true" 
+					requiredMessage="#{msgTyg['navegacion.label.moneda']} #{msg['mensaje.error.requerido']}"-->
+					<f:selectItem itemLabel="#{msg['seleccione']}" />
+					<f:selectItems value="#{monedasValoresAction.listMonedasDestinos}"/>
+				</h:selectOneMenu>
+			</h:panelGrid>
+			
+			<rich:dataTable id="dtMonedaValor" border="0" cellpadding="0" cellspacing="0" rowClasses="Row1, Row2" rows="100" styleClass="tabla_pagina" 
+				value="#{monedasValoresAction.listValores}" var="val">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column colspan="8" styleClass="Titulo">
+							<h:outputText value="#{msgTyg['navegacion.label.tiposCambio']}"/>
+						</rich:column>
+						
+						<rich:column breakBefore="true" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msgTyg['navegacion.label.id']}"/>
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msgTyg['navegacion.label.moneda']}"/>
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msgTyg['navegacion.label.MonedaDestino']}"/>
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msgTyg['navegacion.label.fechaInicial']}"/>
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msgTyg['navegacion.label.fechaTerminacion']}"/>
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msgTyg['navegacion.label.valor']}"/>
+						</rich:column>
+						
+						<rich:column colspan="2"/>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="100">
+					<h:outputText value="#{val.id}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:left" styleClass="Descripcion">
+					<h:outputText value="#{val.monedaBase.abreviacion != null ? val.monedaBase.abreviacion : ''} - #{val.monedaBase.nombre != null ? val.monedaBase.nombre : ' '}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:left" styleClass="Descripcion">
+					<h:outputText value="#{val.monedaDestino.abreviacion != null ? val.monedaDestino.abreviacion : ''} - #{val.monedaDestino.nombre != null ? val.monedaDestino.nombre : ' '}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="120">
+					<h:outputText value="#{val.fechaDesde}">
+						<f:convertDateTime pattern="dd-MMM-yyyy"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="120">
+					<h:outputText value="#{val.fechaHasta}">
+						<f:convertDateTime pattern="dd-MMM-yyyy"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:right;" styleClass="Descripcion" width="80">
+					<h:outputText value="#{val.valor}">
+						<f:convertNumber pattern="###,###,##0.0000" />
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msgTyg['navegacion.boton.editar.img']}" title="#{msgTyg['navegacion.boton.editar.e']}"
+						oncomplete="Richfaces.showModalPanel('pnlEditarMonedaValor')" 
+						reRender="pnlEditarMonedaValor">
+						<f:setPropertyActionListener target="#{monedasValoresAction.pojoMonedaValor}" value="#{val}"/>
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center;" styleClass="Descripcion" width="20">
+					<a4j:commandButton image="#{msgTyg['navegacion.boton.eliminar.img']}" title="#{msgTyg['navegacion.boton.eliminar.e']}"
+						oncomplete="Richfaces.showModalPanel('pnlEliminarMonedaValor')">
+						<f:setPropertyActionListener target="#{monedasValoresAction.pojoMonedaValor}" value="#{val}"/>
+					</a4j:commandButton>
+				</rich:column>
+				
+				<f:facet name="footer">
+					<rich:datascroller for="dtMonedaValor" page="#{monedasValoresAction.numPagina}" ajaxSingle="true" align="center" maxPages="10" styleClass="Titulo"/>
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<!-- ####### MODAL NUEVO Y EDITAR  ######### -->
+		<rich:modalPanel id="pnlEditarMonedaValor" autosized="true" top="15">
+			<f:facet name="header">
+				<h:outputText style="margin-left:10px" styleClass="Titulo" value="#{msgTyg['navegacion.label.tipoCambio']}"/>
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage style="cursor:pointer;" 
+					value="#{msg['navegacion.gral.cerrar.img']}" 
+					onclick="#{rich:component('pnlEditarMonedaValor')}.hide()" />
+			</f:facet>
+			
+			<a4j:form id="frmEditarMonedaValor">
+				<div style="display: block; width: 600px; height: 22px;">
+					<h:panelGrid columns="2" style="position:relative; float:right; margin-right:5px;">
+						<h:panelGroup style="vertical-align: middle; position:relative;">
+							<a4j:commandButton id="cmdSalvar" style="vertical-align: middle; margin-right:5px; cursor: pointer;" 
+								image="#{msgTyg['navegacion.boton.salvar.img']}" title="#{msgTyg['navegacion.boton.salvar.e']}"
+								action="#{monedasValoresAction.guardar}" 
+								oncomplete="guardar('#{monedasValoresAction.resOperacion}', 'pnlEditarMonedaValor', 'pnlMsgMonedaValor', #{rich:element('msgErrorMonedaValor')})" 
+								reRender="dtMonedaValor, pnlMsgMonedaValor, msgErrorMonedaValor" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</div>
+				
+				<rich:messages ajaxRendered="false" globalOnly="false" id="msgErrorMonedaValor" showDetail="false" showSummary="true">
+					<f:facet name="errorMarker">
+						<h:graphicImage style="margin-right:1em;" value="#{msgTyg['navegacion.boton.alert.img']}"/>
+					</f:facet>
+				</rich:messages>
+				
+				<h:panelGrid columnClasses="colLabel, colDato" columns="2">
+					<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.id']}:"/>
+					<h:outputText id="lblId" styleClass="Descripcion" 
+						value="#{monedasValoresAction.pojoMonedaValor.id}"/>
+					
+					<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.MonedaBase']}:"/>
+					<h:selectOneMenu style="width:200px;" 
+						value="#{monedasValoresAction.suggMoneda}"
+						required="true" 
+						requiredMessage="#{msgTyg['navegacion.label.moneda']}: #{msg['mensaje.error.requerido']}">
+						<f:selectItems value="#{monedasValoresAction.listMonedas}"/>
+						<a4j:support event="onchange" ajaxSingle="true"
+							action="#{monedasValoresAction.monedasDestino}" 
+							reRender="cbMonedaDestino" />
+					</h:selectOneMenu>
+					
+					<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.MonedaDestino']}:"/>
+					<h:selectOneMenu id="cbMonedaDestino" style="width:200px;" 
+						value="#{monedasValoresAction.suggMonedaDestino}"
+						required="true" 
+						requiredMessage="#{msgTyg['navegacion.label.MonedaDestino']}: #{msg['mensaje.error.requerido']}">
+						<f:selectItems value="#{monedasValoresAction.listMonedasDestinos}"/>
+					</h:selectOneMenu>
+					
+					<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.fechaInicial']}:"/>
+					<rich:calendar datePattern="dd/MMM/yyyy" showApplyButton="true"
+						value="#{monedasValoresAction.pojoMonedaValor.fechaDesde}"
+						required="true" 
+						requiredMessage="#{msgTyg['navegacion.label.desde']}: #{msg['mensaje.error.requerido']}" />
+					
+					<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.fechaTerminacion']}:"/>
+					<rich:calendar datePattern="dd/MMM/yyyy" showApplyButton="true" 
+						value="#{monedasValoresAction.pojoMonedaValor.fechaHasta}"
+						required="true" 
+						requiredMessage="#{msgTyg['navegacion.label.hasta']}: #{msg['mensaje.error.requerido']}" />
+					
+					<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.valor']}:"/>
+					<h:inputText maxlength="20" size="10" style="text-align:right"
+						value="#{monedasValoresAction.pojoMonedaValor.valor}"
+						converter="javax.faces.BigDecimal" 
+						converterMessage="#{msgTyg['navegacion.label.valor']}: #{msg['mensaje.validacion.numerico']}" 
+						required="true" 
+						requiredMessage="#{msgTyg['navegacion.label.valor']}: #{msg['mensaje.error.requerido']}">
+						<f:convertNumber pattern="###,###,##0.0000" />
+					</h:inputText>
+				</h:panelGrid>
+			</a4j:form>
+		</rich:modalPanel>
+		
+		<!-- Panel Actualizar Tipo Cambio -->
+		<rich:modalPanel id="pnlActualizarMonedaValor" autosized="true" top="15">
+			<f:facet name="header">
+				<h:outputText value="Actualizar Tipo de Cambio" styleClass="Titulo" />
+			</f:facet>
+			
+			<a4j:form id="frmActualizarMonedaValor" style="text-align:center; min-width:500px;">
+				<rich:messages id="validadorActualizarMonedaValor" ajaxRendered="false" globalOnly="false" showDetail="false" showSummary="true">
+					<f:facet name="errorMarker"><h:graphicImage style="margin-right:1em;" value="#{msgTyg['navegacion.boton.alert.img']}"/></f:facet>
+				</rich:messages>
+				
+				<h:panelGrid cellspacing="0" columns="2" columnClasses="colLabel, colDato" style="text-align:center; width:100%;">
+					<h:outputText styleClass="Titulo" value="#{msg['fechaDesde']}:"/>
+					<rich:calendar datePattern="dd/MMM/yyyy" inputSize="9" enableManualInput="true" showWeekDaysBar="false" showWeeksBar="false"
+						value="#{monedasValoresAction.tcFechaDesde}"
+						required="true" requiredMessage="#{msg['fechaDesde']}: #{msg['mensaje.error.requerido']}" />
+					
+					<h:outputText styleClass="Titulo" value="#{msg['fechaHasta']}:"/>
+					<rich:calendar datePattern="dd/MMM/yyyy" inputSize="9" enableManualInput="true" showWeekDaysBar="false" showWeeksBar="false"
+						value="#{monedasValoresAction.tcFechaHasta}"
+						required="true" requiredMessage="#{msg['fechaHasta']}: #{msg['mensaje.error.requerido']}" />
+				</h:panelGrid>
+				
+				<h:panelGroup style="margin:10px auto 0; text-align:center; display:block;">
+					<a4j:commandButton id="cmdAceptar" style="margin:0 5px; width:100px;" 
+						value="#{msgTyg['navegacion.label.aceptar']}"
+						action="#{monedasValoresAction.obtenerTipoCambio}"
+						oncomplete="guardar('#{monedasValoresAction.resOperacion}', 'pnlActualizarMonedaValor', 'pnlMsgMonedaValor', #{rich:element('validadorActualizarMonedaValor')})" 
+						reRender="validadorActualizarMonedaValor, dtMonedaValor, pnlMsgMonedaValor" />
+					
+					<a4j:commandButton id="cmdCancelar" style="margin:0 5px; width:90px;"
+						value="#{msgTyg['navegacion.label.cancelar']}"
+						onclick="#{rich:component('pnlActualizarMonedaValor')}.hide()" />
+				</h:panelGroup>
+			</a4j:form>
+		</rich:modalPanel>
+		<!--  Fin Actualizar Tipo Cambio-->
+		
+		<!-- Panel Eliminar -->
+		<rich:modalPanel id="pnlEliminarMonedaValor" autosized="true">
+			<f:facet name="header">
+				<h:outputText styleClass="Titulo" value="#{msgTyg['navegacion.label.atencion']}"/>
+			</f:facet>
+			
+			<f:facet name="controls">
+				<h:graphicImage style="cursor:pointer;" 
+					value="#{msg['navegacion.gral.cerrar.img']}" 
+					onclick="#{rich:component('pnlEliminarMonedaValor')}.hide()" />
+			</f:facet>
+			
+			<a4j:form id="frmEliminarMonedaValor">
+				<h:panelGrid cellspacing="10" columns="1" style="text-align:center;" width="200">
+					<h:outputText style="display:block;" styleClass="Descripcion" value="#{msgTyg['navegacion.label.deseaEliminar']}"/>
+					<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+						<a4j:commandButton id="cmdEliminar" 
+							value="#{msgTyg['navegacion.label.aceptar']}"
+							action="#{monedasValoresAction.eliminar}" 
+							oncomplete="eliminar('#{monedasValoresAction.resOperacion}', 'pnlEliminarMonedaValor', 'pnlMsgMonedaValor');" 
+							reRender="dtMonedaValor, pnlMsgMonedaValor" />
+						
+						<a4j:commandButton style="margin-left:10px;" 
+							value="#{msgTyg['navegacion.label.cancelar']}"
+							onclick="#{rich:component('pnlEliminarMonedaValor')}.hide()" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</a4j:form>
+		</rich:modalPanel>
+		<!--  Fin Panel Eliminar-->
+		
+		<!-- #### Panel MsgLayout #### -->
+		<rich:modalPanel autosized="true" id="pnlMsgMonedaValor" width="350">
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText styleClass="Titulo" value="#{monedasValoresAction.resOperacion == '' ? msgTyg['navegacion.label.informacion'] : msgTyg['navegacion.label.atencion']}"/>
+				</h:panelGroup>
+			</f:facet>
+			
+			<a4j:form id="frmMsgEjec" style="text-align:center;">
+				<h:panelGroup style="display:block; width:300px; float:center;">
+					<h:outputText style="display:block;" styleClass="Descripcion" 
+						value="#{monedasValoresAction.resOperacion != '' ? monedasValoresAction.resOperacion : msg['mensaje.info.infoReg']}" />
+				</h:panelGroup>
+				
+				<a4j:commandButton style="margin-top:10px; cursor:pointer;" 
+					value="#{msgTyg['navegacion.label.aceptar']}"
+					onclick="#{rich:component('pnlMsgMonedaValor')}.hide()" />
+			</a4j:form>
+		</rich:modalPanel>
+		<!--  Fin Panel Msg-->
+	</ui:define>
+</ui:composition>

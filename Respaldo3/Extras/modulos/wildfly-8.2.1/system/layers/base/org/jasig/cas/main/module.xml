@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="org.jasig.cas" xmlns="urn:jboss:module:1.1">
+	<resources>
+		<resource-root path="cas-client-core-3.2.1.jar"/>
+	</resources>
+	<dependencies>
+		<module export="true" name="javaee.api" />
+		<module export="true" name="javax.api" />
+		<module export="true" name="javax.servlet.api" />
+		<module export="true" name="org.apache.commons.logging" />
+	</dependencies>
+</module>

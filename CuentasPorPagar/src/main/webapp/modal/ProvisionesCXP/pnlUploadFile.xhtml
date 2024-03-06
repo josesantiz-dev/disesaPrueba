@@ -1,0 +1,81 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlUploadFile" autosized="true" top="15">
+		<f:facet name="header">
+			<h:outputText value="#{msg['cargarArchivo']}" styleClass="Titulo"/>
+		</f:facet>
+		
+		<f:facet name="controls">
+       		<h:graphicImage style="cursor:pointer;"
+       	  		value="#{msg['navegacion.gral.cerrar.img']}"
+       	  		onclick="#{rich:component('pnlUploadFile')}.hide()" />
+		</f:facet>
+		
+		<a4j:form id="frmUploadFile">
+			<a4j:region id="loadUploadFile">
+				<div style="display:block; padding:0; min-width:400px; min-height:40px; text-align: left; background-color: none;">
+					<rich:fileUpload id="uploadXML" listWidth="100%" listHeight="120"
+						acceptedTypes="xml"
+						addControlLabel="#{msg['navegacion.label.anadirArchivo']}" 
+						addLabel="#{msg['agregar.e']}"
+						cancelEntryControlLabel="#{msg['navegacion.boton.eliminar.e']}" 
+						cleanButtonClass="Titulo"
+						clearAllControlLabel="#{msg['borrarTodo']}"
+						clearAllLabel="#{msg['borrarTodo']}" 
+						clearLabel="#{msg['borrar']}"
+						doneLabel="#{msg['navegacion.label.archivoEnviado']}" 
+						fileEntryControlClass="Descripcion"
+						fileUploadListener="#{provisionAction.uploadListener}"
+						immediateUpload="true"
+						maxFilesQuantity="1" 
+						onerror="alert('Ocurrio un problema con la carga del archivo, reintente')"
+						ontyperejected="alert('#{msg['soloXML']}');"
+						progressLabel="#{msg['navegacion.label.enviando']}"
+						stopButtonClass="Titulo"
+						stopControlLabel="#{msg['navegacion.label.detener']}"
+						style="text-align: left;"
+						uploadButtonClass="Titulo"
+						uploadButtonClassDisabled="true" 
+						uploadControlLabel="#{msg['navegacion.label.enviarArchivo']}">
+						<f:facet name="label"><h:outputText value="{_KB}KB de {KB}KB enviado - {mm}:{ss}" styleClass="Descripcion" /></f:facet>
+			   		</rich:fileUpload>
+		
+					<h:panelGrid id="confirmUpload" columns="2" style="width:100%">
+						<h:panelGroup>
+							<a4j:status for="loadUploadFile" >
+								<f:facet name="start">
+									<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;" />
+									<h:outputLabel value="#{msg['procesando']}" style="cursor:pointer;"  styleClass="Titulo" />
+								</f:facet>
+								
+								<f:facet name="stop">
+									<h:outputLabel value="#{msg['navegacion.label.vacio']}" style="cursor:pointer;"  styleClass="Titulo" />
+								</f:facet>
+								
+								<f:facet name="success">
+									<h:graphicImage value="#{msg['aplicar22.img']}" style="vertical-align: middle; position:relative;" />
+									<h:outputLabel value="Proceso terminado" style="cursor:pointer;"  styleClass="Titulo" />
+								</f:facet>
+							</a4j:status>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+					   		<a4j:commandButton id="cmdUploadFile" style="float:right; margin:5px;" 
+					   			image="#{msg['aplicar22.img']}" title="#{msg['cargarArchivo']}"
+							   	onclick="#{rich:element('cmdUploadFile')}.disabled = true;"
+								action="#{provisionAction.analizarArchivo}"
+								oncomplete="analizarArchivo(#{provisionAction.encontroMismoGrupo}, '#{rich:clientId('pnlUploadFile')}', '#{rich:clientId('pnlMensajes')}'); #{rich:element('cmdUploadFile')}.disabled = false;"
+								reRender="pnlMensajes,groupFactura,dtDesgloseImpuestos" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</div>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

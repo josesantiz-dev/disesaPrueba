@@ -1,0 +1,57 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlOperacionIntegrada" autosized="true" domElementAttachment="form" header="#{operIntAction.pojoOperacion.id == null ? msg['nueva'] : ''} #{msg['operacionIntegrada']}">
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" onclick="#{rich:component('pnlOperacionIntegrada')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+		
+		<div style="display: block; padding:0 0 10px; min-width:400px; height: 22px; text-align: left; background-color: none;">
+			<h:panelGroup id="botoneraLlave" style="display: block; width: 100%; height: 22px; margin-bottom: 1em;">
+				<h:panelGroup id="grupoLlaveBotonesDerechos" style="width: 100%; vertical-align: middle; position:relative; ">
+					<a4j:commandButton id="cmdSalvar" 
+						style="float:right; margin-left: 5px; vertical-align: middle; position:relative;"
+						image="#{msg['salvar22.img']}" 
+						action="#{operIntAction.guardar}" 
+						oncomplete="salvar(#{operIntAction.operacion}, '#{rich:clientId('pnlOperacionIntegrada')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrores')});"
+						render="dtResults, msgErrores, pnlMensajes">
+						<rich:tooltip id="ttSalvar" showDelay="300" value="#{msg['salvar.e']}" for="cmdSalvar" />
+					</a4j:commandButton>
+				</h:panelGroup>
+			</h:panelGroup>
+		</div>
+		
+		<rich:messages id="msgErrores" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+			<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+		</rich:messages>
+		
+		<div style="display: block; margin: 1px auto; padding: 0; text-align: left; background-color: none;">
+			<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+				<h:outputText value="#{msg['operacion']}:" styleClass="Titulo" />
+				<h:panelGroup id="pnlOperacionDatos">
+					<h:panelGrid columns="2">
+						<h:outputText id="txtOperacion" value="#{operIntAction.operacionDesc}" styleClass="Titulo" style="text-align:left; display:block;" />
+						<h:panelGroup> 
+							<a4j:commandLink id="cmdBusquedaOperaciones" styleClass="linkColor" 
+								action="#{operIntAction.nuevaBusquedaOperaciones}" 
+								value="#{operIntAction.pojoOperacion.idOperacion == null ? msg['seleccionar'] : msg['cambiar'] }"
+								oncomplete="#{rich:component('pnlBusquedaOperaciones')}.show()"
+								render="pnlBusquedaOperaciones, pnlBusquedaOperacionesPrincipal, dtBusquedaOperaciones" />
+								
+							<h:inputText id="txtOperacionHidden" style="display:none;"
+								value="#{operIntAction.operacionDesc}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['operacion']} #{msg['mensaje.error.requerido']}" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+			</h:panelGrid>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

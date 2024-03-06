@@ -1,0 +1,98 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlObrasBusquedaClientes" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+		<f:facet name="header">
+			<h:outputText id="lblTituloBusquedaClientes" value="#{msg['buscar.e']} #{msg['cliente']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlObrasBusquedaClientes')}.hide()" />
+		</f:facet>
+		
+		<div style="display: block; min-width:500px; height: 22px;">
+			<a4j:commandButton id="cmdBuscarClientes" style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+				action="#{obrasAction.buscarClientes}" 
+				oncomplete="buscarClientes(#{obrasAction.band}, '#{rich:clientId('pnlObrasMsgGrales')}');" 
+				render="dtClientes,pnlObrasMsgGrales" />
+		</div>
+
+		<div style="margin: 10px auto 0;">
+			<h:panelGrid id="pnlBusquedaClientes" columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin-left:10px; margin-bottom:20px; display:block;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+				<h:selectOneMenu styleClass="Titulo" style="width: 216px;"
+					value="#{obrasAction.campoBusquedaClientes}">
+					<f:selectItems value="#{obrasAction.tiposBusquedaClientes}" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText id="txtValorBusquedaClientes" maxlength="50" style="width: 210px;"
+					value="#{obrasAction.valorBusquedaClientes}" size="50" />
+
+				<h:outputText value="#{msg['tipo']}:" styleClass="Titulo" />
+				<h:selectOneRadio id="rbTipoClientes" value="#{obrasAction.valorOpcionBusquedaClientes}">
+					<f:selectItem itemLabel="#{msg['persona']}" itemValue="P" />
+					<f:selectItem itemLabel="#{msg['negocio']}" itemValue="N" />
+				</h:selectOneRadio>
+			</h:panelGrid>
+
+			<rich:dataTable id="dtClientes" value="#{obrasAction.listClientes}" var="var" cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column style="width: 90px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['rfc']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['nombre']}" />
+						</rich:column>
+
+						<rich:column style="width: 30px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['seleccionar']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="width:100px; text-align:center;">
+					<h:outputText value="#{var.id}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="width:120px; text-align:center;">
+					<h:outputText value="#{var.rfc}" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.nombre}" />
+				</rich:column>
+				
+				<rich:column style="width:30px; text-align:center;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdAgregarCliente" 
+				   		image="#{msg['agregar16.img']}" title="#{msg['agregar.e']}"
+						action="#{obrasAction.seleccionarCliente}"
+						onclick="#{rich:component('pnlObrasBusquedaClientes')}.hide()" 
+						render="cmdAgregarCliente, pnlObraClienteDatos, pnlObrasBusquedaClientes">
+						<f:setPropertyActionListener target="#{obrasAction.pojoCliente}" value="#{var}" />
+				   	</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller id="dScrollClientes" align="center" for="dtClientes" maxPages="10"
+						ajaxSingle="true" page="#{obrasAction.numPaginaClientes}"
+						styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

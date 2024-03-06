@@ -1,0 +1,243 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC '-//Hibernate/Hibernate Mapping DTD 3.0//EN' 'http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd'>
+<hibernate-mapping>
+	<class name="net.giro.co.beans.Correlativo" table="bbb4420d88">
+		<composite-id class="net.giro.co.beans.CorrelativoId" name="id" unsaved-value="none">
+			<key-property column="c_codemp" name="codigoEmpresa" type="long"/>
+			<key-property column="c_nomtab" name="nombreTabla" type="string"/>
+		</composite-id>
+		<property column="c_codemp" name="cbEmpresa" insert="false" update="false"/>
+		<property column="c_destab" name="descriTabla"/>
+		<property column="n_numcor" name="numeroCorrelativo"/>
+		<property column="a_fecins" name="fechaInsercion"/>
+		<property column="a_fecmod" name="fechaModificacion"/>
+		<property column="a_ipeins" name="ipInsercion"/>
+		<property column="a_ipemod" name="ipModificacion"/>
+		<property column="a_terins" name="terminalInsercion"/>
+		<property column="a_termod" name="terminalModificacion"/>
+		<property column="a_usuins" name="usuarioInsercion"/>
+		<property column="a_usumod" name="usuarioModificacion"/>
+	</class>
+	
+	<class name="net.giro.compras.beans.Requisicion" table="requisicion">
+		<id column="id" name="id" />
+		<property column="tipo" name="tipo" /> <!-- 1 - Inventario 2 - Administrativo -->
+		<property column="fecha" name="fecha" />
+		<property column="id_obra" name="idObra" />
+		<property column="nombre_obra" name="nombreObra" />
+		<property column="id_sucursal" name="idSucursal" />
+		<property column="id_propietario" name="idPropietario" />
+		<property column="nombre_propietario" name="nombrePropietario" />
+		<property column="id_solicita" name="idSolicita" />
+		<property column="nombre_solicita" name="nombreSolicita" />
+		<property column="id_moneda" name="idMoneda" />
+		<property column="moneda" name="moneda" />
+		<property column="tipo_cambio" name="tipoCambio" />
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="autorizado" name="autorizado" />
+		<property column="id_usuario_autorizo" name="idUsuarioAutorizo" />
+		<property column="fecha_autorizacion" name="fechaAutorizacion" />
+		<property column="sistema" name="sistema" /> <!-- [0,1] Indica si es de Sistema -->
+		<property column="uso_parcial" name="cerrada" />
+		<property column="estatus" name="estatus" /> <!-- 0 - Activa, 1 - Eliminada, 2 - Cotizacion, 3 - Suministrada -->
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.compras.beans.RequisicionDetalle" table="requisicion_detalle">
+		<id column="id" name="id" />
+		<property column="id_requisicion" name="idRequisicion" />
+		<property column="id_producto" name="idProducto" />
+		<property column="cantidad" name="cantidad" />
+		<property column="cantidad_inicial" name="cantidadInicial" />
+		<property column="cantidad_orden_compra" name="cantidadOrdenCompra" />
+		<property column="cantidad_suministrada" name="cantidadSuministrada" />
+		<property column="estatus" name="estatus" /><!-- 0:Disponible, 1:No Disponible -->
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+		<!-- quitar 
+		<property column="cantidad_cotizada" name="cantidadCotizada" />
+		<property column="id_cotizacion" name="idCotizacion" />
+		<property column="cotizacion_folio" name="cotizacionFolio" />
+		-->
+	</class>
+	
+	<class name="net.giro.compras.beans.RequisicionDetalleHistorico" table="requisicion_detalle_historico">
+		<id column="id" name="id" />
+		<property column="id_requisicion" name="idRequisicion" />
+		<property column="id_producto" name="idProducto" />
+		<property column="cantidad" name="cantidad" />
+		<property column="cantidad_inicial" name="cantidadInicial" />
+		<property column="cantidad_orden_compra" name="cantidadOrdenCompra" />
+		<property column="cantidad_suministrada" name="cantidadSuministrada" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<!-- quitar 
+		<property column="cantidad_cotizada" name="cantidadCotizada" />
+		-->
+	</class>
+	
+	<class name="net.giro.compras.beans.Cotizacion" table="cotizacion">
+		<id column="id" name="id" />
+		<property column="tipo" name="tipo" /> <!-- 1 - Inventario 2 - Administrativo -->
+		<property column="fecha" name="fecha" />
+		<property column="folio" name="folio" />
+		<property column="id_requisicion" name="idRequisicion" />
+		<property column="id_obra" name="idObra" />
+		<property column="nombre_obra" name="nombreObra" />
+		<property column="id_sucursal" name="idSucursal" />
+		<property column="id_proveedor" name="idProveedor" />
+		<property column="nombre_proveedor" name="nombreProveedor" />
+		<property column="rfc_proveedor" name="rfcProveedor" />
+		<property column="tipo_persona_proveedor" name="tipoPersonaProveedor" />
+		<property column="consecutivo_proveedor" name="consecutivoProveedor" />
+		<property column="id_contacto" name="idContacto" />
+		<property column="nombre_contacto" name="nombreContacto" />
+		<property column="id_comprador" name="idComprador" />
+		<property column="nombre_comprador" name="nombreComprador" />
+		<property column="flete" name="flete" />
+		<property column="margen" name="margen" />
+		<property column="tiempo_entrega" name="tiempoEntrega" />
+		<property column="porcentaje_iva" name="porcentajeIva" />
+		<property column="subtotal" name="subtotal" />
+		<property column="iva" name="iva" />
+		<property column="total" name="total" />
+		<property column="id_moneda" name="idMoneda" />
+		<property column="moneda" name="moneda" />
+		<property column="tipo_cambio" name="tipoCambio" />
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="sistema" name="sistema" /> <!-- [0,1] Indica si es de Sistema -->
+		<property column="uso_parcial" name="cerrada" />
+		<property column="estatus" name="estatus" /> <!-- 0 - Activa, 1 - Eliminada, 2 - Orden Compra, 3 - Suministrada -->
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.compras.beans.CotizacionDetalle" table="cotizacion_detalle">
+		<id column="id" name="id" />
+		<property column="id_cotizacion" name="idCotizacion" />
+		<property column="id_producto" name="idProducto" />
+		<property column="cotizar" name="cantidad" />
+		<property column="precio_unitario" name="precioUnitario" />
+		<property column="importe" name="importe" />
+		<property column="margen" name="margen" />
+		<property column="cantidad_inicial" name="cantidadInicial" />
+		<property column="cantidad_orden_compra" name="cantidadOrdenCompra" />
+		<property column="cantidad_suministrada" name="cantidadSuministrada" />
+		<property column="estatus" name="estatus" /><!-- 0:Disponible, 1:No Disponible -->
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+		<!-- quitar 
+		<property column="cantidad" name="cantidad" />
+		-->
+	</class>
+
+	<class name="net.giro.compras.beans.Comparativa" table="comparativa">
+		<id column="id" name="id" />
+		<property column="fecha" name="fecha" />
+		<property column="id_obra" name="idObra" />
+		<property column="id_sucursal" name="idSucursal" />
+		<property column="tipo" name="tipo" />
+		<property column="nombre_obra" name="nombreObra" />
+		<property column="descripcion" name="descripcion" />
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="estatus" name="estatus" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.compras.beans.ComparativaDetalle" table="comparativa_detalle">
+		<id column="id" name="id" />
+		<property column="id_comparativa" name="idComparativa" />
+		<many-to-one column="id_cotizacion" name="idCotizacion" class="net.giro.compras.beans.Cotizacion" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="orden_compra_folio" name="ordenCompraFolio" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.compras.beans.OrdenCompra" table="orden_compra">
+		<id column="id" name="id" />
+		<property column="tipo" name="tipo" /> <!-- 1 - Inventario 2 - Administrativo -->
+		<property column="fecha" name="fecha" />
+		<property column="folio" name="folio" />
+		<many-to-one column="id_cotizacion" name="idCotizacion" class="net.giro.compras.beans.Cotizacion" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
+		<property column="id_obra" name="idObra" />
+		<property column="nombre_obra" name="nombreObra" />
+		<property column="id_sucursal" name="idSucursal" />
+		<property column="id_proveedor" name="idProveedor" />
+		<property column="nombre_proveedor" name="nombreProveedor" />
+		<property column="tipo_persona_proveedor" name="tipoPersonaProveedor" />
+		<property column="consecutivo_proveedor" name="consecutivoProveedor" />
+		<property column="id_contacto" name="idContacto" />
+		<property column="nombre_contacto" name="nombreContacto" />
+		<property column="id_solicita" name="idSolicita" />
+		<property column="nombre_solicita" name="nombreSolicita" />
+		<property column="anticipo" name="anticipo" />
+		<property column="plazo" name="plazo" />
+		<property column="lugar_entrega" name="lugarEntrega" />
+		<property column="tiempo_entrega" name="tiempoEntrega" />
+		<property column="flete" name="flete" />
+		<property column="referencia" name="referencia" />
+		<property column="id_moneda" name="idMoneda" />
+		<property column="moneda" name="moneda" />
+		<property column="tipo_cambio" name="tipoCambio" />
+		<property column="porcentaje_iva" name="porcentajeIva" />
+		<property column="subtotal" name="subtotal" />
+		<property column="iva" name="iva" />
+		<property column="retenciones" name="retenciones" />
+		<property column="total" name="total" />
+		<property column="autorizado" name="autorizado"/>
+		<property column="id_usuario_autorizo" name="idUsuarioAutorizo"/>
+		<property column="fecha_autorizacion" name="fechaAutorizacion"/>
+		<property column="id_empresa" name="idEmpresa" />
+		<property column="base" name="base" /> <!-- [0,1] Indica si fue en base a Cotizacion o Requisicion -->
+		<property column="sistema" name="sistema" /> <!-- [0,1] Indica si es de Sistema -->
+		<property column="completa" name="completa" />
+		<property column="estatus" name="estatus" /> <!-- 0 - Activa, 1 - Eliminada, 2 - Suministrada -->
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.compras.beans.OrdenCompraDetalle" table="orden_compra_detalle">
+		<id column="id" name="id" />
+		<property column="id_orden_compra" name="idOrdenCompra" />
+		<property column="id_producto" name="idProducto" />
+		<property column="cantidad" name="cantidad" />
+		<property column="precio_unitario" name="precioUnitario" />
+		<property column="importe" name="importe" />
+		<property column="cantidad_recibida" name="cantidadSuministrada" /><!-- Indica si se suministro total o parcial -->
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+		<property column="estatus" name="estatus" />
+		<property column="comentarios_cancelacion" name="comentariosCancelacion" />
+	</class>
+	
+	<class name="net.giro.compras.beans.OrdenCompraImpuestos" table="orden_compra_impuestos">
+		<id column="id" name="id" />
+		<property column="id_orden_compra" name="idOrdenCompra" />
+		<property column="id_impuesto" name="idImpuesto" />
+		<property column="porcentaje" name="porcentaje" />
+		<property column="monto" name="monto" />
+		<property column="aplica_en" name="aplicaEn" />
+		<property column="creado_por" name="creadoPor" />
+		<property column="fecha_creacion" name="fechaCreacion" />
+		<property column="modificado_por" name="modificadoPor" />
+		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+</hibernate-mapping>

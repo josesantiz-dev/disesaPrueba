@@ -1,0 +1,57 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlCorreo" modal="true" autosized="true" header="#{msg['enviarCotizacion']}" domElementAttachment="form"
+		onshow="document.getElementById('#{rich:clientId('txtCorizacionEmail')}').focus();">
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.panel.cerrar.img']}" 
+				onclick="#{rich:component('pnlCorreo')}.hide()" />
+		</f:facet>
+		
+		<rich:messages id="msgErroresCorreo" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+			<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+		</rich:messages>
+
+		<a4j:region>
+			<div style="min-width: 500px; margin: 0 auto; padding 0; text-align: center;">
+				<h:panelGrid columns="2" columnClasses="colTitulo, colDato" style="text-align:center;" cellspacing="10">
+					<h:outputText value="#{msg['correo']}:" styleClass="Descripcion" />
+					<h:inputText id="txtCorizacionEmail" value="#{cotizaAction.email}" style="width: 320px;"
+						required="#{!empty param[rich:clientId('cmdEmailSend')]}"
+						requiredMessage="#{msg['correo']} #{msg['mensaje.error.requerido']}" />
+					
+					<h:outputText value="#{msg['asunto']}:" styleClass="Descripcion" />
+					<h:inputText id="txtCorizacionAsunto" value="#{cotizaAction.emailAsunto}" style="width: 320px;"
+						required="#{!empty param[rich:clientId('cmdEmailSend')]}"
+						requiredMessage="#{msg['asunto']} #{msg['mensaje.error.requerido']}" />
+					
+					<h:outputText value="#{msg['mensaje']}:" styleClass="Descripcion" />
+					<h:inputTextarea id="txtCorizacionBody" value="#{cotizaAction.emailCuerpo}" style="width: 320px; resize: none;" rows="10"
+						required="#{!empty param[rich:clientId('cmdEmailSend')]}"
+						requiredMessage="#{msg['mensaje']} #{msg['mensaje.error.requerido']}" />
+				</h:panelGrid>
+				
+				<h:panelGrid columns="2" style="text-align:center; width:200px; text-align:center; margin:10px auto 0;" cellspacing="5">
+					<a4j:commandButton id="cmdEmailSend" style="width:100px; margin:0 auto;"
+						value="#{msg['navegacion.label.aceptar']}"
+						action="#{cotizaAction.enviarCotizacion}"
+						oncomplete="enviarCorreo(#{cotizaAction.operacion}, '#{rich:clientId('pnlCorreo')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErroresCorreo')});" 
+						execute="@region"
+						render="pnlMensajes,msgErroresCorreo"
+						limitRender="true" />
+					
+					<a4j:commandButton id="cmdEmailCancel" style="width:90px; margin:0 auto;"
+						value="#{msg['cancelar']}" 
+						onclick="#{rich:component('pnlCorreo')}.hide()" 
+						execute="@region" />
+				</h:panelGrid>
+			</div>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

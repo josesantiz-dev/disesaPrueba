@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html  xmlns="http://www.w3.org/1999/xhtml"> 
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />	
+	<title>Requisiciones</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link href="css/bootstrap.css" rel="stylesheet" type="text/css" ></link>
+	<link rel="stylesheet" href="css/bootstrap-table.min.css"></link>
+
+</head>
+
+<body>
+	
+<nav class="navbar navbar-default" role="navigation">
+	<div class="navbar-header">
+	  <button type="button" class="navbar-toggle" data-toggle="collapse"
+	          data-target=".navbar-ex1-collapse">
+	    <span class="sr-only">Desplegar navegación</span>
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	  </button>
+	  <a class="navbar-brand" href="../../DISESA">DISESA</a>
+	</div>
+	
+	<div class="collapse navbar-collapse navbar-ex1-collapse">
+	  <ul class="nav navbar-nav">
+	    <li><a href="Obras.faces">Obras</a></li>
+	    <li><a href="OrdenesCompra.faces">Órdenes de Compra</a></li>
+	    <li class="active"><a href="Requisiciones.faces">Requisiciones</a></li>
+	    <li><a href="#" id="refSalir" data-id="Requisiciones">Salir</a></li>	    
+	  </ul>
+	</div>
+</nav>
+
+<div align="center">
+	<h3>Requisiciones</h3>
+</div>
+
+<div id="divAutorizacion" align="right" style="margin: 10px;">
+	<button id="btnAutorizar"  class="btn btn-primary">Autorizar</button>
+	<br />
+</div>
+
+<div class="table-responsive">
+	<table id="tblRequisiciones" data-click-to-select="true" style="margin: 5 !important;">
+		<thead>
+	        <tr>
+	            <th data-field="id">ID</th>
+	            <th data-field="nombreObra">Obra</th>
+	            <th data-field="nombreSolicita">Comprador</th>
+	            <th data-checkbox="true"></th>
+	        </tr>
+	    </thead>
+	    <tbody>
+	       
+	    </tbody>
+	</table>
+</div>
+<div class="col-md-2 col-sm-6 col-xs-12">
+	
+</div>
+
+<div>
+
+
+<div id="mdlAutorizar" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"></button>
+        <h4 class="modal-title"><span id="spnFolio"/></h4>
+      </div>
+      <div class="modal-body">
+      	¿Autorizar las requisiciones seleccionadas?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="autorizarRequisiciones()" >Autorizar</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<div id="mdlPermisos" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"></button>
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body">
+		<div class="alert alert-danger">
+		  <strong>Permisos insuficientes</strong> Verifique su perfil de usuario.
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="js/bootstrap-table-locale-all.js"></script>
+<script src="js/bootstrap-table.min.js"></script>
+<script src="js/bootbox.min.js"></script>
+
+<script src="js/requisiciones/requisiciones_funciones.js"></script>
+<script src="js/requisiciones/requisiciones.js"></script>
+<script src="js/administracion.js"></script>
+
+</body>
+ 
+</html>

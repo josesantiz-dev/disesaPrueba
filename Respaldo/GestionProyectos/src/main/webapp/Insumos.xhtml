@@ -1,0 +1,159 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['explosionInsumos']} - #{msg['modulo']}"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" image="#{msg['buscar22.img']}" styleClass="Titulo" style="cursor:pointer;"
+				action="#{insumosAction.buscar}" 
+				oncomplete="buscar(#{insumosAction.band},'#{rich:clientId('pnlMensajes')}');"
+				render="dtResults,pnlMensajes">
+				<rich:tooltip id="ttBuscar" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscar" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+		 
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" image="#{msg['nuevo22.img']}" styleClass="Titulo" style="cursor:pointer;"
+				action="#{insumosAction.nuevo}" 
+				render="pnlUploadExcel"
+				oncomplete="#{rich:component('pnlUploadExcel')}.show()">
+				<rich:tooltip id="ttNuevo" showDelay="300" value="#{msg['nueva']} #{msg['explosionInsumos']}" for="cmdNuevo" />
+			</a4j:commandButton>
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="gestion_proyectos.css" />
+		<h:outputStylesheet library="css" name="insumos.css" />
+		<h:outputScript library="scripts" name="insumos.js" />
+		
+		<div class="div_titulo" style="margin: 50px auto 0;">
+			<h:outputText value="#{msg['explosionInsumos']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina" style="margin:0 auto;">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin: 10px; display:block; width: 720px;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+				<h:selectOneMenu id="cmbTipoBusqueda" value="#{insumosAction.campoBusqueda}" style="width: 216px">
+		            <f:selectItems value="#{insumosAction.tiposBusqueda}" />
+		        </h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText id="txtvalor" maxlength="50" value="#{insumosAction.valorBusqueda}"  style="width: 210px" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtResults" cellpadding="0" cellspacing="0" rows="100" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina"
+				var="var" value="#{insumosAction.listInsumos}" style="margin:0 auto 20px;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column colspan="8" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['explosionInsumos']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:100px" styleClass="Titulo" breakRowBefore="true">
+							<h:outputText value="#{msg['id']}" /> 
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['obra']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:120px;" styleClass="Titulo">
+							<h:outputText value="#{msg['materiales']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:120px;" styleClass="Titulo">
+							<h:outputText value="#{msg['manoDeObra']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:120px;" styleClass="Titulo">
+							<h:outputText value="#{msg['herramientas']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:120px;" styleClass="Titulo">
+							<h:outputText value="#{msg['total']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 40px;" styleClass="Titulo" colspan="2" />
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align: center; width:100px;">
+					<h:outputText value="#{var.id}" styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.obraNombre}" styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:right; padding-left: 5px; width: 120px;">
+					<h:outputText value="#{var.montoMateriales}" styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemCancelado'}">
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:right; padding-left: 5px; width: 120px;">
+					<h:outputText value="#{var.montoManoDeObra}" styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemCancelado'}">
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:right; padding-left: 5px; width: 120px;">
+					<h:outputText value="#{var.montoHerramientas}" styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemCancelado'}">
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:right; padding-left: 5px; width: 120px;">
+					<h:outputText value="#{var.total}" styleClass="#{var.estatus == 0 ? 'Descripcion' : 'itemCancelado'}">
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdVer" image="#{msg['detalles16.img']}" rendered="#{var.estatus == 0}"
+						action="#{insumosAction.editar}" 
+						oncomplete="#{rich:component('pnlInsumo')}.show()"
+						render="pnlInsumo, pnlObraDatos">
+						<f:setPropertyActionListener value="#{var.copia}" target="#{insumosAction.pojoInsumo}" for="cmdVer" />
+						<rich:tooltip showDelay="300" value="#{msg['detalles']}" for="cmdVer" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+					<a4j:commandButton id="cmdEliminar" image="#{msg['cancelar16.img']}" rendered="#{var.estatus == 0}"
+						oncomplete="#{rich:component('pnlEliminar')}.show()" 
+						render="pnlEliminar">
+						<f:setPropertyActionListener value="#{var.copia}" target="#{insumosAction.pojoInsumoEliminar}" for="cmdEliminar" />
+						<rich:tooltip showDelay="300" value="#{msg['cancelar']}" for="cmdEliminar" />
+					</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller id="dScroll" page="#{insumosAction.numPagina}" for="dtResults" align="center" maxPages="10" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+		
+		<a4j:log level="debug" popup="false" rendered="false" style="margin:0 auto; min-width:800px; max-height:500px;" />
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modals/insumos/pnlMensajes.xhtml" />
+		<ui:include src="/modals/insumos/pnlEliminar.xhtml" />  
+		<ui:include src="/modals/insumos/pnlUploadExcel.xhtml" /> 
+		<ui:include src="/modals/insumos/pnlBusquedaObras.xhtml" /> 
+		<ui:include src="/modals/insumos/pnlInsumo.xhtml" />
+		<ui:include src="/modals/insumos/pnlProductosNoEncontrados.xhtml" />
+		<!--ui:include src="/modals/insumos/pnlBusquedaProductos.xhtml" /-->
+	</ui:define>
+</ui:composition>

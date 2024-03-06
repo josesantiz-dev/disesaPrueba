@@ -1,0 +1,51 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlMsgGralesComprobacionGastos" autosized="true" >
+		<f:facet name="header">
+			<h:outputText value="#{comprobacionGastosAction.encontroMismoGrupo ? msg['navegacion.label.atencion'] : msg['navegacion.label.informacion']}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="#{msg['navegacion.panel.cerrar.img']}" style="cursor:pointer;" id="imgCerrarMsgImpuestoDuplicado"/>
+				<rich:componentControl for="pnlMsgGralesComprobacionGastos" attachTo="imgCerrarMsgImpuestoDuplicado" operation="hide" event="onclick"/>
+		  </h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="frmMsgGralesComprobacionGastos">
+			<h:panelGrid columns="1" width="200" style="text-align:center;" cellspacing="10">
+				<h:outputText value="#{msg['mensaje.info.infoReg']}"  styleClass="Descripcion" 
+					rendered="#{comprobacionGastosAction.tipoMensaje == 0}" />				 			
+				<h:outputText value="#{msg['mensaje.info.impuestoDuplicado']}"  styleClass="Descripcion" 
+					rendered="#{comprobacionGastosAction.tipoMensaje == 1}" />
+				<h:outputText value="#{msg['mensaje.info.imptosCero']}"  styleClass="Descripcion" 
+					rendered="#{comprobacionGastosAction.tipoMensaje == 2}" />
+				<h:outputText value="#{msg['mensaje.info.montoFacturaCero']}"  styleClass="Descripcion" 
+					rendered="#{comprobacionGastosAction.tipoMensaje == 3}" />
+				<h:outputText value="#{msg['mensaje.info.montoFacturaMenorImptos']}"  styleClass="Descripcion" 
+					rendered="#{comprobacionGastosAction.tipoMensaje == 4}" />
+				<h:outputText value="#{msg['mensaje.error.inesperado']}"  styleClass="Descripcion" 
+					rendered="#{comprobacionGastosAction.tipoMensaje == 5}" />
+				<h:outputText value="#{msg['mensaje.info.noReporteComprobacion']}"  styleClass="Descripcion" 
+					rendered="#{comprobacionGastosAction.tipoMensaje == 6}" />
+				<h:outputText value="#{msg['mensaje.info.noComprobar']}"  styleClass="Descripcion" 
+					rendered="#{comprobacionGastosAction.tipoMensaje == 7}" />
+				<h:outputText value="#{msg['mensaje.info.busquedaVacia']}"  styleClass="Descripcion" 
+					rendered="#{comprobacionGastosAction.tipoMensaje == 8}" />
+				<h:outputText value="#{msg['navegacion.label.retDuplicada']}"  styleClass="Descripcion" 
+					rendered="#{comprobacionGastosAction.tipoMensaje == 9}" />
+				<h:outputText value="#{comprobacionGastosAction.mensaje}" styleClass="Descripcion" 
+					rendered="#{comprobacionGastosAction.tipoMensaje == -1}" />
+				
+				<a4j:commandButton 
+					value="#{msg['navegacion.label.aceptar']}"
+					oncomplete="msgRevisando(#{rich:element('msgErrorCompro')},'pnlNuevoEditarCompGto','pnlMsgGralesComprobacionGastos',#{comprobacionGastosAction.encontroMismoGrupo},'boton')" />
+			</h:panelGrid>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

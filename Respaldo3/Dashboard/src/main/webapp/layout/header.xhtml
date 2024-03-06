@@ -1,0 +1,30 @@
+<!DOCTYPE composition PUBLIC>
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<h:outputText value="Usuario:" styleClass="float-LEFT letra-template-header separacion-VALOR-LEFT2" />
+	<h:outputText value="#{sesionProc.usuario}" styleClass="float-LEFT separacion-VALOR-LEFT"  style="font-weight: bold;"/>
+	
+	<h:outputText value="Responsabilidad:" styleClass="float-LEFT letra-template-header separacion-VALOR-LEFT2" rendered="#{sesionProc.rolSeleccionado.nombre != null}"/>
+	<h:outputText value="#{sesionProc.rolSeleccionado.nombre}" styleClass="float-LEFT separacion-VALOR-LEFT"  style="font-weight: bold;"/>
+	
+	<h:outputText value="FECHA-HORA:" styleClass="float-LEFT letra-template-header separacion-VALOR-LEFT2" />
+	<h:outputText value="#{sesionProc.fechaActual}" styleClass="float-LEFT separacion-VALOR-LEFT" style="font-weight: bold;" />
+	
+	<a4j:commandLink styleClass="float-RIGHT letra-cerrar-sesion separacion-VALOR-RIGHT"
+		action="#{sesionProc.cerrarSesion}" 
+		oncomplete="window.location='https://#{msgAdminProc['vista_ip']}:9443/cas/logout'">
+		<h:graphicImage library="#{msgProc['comun.ruta._22']}" name="#{msgProc['comun.img.salir']}" styleClass="float-RIGHT separacion-VALOR-RIGHT"/>			
+	</a4j:commandLink>
+	
+	<a4j:commandLink styleClass="float-RIGHT letra-cerrar-sesion separacion-VALOR-RIGHT"
+		action="#{sesionProc.cambiarModulo}" 
+		oncomplete="window.location='https://#{msgAdminProc['vista_ip']}:9443/DISESA/index.faces'">
+		<h:graphicImage library="#{msgProc['comun.ruta._22']}" name="#{msgProc['comun.img.modulo']}" styleClass="float-RIGHT separacion-VALOR-RIGHT"/>			
+	</a4j:commandLink>
+</ui:composition> 

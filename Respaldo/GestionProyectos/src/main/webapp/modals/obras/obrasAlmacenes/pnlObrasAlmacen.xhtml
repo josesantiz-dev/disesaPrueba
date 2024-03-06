@@ -1,0 +1,78 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlObrasAlmacen" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+    	<f:facet name="header">
+			<h:outputText value="#{msg['obra']} #{msg['almacen']}" styleClass="Titulo" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" onclick="#{rich:component('pnlObrasAlmacen')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+		
+		<a4j:region>
+			<div style = "display: block; min-width:500px; height: 22px;">
+				<a4j:commandButton id="cmdGuardarObrasAlmacen" 
+					image="#{msg['salvar22.img']}" style="float:right; vertical-align: middle; cursor: pointer;" 
+					action="#{almObraAction.guardar}" 
+					oncomplete="salvarObraAlmacen(#{almObraAction.operacion}, #{almObraAction.tipoMensaje}, '#{rich:clientId('pnlObrasAlmacen')}', '#{rich:clientId('pnlConfirmaAlmPrincipal')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrorObrasAlmacen')});"
+					render="pnlConfirmaAlmPrincipal,pnlMensajes,msgErrorObrasAlmacen,dtObraAlmacenes"
+					execute="@region">
+					<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['salvar.e']}" for="cmdGuardarObrasAlmacen"/>
+					<!-- oncomplete="salvar(#{almObraAction.operacion}, '#{rich:clientId('pnlObrasAlmacen')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrorObrasAlmacen')});" -->
+				</a4j:commandButton>
+			</div>
+			
+			<rich:messages id="msgErrorObrasAlmacen"  showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+				<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+			</rich:messages> 
+	
+			<div style="margin: 10px auto 0;">
+				<h:panelGroup styleClass="encabezado" style="min-height: 1em;">
+					<h:outputText value="#{almObraAction.pojoObra.id != null ? almObraAction.pojoObra.id : '0'} "/>
+					<h:outputText value="#{almObraAction.pojoObra.nombre}" />
+				</h:panelGroup>
+				
+				<a4j:region>
+				<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+					<h:outputText value="#{msg['almacen']}:" styleClass="Titulo" /> 
+					<h:selectOneMenu id="cmbAlmacen" style="width: 316px"
+						value="#{almObraAction.almacenId}" 
+						required="#{!empty param[rich:clientId('cmdGuardarObrasAlmacen')]}" 
+						requiredMessage="#{msg['almacen']} #{msg['mensaje.error.requerido']}">
+			            <f:selectItem itemLabel="#{msg['seleccione']}" />
+			            <f:selectItems value="#{almObraAction.listAlmacenesItems}" />
+			            <a4j:ajax event="change" execute="@region"
+			            	listener="#{almObraAction.comprobarTipoAlmacen}" 
+			            	oncomplete="comprobarAlmacenObra(#{almObraAction.operacion}, '#{rich:clientId('pnlMensajes')}')" 
+			            	render="pnlMensajes,cmbObraAlmacenTipo"
+			            	limitRender="true" />
+			        </h:selectOneMenu>
+		
+					<h:outputText value="#{msg['tipo']}:" styleClass="Titulo" />
+					<h:selectOneMenu id="cmbObraAlmacenTipo" style="width: 316px" 
+						value="#{almObraAction.tipoAlmacen}"
+						required="#{!empty param[rich:clientId('cmdGuardarObrasAlmacen')]}" 
+						requiredMessage="#{msg['tipo']} #{msg['mensaje.error.requerido']}">
+			            <f:selectItem itemLabel="#{msg['seleccione']}" />
+			            <f:selectItems value="#{almObraAction.listTiposAlmacenesItems}" />
+			            <a4j:ajax event="change" execute="@region"
+			            	listener="#{almObraAction.comprobarTipoAlmacen}" 
+			            	oncomplete="comprobarAlmacenObra(#{almObraAction.operacion}, '#{rich:clientId('pnlMensajes')}')" 
+			            	render="pnlMensajes"
+			            	limitRender="true" />
+			        </h:selectOneMenu>
+			        
+			        <h:outputText value="#{msg['almacen']} #{msg['principal']}:" styleClass="Titulo" />
+					<h:selectBooleanCheckbox id="checkAlmacenPrincipal" value="#{almObraAction.almacenPrincipal}" />
+				</h:panelGrid>
+				</a4j:region>
+			</div>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

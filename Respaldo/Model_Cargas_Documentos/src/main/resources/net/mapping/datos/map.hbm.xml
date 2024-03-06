@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                                   "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<class name="net.giro.co.beans.Correlativo" table="bbb4420d88" >
+		<composite-id name="id" class ="net.giro.co.beans.CorrelativoId" unsaved-value="none">
+			<key-property name="codigoEmpresa" type="long" column="c_codemp"/>
+			<key-property name="nombreTabla" type="string" column="c_nomtab"/>
+		</composite-id>
+		<property name="cbEmpresa" column="c_codemp" insert="false" update="false"/>
+		<property name="descriTabla" column="c_destab"/>
+		<property name="fechaInsercion" column="a_fecins"/>
+		<property name="fechaModificacion" column="a_fecmod"/>
+		<property name="ipInsercion" column="a_ipeins"/>
+		<property name="ipModificacion" column="a_ipemod"/>
+		<property name="numeroCorrelativo" column="n_numcor"/>
+		<property name="terminalInsercion" column="a_terins"/>
+		<property name="terminalModificacion" column="a_termod"/>
+		<property name="usuarioInsercion" column="a_usuins"/>
+		<property name="usuarioModificacion" column="a_usumod"/>
+	</class>
+	
+	<class name="net.giro.cargas.documentos.beans.ComprobacionFactura" table="c66ff17ccc">
+		<id  name="id" column="aa"/>
+		<property name="creadoPor" column="ab"/>
+		<property name="fechaCreacion" column="ac"/>
+		<property name="modificadoPor" column="ad"/>
+		<property name="fechaModificacion" column="ae"/>
+		<property name="expresionImpresa" column="af"/>
+		<property name="fechaComprobacion" column="ag"/>
+		<property name="codigoEstatus" column="ah"/>
+		<property name="estado" column="ai"/>
+	</class>
+</hibernate-mapping>

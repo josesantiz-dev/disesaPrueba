@@ -1,0 +1,135 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlComparativa" modal="true" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20">
+    	<f:facet name="header">
+    		<h:outputText styleClass="Titulo" 
+    			value="#{comAction.pojoComparativa.id == null ? msg['nueva'] : ''} #{msg['comparativa']} #{comAction.comparativaTitulo}" />
+    	</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlComparativa')}.hide()" />
+		</f:facet>
+		
+		<h:panelGrid id="botonera" columns="2" style="padding:0; width:100%; min-width:700px; min-height:22px; text-align: left;">
+			<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%; vertical-align:middle; position:relative;">
+				<rich:messages id="msgErrores" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+				</rich:messages>
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoBotonesDerechos" style="width:100%; vertical-align:middle; position:relative;">
+				<a4j:commandButton id="cmdSalvar" style="float:right; margin-left: 5px; vertical-align:top; position:relative;"
+					image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+					rendered="#{comAction.obraActiva}"
+					action="#{comAction.guardar}" 
+					oncomplete="salvarComparativa(#{comAction.operacion}, '#{rich:clientId('pnlComparativa')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrores')});"
+					render="dtComparativas,dScrollComparativas,msgErrores,pnlMensajes"
+					limitRender="true" />
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<h:panelGroup styleClass="encabezado" style="min-height: 1em;">
+			<h:outputText value="#{comAction.encabezado}" />
+		</h:panelGroup>
+		
+		<h:panelGrid columns="2" columnClasses="colTitulo" style="text-align:left; width:100%; margin:15px auto 0;">
+			<h:outputText value="#{msg['descripcion']}:" styleClass="Titulo" />
+			<h:inputText id="txtDescripcion" styleClass="Titulo" style="width:90%; text-align:left"
+				disabled="#{comAction.pojoComparativa.estatus == 1}"
+				value="#{comAction.pojoComparativa.descripcion}"
+				required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+				requiredMessage="#{msg['descripcion']} #{msg['mensaje.error.requerido']}" />
+			
+			<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+			<h:panelGroup style="width:100%; text-align:right;">
+		        <a4j:commandButton id="cmdAdd" style="float:right; margin:0 5px; vertical-align: middle; position:relative;"
+					rendered="#{comAction.pojoComparativa.estatus == 0}"
+					image="#{msg['agregar22.img']}" title="#{msg['agregar.e']} #{msg['cotizacion']}"
+					action="#{comAction.nuevaBusquedaCotizaciones}"
+					oncomplete="nuevaBusquedaCotizaciones(#{comAction.operacion}, '#{rich:clientId('pnlBusquedaCotizaciones')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrores')})" 
+					render="pnlBusquedaCotizaciones,pnlMensajes,msgErrores"
+					limitRender="true" />
+			</h:panelGroup>
+		</h:panelGrid>
+			
+		<rich:dataTable id="dtDetalles" value="#{comAction.listDetalles}" var="var" style="margin:10px auto 0;"
+			cellpadding="0" cellspacing="0" rows="5" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column style="text-align:center;" colspan="6">
+						<h:outputText value="#{msg['cotizaciones']}" styleClass="Titulo" />
+					</rich:column>
+					
+					<rich:column style="text-align:center; width:90px;" breakRowBefore="true">
+						<h:outputText value="#{msg['folio']}" styleClass="Titulo" />
+					</rich:column>
+		
+					<rich:column style="text-align:center; min-width:120px;">
+						<h:outputText value="#{msg['proveedor']}" styleClass="Titulo" />
+					</rich:column>
+		
+					<rich:column style="text-align:center; min-width:120px;">
+						<h:outputText value="#{msg['contacto']}" styleClass="Titulo" />
+					</rich:column>
+		
+					<rich:column style="text-align:center; width:100px;">
+						<h:outputText value="#{msg['total']}" styleClass="Titulo" />
+					</rich:column>
+		
+					<rich:column style="text-align:center; width:90px;">
+						<h:outputText value="#{msg['ordenCompra']}" styleClass="Titulo" />
+					</rich:column>
+		
+					<rich:column style="text-align:center; width:20px;" />
+				</rich:columnGroup>
+			</f:facet>
+			
+			<rich:column style="text-align:center; width:90px;" styleClass="#{var.idCotizacion.estatus == 0 ? 'Descripcion' : 'itemUsado'}">
+				<h:outputText value="#{var.idCotizacion.folio}" />
+			</rich:column>
+		
+			<rich:column style="text-align:left; min-width:120px;" styleClass="#{var.idCotizacion.estatus == 0 ? 'Descripcion' : 'itemUsado'}">
+				<h:outputText value="#{var.idCotizacion.nombreProveedor}" />
+			</rich:column>
+		
+			<rich:column style="text-align:left; min-width:120px;" styleClass="#{var.idCotizacion.estatus == 0 ? 'Descripcion' : 'itemUsado'}">
+				<h:outputText value="#{var.idCotizacion.nombreContacto}" />
+			</rich:column>
+		
+			<rich:column style="text-align:right; width:100px;" styleClass="#{var.idCotizacion.estatus == 0 ? 'Descripcion' : 'itemUsado'}">
+				<h:outputText value="#{var.idCotizacion.total}">
+					<f:convertNumber pattern="###,###,##0.00" />
+				</h:outputText>
+			</rich:column>
+		
+			<rich:column style="text-align:center; width:90px;" styleClass="#{var.idCotizacion.estatus == 0 ? 'Descripcion' : 'itemUsado'}">
+				<h:outputText value="#{var.ordenCompraFolio}" />
+			</rich:column>
+	
+			<rich:column style="text-align:center; width:20px;" styleClass="Descripcion">
+				<a4j:commandButton id="cmdEliminarDetalle" 
+					rendered="#{comAction.pojoComparativa.estatus == 0}"
+					image="#{msg['eliminar16.img']}" title="#{msg['eliminar']} #{msg['cotizacion']}"
+					onclick="#{rich:element('cmdEliminarDetalle')}.disabled = true;"
+					oncomplete="#{rich:component('pnlEliminarDetalle')}.show(); #{rich:element('cmdEliminarDetalle')}.disabled = false;"
+					render="pnlEliminarDetalle"
+					limitRender="true">
+					<f:setPropertyActionListener value="#{var}" target="#{comAction.pojoDetalle}" for="cmdEliminarDetalle" />
+				</a4j:commandButton>
+			</rich:column>
+
+			<f:facet name="footer">
+				<rich:dataScroller for="dtDetalles" page="#{comAction.paginacionDetalles}" renderIfSinglePage="false" 
+					maxPages="10" fastStep="10" ajaxSingle="true" align="center" styleClass="Titulo" />
+			</f:facet>
+		</rich:dataTable>
+	</rich:popupPanel>
+</ui:composition>

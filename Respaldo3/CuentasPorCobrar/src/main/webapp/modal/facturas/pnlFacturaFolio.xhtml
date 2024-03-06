@@ -1,0 +1,52 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlFacturaFolio" autosized="true" domElementAttachment="form" style="min-width:300px; max-width:1024px;"
+		header="#{msg['factura']} #{msg['folio']}">
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;"
+				value="#{msg['navegacion.gral.cerrar.img']}"
+				onclick="#{rich:component('pnlFacturaFolio')}.hide()" />	
+		</f:facet>
+		
+		<a4j:region id="regFacturaFolio">
+		<h:panelGroup style="display:block; min-height:22px; margin-bottom:10px; min-width:500px;">
+			<h:panelGrid columns="2" style="width:100%;">
+				<rich:messages id="validadorFacturaFolio" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+					<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" /></f:facet>
+				</rich:messages>
+				
+				<h:panelGroup style="vertical-align:middle; position:relative;">
+					<a4j:commandButton id="cmdSalvarFacturaFolio" style="float:right; margin:0 5px 0 2px; vertical-align: right; position:relative;"
+						image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+						action="#{facturaAction.guardarFacturaFolio}" 
+						oncomplete="salvar(#{facturaAction.band}, '#{rich:clientId('pnlFacturaFolio')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorFacturaFolio')})" 
+						render="validadorFacturaFolio,pnlMensajes,txtFolio,dtFacturas" limitRender="true" />
+				</h:panelGroup>
+			</h:panelGrid>
+		</h:panelGroup>
+		
+		<h:panelGroup style="display:block; min-width:500px; text-align:center;">
+			<h:panelGrid columns="2" width="100%" style="margin:10px auto 0;" columnClasses="colTitulo,colDato">
+				<h:outputText value="#{msg['factura']} #{msg['serie']}:" styleClass="Descripcion" />
+				<h:inputText styleClass="Descripcion" style="width: 140px;"
+					value="#{facturaAction.facturaSerie}"
+					required="#{!empty param[rich:clientId('cmdSalvarFacturaFolio')]}"
+					requiredMessage="#{msg['serie']} #{msg['mensaje.error.requerido']}" />
+				
+				<h:outputText value="#{msg['factura']} #{msg['folio']}:" styleClass="Descripcion" />
+				<h:inputText styleClass="Descripcion" style="width: 140px;"
+					value="#{facturaAction.facturaFolio}"
+					required="#{!empty param[rich:clientId('cmdSalvarFacturaFolio')]}"
+					requiredMessage="#{msg['folio']} #{msg['mensaje.error.requerido']}" />
+			</h:panelGrid>
+		</h:panelGroup>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

@@ -1,0 +1,44 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:rich="http://richfaces.org/rich" 
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+	<rich:modalPanel autosized="true" id="pnlCancelarCheque">
+		<f:facet name="header">
+			<h:outputText styleClass="Titulo" value="#{msg['navegacion.label.atencion']}"/>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage id="imgCerrarCancelarCheque" style="cursor:pointer;" value="#{msg['navegacion.panel.cerrar.img']}"/>
+				<rich:componentControl attachTo="imgCerrarCancelarCheque" event="onclick" for="pnlCancelarCheque" operation="hide"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmCancelarChequeRegistroGastos">
+			<a4j:region id="loadCancelarChequeRegistroGastos">
+				<h:panelGrid cellspacing="10" columns="1" style="text-align:center;" width="200">
+					<h:outputText styleClass="Descripcion" value="#{registroGastosAction.resOperacion}"/>
+					<h:panelGroup style="margin-top:10px; text-align:center; display:block;">
+						<a4j:commandButton value="#{msg['navegacion.label.aceptar']}"
+							action="#{registroGastosAction.cancelarCheques}" 
+							oncomplete="msgRevisando(#{rich:element('msgErrorFact')},'pnlCancelarCheque','pnlMensajes2',#{registroGastosAction.encontroMismoGrupo},'boton2','#{registroGastosAction.resOperacion}')" 
+							reRender="pnlMensajes2, LabelClave,dtResultsGastos" />
+							
+						<a4j:commandButton style="margin-left:10px;" 
+							value="#{msg['cancelar.e']}"
+							onclick="#{rich:component('pnlCancelarCheque')}.hide()" />
+					</h:panelGroup>
+					
+					<a4j:status for="loadCancelarChequeRegistroGastos">
+						<f:facet name="start">
+							<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}"/>
+						</f:facet>
+					</a4j:status>
+				</h:panelGrid>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

@@ -1,0 +1,61 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlProvision" autosized="true" domElementAttachment="form" style="min-width:300px; max-width:1024px;">
+		<f:facet name="header">				
+			<h:outputText styleClass="Titulo" value="#{msg['provision']}" />
+		</f:facet>
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;"
+				value="#{msg['navegacion.gral.cerrar.img']}"
+				onclick="#{rich:component('pnlProvision')}.hide()" />	
+		</f:facet>
+		
+		<a4j:region id="regProvision">
+			<h:panelGroup style="display:block; min-width:300px; text-align:center;">
+				<h:outputText value="#{facturaAction.permiteProvisionar ? msg['facturaProvisionada'] : msg['confirmarProvision']}" styleClass="Titulo" style="margin:10px auto;" />
+				
+				<h:panelGrid columns="2" width="100%" style="margin:10px auto 0;" columnClasses="colTitulo,colDato">
+					<h:outputText value="#{msg['total']} #{msg['factura']}:" styleClass="Descripcion" />
+					<h:inputText styleClass="Descripcion" style="width: 140px; text-align: right" readonly="true" 
+						value="#{facturaAction.pojoFactura.total}">
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:inputText>
+					
+					<h:outputText value="#{msg['abonado']}:" styleClass="Descripcion" />
+					<h:inputText styleClass="Descripcion" style="width: 140px; text-align:right" readonly="true" 
+						value="#{facturaAction.montoPagado}">
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:inputText>
+					
+					<h:outputText value="#{msg['provision']}:" styleClass="Titulo" />
+					<h:inputText styleClass="Titulo" style="width: 140px; text-align: right" readonly="#{facturaAction.permiteProvisionar}" 
+						value="#{facturaAction.montoProvision}">
+						<f:convertNumber pattern="###,###,##0.00"/>
+					</h:inputText>
+				</h:panelGrid>
+				
+				<h:panelGrid columns="2" width="100%" style="margin:10px auto 0; text-align:center;">
+					<a4j:commandButton style="margin:0 auto; width:100px;"
+						value="#{msg['aceptar']}" 
+						disabled="#{facturaAction.permiteProvisionar}"
+						onclick="#{rich:component('pnlProvision')}.hide()"
+						action="#{facturaAction.provisionar}"
+						oncomplete="eliminarFactura(#{facturaAction.band}, '#{rich:clientId('pnlMensajes')}')"
+						render="pnlMensajes"
+						limitRender="true" />
+						
+					<a4j:commandButton style="margin:0 auto; width:100px;"
+						onclick="#{rich:component('pnlProvision')}.hide()"
+						value="#{msg['cancelar']}" />
+				</h:panelGrid>
+			</h:panelGroup>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

@@ -1,0 +1,42 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlConfirmaOrigen" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.panel.cerrar.img']}" 
+				onclick="#{rich:component('pnlConfirmaOrigen')}.hide()" />
+		</f:facet>
+
+		<a4j:region>
+			<h:panelGroup>
+				<h:outputText value="#{msg['indiqueOrigenProductos']}" styleClass="Descripcion" />
+			</h:panelGroup>
+			
+			<h:panelGrid columns="2" columnClasses="colTitulo,colTitulo" width="200" style="text-align:center;" cellspacing="10">
+				<a4j:commandButton value="#{msg['conComparativa']}" 
+					onclick="#{rich:component('pnlConfirmaOrigen')}.hide()"
+					action="#{ordenAction.nuevoCotizacion}"
+					oncomplete="#{rich:component('pnlOrden')}.show()" 
+					render="pnlOrden, pnlProveedorDatos, pnlRequisicionDatos, pnlCotizacionDatos"
+					limitRender="true" />
+					
+				<a4j:commandButton value="#{msg['compraDirecta']}" 
+					onclick="#{rich:component('pnlConfirmaOrigen')}.hide()"
+					action="#{ordenAction.nuevoRequisicion}"
+					oncomplete="#{rich:component('pnlOrden')}.show()" 
+					render="pnlOrden, pnlProveedorDatos, pnlRequisicionDatos, pnlCotizacionDatos"
+					limitRender="true" />
+			</h:panelGrid>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

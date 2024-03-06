@@ -1,0 +1,256 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlComprobacionConFactura" autosized="true" top="10">
+		<f:facet name="header">
+			<h:outputText value="#{provAction.tituloComprobacion}" styleClass="Titulo" />
+	    </f:facet>
+		
+	    <f:facet name="controls">
+       		<h:graphicImage style="cursor:pointer;"
+       	  		value="#{msg['navegacion.gral.cerrar.img']}"
+       	  		onclick="#{rich:component('pnlComprobacionConFactura')}.hide()" />
+	    </f:facet>
+		
+		<a4j:form id="frmComprobacionConFactura" style="padding:0; width:auto; min-width:800px; max-width:1024px; min-height:22px; text-align: left;">
+			<a4j:region id="loadComprobacionConFactura">
+				<h:panelGrid id="botoneraComprobacionConFactura" columns="2" cellpadding="0" style="margin:0 auto; padding:0; width:100%; min-width:800px; min-height:22px; text-align:left;">
+					<h:panelGroup id="grupoBotonesIzquierdosComprobacionConFactura" style="width:100%; vertical-align:middle; position:relative;">
+						<a4j:commandButton style="cursor: pointer;"
+							rendered="#{provAction.egresoDetalleDescargarFactura}"
+							image="#{msg['xml22.img']}" title="#{msg['descargar.e']}"
+							action="#{provAction.descargarXML}"
+							oncomplete="reporte(#{provAction.operacionCancelada}, '#{rich:clientId('pnlMensajes')}', '#{msg['urlapp']}');" 
+							reRender="pnlMensajes" />
+						
+						<rich:messages id="validadorComprobacionConFactura" showDetail="true" showSummary="false" />
+					</h:panelGroup>
+					
+					<h:panelGroup id="grupoBotonesDerechosComprobacionConFactura" style="width:100%; vertical-align:middle; position:relative;">
+						<a4j:commandButton id="cmdSalvarConFactura" style="float:right; margin-left: 5px; vertical-align:top; position:relative;" 
+							image="#{msg['salvarAdd22.img']}" title="#{msg['salvar.e']}"
+							onclick="#{rich:element('cmdSalvarConFactura')}.disabled = true;"
+							action="#{provAction.guardarComprobacion}"
+							oncomplete="#{rich:element('cmdSalvarConFactura')}.disabled = false; salvar(#{provAction.operacionCancelada}, '#{rich:clientId('pnlComprobacionConFactura')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorComprobacionConFactura')});"
+							reRender="validadorComprobacionConFactura,pnlMensajes,dtResultsComprobado"
+							limitToList="true" />
+					</h:panelGroup>
+				</h:panelGrid>
+				
+				<h:panelGroup layout="block" styleClass="encabezado" style="min-height:1em; margin:5px auto 0;">
+					<h:outputText value="#{provAction.tituloComprobacionFactura}" /><!-- ID - UUID -->
+				</h:panelGroup>
+				
+				<table id="groupFacturaComprobacionConFactura" style="display:block; margin:5px auto 0; width:100%;">
+					<tr>
+						<td class="tygCompGtosColIzq"><h:outputText value="#{msg['emisor']}:" styleClass="Titulo" /></td>
+						<td class="tygCompGtosColDer" colspan="3"><h:outputText value="#{provAction.egresoDetalleEmisor}" styleClass="Descripcion"/></td>
+						<td class="tygCompGtosColIzq"><h:outputText value="#{msg['rfc']}:" styleClass="Titulo"/></td>
+						<td class="tygCompGtosColDer"><h:outputText value="#{provAction.egresoDetalleEmisorRFC}" styleClass="Descripcion"/></td>
+					</tr>
+					<tr>
+						<td class="tygCompGtosColIzq"><h:outputText value="#{msg['folio']}:" styleClass="Titulo" /></td>
+						<td class="tygCompGtosColDer"><h:outputText value="#{provAction.egresoDetalleFolio}" styleClass="Descripcion"/></td>
+						<td class="tygCompGtosColIzq"><h:outputText value="#{msg['facturado']}:" styleClass="Titulo" rendered="#{provAction.perfilRequiereObra}" /></td>
+						<td class="tygCompGtosColDer"><h:outputText value="#{provAction.egresoDetalleFacturado} #{provAction.egresoDetalleMoneda}" styleClass="Descripcion"><f:convertNumber pattern="$ ###,###,##0.00" /></h:outputText></td>
+						<td class="tygCompGtosColIzq"><h:outputText value="#{msg['fecha']}:" styleClass="Titulo" /></td>
+						<td class="tygCompGtosColDer"><h:outputText value="#{provAction.egresoDetalleFecha}" styleClass="Descripcion"><f:convertDateTime pattern="dd-MM-yyyy" /></h:outputText></td>
+					</tr>
+				</table>
+				
+				<h:panelGrid id="groupComprobacionConFacturaDatos" columns="2" columnClasses="tygCompGtosColIzq,tygCompGtosColDer" style="display:block; position:relative; margin:10px auto 0;" cellpadding="0">
+					<h:outputText value="#{msg['manoDeObra']}:" for="txtManoObra" styleClass="Titulo" /> 
+					<h:selectBooleanCheckbox id="txtManoObra" value="#{provAction.egresoDetalleManoObra}" styleClass="Titulo" />
+				    
+					<h:outputText value="#{msg['egreso']}:" styleClass="Titulo" />
+					<h:panelGroup id="groupConceptoComprobacionConFactura" style="font-size:12px">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtConcepto" value="#{provAction.comprobacionEgreso}" escape="false" />
+							<h:panelGroup>
+								<a4j:commandLink id="btnBusquedaConceptos" 
+									onclick="#{rich:element('btnBusquedaConceptos')}.disabled = true;"
+									value="#{provAction.comprobacionEgreso eq '' ? msg['seleccionar'] : msg['cambiar']}"
+									action="#{provAction.nuevaBusquedaConceptos}"
+									oncomplete="#{rich:element('btnBusquedaConceptos')}.disabled = false; nuevaBusqueda(#{provAction.operacionCancelada},'pnlBusquedaConceptos','pnlMensajes')"
+									reRender="pnlMensajes,pnlBusquedaConceptos" />
+									
+								<!-- Este input es solo con propósito de que se permita hacer validator al proyecto -->
+								<h:inputText id="txtConceptoHidden" style="text-align:left; display:none;"
+									value="#{provAction.comprobacionEgreso}"
+									required="#{!empty param[rich:clientId('cmdSalvarSinFactura')]}"
+									requiredMessage="#{msg['egreso']} #{msg['mensaje.error.requerido']}" />
+								
+								<rich:message for="txtConceptoHidden" showSummary="false" showDetail="false" style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage style="margin:0 5px;" 
+											value="#{msg['cancelar16.img']}" 
+											title="#{msg['mensaje.error.requerido']}. #{msg['mensaje.validacion.selectItem']}" />
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['obra.admin']}:" rendered="#{provAction.perfilRequiereObra}" styleClass="Titulo" />
+					<h:panelGroup id="groupObraEgresoAdmvoComprobacionConFactura" style="font-size:12px" rendered="#{provAction.perfilRequiereObra}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtObraEgresoAdmvo" value="#{provAction.comprobacionObra}" rendered="#{provAction.perfilRequiereObra}" escape="false" />
+							<h:panelGroup>
+								<a4j:commandLink id="btnBusquedaObraEgresoAdmvo" 
+									value="#{provAction.comprobacionObra eq '' ? msg['seleccionar'] : msg['cambiar']}"
+									onclick="#{rich:element('btnBusquedaObraEgresoAdmvo')}.disabled = true;"
+									action="#{provAction.nuevaBusquedaObras}"
+									oncomplete="nuevaBusqueda(#{provAction.operacionCancelada}, 'pnlBusquedaObras','pnlMensajes'); #{rich:element('btnBusquedaObraEgresoAdmvo')}.disabled = false;"
+									reRender="pnlBusquedaObras,pnlMensajes"
+									limitToList="true" />
+									
+								<a4j:commandLink id="btnQuitarObraEgresoAdmvo" rendered="#{provAction.comprobacionObra eq '' ? false : true}" 
+									value="#{msg['quitar']}" style="margin:auto 5px;"
+									onclick="#{rich:element('btnQuitarObraEgresoAdmvo')}.disabled = true;"
+									action="#{provAction.quitarObra}"
+									oncomplete="buscar(#{provAction.operacionCancelada},'pnlMensajes'); #{rich:element('btnQuitarObraEgresoAdmvo')}.disabled = false;"
+									reRender="groupObraEgresoAdmvoComprobacionConFactura,groupOrdenCompraComprobacionConFactura"
+									limitToList="true" />
+									
+								<h:inputText id="txtObraEgresoAdmvoHidden" style="text-align:left; display:none;"
+									value="#{provAction.comprobacionObra}" />
+								
+								<rich:message for="txtObraEgresoAdmvoHidden" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage style="margin:0 5px;" 
+											value="#{msg['cancelar16.img']}" 
+											title="#{msg['mensaje.error.requerido']}. #{msg['mensaje.validacion.selectItem']}" />
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGroup>
+			
+					<h:outputText value="#{msg['ordenCompra']}:" rendered="#{provAction.perfilRequiereObra}" styleClass="Titulo" />
+					<h:panelGroup id="groupOrdenCompraComprobacionConFactura" style="font-size:12px"
+						rendered="#{provAction.perfilRequiereObra}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtOrdenCompra" value="#{provAction.comprobacionOrdenCompra}" rendered="#{provAction.perfilRequiereObra}" escape="false" />
+							<h:panelGroup>
+								<a4j:commandLink id="btnBusquedaOrdenCompra" 
+									value="#{provAction.comprobacionOrdenCompra == '' ? msg['seleccionar'] : msg['cambiar']}"
+									onclick="#{rich:element('btnBusquedaOrdenCompra')}.disabled = true;"
+									action="#{provAction.nuevaBusquedaOrdenCompra}" 
+									oncomplete="nuevaBusqueda(#{provAction.operacionCancelada}, 'pnlBusquedaOrdenCompra','pnlMensajes'); #{rich:element('btnBusquedaOrdenCompra')}.disabled = false;"
+									reRender="pnlBusquedaOrdenCompra,pnlMensajes"
+									limitToList="true" />
+									
+								<a4j:commandLink id="btnQuitarOrdenCompra" rendered="#{provAction.comprobacionOrdenCompra eq '' ? false : true}" 
+									value="#{msg['quitar']}" style="margin:auto 5px;"
+									onclick="#{rich:element('btnQuitarOrdenCompra')}.disabled = true;"
+									action="#{provAction.quitarOrdenCompra}"
+									oncomplete="buscar(#{provAction.operacionCancelada},'pnlMensajes');  #{rich:element('btnQuitarOrdenCompra')}.disabled = false;"
+									reRender="groupOrdenCompraComprobacionConFactura"
+									limitToList="true" />
+									
+								<h:inputText id="txtOrdenCompraHidden" style="text-align:left; display:none;"
+									value="#{provAction.comprobacionOrdenCompra}" />
+								
+								<rich:message for="txtOrdenCompraHidden" showSummary="false" showDetail="false"  style="color:red">
+									<f:facet name="errorMarker">
+										<h:graphicImage style="margin:0 5px;" 
+											value="#{msg['cancelar16.img']}" 
+											title="#{msg['mensaje.error.requerido']}. #{msg['mensaje.validacion.selectItem']}" />
+									</f:facet>
+								</rich:message>
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['subtotal']}:" styleClass="Titulo" />
+					<h:panelGroup >
+						<h:inputText id="txtSubtotal" style="text-align:right; width:150px;" disabled="true"  
+							value="#{provAction.subtotal}">
+			               	<f:convertNumber pattern="###,###,##0.00" /> 
+			            </h:inputText>
+							
+						<rich:message for="txtSubtotal" showSummary="false" showDetail="false" style="color:red">
+					    	<f:facet name="errorMarker">
+								<h:graphicImage style="margin:0 5px;" 
+									value="#{msg['cancelar16.img']}" 
+									title="#{msg['mensaje.error.requerido']}" />
+					    	</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['impuestos']}:" styleClass="Titulo" />
+					<h:panelGroup >
+						<h:inputText id="txtImpuestos" disabled="true" style="width:150px; text-align:right;"
+							value="#{provAction.impuestos}">
+			               	<f:convertNumber pattern="###,###,##0.00" /> 
+			            </h:inputText>
+							
+						<rich:message for="txtImpuestos" showSummary="false" showDetail="false"  style="color:red">
+					    	<f:facet name="errorMarker">
+								<h:graphicImage style="margin:0 5px;" 
+									value="#{msg['cancelar16.img']}" 
+									title="#{msg['mensaje.error.requerido']}" />
+					    	</f:facet>
+						</rich:message>
+						
+                    	<a4j:commandLink id="cmdDesgloseImptos" styleClass="tygCompGtosAtn" style="margin:0 10px;"
+                    		rendered="#{provAction.verDesgloce}"
+                    		value="#{msg['navegacion.label.desgloseImptos']}" 
+                    		onclick=" #{rich:element('cmdDesgloseImptos')}.disabled = true;" 
+							oncomplete="Richfaces.showModalPanel('pnlDesgloceImpuestos'); #{rich:element('cmdDesgloseImptos')}.disabled = false;" 
+                    		reRender="pnlDesgloceImpuestos,dtDesgloseImpuestos" 
+                    		limitToList="true" />
+					</h:panelGroup>	
+					
+					<h:outputText value="#{msg['retencion']}:" styleClass="Titulo" />
+					<h:panelGroup>
+						<h:inputText id="txtRetenciones" disabled="true" style="width:150px; text-align:right;"
+							value="#{provAction.retenciones}">
+			               	<f:convertNumber pattern="###,###,##0.00" /> 
+			            </h:inputText>
+							
+						<rich:message for="txtRetenciones" showSummary="false" showDetail="false"  style="color:red">
+					    	<f:facet name="errorMarker">
+								<h:graphicImage style="margin:0 5px;" 
+									value="#{msg['cancelar16.img']}" 
+									title="#{msg['mensaje.error.requerido']}" />
+					    	</f:facet>
+						</rich:message>
+					</h:panelGroup>	
+					
+					<h:outputText value="#{msg['total']}:" styleClass="Titulo" />
+					<h:panelGroup>
+						<h:inputText id="txtTotal" maxlength="15" style="width:150px; text-align:right;"
+							value="#{provAction.totalComprobacion}" 
+							required="#{!empty param[rich:clientId('cmdSalvarSinFactura')]}"
+						    requiredMessage="#{msg['navegacion.label.monto']} #{msg['mensaje.error.requerido']}"
+							onkeypress="return soloDecimales(event, this.value, 10, 4);">
+							<f:converter converterId="javax.faces.Double" />
+			               	<f:convertNumber pattern="###,###,##0.00" /> 
+							<a4j:support event="onblur" 
+								action="#{provAction.desglosaImpuestos}" 
+								reRender="groupSinFacturaConceptoDatos"
+								limitToList="true" />
+						</h:inputText>
+							
+						<rich:message for="txtTotal" showSummary="false" showDetail="false"  style="color:red">
+					    	<f:facet name="errorMarker">
+								<h:graphicImage style="margin:0 5px;" 
+									value="#{msg['cancelar16.img']}" 
+									title="#{msg['mensaje.error.requerido']}" />
+					    	</f:facet>
+						</rich:message>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['observaciones']}:" style="position:relative; top:-16px" styleClass="Titulo"/>
+					<h:inputTextarea id="txtObservaciones" row="2" style="width:644px; resize:none;"
+						value="#{provAction.observaciones}" />
+				</h:panelGrid>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

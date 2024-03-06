@@ -1,0 +1,132 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="#{msg['obras']} #{msg['almacenes']} - #{msg['modulo']}"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}" 
+				action="#{almObraAction.buscar}" 
+				oncomplete="buscar(#{almObraAction.operacion},'#{rich:clientId('pnlMensajes')}');"
+				render="dtResults, pnlMensajes" limitRender="true" />
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="obras.css" />
+		<h:outputScript library="scripts" name="obras_almacenes.js" />
+			
+		<div class="div_titulo" style="margin: 50px auto 0;">
+			<h:outputText value="#{msg['obra']} #{msg['almacenes']}" style="font-weight: bold; font-size: 28px; color:#525252;"/>
+		</div>
+		
+		<div class="div_pagina" style="margin: 0 auto;">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin:10px; display:block; width: 720px;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo" />
+				<h:selectOneMenu id="cmbTipoBusqueda" style="width: 216px"
+					value="#{almObraAction.busquedaCampo}">
+		            <f:selectItems value="#{almObraAction.busquedaOpciones}" />
+		        </h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText id="txtvalor" maxlength="50" style="width:210px" 
+					value="#{almObraAction.busquedaValor}" />
+				
+				<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" rendered="#{almObraAction.perfilAdministrativo}" />
+				<h:panelGroup rendered="#{almObraAction.perfilAdministrativo}">
+					<h:selectBooleanCheckbox id="txtObrasAdministrativas" 
+						value="#{almObraAction.busquedaAdministrativas}" />
+			        <h:outputLabel for="txtObrasAdministrativas" value="#{msg['obraAdministrativa']}" styleClass="Titulo" />
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<rich:dataTable id="dtResults" value="#{almObraAction.listObras}" var="var" style="margin:0 auto 20px;" 
+				cellpadding="0" cellspacing="0" rows="100" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column colspan="6" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['obras']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:80px" styleClass="Titulo" breakRowBefore="true">
+							<h:outputText value="#{msg['id']}" /> 
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['obra']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['cliente']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['contrato']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width:120px" styleClass="Titulo">
+							<h:outputText value="#{msg['tipo']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center; width: 20px;" styleClass="Titulo" />
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align: center; width: 80px;">
+					<h:outputText value="#{var.id}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : 'Descripcion'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left: 5px;"> 
+					<h:outputText value="#{var.nombre}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : 'Descripcion'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.nombreCliente}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : 'Descripcion'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.nombreContrato}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : 'Descripcion'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width:120px; padding-left: 5px;">
+					<h:outputText rendered="#{var.tipoObra == 1}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : 'Descripcion'}" value="Obra" />
+					<h:outputText rendered="#{var.tipoObra == 2}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : 'Descripcion'}" value="Proyecto" />
+					<h:outputText rendered="#{var.tipoObra == 3}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : 'Descripcion'}" value="Orden Trabajo" />
+					<h:outputText rendered="#{var.tipoObra == 4}" styleClass="#{var.estatus == 0 ? 'itemCancelado' : 'Descripcion'}" value="Administrativa" />
+				</rich:column>
+				
+				<rich:column style="text-align:center; width: 20px;" styleClass="#{var.estatus == 0 ? 'itemCancelado' : 'Descripcion'}">
+					<a4j:commandButton id="cmdVer" 
+						image="#{msg['detalles16.img']}" title="#{msg['ver']} #{msg['almacenes']}"
+						action="#{almObraAction.ver}" 
+						oncomplete="#{rich:component('pnlObrasAlmacenes')}.show();"
+						render="pnlObrasAlmacenes" limitRender="true">
+						<f:setPropertyActionListener value="#{var}" target="#{almObraAction.pojoObra}" for="cmdVer" />
+					</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller for="dtResults" page="#{almObraAction.busquedaPaginas}" renderIfSinglePage="false" 
+						align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modals/obras/obrasAlmacenes/pnlMensajes.xhtml" />
+		<ui:include src="/modals/obras/obrasAlmacenes/pnlObrasAlmacenes.xhtml" /> 
+		<ui:include src="/modals/obras/obrasAlmacenes/pnlObrasAlmacen.xhtml" /> 
+		<ui:include src="/modals/obras/obrasAlmacenes/pnlEliminar.xhtml" />  
+		<ui:include src="/modals/obras/obrasAlmacenes/pnlConfirmaAlmPrincipal.xhtml" />
+	</ui:define>
+</ui:composition>

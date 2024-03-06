@@ -1,0 +1,20 @@
+<xa-datasource enabled="true" jndi-name="java:/giroDS" pool-name="PGGiroXADS" use-java-context="true">
+                    <xa-datasource-property name="ServerName">
+condese510.ddns.net
+</xa-datasource-property>
+                    <xa-datasource-property name="PortNumber">
+9450
+</xa-datasource-property>
+                    <xa-datasource-property name="DatabaseName">
+giro
+</xa-datasource-property>
+                    <driver>postgresql</driver>
+                    <security>
+                        <user-name>apps</user-name>
+                        <password>apps</password>
+                    </security>
+                    <validation>
+                        <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker"/>
+                        <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter"/>
+                    </validation>
+</xa-datasource>

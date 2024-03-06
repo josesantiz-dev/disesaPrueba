@@ -1,0 +1,164 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlComprobarGto" autosized="true" >
+		<f:facet name="header">
+			<h:panelGroup>					 
+				<h:outputText style="margin-left:10px" value="#{msg['navegacion.label.comprobacion']}  #{comprobacionGastosAction.concepto}" styleClass="Titulo"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:panelGroup>
+			  <h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" id="btnCerrarComprobarGtos"/>
+			  <rich:componentControl for="pnlComprobarGto" attachTo="btnCerrarComprobarGtos" operation="hide" event="onclick"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		<a4j:form id="frmComprobarGto">
+			<a4j:region id="loadComprobarGto">
+				<div style = "display: block; width: 780px; height: 22px;margin-bottom:5px;">
+					<h:panelGrid columns="2" style="float:right; margin-right:5px;" >
+						<h:panelGroup style="vertical-align: middle; position:relative; ">
+							<a4j:commandButton id="cmdAgregar" style="cursor: pointer;" 
+								image="#{msg['agregar22.img']}" 
+								onclick="#{rich:element('cmdAgregar')}.disabled = true;" 
+								action="#{comprobacionGastosAction.agregar}"
+								oncomplete="Richfaces.showModalPanel('pnlNuevoEditarCompGto'); #{rich:element('cmdAgregar')}.disabled = false;"  
+								reRender="pnlNuevoEditarCompGto"/>
+							<h:outputLabel for="cmdAgregar" value="#{msg['agregar.e']}" style="cursor:pointer;" styleClass="Titulo"/>			 					
+						</h:panelGroup>
+						
+						<h:panelGroup style="vertical-align: middle; position:relative;">
+							<a4j:status for="loadComprobarGto">
+								<f:facet name="start"><h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;"/></f:facet>
+								<f:facet name="stop"><h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: middle; position:relative;"/></f:facet>
+							</a4j:status>
+						</h:panelGroup>
+					</h:panelGrid>
+				</div>
+									
+				<h:panelGrid columns="2" cellpadding="3" columnClasses="tygCompGtosCol1,tygCompGtosCol2" style = "display: block; position:relative;margin-bottom:15px; margin-top:5px; margin-left:10px;">					
+					<h:outputText value="#{msg['navegacion.label.fecha']}:" styleClass="Titulo"/>
+					<h:outputText value="#{comprobacionGastosAction.pojoGtosComp.fecha}" styleClass="Titulo">
+						 <f:convertDateTime pattern="dd, MMM yyyy" />
+					</h:outputText>
+					
+					<h:outputText value="#{msg['navegacion.label.operacion']}:" styleClass="Titulo"/>
+					<h:outputText value="#{comprobacionGastosAction.pojoGtosComp.operacion =='C' ? msg['navegacion.label.cheque'] : msg['navegacion.label.transfer3']}" styleClass="Titulo"/>
+					
+					<h:outputText value="#{msg['navegacion.label.concepto']}:" styleClass="Titulo"/>
+					<h:outputText value="#{comprobacionGastosAction.pojoGtosComp.concepto}" styleClass="Titulo"/>
+					
+					<h:outputText value="#{msg['navegacion.label.monto']}:" styleClass="Titulo" />
+					<h:outputText value="#{comprobacionGastosAction.pojoGtosComp.monto}" styleClass="Titulo" >
+						<f:convertNumber pattern="$###,###.00"  />
+					</h:outputText>
+				</h:panelGrid>
+
+				<rich:dataTable id="dtResultsComprobado" rows="10" cellpadding="0" cellspacing="0" width="780" border="0" var="comprobado" rowClasses="Row1, Row2"
+					value="#{comprobacionGastosAction.listComprobadoGto}" >
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column colspan="7" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['navegacion.label.comprobado']}"/>
+							</rich:column>
+							
+							<rich:column breakBefore="true" style="text-align:center;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['navegacion.label.concepto']}"/>
+							</rich:column>
+							
+							<rich:column style="text-align:center; margin-left:10px;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['proveedor']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; margin-left:10px;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['folioDocumento']}" />
+							</rich:column> 
+							
+							<rich:column style="text-align:center; margin-left:10px;" styleClass="tygCompGtosTit">
+								<h:outputText value="#{msg['navegacion.label.monto']}" />
+							</rich:column> 	
+							
+							<rich:column colspan="7" style="text-align:center; margin-left:10px;" styleClass="tygCompGtosTit" />
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column width="150" style="text-align:center;" styleClass="tygCompGtosDesc">
+						<h:outputText  value="#{comprobado.conceptoId.descripcion}">
+							<f:convertDateTime pattern="dd, MMM yyyy" />
+						</h:outputText>					  
+					</rich:column>
+					
+					<rich:column width="320" style="text-align:center;" styleClass="tygCompGtosDesc">
+						<h:outputText  value="#{comprobado.proveedorId.nombre}" />
+					</rich:column>
+					
+					<rich:column  width="130" style="text-align:center;"  styleClass="tygCompGtosDesc">
+						<h:outputText value="#{comprobado.referencia}"/>
+					</rich:column>
+					
+					<rich:column  width="140" style="text-align:center;"  styleClass="tygCompGtosDesc">
+						<h:outputText value="#{(comprobado.subtotal + comprobado.totalImpuestos)- comprobado.totalRetenciones}">
+							<f:convertNumber pattern="$###,###.00" /> 
+						</h:outputText>
+					</rich:column>
+					             
+					<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;" styleClass="tygCompGtosDesc">
+						<a4j:commandButton image="#{msg['detalles16.img']}" 
+							rendered="#{comprobado.idXml > 0}"
+							action="#{comprobacionGastosAction.descargarArchivo}"
+							oncomplete="descargar(#{comprobacionGastosAction.encontroMismoGrupo}, '#{msg['urlapp']}', 'pnlMsgGralesComprobacionGastos');" 
+							reRender="pnlMsgGralesComprobacionGastos">
+							<f:setPropertyActionListener target="#{comprobacionGastosAction.pojoComprobadoGto}" value="#{comprobado}" />
+							<rich:toolTip showDelay="300"><h:outputText value="#{msg['descargar.e']}" styleClass="Descripcion"/></rich:toolTip>
+						</a4j:commandButton>		                  		             		
+					</rich:column>
+					
+					<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;" styleClass="tygCompGtosDesc">
+						<a4j:commandButton style="cursor:pointer;" 
+							image="#{msg['editar22.img']}" 
+							oncomplete="Richfaces.showModalPanel('pnlNuevoEditarCompGto')" 
+							reRender="pnlNuevoEditarCompGto,dtDesgloseImpuestos,txtTotalImpto,txtSubtotal,txtObservaciones">
+							<f:setPropertyActionListener target="#{comprobacionGastosAction.pojoComprobadoGto}" value="#{comprobado}" />
+							<rich:toolTip showDelay="300"><h:outputText value="#{msg['editar.e']}" styleClass="Descripcion"/></rich:toolTip>
+						</a4j:commandButton>
+					</rich:column>
+					
+					<rich:column width="20" style="text-align:center; font-weight: bold; font-size:12px;" styleClass="tygCompGtosDesc">
+						<a4j:commandButton style="cursor:pointer;"
+							image="#{msg['eliminar22.img']}" 
+							oncomplete="Richfaces.showModalPanel('pnlEliminarcomprobado')" 
+							reRender="pnlEliminarcomprobado,dtResultsComprobado">
+							<f:setPropertyActionListener target="#{comprobacionGastosAction.pojoComprobadoGto}" value="#{comprobado}" />
+							<rich:toolTip showDelay="300"><h:outputText value="#{msg['eliminar.e']}" styleClass="Descripcion"/></rich:toolTip>
+						</a4j:commandButton>
+					</rich:column>
+					
+					<f:facet name="footer" >
+						<rich:columnGroup>
+							<rich:column width="150" colspan="1" style="text-align:center;" />
+							<rich:column width="320" colspan="1" style="text-align:center;" />
+							<rich:column width="130" colspan="1" style="text-align:center;" >
+								<h:outputText value="#{msg['navegacion.label.totalComprobado']}"  />
+							</rich:column>
+							<rich:column width="140" colspan="1" style="text-align:center;" >
+								<h:outputText value="#{comprobacionGastosAction.totalFacturasReportadas}"  > 
+								<f:convertNumber pattern="$###,###.00"  />
+								</h:outputText>
+							</rich:column>
+							<rich:column width="40" colspan="3" />
+							<rich:column breakBefore="true" colspan="7">
+								<rich:datascroller align="center" for="dtResultsComprobado" maxPages="10" ajaxSingle="true" page="#{comprobacionGastosAction.numPagina3}" id="dScroll3" styleClass="tygCompGtosTit"/>
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+				</rich:dataTable>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

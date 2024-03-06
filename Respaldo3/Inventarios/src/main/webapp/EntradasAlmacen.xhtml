@@ -1,0 +1,203 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+    
+    <ui:define name="title">
+		<h:outputText value="Entradas de Almacen"/>
+	</ui:define>
+	
+	<ui:define name="menuFrag">
+		<rich:toolbarGroup id="tbgBuscar" location="right">
+			<a4j:commandButton id="cmdBuscar" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+				action="#{entradasAction.buscar}" 
+				oncomplete="buscar(#{entradasAction.band},'#{rich:clientId('pnlMensajes')}');"
+				render="dtEntradas,pnlMensajes" limitRender="true" />
+		</rich:toolbarGroup>
+		
+		<rich:toolbarGroup id="tbgNuevo" location="right">
+			<a4j:commandButton id="cmdNuevo" styleClass="Titulo" style="cursor:pointer;"
+				image="#{msg['nuevo22.img']}" title="#{msg['nueva']} #{msg['entrada']}"
+				action="#{entradasAction.validaNuevaEntrada}" 
+				oncomplete="validaNuevo(#{entradasAction.band},'#{rich:clientId('pnlNuevaEntrada')}','#{rich:clientId('pnlMensajes')}');"
+				render="pnlNuevaEntrada,pnlMensajes" limitRender="true" />
+		</rich:toolbarGroup>
+	</ui:define>
+	
+	<ui:define name="body">
+		<h:outputStylesheet library="css" name="inventarios.css" />
+		<h:outputScript library="scripts/movimientos" name="entradas.js" />
+		
+		<div class="div_titulo" style="margin:50px auto 0;">
+			<h:outputText value="#{msg['entradas']} #{msg['almacenBodega']}" style="font-weight: bold; font-size: 28px; color:#525252;" />
+		</div>
+		
+		<rich:hotKey id="richHotKeyEntradas" enabledInInput="true" preventDefault="true" 
+			selector="#txtValorBusqueda" key="return" 
+			onkeydown="#{rich:element('frmPrincipal:cmdBuscar')}.click()" />
+		
+		<h:panelGroup style="margin:0 auto; padding:0; text-align:left; width:100%;">
+			<h:panelGrid columns="2" columnClasses="colPnlBusqIzq" style="margin:10px auto 0; display:block; width:100%;">
+				<h:outputText value="#{msg['almacenBodega']}:" styleClass="Titulo" />
+				<h:selectOneMenu value="#{entradasAction.idAlmacenTrabajo}" style="width:316px;">
+					<f:selectItem itemLabel="#{msg['seleccione']}" />
+					<f:selectItems value="#{entradasAction.listAlmacenesTrabajoItems}" />
+			    	<a4j:ajax event="change" 
+			    		listener="#{entradasAction.actualizarResultados}" 
+			    		render="dtEntradas" limitRender="true" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['busqueda']}:" styleClass="Titulo" />
+				<h:panelGroup id="groupValorBusqueda" style="width:100%;">
+					<h:inputText id="txtValorBusqueda" maxlength="50" style="width:316px;"
+						rendered="#{entradasAction.campoBusqueda ne 'fecha'}"
+						value="#{entradasAction.valorBusqueda}" />
+					
+					<rich:calendar id="txtFechaBusqueda" enableManualInput="false" datePattern="dd/MMM/yyyy"
+						rendered="#{entradasAction.campoBusqueda eq 'fecha'}"
+		            	value="#{entradasAction.fechaBusqueda}" />
+					
+					<a4j:commandButton id="cmdBusquedaAvanzada" 
+						image="#{msg['toggle.img']}" title="#{msg['busqueda']} #{msg['avanzada']}"
+						onclick="toggleAvanzado(this.id, 'gBusquedaAvanzada', 'cmbTipoBusqueda', 'groupValorBusqueda');" />
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<h:panelGroup id="gBusquedaAvanzada" style="width:100%; margin:5px auto 0; padding:0; display:none;">
+				<h:panelGrid columns="2" columnClasses="colPnlBusqIzq" style="margin:10px auto 0; display:block; width:100%;">
+					<h:outputText value="#{msg['tipo']}:" styleClass="Titulo" />
+					<h:selectOneMenu id="cmbTipoBusqueda" value="#{entradasAction.campoBusqueda}" style="width:316px; margin:auto 5px auto 0;">
+						<f:selectItems value="#{entradasAction.listaCampoBusqueda}" />
+						<a4j:ajax event="change" execute="@this" 
+							render="groupValorBusqueda" limitRender="true" />
+					</h:selectOneMenu>
+				</h:panelGrid>
+			</h:panelGroup>
+
+			<rich:dataTable id="dtEntradas" value="#{entradasAction.listaMovimientosGrid}" var="var" rows="100"
+				cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina" style="margin:10px auto 20px; width: 100%;">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:70px;">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+							<h:outputText value="#{msg['fecha']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:100px;">
+							<h:outputText value="#{msg['tipo']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+							<h:outputText value="#{msg['referencia']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+							<h:outputText value="#{msg['factura']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+							<h:outputText value="#{msg['almacen']}" />
+						</rich:column>
+						
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+							<h:outputText value="#{msg['recibe']}" />
+						</rich:column>
+
+						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;" colspan="#{entradasAction.debugging ? 3 : 2}" />
+					</rich:columnGroup>
+				</f:facet>
+
+				<rich:column style="text-align:center;">
+					<h:outputText value="#{var.id}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}" />
+				</rich:column>
+				
+				<rich:column style="text-align:center;">
+					<h:outputText value="#{var.fecha}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}">
+						<f:convertDateTime type="date" pattern="dd MMM yyyy"/>
+					</h:outputText>
+				</rich:column>
+				
+				<rich:column style="text-align:left;">
+					<h:outputText value="Orden de Compra" rendered="#{var.tipoEntrada == 'OC'}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+					<h:outputText value="Traspaso" rendered="#{var.tipoEntrada == 'TR' || var.tipoEntrada == 'TX'}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+					<h:outputText value="Devolucion" rendered="#{var.tipoEntrada == 'DE'}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+					<h:outputText value="Sobrante" rendered="#{var.tipoEntrada == 'SO'}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:center;">
+					<h:outputText value="#{var.folioOrdenCompra}" title="#{msg['ordenCompra']}" rendered="#{var.tipoEntrada == 'OC'}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+					<h:outputText value="#{var.idTraspaso}" title="#{msg['traspaso']}" rendered="#{var.tipoEntrada == 'TR' || var.tipoEntrada == 'TX'}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+					<h:outputText value="#{var.idTraspaso}" title="#{msg['devolucion']}" rendered="#{var.tipoEntrada == 'DE'}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+					<h:outputText value="#{var.idObra}" title="#{msg['obra']}" rendered="#{var.tipoEntrada == 'SO'}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:left;">
+					<h:outputText value="#{var.folioFactura}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:left;">
+					<h:outputText value="#{var.idAlmacen.nombre}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+				</rich:column>
+				
+				<rich:column style="text-align:left;">
+					<h:outputText value="#{var.recibeNombre}" styleClass="#{var.estatus == 0 ? '' : 'itemCancelado'}"/>
+				</rich:column>
+						
+				<rich:column style="text-align:center; width:20px;" rendered="#{entradasAction.debugging}">
+					<a4j:commandButton id="btnEvento" 
+						image="#{msg['devolucion16.img']}" title="#{msg['evento']}"
+						action="#{entradasAction.lanzarEvento}" 
+						oncomplete="reporte(#{entradasAction.operacionCompleta}, '#{rich:clientId('pnlMensajes')}')"
+						render="pnlMensajes" limitRender="true">
+						<f:setPropertyActionListener target="#{entradasAction.idMovimiento}" value="#{var.id}" />
+					</a4j:commandButton>
+				</rich:column>
+						
+				<rich:column style="text-align:center; width:20px;">
+					<a4j:commandButton id="btnReporte"
+						image="#{msg['imprimir16.img']}" title="#{msg['imprimir.e']}"
+						action="#{entradasAction.reporte}" 
+						oncomplete="reporte(#{entradasAction.operacionCompleta}, '#{rich:clientId('pnlMensajes')}')"
+						render="pnlMensajes" limitRender="true">
+						<f:setPropertyActionListener target="#{entradasAction.idMovimiento}" value="#{var.id}" />
+					</a4j:commandButton>
+				</rich:column>
+
+				<rich:column style="text-align:center; width:20px;" >
+					<a4j:commandButton id="cmdEditar" rendered="#{var.estatus == 0}"
+						image="#{msg['consultarMovimiento22.img']}" title="#{msg['editar']}"
+						action="#{entradasAction.editar}" 
+						oncomplete="#{rich:component('pnlEntrada')}.show()"
+						render="pnlEntrada,cboTipoEntrada" limitRender="true">
+						<f:setPropertyActionListener target="#{entradasAction.idMovimiento}" value="#{var.id}" />
+					</a4j:commandButton>
+				</rich:column>
+				
+				<f:facet name="footer">
+					<rich:dataScroller for="dtEntradas" page="#{entradasAction.numPagina}" renderIfSinglePage="false" 
+						align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</h:panelGroup>
+	</ui:define>
+	
+	<ui:define name="modals">
+		<ui:include src="/modal/movimientos_almacen/entradas/pnlNuevaEntrada.xhtml"/>
+		<ui:include src="/modal/movimientos_almacen/entradas/pnlEntrada.xhtml"/>
+		<ui:include src="/modal/movimientos_almacen/entradas/pnlMensajes.xhtml" />
+		<ui:include src="/modal/movimientos_almacen/entradas/pnlEliminar.xhtml"/>
+		<ui:include src="/modal/movimientos_almacen/entradas/pnlAvisoCantidad.xhtml"/>
+		<ui:include src="/modal/movimientos_almacen/entradas/pnlBusquedaOrdenCompra.xhtml"/>
+		<ui:include src="/modal/movimientos_almacen/entradas/pnlBusquedaTraspasos.xhtml"/>
+		<ui:include src="/modal/movimientos_almacen/entradas/pnlBusquedaObras.xhtml" />
+		<ui:include src="/modal/movimientos_almacen/entradas/pnlBusquedaProductos.xhtml" />
+	</ui:define>
+</ui:composition>

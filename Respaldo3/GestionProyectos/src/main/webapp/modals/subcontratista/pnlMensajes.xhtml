@@ -1,0 +1,25 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlMensajes" autosized="true"
+		onshow="document.getElementById('#{rich:clientId('btnMensajesOk')}').focus();"
+		header="#{msg['navegacion.label.atencion']}">
+		
+		<h:panelGrid columns="1" style="text-align:center; min-width:300px;" cellspacing="0" cellpadding="0">
+			<h:outputText styleClass="Descripcion" rendered="#{subcontratistaAction.tipoMensaje == -1}" value="#{subcontratistaAction.mensaje}" escape="false" />
+			<h:outputText styleClass="Descripcion" rendered="#{subcontratistaAction.tipoMensaje ==  0}" value="#{msg['mensaje.info.infoReg']}" />
+			<h:outputText styleClass="Descripcion" rendered="#{subcontratistaAction.tipoMensaje ==  1}" value="#{msg['mensaje.error.inesperado']}" />
+			<h:outputText styleClass="Descripcion" rendered="#{subcontratistaAction.tipoMensaje ==  2}" value="#{msg['mensaje.info.busquedaVacia']}" />
+			<h:outputText styleClass="Descripcion" rendered="#{subcontratistaAction.tipoMensaje ==  3}" value="#{msg['mensaje.error.requerido']}" />
+			
+			<a4j:commandButton id="btnMensajesOk" style="margin:10px auto 0; min-width:100px;"
+				value="#{msg['navegacion.label.aceptar']}" 
+				onclick="#{rich:component('pnlMensajes')}.hide()" />
+		</h:panelGrid>
+	</rich:popupPanel>
+</ui:composition>

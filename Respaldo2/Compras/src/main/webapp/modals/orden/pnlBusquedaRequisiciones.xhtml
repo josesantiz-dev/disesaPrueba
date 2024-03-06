@@ -1,0 +1,114 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlBusquedaRequisiciones" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1044px;" top="20"
+		onshow="document.getElementById('#{rich:clientId('txtValorBusquedaRequisiciones')}').focus();"
+		header="#{msg['buscar.e']} #{msg['requisicion']}">
+
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlBusquedaRequisiciones')}.hide()" />
+		</f:facet>
+		
+		<rich:hotKey id="richHotKeyBusquedaRequisiciones" enabledInInput="true" preventDefault="true" 
+			selector="#txtValorBusquedaRequisiciones" key="return"
+			onkeydown="#{rich:element('frmPrincipal:cmdBuscarRequisiciones')}.click()" />
+		
+		<a4j:region id="regBusquedaRequisiciones">
+		<h:panelGroup style="width:100%; margin:0 auto; padding:0;">
+			<h:panelGrid columns="2" columnClasses="colLayoutTop,colLayoutBottom" style="width:100%; margin:0 auto; padding:0; min-height:22px; text-align:left;">
+				<h:panelGroup style="width:100%;">
+					<h:panelGrid columns="3" cellpadding="0" cellspacing="0">
+						<h:inputText id="txtValorBusquedaRequisiciones" maxlength="50" style="width:210px;"
+							value="#{ordenesAction.valorBusquedaRequisiciones}" title="#{msg['busqueda']}">
+							<rich:placeholder value="#{msg['busqueda']}" />
+						</h:inputText>
+						
+						<a4j:commandButton id="cmdBuscarRequisiciones" style="margin:0 5px; vertical-align:middle; cursor:pointer;" 
+							image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}" 
+							action="#{ordenesAction.buscarRequisiciones}" execute="@region"
+							oncomplete="buscar(#{ordenesAction.operacion}, '#{rich:clientId('pnlMensajes')}')" 
+							render="dtBusquedaRequisiciones,dScrollRequisicion,pnlMensajes" limitRender="true" />
+								
+						<a4j:commandButton id="cmdBusquedaRequisicionAvanzada" 
+							image="#{msg['toggle.img']}" title="#{msg['busqueda']} #{msg['avanzada']}"
+							onclick="toggleAvanzado(this.id, 'gBusquedaRequisicionesAvanzada', 'cmbReqTipoBusquedaRequisiciones', 'txtValorBusquedaRequisiciones');" />
+					</h:panelGrid>
+				</h:panelGroup>
+				
+				<h:panelGroup style="width:100%;">
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<h:panelGroup id="gBusquedaRequisicionesAvanzada" style="display:none; width:100%; margin:5px auto 0; padding:0;">
+				<h:panelGrid columns="2" style="margin:0; padding:0;" cellpadding="0" cellspacing="5">
+					<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+					<h:selectOneMenu id="cmbReqTipoBusquedaRequisiciones" style="width:216px"
+						value="#{ordenesAction.campoBusquedaRequisiciones}">
+			            <f:selectItems value="#{ordenesAction.tiposBusquedaRequisiciones}" />
+			        </h:selectOneMenu>
+				</h:panelGrid>
+			</h:panelGroup> 
+			
+			<div style="width:100%; margin:5px auto 0; padding:0; height:auto; max-height:500px; overflow-y:auto;">
+				<rich:dataTable id="dtBusquedaRequisiciones" value="#{ordenesAction.listRequisiciones}" var="var" rows="50" style="margin:0 auto; width:100%;"
+					cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:70px;">
+								<h:outputText value="#{msg['id']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+								<h:outputText value="#{msg['fecha']}" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px;">
+								<h:outputText value="#{msg['comprador']}" />
+							</rich:column>
+	
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:20px;" />
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column styleClass="Descripcion" style="text-align:center;">
+						<h:outputText value="#{var.id}" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:center;">
+						<h:outputText value="#{var.fecha}"><f:convertDateTime type="date" pattern="dd/MMM/yyyy" /></h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:left;">
+						<h:outputText value="#{var.nombreSolicita}" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+						<h:outputText rendered="#{var.estatus == 2}" value="#{msg['estatus.suministrada']}" />
+						<h:outputText rendered="#{var.estatus == 1}" value="#{msg['estatus.cancelada']}" />
+						<h:outputText rendered="#{var.estatus == 0 ? (var.cerrada == 1) : false}" value="#{msg['estatus.cerrada']}" />
+					   <a4j:commandButton id="cmdAddRequisicion" rendered="#{var.estatus == 0 ? (var.cerrada == 0) : false}" 
+					   		image="#{msg['agregar16.img']}" title="#{msg['seleccionar']}" 
+							action="#{ordenesAction.seleccionarRequisicion}"
+							oncomplete="seleccionar(#{ordenesAction.operacion}, '#{rich:clientId('pnlBusquedaRequisiciones')}', '#{rich:clientId('pnlMensajes')}');" 
+							render="pnlMensajes,pnlProveedorDatos,pnlRequisicionDatos,pnlCotizacionDatos,regListDetalles,txtProveedor,txtContacto,txtTiempoEntrega,txtLugarEntrega,cmbMonedas,panelOrdenTotales" limitRender="true">
+							<f:setPropertyActionListener target="#{ordenesAction.pojoRequisicion}" value="#{var}" />
+					   </a4j:commandButton>
+					</rich:column>
+
+					<f:facet name="footer">
+						<rich:dataScroller for="dtBusquedaRequisiciones" page="#{ordenesAction.paginacionRequisiciones}" renderIfSinglePage="false" 
+							align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</div>
+		</h:panelGroup>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

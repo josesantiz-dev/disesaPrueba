@@ -1,0 +1,529 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlTransaccionData" autosized="true" domElementAttachment="form" header="#{transDataAction.pojoTransaccionData.id == null ? msg['nueva'] : ''} #{msg['transaccionData']}">
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" onclick="#{rich:component('pnlTransaccionData')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+		
+		<div style="display: block; padding:0 0 10px; min-width:400px; height: 22px; text-align: left; background-color: none;">
+			<h:panelGroup id="botoneraTransaccion" style="display: block; width: 100%; height: 22px; margin-bottom: 1em;">
+				<h:panelGroup id="grupoTransaccionBotonesDerechos" style="width: 100%; vertical-align: middle; position:relative; ">
+					<a4j:commandButton id="cmdSalvar" 
+						style="float:right; margin-left: 5px; vertical-align: middle; position:relative;"
+						image="#{msg['salvar22.img']}" 
+						action="#{transDataAction.guardar}" 
+						oncomplete="salvar(#{transDataAction.operacion}, '#{rich:clientId('pnlTransaccionData')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErrores')});"
+						render="dtResults, msgErrores, pnlMensajes">
+						<rich:tooltip id="ttSalvar" showDelay="300" value="#{msg['salvar.e']}" for="cmdSalvar" />
+					</a4j:commandButton>
+				</h:panelGroup>
+			</h:panelGroup>
+		</div>
+		
+		<rich:messages id="msgErrores" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+			<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+		</rich:messages>
+		
+		<div style="display: block; margin: 1px auto; padding: 0; text-align: left; background-color: none;">
+			<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+				<h:outputText value="#{msg['transaccion']}:" styleClass="Titulo" />
+				<h:panelGroup id="pnlTransaccionDatos">
+					<h:panelGrid columns="2">
+						<h:outputText id="txtTransaccion" value="#{transDataAction.codigoTransaccion}" style="text-align:left; display:block;" />
+						<h:panelGroup>
+							<a4j:commandLink id="cmdBusquedaTransacciones" styleClass="linkColor" 
+								action="#{transDataAction.nuevaBusquedaTransacciones}" 
+								value="#{transDataAction.pojoTransaccionData.codigoTransaccion == null ? msg['seleccionar'] : msg['cambiar'] }"
+								oncomplete="#{rich:component('pnlBusquedaTransacciones')}.show()"
+								render="pnlBusquedaTransacciones, pnlBusquedaTransaccionesPrincipal, dtBusquedaTransacciones" />
+								
+							<h:inputText id="txtTransaccionHidden" style="text-align:left;  display:none;"
+								value="#{transDataAction.codigoTransaccion}" 
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['sucursal']} #{msg['mensaje.error.requerido']}" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+				
+				<h:outputText value="#{msg['importe']}:" styleClass="Titulo" />
+				<h:inputText id="txtImporte" styleClass="Titulo" style="text-align: right; width: 60%;"
+					value="#{transDataAction.pojoTransaccionData.importe}"
+					required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+					requiredMessage="#{msg['importe']} #{msg['mensaje.error.requerido']}"
+					onkeypress=" return soloDecimales(event, document.getElementById('frmPrincipal:txtImporte').value); ">
+					<f:convertNumber pattern="###,###,##0.00" />
+				</h:inputText>
+				
+				<h:outputText value="#{msg['sucursal']}:" styleClass="Titulo" />
+				<h:panelGroup id="pnlSucursalDatos">
+					<h:panelGrid columns="2">
+						<h:outputText id="txtSucursal" value="#{transDataAction.pojoTransaccionData.sucursal}" style="text-align:left; display:block;" />
+						<h:panelGroup>
+							<a4j:commandLink id="cmdBusquedaSucursales" styleClass="linkColor" 
+								action="#{transDataAction.nuevaBusquedaSucursales}" 
+								value="#{transDataAction.pojoTransaccionData.idSucursal == null ? msg['seleccionar'] : msg['cambiar'] }"
+								oncomplete="#{rich:component('pnlBusquedaSucursales')}.show()"
+								render="pnlBusquedaSucursales, pnlBusquedaSucursalesPrincipal, dtBusquedaSucursales" />
+								
+							<h:inputText id="txtSucursalHidden" style="text-align:left;  display:none;"
+								value="#{transDataAction.pojoTransaccionData.sucursal}"
+								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+								requiredMessage="#{msg['sucursal']} #{msg['mensaje.error.requerido']}" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<fieldset>
+				<legend><h:outputText value="#{msg['valoresLlaves']}:" styleClass="Titulo" /></legend>
+				
+				<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
+					<h:outputText value="#{msg['valorLlave']}:" styleClass="Titulo" />
+					<h:panelGroup>
+						<h:inputText id="txtValorLlave" styleClass="Titulo" style="text-align: right; width: 60%;"
+							value="#{transDataAction.valorLlave}"
+							required="#{!empty param[rich:clientId('cmdAgregarValorLlave')]}" 
+							requiredMessage="#{msg['valorLlave']} #{msg['mensaje.error.requerido']}" />
+						
+						<a4j:commandButton id="cmdAgregarValorLlave" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['agregar22.img']}" 
+							action="#{transDataAction.agregarValorLlave}"
+							render="groupValoresLlaves">
+							<rich:tooltip id="ttAgregarValorLlave" showDelay="300" value="#{msg['salvar.e']}" for="cmdAgregarValorLlave" />
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+				
+				<!--h:panelGrid id="groupValoresLlaves" columns="4" columnClasses="colTitulo, colDato">
+					<h:outputText value="#{msg['valorLlave']}1:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave1 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave1 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave1 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave1 != ''}">
+						<h:outputText id="txtValorLlave1" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave1}" />
+						<a4j:commandButton id="cmdBorrarValorLlave1" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="1" />
+							<rich:tooltip id="ttBorrarValorLlave1" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave1" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}2:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave2 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave2 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave2 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave2 != ''}">
+						<h:outputText id="txtValorLlave2" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave2}" />
+						<a4j:commandButton id="cmdBorrarValorLlave2" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="2" />
+							<rich:tooltip id="ttBorrarValorLlave2" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave2" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}3:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave3 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave3 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave3 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave3 != ''}">
+						<h:outputText id="txtValorLlave3" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave3}" />
+						<a4j:commandButton id="cmdBorrarValorLlave3" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="3" />
+							<rich:tooltip id="ttBorrarValorLlave3" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave3" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}4:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave4 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave4 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave4 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave4 != ''}">
+						<h:outputText id="txtValorLlave4" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave4}" />
+						<a4j:commandButton id="cmdBorrarValorLlave4" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="4" />
+							<rich:tooltip id="ttBorrarValorLlave4" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave4" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}5:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave5 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave5 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave5 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave5 != ''}">
+						<h:outputText id="txtValorLlave5" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave5}" />
+						<a4j:commandButton id="cmdBorrarValorLlave5" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="5" />
+							<rich:tooltip id="ttBorrarValorLlave5" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave5" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}6:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave6 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave6 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave6 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave6 != ''}">
+						<h:outputText id="txtValorLlave6" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave6}" />
+						<a4j:commandButton id="cmdBorrarValorLlave6" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="6" />
+							<rich:tooltip id="ttBorrarValorLlave6" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave6" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}7:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave7 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave7 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave7 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave7 != ''}">
+						<h:outputText id="txtValorLlave7" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave7}" />
+						<a4j:commandButton id="cmdBorrarValorLlave7" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="7" />
+							<rich:tooltip id="ttBorrarValorLlave7" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave7" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}8:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave8 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave8 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave8 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave8 != ''}">
+						<h:outputText id="txtValorLlave8" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave8}" />
+						<a4j:commandButton id="cmdBorrarValorLlave8" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="8" />
+							<rich:tooltip id="ttBorrarValorLlave8" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave8" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}9:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave9 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave9 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave9 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave9 != ''}">
+						<h:outputText id="txtValorLlave9" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave9}" />
+						<a4j:commandButton id="cmdBorrarValorLlave9" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="9" />
+							<rich:tooltip id="ttBorrarValorLlave9" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave9" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}10:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave10 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave10 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave10 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave10 != ''}">
+						<h:outputText id="txtValorLlave10" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave10}" />
+						<a4j:commandButton id="cmdBorrarValorLlave10" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="10" />
+							<rich:tooltip id="ttBorrarValorLlave10" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave10" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}11:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave11 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave11 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave11 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave11 != ''}">
+						<h:outputText id="txtValorLlave11" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave11}" />
+						<a4j:commandButton id="cmdBorrarValorLlave11" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="11" />
+							<rich:tooltip id="ttBorrarValorLlave11" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave11" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}12:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave12 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave12 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave12 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave12 != ''}">
+						<h:outputText id="txtValorLlave12" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave12}" />
+						<a4j:commandButton id="cmdBorrarValorLlave12" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="12" />
+							<rich:tooltip id="ttBorrarValorLlave12" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave12" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}13:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave13 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave13 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave13 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave13 != ''}">
+						<h:outputText id="txtValorLlave13" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave13}" />
+						<a4j:commandButton id="cmdBorrarValorLlave13" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="13" />
+							<rich:tooltip id="ttBorrarValorLlave13" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave13" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}14:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave14 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave14 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave14 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave14 != ''}">
+						<h:outputText id="txtValorLlave14" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave14}" />
+						<a4j:commandButton id="cmdBorrarValorLlave14" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="14" />
+							<rich:tooltip id="ttBorrarValorLlave14" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave14" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}15:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave15 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave15 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave15 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave15 != ''}">
+						<h:outputText id="txtValorLlave15" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave15}" />
+						<a4j:commandButton id="cmdBorrarValorLlave15" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="15" />
+							<rich:tooltip id="ttBorrarValorLlave15" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave15" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}16:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave16 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave16 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave16 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave16 != ''}">
+						<h:outputText id="txtValorLlave16" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave16}" />
+						<a4j:commandButton id="cmdBorrarValorLlave16" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="16" />
+							<rich:tooltip id="ttBorrarValorLlave16" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave16" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}17:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave17 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave17 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave17 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave17 != ''}">
+						<h:outputText id="txtValorLlave17" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave17}" />
+						<a4j:commandButton id="cmdBorrarValorLlave17" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="17" />
+							<rich:tooltip id="ttBorrarValorLlave17" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave17" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}18:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave18 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave18 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave18 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave18 != ''}">
+						<h:outputText id="txtValorLlave18" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave18}" />
+						<a4j:commandButton id="cmdBorrarValorLlave18" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="18" />
+							<rich:tooltip id="ttBorrarValorLlave18" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave18" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}19:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave19 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave19 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave19 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave19 != ''}">
+						<h:outputText id="txtValorLlave19" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave19}" />
+						<a4j:commandButton id="cmdBorrarValorLlave19" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="19" />
+							<rich:tooltip id="ttBorrarValorLlave19" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave19" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}20:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave20 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave20 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave20 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave20 != ''}">
+						<h:outputText id="txtValorLlave20" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave20}" />
+						<a4j:commandButton id="cmdBorrarValorLlave20" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="20" />
+							<rich:tooltip id="ttBorrarValorLlave20" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave20" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}21:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave21 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave21 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave21 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave21 != ''}">
+						<h:outputText id="txtValorLlave21" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave21}" />
+						<a4j:commandButton id="cmdBorrarValorLlave21" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="21" />
+							<rich:tooltip id="ttBorrarValorLlave21" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave21" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}22:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave22 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave22 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave22 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave22 != ''}">
+						<h:outputText id="txtValorLlave22" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave22}" />
+						<a4j:commandButton id="cmdBorrarValorLlave22" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="22" />
+							<rich:tooltip id="ttBorrarValorLlave22" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave22" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}23:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave23 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave23 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave23 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave23 != ''}">
+						<h:outputText id="txtValorLlave23" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave23}" />
+						<a4j:commandButton id="cmdBorrarValorLlave23" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="23" />
+							<rich:tooltip id="ttBorrarValorLlave23" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave23" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}24:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave24 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave24 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave24 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave24 != ''}">
+						<h:outputText id="txtValorLlave24" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave24}" />
+						<a4j:commandButton id="cmdBorrarValorLlave24" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="24" />
+							<rich:tooltip id="ttBorrarValorLlave24" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave24" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}25:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave25 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave25 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave25 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave25 != ''}">
+						<h:outputText id="txtValorLlave25" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave25}" />
+						<a4j:commandButton id="cmdBorrarValorLlave25" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="25" />
+							<rich:tooltip id="ttBorrarValorLlave25" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave25" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}26:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave26 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave26 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave26 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave26 != ''}">
+						<h:outputText id="txtValorLlave26" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave26}" />
+						<a4j:commandButton id="cmdBorrarValorLlave26" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="26" />
+							<rich:tooltip id="ttBorrarValorLlave26" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave26" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}27:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave27 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave27 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave27 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave27 != ''}">
+						<h:outputText id="txtValorLlave27" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave27}" />
+						<a4j:commandButton id="cmdBorrarValorLlave27" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="27" />
+							<rich:tooltip id="ttBorrarValorLlave27" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave27" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}28:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave28 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave28 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave28 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave28 != ''}">
+						<h:outputText id="txtValorLlave28" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave28}" />
+						<a4j:commandButton id="cmdBorrarValorLlave28" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="28" />
+							<rich:tooltip id="ttBorrarValorLlave28" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave28" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}29:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave29 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave29 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave29 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave29 != ''}">
+						<h:outputText id="txtValorLlave29" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave29}" />
+						<a4j:commandButton id="cmdBorrarValorLlave29" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="29" />
+							<rich:tooltip id="ttBorrarValorLlave29" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave29" />
+						</a4j:commandButton>
+					</h:panelGroup>
+					
+					<h:outputText value="#{msg['valorLlave']}30:" styleClass="Titulo" rendered="#{transDataAction.pojoTransaccionData.valorLlave30 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave30 != ''}" />
+					<h:panelGroup rendered="#{transDataAction.pojoTransaccionData.valorLlave30 != null &amp;&amp; transDataAction.pojoTransaccionData.valorLlave30 != ''}">
+						<h:outputText id="txtValorLlave30" styleClass="Titulo" 
+							value="#{transDataAction.pojoTransaccionData.valorLlave30}" />
+						<a4j:commandButton id="cmdBorrarValorLlave30" 
+							style="margin-left: 10px; vertical-align: middle;"
+							image="#{msg['eliminar16.img']}" 
+							action="#{transDataAction.borrarValorLlave}"
+							render="groupValoresLlaves">
+							<f:param name="borrarValorLlave" value="30" />
+							<rich:tooltip id="ttBorrarValorLlave30" showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarValorLlave30" />
+						</a4j:commandButton>
+					</h:panelGroup>
+				</h:panelGrid-->
+			</fieldset>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

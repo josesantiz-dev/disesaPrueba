@@ -1,0 +1,82 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlNuevoEditarArea" autosized="true" domElementAttachment="form">
+		<f:facet name="header">
+			<h:outputText id="lblTitulo" value="#{areaAction.pojoArea.id==null ? 'Recursos Humanos: Nueva Area' : 'Recursos Humanos: Editar Area'}" styleClass="Titulo" style="margin-left:10px" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlNuevoEditarArea')}.hide()" />
+		</f:facet>
+		
+		<div style = "display: block; height: 22px; margin-bottom:10px;">
+			<h:panelGrid columns="2" style="float:right; margin-right:5px;" >
+				<h:panelGroup style="vertical-align: middle; position:relative; ">
+					<a4j:commandButton id="cmdSalvar" onclick="#{rich:element('cmdSalvar')}.disabled = true;" image="#{msg['salvar22.img']}" style="vertical-align: right; position:relative;" 
+						action="#{areaAction.guardar}" 
+						oncomplete="msgRevisando(#{rich:element('msgErrorArea')},'#{rich:clientId('pnlNuevoEditarArea')}','#{rich:clientId('pnlMsgGralAreas')}',#{areaAction.band},'guardar'); #{rich:element('cmdSalvar')}.disabled = false;"
+						render="dtAreas, pnlMsgGralAreas, msgErrorArea"/>
+				</h:panelGroup>
+				
+				<h:panelGroup style="vertical-align: middle; position:relative;">
+					<a4j:status>
+						<f:facet name="start">
+							<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;"/>
+						</f:facet>
+						<f:facet name="stop">
+							<h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: middle; position:relative;"/>
+						</f:facet>
+					</a4j:status>
+				</h:panelGroup>
+			</h:panelGrid>
+		</div>
+		<h:panelGroup id="grupoEncabezado">
+		
+		</h:panelGroup>
+		
+		<rich:messages id="msgErrorArea" rendered="#{true}" showDetail="false"
+			showSummary="true" globalOnly="false" title="Campos requeridos!" >
+			<f:facet name="errorMarker">
+				<h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" />
+			</f:facet>
+		</rich:messages>
+		
+		<h:panelGroup id="grupoDatos">
+			<fieldset style="margin-top: 10px; margin-bottom: 10px">
+				<legend>#{msg['area']}</legend>
+				
+				<h:panelGrid columns="2" width="500" columnClasses="colTitulo,colDato,colTitulo">
+					
+					<h:outputText value="#{msg['id']}:" styleClass="Titulo"/>
+					<h:outputText id="txtIdArea" value="#{areaAction.pojoArea.id}"  style="text-align:left; width: 500px; display:block;" />
+					
+					<h:outputText value="#{msg['descripcion']}:" styleClass="Titulo"/>
+					<h:inputText id="txtDescripcion" value="#{areaAction.descripcion}" size="80"
+						required="#{!empty param[rich:clientId('cmdSalvar')]}"
+						requiredMessage="#{msg['mensage.error.descripcion']} #{msg['mensaje.error.requerido']}"
+					 />
+					
+					<h:outputText value="#{msg['responsable']}:" style="position:relative; " styleClass="Titulo"/>
+					<h:selectOneMenu value="#{areaAction.idResponsable}" style="width:350px;">
+						<f:selectItem itemLabel="#{msg['seleccione']}"/>		
+						<f:selectItems value="#{areaAction.responsables}"/>		
+						<a4j:ajax event="change" listener="#{areaAction.itemChangeListener}"  immediate="true"/>			  					
+					</h:selectOneMenu>
+					
+				</h:panelGrid>
+			</fieldset>
+		</h:panelGroup>
+		
+			
+		
+		
+		
+		
+	</rich:popupPanel>
+</ui:composition>

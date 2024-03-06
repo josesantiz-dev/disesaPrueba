@@ -1,0 +1,29 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+	<rich:popupPanel id="pnlMensajes" autosized="true" domElementAttachment="form"
+    	onshow="document.getElementById('#{rich:clientId('btnMensajes')}').focus();">
+    	
+		<f:facet name="header">
+			<h:outputText value="#{msg['atencion']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<h:panelGroup style="display:block; min-width:300px; float:center; text-align:center;">
+			<h:outputText styleClass="Descripcion" value="#{sboAction.mensaje}" rendered="#{sboAction.tipoMensaje == -1}" escape="false" /> 
+			<h:outputText styleClass="Descripcion" value="#{msg['mensaje.info.infoReg']}" rendered="#{sboAction.tipoMensaje == 0}" />       			
+			<h:outputText styleClass="Descripcion" value="#{msg['mensaje.error.inesperado']}" rendered="#{sboAction.tipoMensaje == 1}" />
+			<h:outputText styleClass="Descripcion" value="#{msg['mensaje.info.busquedaVacia']}" rendered="#{sboAction.tipoMensaje == 2}" />
+			<h:outputText styleClass="Descripcion" value="#{msg['cantidadActualizada']}" rendered="#{sboAction.tipoMensaje == 3}" />
+			<h:outputText styleClass="Descripcion" value="#{msg['productoEliminado']}" rendered="#{sboAction.tipoMensaje == 4}" />
+			
+			<a4j:commandButton id="btnMensajes" style="display:block; margin:10px auto 0; width:100px; cursor:pointer;" 
+				value="#{msg['aceptar']}" 
+				onclick="#{rich:component('pnlMensajes')}.hide()" /> 
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

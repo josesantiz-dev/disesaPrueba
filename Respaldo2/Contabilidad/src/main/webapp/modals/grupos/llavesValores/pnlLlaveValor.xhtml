@@ -1,0 +1,534 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlLlaveValor" autosized="true" domElementAttachment="form" header="#{msg['llaves']} #{msg['valores']}">
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" onclick="#{rich:component('pnlLlaveValor')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+		
+		<a4j:jsFunction name="descripcionLlaveValor" ></a4j:jsFunction>
+		
+		<div style = "display: block; min-width:700px; height: 22px;">
+			<a4j:commandButton id="cmdSalvarLlaveValor" 
+				image="#{msg['salvar22.img']}" 
+				style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+				action="#{gruposAction.salvarLlaveValor}"
+				oncomplete="salvar(#{gruposAction.operacion}, '#{rich:clientId('pnlLlaveValor')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('msgErroresLlaveValor')})"
+				render="dtGrupoLlavesValores, pnlMensajes, msgErroresLlaveValor"
+				limitRender="true">
+				<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['salvar.e']}" for="cmdSalvarLlaveValor"/>
+			</a4j:commandButton>
+		</div>
+		
+		<rich:messages id="msgErroresLlaveValor" showDetail="false" showSummary="true" globalOnly="false" title="Campos requeridos!" >
+			<f:facet name="errorMarker"><h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em; text-align:left;" /></f:facet>
+		</rich:messages>
+
+		<div style="margin: 10px auto 0;">
+			<h:panelGroup id="bandGrupoData2" styleClass="encabezado" style="min-height: 1em;">
+				<h:outputText value="#{gruposAction.grupoDescripcion}" />
+			</h:panelGroup>
+			
+			<fieldset>
+				<legend><h:outputText value="#{msg['llaves']} - #{msg['grupo']}" /></legend>
+				
+				<h:panelGrid id="groupLlavesValores" columns="2" columnClasses="colTitulo, colDato">				
+					<h:outputText value="#{msg['cuentaContable']}:" styleClass="Titulo" />
+					<h:inputText id="txtLlaveValorCuentaContable" styleClass="Titulo" style="text-align: left; width: 100%;"
+						value="#{gruposAction.pojoLlaveValor.noCuenta}"
+						required="#{!empty param[rich:clientId('cmdSalvarLlaveValor')]}" 
+						requiredMessage="#{msg['cuentaContable']} #{msg['mensaje.error.requerido']}" />
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave1 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave1 == null ? msg['llave'] : gruposAction.pojoGrupo.llave1.descripcion}:" />
+					<h:panelGroup id="pnlLlave1Datos" rendered="#{gruposAction.pojoGrupo.llave1 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave1"
+								value="#{gruposAction.pojoLlaveValor.valorLlave1 == null ? '' : gruposAction.pojoLlaveValor.valorLlave1}" 
+								style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave1" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave1 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="1" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave2 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave2 == null ? msg['llave'] : gruposAction.pojoGrupo.llave2.descripcion}:" />
+					<h:panelGroup id="pnlLlave2Datos" rendered="#{gruposAction.pojoGrupo.llave2 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave2" style="text-align:left; display:block;" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave2 == null ? '' : gruposAction.pojoLlaveValor.valorLlave2}" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave2" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave2 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="2" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave3 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave3 == null ? msg['llave'] : gruposAction.pojoGrupo.llave3.descripcion}:" />
+					<h:panelGroup id="pnlLlave3Datos" rendered="#{gruposAction.pojoGrupo.llave3 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave3" value="#{gruposAction.pojoLlaveValor.valorLlave3 == null ? '' : gruposAction.pojoLlaveValor.valorLlave3}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave3" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave3 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="3" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave4 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave4 == null ? msg['llave'] : gruposAction.pojoGrupo.llave4.descripcion}:" />
+					<h:panelGroup id="pnlLlave4Datos" rendered="#{gruposAction.pojoGrupo.llave4 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave4" value="#{gruposAction.pojoLlaveValor.valorLlave4 == null ? '' : gruposAction.pojoLlaveValor.valorLlave4}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave4" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave4 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="4" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave5 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave5 == null ? msg['llave'] : gruposAction.pojoGrupo.llave5.descripcion}:" />
+					<h:panelGroup id="pnlLlave5Datos" rendered="#{gruposAction.pojoGrupo.llave5 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave5" value="#{gruposAction.pojoLlaveValor.valorLlave5 == null ? '' : gruposAction.pojoLlaveValor.valorLlave5}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave5" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave5 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="5" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave6 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave6 == null ? msg['llave'] : gruposAction.pojoGrupo.llave6.descripcion}:" />
+					<h:panelGroup id="pnlLlave6Datos" rendered="#{gruposAction.pojoGrupo.llave6 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave6" value="#{gruposAction.pojoLlaveValor.valorLlave6 == null ? '' : gruposAction.pojoLlaveValor.valorLlave6}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave6" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave6 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="6" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave7 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave7 == null ? msg['llave'] : gruposAction.pojoGrupo.llave7.descripcion}:" />
+					<h:panelGroup id="pnlLlave7Datos" rendered="#{gruposAction.pojoGrupo.llave7 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave7" value="#{gruposAction.pojoLlaveValor.valorLlave7 == null ? '' : gruposAction.pojoLlaveValor.valorLlave7}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave7" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave7 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="7" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave8 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave8 == null ? msg['llave'] : gruposAction.pojoGrupo.llave8.descripcion}:" />
+					<h:panelGroup id="pnlLlave8Datos" rendered="#{gruposAction.pojoGrupo.llave8 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave8" value="#{gruposAction.pojoLlaveValor.valorLlave8 == null ? '' : gruposAction.pojoLlaveValor.valorLlave8}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave8" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave8 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="8" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave9 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave9 == null ? msg['llave'] : gruposAction.pojoGrupo.llave9.descripcion}:" />
+					<h:panelGroup id="pnlLlave9Datos" rendered="#{gruposAction.pojoGrupo.llave9 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave9" value="#{gruposAction.pojoLlaveValor.valorLlave9 == null ? '' : gruposAction.pojoLlaveValor.valorLlave9}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave9" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave9 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="9" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave10 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave10 == null ? msg['llave'] : gruposAction.pojoGrupo.llave10.descripcion}:" />
+					<h:panelGroup id="pnlLlave10Datos" rendered="#{gruposAction.pojoGrupo.llave10 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave10" value="#{gruposAction.pojoLlaveValor.valorLlave10 == null ? '' : gruposAction.pojoLlaveValor.valorLlave10}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave10" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave10 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="10" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave11 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave11 == null ? msg['llave'] : gruposAction.pojoGrupo.llave11.descripcion}:" />
+					<h:panelGroup id="pnlLlave11Datos" rendered="#{gruposAction.pojoGrupo.llave11 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave11" value="#{gruposAction.pojoLlaveValor.valorLlave11 == null ? '' : gruposAction.pojoLlaveValor.valorLlave11}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave11" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave11 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="11" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave12 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave12 == null ? msg['llave'] : gruposAction.pojoGrupo.llave12.descripcion}:" />
+					<h:panelGroup id="pnlLlave12Datos" rendered="#{gruposAction.pojoGrupo.llave12 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave12" value="#{gruposAction.pojoLlaveValor.valorLlave12 == null ? '' : gruposAction.pojoLlaveValor.valorLlave12}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave12" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave12 == null ? msg['seleccionar'] : msg['cambiar'] } #{gruposAction.llave}" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="12" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave13 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave13 == null ? msg['llave'] : gruposAction.pojoGrupo.llave13.descripcion}:" />
+					<h:panelGroup id="pnlLlave13Datos" rendered="#{gruposAction.pojoGrupo.llave13 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave13" value="#{gruposAction.pojoLlaveValor.valorLlave13 == null ? '' : gruposAction.pojoLlaveValor.valorLlave13}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave13" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave13 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="13" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave14 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave14 == null ? msg['llave'] : gruposAction.pojoGrupo.llave14.descripcion}:" />
+					<h:panelGroup id="pnlLlave14Datos" rendered="#{gruposAction.pojoGrupo.llave14 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave14" value="#{gruposAction.pojoLlaveValor.valorLlave14 == null ? '' : gruposAction.pojoLlaveValor.valorLlave14}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave14" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave14 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="14" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave15 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave15 == null ? msg['llave'] : gruposAction.pojoGrupo.llave15.descripcion}:" />
+					<h:panelGroup id="pnlLlave15Datos" rendered="#{gruposAction.pojoGrupo.llave15 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave15" value="#{gruposAction.pojoLlaveValor.valorLlave15 == null ? '' : gruposAction.pojoLlaveValor.valorLlave15}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave15" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave15 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="15" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave16 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave16 == null ? msg['llave'] : gruposAction.pojoGrupo.llave16.descripcion}:" />
+					<h:panelGroup id="pnlLlave16Datos" rendered="#{gruposAction.pojoGrupo.llave16 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave16" value="#{gruposAction.pojoLlaveValor.valorLlave16 == null ? '' : gruposAction.pojoLlaveValor.valorLlave16}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave16" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave16 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="16" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave17 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave17 == null ? msg['llave'] : gruposAction.pojoGrupo.llave17.descripcion}:" />
+					<h:panelGroup id="pnlLlave17Datos" rendered="#{gruposAction.pojoGrupo.llave17 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave17" value="#{gruposAction.pojoLlaveValor.valorLlave17 == null ? '' : gruposAction.pojoLlaveValor.valorLlave17}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave17" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave17 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="17" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave18 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave18 == null ? msg['llave'] : gruposAction.pojoGrupo.llave18.descripcion}:" />
+					<h:panelGroup id="pnlLlave18Datos" rendered="#{gruposAction.pojoGrupo.llave18 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave18" value="#{gruposAction.pojoLlaveValor.valorLlave18 == null ? '' : gruposAction.pojoLlaveValor.valorLlave18}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave18" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave18 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="18" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave19 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave19 == null ? msg['llave'] : gruposAction.pojoGrupo.llave19.descripcion}:" />
+					<h:panelGroup id="pnlLlave19Datos" rendered="#{gruposAction.pojoGrupo.llave19 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave19" value="#{gruposAction.pojoLlaveValor.valorLlave19 == null ? '' : gruposAction.pojoLlaveValor.valorLlave19}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave19" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave19 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="19" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave20 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave20 == null ? msg['llave'] : gruposAction.pojoGrupo.llave20.descripcion}:" />
+					<h:panelGroup id="pnlLlave20Datos" rendered="#{gruposAction.pojoGrupo.llave20 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave20" value="#{gruposAction.pojoLlaveValor.valorLlave20 == null ? '' : gruposAction.pojoLlaveValor.valorLlave20}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave20" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave20 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="20" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave21 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave21 == null ? msg['llave'] : gruposAction.pojoGrupo.llave21.descripcion}:" />
+					<h:panelGroup id="pnlLlave21Datos" rendered="#{gruposAction.pojoGrupo.llave21 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave21" value="#{gruposAction.pojoLlaveValor.valorLlave21 == null ? '' : gruposAction.pojoLlaveValor.valorLlave21}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave21" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave21 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="21" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave22 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave22 == null ? msg['llave'] : gruposAction.pojoGrupo.llave22.descripcion}:" />
+					<h:panelGroup id="pnlLlave22Datos" rendered="#{gruposAction.pojoGrupo.llave22 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave22" value="#{gruposAction.pojoLlaveValor.valorLlave22 == null ? '' : gruposAction.pojoLlaveValor.valorLlave22}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave22" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave22 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="22" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave23 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave23 == null ? msg['llave'] : gruposAction.pojoGrupo.llave23.descripcion}:" />
+					<h:panelGroup id="pnlLlave23Datos" rendered="#{gruposAction.pojoGrupo.llave23 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave23" value="#{gruposAction.pojoLlaveValor.valorLlave23 == null ? '' : gruposAction.pojoLlaveValor.valorLlave23}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave23" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave23 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="23" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave24 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave24 == null ? msg['llave'] : gruposAction.pojoGrupo.llave24.descripcion}:" />
+					<h:panelGroup id="pnlLlave24Datos" rendered="#{gruposAction.pojoGrupo.llave24 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave24" value="#{gruposAction.pojoLlaveValor.valorLlave24 == null ? '' : gruposAction.pojoLlaveValor.valorLlave24}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave24" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave24 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="24" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave25 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave25 == null ? msg['llave'] : gruposAction.pojoGrupo.llave25.descripcion}:" />
+					<h:panelGroup id="pnlLlave25Datos" rendered="#{gruposAction.pojoGrupo.llave25 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave25" value="#{gruposAction.pojoLlaveValor.valorLlave25 == null ? '' : gruposAction.pojoLlaveValor.valorLlave25}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave25" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave25 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="25" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave26 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave26 == null ? msg['llave'] : gruposAction.pojoGrupo.llave26.descripcion}:" />
+					<h:panelGroup id="pnlLlave26Datos" rendered="#{gruposAction.pojoGrupo.llave26 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave26" value="#{gruposAction.pojoLlaveValor.valorLlave26 == null ? '' : gruposAction.pojoLlaveValor.valorLlave26}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave26" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave26 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="26" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave27 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave27 == null ? msg['llave'] : gruposAction.pojoGrupo.llave27.descripcion}:" />
+					<h:panelGroup id="pnlLlave27Datos" rendered="#{gruposAction.pojoGrupo.llave27 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave27" value="#{gruposAction.pojoLlaveValor.valorLlave27 == null ? '' : gruposAction.pojoLlaveValor.valorLlave27}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave27" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave27 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="27" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave28 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave28 == null ? msg['llave'] : gruposAction.pojoGrupo.llave28.descripcion}:" />
+					<h:panelGroup id="pnlLlave28Datos" rendered="#{gruposAction.pojoGrupo.llave28 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave28" value="#{gruposAction.pojoLlaveValor.valorLlave28 == null ? '' : gruposAction.pojoLlaveValor.valorLlave28}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave28" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave28 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="28" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave29 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave29 == null ? msg['llave'] : gruposAction.pojoGrupo.llave29.descripcion}:" />
+					<h:panelGroup id="pnlLlave29Datos" rendered="#{gruposAction.pojoGrupo.llave29 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave29" value="#{gruposAction.pojoLlaveValor.valorLlave29 == null ? '' : gruposAction.pojoLlaveValor.valorLlave29}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave29" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave29 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="29" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+				
+					<h:outputText styleClass="Titulo" rendered="#{gruposAction.pojoGrupo.llave30 == null ? 'false' : 'true'}"
+						value="#{gruposAction.pojoGrupo.llave30 == null ? msg['llave'] : gruposAction.pojoGrupo.llave30.descripcion}:" />
+					<h:panelGroup id="pnlLlave30Datos" rendered="#{gruposAction.pojoGrupo.llave30 != null}">
+						<h:panelGrid columns="2">
+							<h:outputText id="txtLlave30" value="#{gruposAction.pojoLlaveValor.valorLlave30 == null ? '' : gruposAction.pojoLlaveValor.valorLlave30}" style="text-align:left; display:block;" />
+							
+							<a4j:commandLink id="cmdSeleccionarLlave30" 
+								action="#{gruposAction.nuevaBusquedaDinamica}" 
+								value="#{gruposAction.pojoLlaveValor.valorLlave30 == null ? msg['seleccionar'] : msg['cambiar'] }" 
+								oncomplete="#{rich:component('pnlBusquedaDinamica')}.show();"
+								render="pnlBusquedaDinamica">
+								<f:param name="llaveColumn" value="30" />
+							</a4j:commandLink>
+						</h:panelGrid>
+					</h:panelGroup>
+					
+				</h:panelGrid>
+			</fieldset>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

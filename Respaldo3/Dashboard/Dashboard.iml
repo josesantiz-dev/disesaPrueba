@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Logica_Publico1" level="project" />
+    <orderEntry type="library" name="net.giro.comparativa.Comparativa" level="project" />
+    <orderEntry type="library" name="Navegador4" level="project" />
+    <orderEntry type="library" name="Logica_GestionProyectos1" level="project" />
+    <orderEntry type="library" name="Logica_Publico" level="project" />
+    <orderEntry type="library" name="Navegador-rf4.5" level="project" />
+    <orderEntry type="library" name="zEmpaquetados" level="project" />
+    <orderEntry type="library" name="seguimiento.reppromesasdepago_0_1.RepPromesasDePago" level="project" />
+    <orderEntry type="library" name="Logica_GestionProyectos" level="project" />
+    <orderEntry type="library" name="Logica_CuentasPorCobrar1" level="project" />
+    <orderEntry type="library" name="lib13" level="project" />
+    <orderEntry type="library" name="lib12" level="project" />
+    <orderEntry type="library" name="lib26" level="project" />
+    <orderEntry type="library" name="Logica_CuentasPorCobrar" level="project" />
+    <orderEntry type="library" name="Navegador" level="project" />
+    <orderEntry type="library" name="Logica_RecHum" level="project" />
+    <orderEntry type="library" name="lib10" level="project" />
+    <orderEntry type="library" name="Logica_Inventarios" level="project" />
+    <orderEntry type="library" name="Logica_RecHum1" level="project" />
+    <orderEntry type="library" name="Logica_Inventarios1" level="project" />
+    <orderEntry type="library" name="lib22" level="project" />
+    <orderEntry type="library" name="lib16" level="project" />
+    <orderEntry type="module" module-name="Navegador" />
+    <orderEntry type="module" module-name="Navegador4" />
+    <orderEntry type="module" module-name="Logica_CuentasPorCobrar" />
+    <orderEntry type="module" module-name="Logica_RecHum" />
+    <orderEntry type="module" module-name="Logica_Publico" />
+    <orderEntry type="module" module-name="Logica_Inventarios" />
+    <orderEntry type="module" module-name="Logica_GestionProyectos" />
+  </component>
+</module>

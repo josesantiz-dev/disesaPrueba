@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:jboss:module:1.1" name="net.giro.model.tyg">
+	<resources>
+		<resource-root path="Model_TYG.jar" />
+	</resources>
+	<dependencies>
+		<module name="net.giro.comun"  export="true" />
+		<module name="org.hibernate"  export="true"/>
+	</dependencies>
+</module>

@@ -1,0 +1,76 @@
+.Titulo{
+	font-weight: bold;
+	font-size: 12px;
+	color:#525252;
+}
+.Titulo10{
+	font-weight: bold;
+	font-size: 10px;
+	color:#525252;
+}
+.colorTitulo{
+	color:#525252;
+}
+.Descripcion{
+	font-weight: bold;
+	font-size: 12px;
+	color:#808080;
+}
+.Descripcion10{
+	font-weight: bold;
+	font-size: 10px;
+	color:#808080;
+}
+.Observacion{
+	font-weight: bold;
+	font-size: 12px;
+	color:#C0C0C0;
+}
+.Observacion10{
+	font-weight: bold;
+	font-size: 10px;
+	color:#C0C0C0;
+}
+.Alterno{
+	color: #FAE6B0;
+	font-weight: bold;
+}
+.Err{
+	text-align:right;
+	font-size: 12px;
+	color:red;
+}
+.encabezado{
+	border:2px solid #9CADBA;
+	color:#6A6868; 
+	background-color:#E4EDFD; //#f1f1f1;//#BED6F8;
+	font-weight: bold;
+	padding:.2em;
+	margin:1em .5em;
+	text-align:center;
+	display:block;
+}
+.rich-messages{
+	float:center;
+	display:block;
+	text-align:left;
+	font-weight: bold;
+	font-size: 12px;
+	color:#BB3029;
+	background-color:#E5EEFE;
+	border:2px solid #C6DEFF;
+	font-family:Arial,Verdana,sans-serif;
+	padding: 0.5em;
+	margin-right:1em;
+	margin-left:1em;
+}
+.rich-messages dt{
+	margin: .2em 0 .2em 0;
+}
+.valorBusqueda1{
+	text-align: right;
+	width: 100px;
+}
+.alignLeft{
+	text-align: left;
+}

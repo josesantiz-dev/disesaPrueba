@@ -1,0 +1,87 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlAsistenciasInvalidas" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20"
+    	header="#{msg['asistenciasInvalidas']}">
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlAsistenciasInvalidas')}.hide()" />
+		</f:facet>
+
+		<div style="margin:0 auto; min-width:800px; text-align:center;">
+			<h:panelGrid style="margin:10px auto; display:block; max-width:600px; text-align:left;">
+				<h:outputText value="#{msg['listaAsistenciaLeyenda1']}." styleClass="Titulo" />
+				<h:outputText value="#{msg['listaAsistenciaLeyenda2']}" styleClass="Titulo" />
+			</h:panelGrid>
+
+			<div class="tableParent" style="margin:10px auto 0; width:100%; height:auto; max-height:450px; overflow-y:scroll;">
+				<rich:dataTable id="dtAsistenciasInvalidas" value="#{asisAction.asistenciasInvalidas}" var="var" style="margin:0 auto;"
+					cellpadding="0" cellspacing="0" rows="100" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column style="text-align:center; padding:auto 2px; width:20px;">
+								<h:outputText value="#" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:auto 2px; width:120px;">
+								<h:outputText value="#{msg['empleado']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:auto 2px; width:90px;">
+								<h:outputText value="#{msg['fecha']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:auto 2px; width:50px;">
+								<h:outputText value="#{msg['horaEntradaMarcada']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:auto 2px; width:50px;">
+								<h:outputText value="#{msg['horaSalidaMarcada']}" />
+							</rich:column>
+							
+							<rich:column style="text-align:center; padding:auto 2px;">
+								<h:outputText value="#{msg['observaciones']}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+					
+					<rich:column styleClass="Descripcion" style="text-align:center; width:20px;">
+						<h:outputText value="#{var.row}"><f:convertNumber pattern="00" /></h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:left;">
+						<h:outputText value="#{var.empleado}" />
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:center;">
+						<h:outputText value="#{var.fecha}"><f:convertDateTime type="date" pattern="dd-MMM-yyyy" /></h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:center;">
+						<h:outputText value="#{var.horaEntradaMarcada == null ? '' : var.horaEntradaMarcada}"><f:convertDateTime type="time" pattern="HH:mm" timeZone="#{asisAction.timeZone}" /></h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:center;">
+						<h:outputText value="#{var.horaSalidaMarcada == null ? '' : var.horaSalidaMarcada}"><f:convertDateTime type="time" pattern="HH:mm" timeZone="#{asisAction.timeZone}" /></h:outputText>
+					</rich:column>
+					
+					<rich:column styleClass="Descripcion" style="text-align:left;">
+						<h:outputText value="#{var.observaciones}"><f:convertDateTime type="time" pattern="HH:mm" timeZone="#{asisAction.timeZone}" /></h:outputText>
+					</rich:column>
+	
+					<f:facet name="footer">
+						<rich:dataScroller for="dtAsistenciasInvalidas" page="#{asisAction.paginacionAsistenciasInvalidas}" renderIfSinglePage="false" 
+							maxPages="10" fastStep="10" ajaxSingle="true" align="center" styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</div>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

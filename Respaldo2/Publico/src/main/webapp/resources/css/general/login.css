@@ -1,0 +1,19 @@
+.imagenLogin{
+	border: 1px solid #BED6F8;
+	height:243px;
+	width:465;
+	display:block;
+	margin-left:auto; 
+	margin-right:auto;
+}
+
+.datosLog{
+	margin: 15px auto 10px auto;
+}
+
+.panelLogin{
+	border:2px solid #BED6F8;
+	margin-left:auto;
+	margin-right:auto;
+	width:495px;
+}

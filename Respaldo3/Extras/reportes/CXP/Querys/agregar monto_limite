@@ -1,0 +1,24 @@
+ALTER TABLE pagos_gastos ADD COLUMN monto_limite double precision default 0
+
+
+
+
+
+/*
+
+
+INSERT INTO "de7a4d94446" ("aa", "ab", "ac", "ad", "ae", "af", "ag", "ah", "ai", "atributo1", "atributo2", "atributo3", "atributo4", "atributo5", "atributo6", "atributo7", "atributo8", "atributo9", "atributo10", "atributo11", "atributo12", "atributo13", "atributo14", "atributo15", "atributo16", "atributo17", "atributo18", "atributo19", "atributo20")
+VALUES ('10000789', '10017584', '2016-03-11 11:24:48.547', '10017584', '2016-03-11 11:24:48.537', '1', 'MATERIAL / COSTO', NULL, '10000038', '', '', '', '', '', '', '', '', '', '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL);
+
+INSERT INTO "de7a4d94446" ("aa", "ab", "ac", "ad", "ae", "af", "ag", "ah", "ai", "atributo1", "atributo2", "atributo3", "atributo4", "atributo5", "atributo6", "atributo7", "atributo8", "atributo9", "atributo10", "atributo11", "atributo12", "atributo13", "atributo14", "atributo15", "atributo16", "atributo17", "atributo18", "atributo19", "atributo20")
+VALUES ('10000790', '10017584', '2016-03-11 11:25:04.136', '10017584', '2016-03-11 11:25:04.136', '2', 'HERRAMIENTA / EQUIPO MENOR', NULL, '10000038', '', '', '', '', '', '', '', '', '', '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL);
+
+INSERT INTO "de7a4d94446" ("aa", "ab", "ac", "ad", "ae", "af", "ag", "ah", "ai", "atributo1", "atributo2", "atributo3", "atributo4", "atributo5", "atributo6", "atributo7", "atributo8", "atributo9", "atributo10", "atributo11", "atributo12", "atributo13", "atributo14", "atributo15", "atributo16", "atributo17", "atributo18", "atributo19", "atributo20")
+VALUES ('10000791', '10017584', '2016-03-11 11:25:12.123', '10017584', '2016-03-11 11:25:12.123', '3', 'ACTIVO', NULL, '10000038', '', '', '', '', '', '', '', '', '', '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL);
+
+INSERT INTO "de7a4d94446" ("aa", "ab", "ac", "ad", "ae", "af", "ag", "ah", "ai", "atributo1", "atributo2", "atributo3", "atributo4", "atributo5", "atributo6", "atributo7", "atributo8", "atributo9", "atributo10", "atributo11", "atributo12", "atributo13", "atributo14", "atributo15", "atributo16", "atributo17", "atributo18", "atributo19", "atributo20")
+VALUES ('10000792', '10017584', '2016-03-11 11:25:23.096', '10017584', '2016-03-11 11:25:23.096', '4', 'GASTO / INDIRECTO', NULL, '10000038', '', '', '', '', '', '', '', '', '', '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL);
+
+
+
+*/

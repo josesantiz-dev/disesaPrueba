@@ -1,0 +1,91 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlBusquedaTransacciones" autosized="true" domElementAttachment="form" header="#{msg['buscar.e']} #{msg['transacciones']}">
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" onclick="#{rich:component('pnlBusquedaTransacciones')}.hide()" style="cursor:pointer;" />
+		</f:facet>
+		
+		<div style = "display: block; width:700px; height: 22px;">
+			<a4j:commandButton id="cmdBuscarTransacciones" image="#{msg['buscar22.img']}"
+				action="#{asigGruposAction.buscarTransacciones}" 
+				style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+				oncomplete="buscar(#{asigGruposAction.operacion}, '#{rich:clientId('pnlMensajes')}');" 
+				render="dtBusquedaTransacciones, pnlMensajes">
+				<rich:tooltip styleClass="Descripcion" showDelay="300" value="#{msg['buscar.e']}" for="cmdBuscarTransacciones"/>
+			</a4j:commandButton>
+		</div> 
+
+		<div style="margin: 10px auto 0;">
+			<h:panelGrid id="pnlBusquedaTransaccionesPrincipal" columns="2" columnClasses="colPnlBusqIzq, colPnlBusqDer" style="margin-left:10px; margin-bottom:20px; display:block;">
+				<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>				
+				<h:selectOneMenu value="#{asigGruposAction.campoBusquedaTransacciones}" styleClass="Titulo" style="width: 216px;">
+					<f:selectItems value="#{asigGruposAction.tiposBusquedaTransacciones}" />
+				</h:selectOneMenu>
+				
+				<h:outputText value="#{msg['valor']}:" styleClass="Titulo" />
+				<h:inputText id="txtValorBusquedaTransacciones" maxlength="50" style="width: 210px;"
+					value="#{asigGruposAction.valorBusquedaTransacciones}" />
+			</h:panelGrid>
+
+			<rich:dataTable id="dtBusquedaTransacciones" value="#{asigGruposAction.listTransacciones}" var="var" cellpadding="0" cellspacing="0" rows="10" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column colspan="4" style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['transacciones']}" />
+						</rich:column>
+						
+						<rich:column breakRowBefore="true" style="width:90px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['id']}" />
+						</rich:column>
+						
+						<rich:column style="width:90px; text-align:center; font-weight: bold;" styleClass="Titulo">
+							<h:outputText value="#{msg['codigo']}" />
+						</rich:column>
+						
+						<rich:column style="text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['descripcion']}" />
+						</rich:column>
+
+						<rich:column style="width: 30px; text-align:center;" styleClass="Titulo">
+							<h:outputText value="#{msg['seleccionar']}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				
+				<rich:column styleClass="Descripcion" style="width:90px; text-align:center;">
+					<h:outputText value="#{var.id}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="width:90px; text-align:center;">
+					<h:outputText value="#{var.codigo}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
+					<h:outputText value="#{var.descripcion}" styleClass="Descripcion" />
+				</rich:column>
+				
+				<rich:column style="width:30px; text-align:center;">
+				   	<a4j:commandButton id="cmdSeleccionarTransaccion" 
+				   		image="#{msg['agregar16.img']}" 
+						action="#{asigGruposAction.seleccionarTransaccion}"
+						oncomplete="seleccionar(#{asigGruposAction.operacion}, '#{rich:clientId('pnlBusquedaTransacciones')}', '#{rich:clientId('pnlMensajes')}')"
+						render="pnlTransaccionDatos">
+						<rich:tooltip showDelay="300" value="#{msg['agregar.e']}" for="cmdSeleccionarTransaccion" />	
+						<f:setPropertyActionListener target="#{asigGruposAction.pojoTransaccion}" value="#{var}" for="cmdSeleccionarTransaccion" />
+				   	</a4j:commandButton>
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:dataScroller id="dScrollTransacciones" page="#{asigGruposAction.numPaginaTransacciones}" for="dtBusquedaTransacciones" 
+						maxPages="10" ajaxSingle="true" align="center" styleClass="Titulo" />
+				</f:facet>
+			</rich:dataTable>
+		</div>
+	</rich:popupPanel>
+</ui:composition>

@@ -1,0 +1,44 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:popupPanel id="pnlMensajes" autosized="true">
+		<f:facet name="header">
+			<h:outputText value="#{msg['navegacion.label.atencion']}" styleClass="Titulo" />
+		</f:facet>
+
+		<a4j:region>
+			<h:panelGrid columns="1" style="text-align:center; min-width:300px;" cellspacing="0" cellpadding="0">
+				<h:outputText rendered="#{cobranzaAction.tipoMensaje == -1}" value="#{cobranzaAction.mensaje}" styleClass="Descripcion" escape="false" />
+				<h:outputText rendered="#{cobranzaAction.tipoMensaje ==  0}" value="#{msg['mensaje.info.infoReg']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cobranzaAction.tipoMensaje ==  1}" value="#{msg['mensaje.error.inesperado']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cobranzaAction.tipoMensaje ==  2}" value="#{msg['mensaje.info.busquedaVacia']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cobranzaAction.tipoMensaje ==  3}" value="#{msg['mensaje.error.requerido']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cobranzaAction.tipoMensaje ==  4}" value="#{msg['almacenTipoInvalido']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cobranzaAction.tipoMensaje ==  5}" value="#{msg['cargaArchivoFallida']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cobranzaAction.tipoMensaje ==  6}" value="#{msg['montoDiferenteTotal']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cobranzaAction.tipoMensaje ==  7}" value="#{msg['mensaje.validacion.valorCeroCien']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cobranzaAction.tipoMensaje ==  8}" value="#{msg['montoMayorCero']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cobranzaAction.tipoMensaje ==  9}" value="#{msg['ivaMayorCero']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cobranzaAction.tipoMensaje == 10}" value="#{msg['almacenExisteObraProyecto']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cobranzaAction.tipoMensaje == 11}" value="#{msg['almacenPrincipalMultiple']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cobranzaAction.tipoMensaje == 12}" value="#{msg['almacenPrincipalAsignado']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cobranzaAction.tipoMensaje == 13}" value="#{msg['almacenPrincipalInvalido']}" styleClass="Descripcion" />
+				<h:outputText rendered="#{cobranzaAction.tipoMensaje == 14}" value="#{msg['porcentajeInvalidoOMayor100']}" styleClass="Descripcion" />
+				
+				<a4j:commandButton style="margin:10px auto 0; min-width:100px;"
+					value="#{msg['navegacion.label.aceptar']}" 
+					onclick="#{rich:component('pnlMensajes')}.hide()" />
+			</h:panelGrid>
+			
+			<rich:collapsiblePanel header="#{msg['detalles']}" expanded="false" switchType="client" styleClass="Descripcion" 
+				rendered="#{cobranzaAction.mensajeDetalles != ''}" style="width:100%; margin:auto 0 0; padding:0; max-height:500px; overflow:auto;">
+				<h:outputText value="#{cobranzaAction.mensajeDetalles}" styleClass="Descripcion" escape="false" />
+       		</rich:collapsiblePanel>
+		</a4j:region>
+	</rich:popupPanel>
+</ui:composition>

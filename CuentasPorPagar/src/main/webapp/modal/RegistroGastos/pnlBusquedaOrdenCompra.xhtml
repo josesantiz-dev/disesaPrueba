@@ -1,0 +1,122 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="pnlBusquedaOrdenCompra" autosized="true" top="20">
+		<f:facet name="header">
+			<h:outputText value="#{msg['busqueda']} #{msg['ordenCompra']}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+       		<h:graphicImage style="cursor:pointer;"
+       	  		value="#{msg['navegacion.gral.cerrar.img']}"
+       	  		onclick="#{rich:component('pnlBusquedaOrdenCompra')}.hide()" />
+		</f:facet>
+		
+		<rich:hotKey id="richHotKeyOrdenCompra" enabledInInput="true" preventDefault="true"
+			selector="#txtValorBusquedaOrdenCompra" key="return" 
+			handler="#{rich:element('frmPrincipal:cmdBuscarOrdenCompra')}.click()" />
+		
+		<a4j:form id="frmBusquedaOrdenCompra" style="min-width:700px; width:100%; max-width:1024px;">
+			<a4j:region id="regBusquedaOrdenCompra">
+				<h:panelGrid id="panelBusquedaOpcionesOrdenCompra" columns="2" columnClasses="colLayoutMiddle,colLayoutBottom" cellpadding="0" cellspacing="0" style="width:100%;">
+					<h:panelGroup style="width:100%;">
+						<h:panelGrid columns="3" cellpadding="0" cellspacing="0">
+							<h:inputText id="txtValorBusquedaOrdenCompra" maxlength="35" style="width:210px;" 
+								value="#{registroGastosAction.valorBusquedaOrdenCompra}" />
+							
+							<a4j:commandButton id="cmdBuscarOrdenCompra" style="margin:0 5px; vertical-align: middle; cursor: pointer;"
+								image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
+								onclick="#{rich:element('cmdBuscarOrdenCompra')}.disabled = true;" 
+								action="#{registroGastosAction.ordenCompraBuscar}" 
+								oncomplete="buscarConceptos(#{registroGastosAction.encontroMismoGrupo}, '#{rich:clientId('pnlMensajes')}'); #{rich:element('cmdBuscarOrdenCompra')}.disabled = false;"
+								reRender="dtBusquedaOrdenCompra,pnlMensajes,ordenCompraScrollTop"
+								limitToList="true" />
+								
+							<a4j:commandButton id="cmdBusquedaAvanzadaOrdenes" 
+								image="#{msg['toggle.img']}" title="#{msg['busqueda']} #{msg['avanzada']}"
+								onclick="toggleAvanzado(this.id, 'gBusquedaAvanzadaOrdenCompra', 'cbTipoBusquedaOrdenCompra', 'txtValorBusquedaOrdenCompra');" />
+						</h:panelGrid>
+					</h:panelGroup>
+					
+					<h:panelGroup style="width:100%;">
+						<rich:datascroller id="ordenCompraScrollTop" page="#{registroGastosAction.paginacionOrdenCompra}" for="dtBusquedaOrdenCompra" renderIfSinglePage="false"
+							align="center" maxPages="5" fastStep="5" ajaxSingle="true" styleClass="Titulo" style="float:right; margin:0;" />
+					</h:panelGroup>
+				</h:panelGrid>
+				
+				<h:panelGroup id="gBusquedaAvanzadaOrdenCompra" style="display:none; backgroud-color:#e9e9e9; width:100%; margin:5px auto 0; padding:0;">
+					<h:panelGrid columns="4" style="margin:0; padding:0;">
+						<h:panelGroup>
+							<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
+							<h:selectOneMenu id="cbTipoBusquedaOrdenCompra" styleClass="Titulo" style="width: 216px;"
+								value="#{registroGastosAction.campoBusquedaOrdenCompra}">
+								<f:selectItems value="#{registroGastosAction.listTiposBusquedaOrdenCompra}" />
+							</h:selectOneMenu>
+						</h:panelGroup>
+					</h:panelGrid>
+				</h:panelGroup>
+			
+				<div class="tableParent" style="display:block; margin:5px auto 0; width:100%; padding:0; height:auto; max-height:480px; overflow-y:auto;">
+					<rich:dataTable id="dtBusquedaOrdenCompra" value="#{registroGastosAction.listOrdenCompra}" var="var" 
+						rows="50" cellpadding="0" cellspacing="0" width="780" border="0" rowClasses="Row1, Row2" style="margin:0 auto; width:100%;">
+						<f:facet name="header">
+							<rich:columnGroup>
+								<rich:column styleClass="tygCompGtosTit" style="text-align:center; padding:auto 2px; width:80px;">
+									<h:outputText value="#{msg['id']}"/>
+								</rich:column>
+								
+								<rich:column styleClass="tygCompGtosTit" style="text-align:center; padding:auto 2px; width:90px;">
+									<h:outputText value="#{msg['folio']}"/>
+								</rich:column>
+								
+								<rich:column styleClass="tygCompGtosTit" style="text-align:center; padding:auto 2px;">
+									<h:outputText value="#{msg['proveedor']}"/>
+								</rich:column>
+								
+								<rich:column styleClass="tygCompGtosTit" style="text-align:center; padding:auto 2px;;">
+									<h:outputText value="#{msg['solicita']}"/>
+								</rich:column>
+								
+								<rich:column  styleClass="tygCompGtosTit" style="text-align:center; padding:auto 2px; width:20px;" />
+							</rich:columnGroup>
+						</f:facet>
+						
+						<rich:column styleClass="tygCompGtosDesc" style="text-align:center;">
+							<h:outputText value="#{var.id}" />
+						</rich:column>
+						
+						<rich:column tyleClass="tygCompGtosDesc" style="text-align:center;">
+							<h:outputText value="#{var.folio}" />
+						</rich:column>
+						
+						<rich:column tyleClass="tygCompGtosDesc" style="text-align:left;">
+							<h:outputText value="#{var.nombreProveedor}" />
+						</rich:column>
+						
+						<rich:column tyleClass="tygCompGtosDesc" style="text-align:left;">
+							<h:outputText value="#{var.nombreSolicita}" />
+						</rich:column>
+						
+						<rich:column tyleClass="tygCompGtosDesc" style="text-align:center;">
+							<a4j:commandButton id="cmdBusquedaSeleccionarOrdenCompra" 
+								rendered="#{var.estatus != 1}"
+								image="#{msg['agregar16.img']}" title="#{msg['seleccionar']}"
+								onclick="#{rich:component('pnlBusquedaOrdenCompra')}.hide()"
+								action="#{registroGastosAction.ordenCompraSeleccionar}" 
+								oncomplete="seleccionar(#{registroGastosAction.encontroMismoGrupo}, 'pnlBusquedaOrdenCompra', '')"
+								reRender="dtBusquedaOrdenCompra,pnlDatosOrdenCompra">
+								<f:setPropertyActionListener target="#{registroGastosAction.pojoOrdenCompra}" value="#{var}" />
+							</a4j:commandButton>
+							<h:outputText rendered="#{var.estatus == 1}" value="#{msg['cancelada']}" />
+						</rich:column>
+					</rich:dataTable>
+				</div>
+			</a4j:region>
+		</a4j:form>
+	</rich:modalPanel>
+</ui:composition>

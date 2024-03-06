@@ -1,0 +1,91 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlNuevoEditarAlmacen" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;">
+		<f:facet name="header">
+			<h:outputText id="lblTitulo" value="#{almacenAction.pojoAlmacen.id==null ? 'Nuevo Almacen' : 'Editar Almacen'}" styleClass="Titulo" style="margin-left:10px" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage value="#{msg['navegacion.gral.cerrar.img']}" style="cursor:pointer;" onclick="#{rich:component('pnlNuevoEditarAlmacen')}.hide()" />
+		</f:facet>
+		
+		<!-- BOTONERA -->
+		<div id="botonera" style="display: block; width: 100%; height: 22px; margin-bottom: 1em;">
+			<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%">
+				
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoBotonesDerechos" style="width:100%">
+				<h:panelGrid columns="2" style="float:right; margin-right:5px;" >
+					<h:panelGroup style="vertical-align: middle; position:relative; ">
+						<a4j:commandButton id="cmdSalvar"
+							image="#{msg['salvar22.img']}" style="vertical-align: right; position:relative;" 
+							action="#{almacenAction.guardar}" 
+							reRender="dtAlmacenes, pnlMsgGralAlmacen, grupoResOperacion"
+							oncomplete="validaGuardar( #{almacenAction.operacionCompleta}, '#{rich:clientId('pnlNuevoEditarAlmacen')}', '#{rich:clientId('pnlMsgGralAlmacen')}', #{rich:element('cmdSalvar')} );"
+							render="dtAlmacenes, pnlMsgGralAlmacen"/>
+					</h:panelGroup>
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<a4j:status>
+							<f:facet name="start">
+								<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;"/>
+							</f:facet>
+							<f:facet name="stop">
+								<h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: middle; position:relative;"/>
+							</f:facet>
+						</a4j:status>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+		</div>
+		
+		<h:panelGroup id="grupoEncAlmacen" styleClass="encabezado">
+			<h:panelGrid width="100%">
+				<h:panelGroup>
+					<h:outputText
+						value="#{almacenAction.pojoAlmacen.id==null ? '' : almacenAction.pojoAlmacen.id  }"
+						style="text-align: center;" />
+						
+					<h:outputText
+						value=" - #{almacenAction.pojoAlmacen.id==null ? '' : almacenAction.pojoAlmacen.nombre  }"
+						style="text-align: center;" />
+				</h:panelGroup>
+			</h:panelGrid>
+		</h:panelGroup>
+		
+		<h:panelGroup id="grupoDatos">
+			<fieldset style="margin-top: 10px; margin-bottom: 10px">
+				<legend>#{msg['almacen']}</legend>
+				
+				<h:panelGrid id="pnlAlmacenDatos" columns="2" width="400" columnClasses="colTitulo,colDato" style="text-align:left;">
+					<h:outputLabel value="#{msg['nombre']}:" styleClass="Titulo" />
+					<h:inputText style="width: 230px;" value="#{almacenAction.pojoAlmacen.nombre}" />
+					
+					<h:outputLabel value="#{msg['almacen.identificador']}:" styleClass="Titulo" />
+					<h:inputText style="width: 150px;" value="#{almacenAction.pojoAlmacen.identificador}" />
+					
+					<h:outputLabel value="#{msg['general']}:" styleClass="Titulo" />
+					<h:selectBooleanCheckbox value="#{almacenAction.tipoAlmacen}" style="float:center; margin-right:2px;"/>
+					
+					<h:outputText value="#{msg['sucursal']}:" styleClass="Titulo" />
+					<h:selectOneMenu value="#{almacenAction.idSucursal}" style="width:200px;">
+						<f:selectItems value="#{almacenAction.listaCboSucursales}"/>				
+					</h:selectOneMenu>
+					
+					<h:outputText value="#{msg['domicilio']}:" styleClass="Titulo" />
+					<a4j:commandLink id="cmdSeleccionarDomicilio" 
+						action="#{almacenAction.nuevoDomicilio}"  
+						value="#{almacenAction.pojoAlmacen.domicilio == null ? msg['seleccionar'] : almacenAction.pojoAlmacen.domicilio}" 
+						oncomplete="#{rich:component('pnlDomicilio')}.show();"  
+						render="pnlDomicilio, grpDomiDom0, grpDomiDom"/>
+				</h:panelGrid>
+			</fieldset>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

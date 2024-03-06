@@ -1,0 +1,385 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlLlavesValores" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1200px;" top="20">
+		<f:facet name="header">
+			<h:outputText value="#{msg['llaves']} #{msg['valores']}" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlLlavesValores')}.hide()" />
+		</f:facet>
+
+		<div style="margin: 10px auto 0; min-width:500px;">
+			<h:panelGroup id="bandGrupoData1" styleClass="encabezado" style="min-height: 1em;">
+				<h:outputText value="#{gruposAction.grupoDescripcion}" />
+			</h:panelGroup>
+			
+			<fieldset>
+				<legend><h:outputText value="#{msg['llaves']} - #{msg['grupo']}" /></legend>
+		
+				<div style="display:block; min-width:500px; width:100%; height: 22px;">
+					<a4j:commandButton id="cmdNuevoGrupoLlaveValor" 
+						image="#{msg['agregar22.img']}" title="#{msg['agregar.e']}"
+						style="float:right; margin-right:5px; vertical-align: middle; cursor: pointer;" 
+						action="#{gruposAction.nuevoLlaveValor}" 
+						oncomplete="#{rich:component('pnlLlaveValor')}.show()"
+						render="pnlLlaveValor, pnlValidaciones, bandGrupoData2"
+						limitRender="true"
+						execute="@this" />
+				</div>
+
+			<div style="display:block; padding:0; max-width:1024px; width:100%; height:auto; max-height:490px; overflow:auto;">
+				<rich:dataTable id="dtGrupoLlavesValores" value="#{gruposAction.listLlavesValores}" var="var" 
+					cellpadding="0" cellspacing="0" rows="100" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['id']}" />
+							</rich:column>
+							
+							<rich:column style="width:100px; text-align:center;" styleClass="Titulo">
+								<h:outputText value="#{msg['cuenta']}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave1 != ''}">
+								<h:outputText value="#{msg['llave']} 1" title="#{gruposAction.tituloLlave1}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave2 != ''}">
+								<h:outputText value="#{msg['llave']} 2" title="#{gruposAction.tituloLlave2}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave3 != ''}">
+								<h:outputText value="#{msg['llave']} 3" title="#{gruposAction.tituloLlave3}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave4 != ''}">
+								<h:outputText value="#{msg['llave']} 4" title="#{gruposAction.tituloLlave4}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave5 != ''}">
+								<h:outputText value="#{msg['llave']} 5" title="#{gruposAction.tituloLlave5}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave6 != ''}">
+								<h:outputText value="#{msg['llave']} 6" title="#{gruposAction.tituloLlave6}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave7 != ''}">
+								<h:outputText value="#{msg['llave']} 7" title="#{gruposAction.tituloLlave7}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave8 != ''}">
+								<h:outputText value="#{msg['llave']} 8" title="#{gruposAction.tituloLlave8}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave9 != ''}">
+								<h:outputText value="#{msg['llave']} 9" title="#{gruposAction.tituloLlave9}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave10 != ''}">
+								<h:outputText value="#{msg['llave']} 10" title="#{gruposAction.tituloLlave10}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave11 != ''}">
+								<h:outputText value="#{msg['llave']} 11" title="#{gruposAction.tituloLlave11}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave12 != ''}">
+								<h:outputText value="#{msg['llave']} 12" title="#{gruposAction.tituloLlave12}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave13 != ''}">
+								<h:outputText value="#{msg['llave']} 13" title="#{gruposAction.tituloLlave13}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave14 != ''}">
+								<h:outputText value="#{msg['llave']} 14" title="#{gruposAction.tituloLlave14}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave15 != ''}">
+								<h:outputText value="#{msg['llave']} 15" title="#{gruposAction.tituloLlave15}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave16 != ''}">
+								<h:outputText value="#{msg['llave']} 16" title="#{gruposAction.tituloLlave16}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave17 != ''}">
+								<h:outputText value="#{msg['llave']} 17" title="#{gruposAction.tituloLlave17}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave18 != ''}">
+								<h:outputText value="#{msg['llave']} 18" title="#{gruposAction.tituloLlave18}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave19 != ''}">
+								<h:outputText value="#{msg['llave']} 19" title="#{gruposAction.tituloLlave19}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave20 != ''}">
+								<h:outputText value="#{msg['llave']} 20" title="#{gruposAction.tituloLlave20}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave21 != ''}">
+								<h:outputText value="#{msg['llave']} 21" title="#{gruposAction.tituloLlave21}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave22 != ''}">
+								<h:outputText value="#{msg['llave']} 22" title="#{gruposAction.tituloLlave22}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave23 != ''}">
+								<h:outputText value="#{msg['llave']} 23" title="#{gruposAction.tituloLlave23}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave24 != ''}">
+								<h:outputText value="#{msg['llave']} 24" title="#{gruposAction.tituloLlave24}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave25 != ''}">
+								<h:outputText value="#{msg['llave']} 25" title="#{gruposAction.tituloLlave25}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave26 != ''}">
+								<h:outputText value="#{msg['llave']} 26" title="#{gruposAction.tituloLlave26}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave27 != ''}">
+								<h:outputText value="#{msg['llave']} 27" title="#{gruposAction.tituloLlave27}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave28 != ''}">
+								<h:outputText value="#{msg['llave']} 28" title="#{gruposAction.tituloLlave28}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave29 != ''}">
+								<h:outputText value="#{msg['llave']} 29" title="#{gruposAction.tituloLlave29}" />
+							</rich:column>
+							
+							<rich:column style="width:80px; text-align:center;" styleClass="Titulo"
+								rendered="#{gruposAction.tituloLlave30 != ''}">
+								<h:outputText value="#{msg['llave']} 30" title="#{gruposAction.tituloLlave30}" />
+							</rich:column>
+							
+							<rich:column style="width: 20px; text-align:center;" styleClass="Titulo" />
+						</rich:columnGroup>
+					</f:facet>
+						
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion">
+						<h:outputText value="#{var.id}" />
+					</rich:column>
+					
+					<rich:column style="width:100px; text-align: center;" styleClass="Descripcion">
+						<h:outputText value="#{var.noCuenta}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave1 != ''}">
+						<h:outputText value="#{var.valorLlave1}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave2 != ''}">
+						<h:outputText value="#{var.valorLlave2}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave3 != ''}">
+						<h:outputText value="#{var.valorLlave3}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave4 != ''}">
+						<h:outputText value="#{var.valorLlave4}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave5 != ''}">
+						<h:outputText value="#{var.valorLlave5}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave6 != ''}">
+						<h:outputText value="#{var.valorLlave6}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave7 != ''}">
+						<h:outputText value="#{var.valorLlave7}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave8 != ''}">
+						<h:outputText value="#{var.valorLlave8}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave9 != ''}">
+						<h:outputText value="#{var.valorLlave9}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave10 != ''}">
+						<h:outputText value="#{var.valorLlave10}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave11 != ''}">
+						<h:outputText value="#{var.valorLlave11}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave12 != ''}">
+						<h:outputText value="#{var.valorLlave12}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave13 != ''}">
+						<h:outputText value="#{var.valorLlave13}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave14 != ''}">
+						<h:outputText value="#{var.valorLlave14}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave15 != ''}">
+						<h:outputText value="#{var.valorLlave15}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave16 != ''}">
+						<h:outputText value="#{var.valorLlave16}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave17 != ''}">
+						<h:outputText value="#{var.valorLlave17}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave18 != ''}">
+						<h:outputText value="#{var.valorLlave18}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave19 != ''}">
+						<h:outputText value="#{var.valorLlave19}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave20 != ''}">
+						<h:outputText value="#{var.valorLlave20}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave21 != ''}">
+						<h:outputText value="#{var.valorLlave21}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave22 != ''}">
+						<h:outputText value="#{var.valorLlave22}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave23 != ''}">
+						<h:outputText value="#{var.valorLlave23}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave24 != ''}">
+						<h:outputText value="#{var.valorLlave24}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave25 != ''}">
+						<h:outputText value="#{var.valorLlave25}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave26 != ''}">
+						<h:outputText value="#{var.valorLlave26}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave27 != ''}">
+						<h:outputText value="#{var.valorLlave27}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave28 != ''}">
+						<h:outputText value="#{var.valorLlave28}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave29 != ''}">
+						<h:outputText value="#{var.valorLlave29}" />
+					</rich:column>
+					
+					<rich:column style="width:80px; text-align: center;" styleClass="Descripcion"
+						rendered="#{gruposAction.tituloLlave30 != ''}">
+						<h:outputText value="#{var.valorLlave30}" />
+					</rich:column>
+
+					<rich:column style="text-align:center; width: 20px;" styleClass="Descripcion">
+						<a4j:commandButton id="cmdBorrarLLaveValor" 
+							image="#{msg['eliminar16.img']}" 
+							oncomplete="#{rich:component('pnlEliminarLlaveValor')}.show()" 
+							render="pnlEliminarLlaveValor">
+							<f:setPropertyActionListener value="#{var}" target="#{gruposAction.pojoLlaveValorBorrar}" for="cmdBorrarLLaveValor" />
+							<rich:tooltip showDelay="300" value="#{msg['eliminar.e']}" for="cmdBorrarLLaveValor" />
+						</a4j:commandButton>
+					</rich:column> 
+	
+					<f:facet name="footer">
+						<rich:column breakRowBefore="true" colspan="11" style="text-align:center;">
+							<rich:dataScroller id="dScrollGrupoLlavesValores" align="center" for="dtGrupoLlavesValores" maxPages="10"
+								ajaxSingle="true" page="#{gruposAction.numPaginaGrupoLlavesValores}" styleClass="Titulo" />
+						</rich:column>
+					</f:facet>
+				</rich:dataTable>
+			</div>
+			</fieldset>
+		</div>
+	</rich:popupPanel>
+</ui:composition>
