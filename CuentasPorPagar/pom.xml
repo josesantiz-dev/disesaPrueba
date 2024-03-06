@@ -296,16 +296,16 @@
 		-->
 	</dependencies>
 	
-<build>
+	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
+				<version>2.3.2</version>
 			</plugin>
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>3.3.1</version>
+				<version>2.1.1</version>
 				<configuration>
 					<archive>
 						<manifestFile>src/main/webapp/META-INF/MANIFEST.MF</manifestFile>

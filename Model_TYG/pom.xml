@@ -4,7 +4,7 @@
 	<groupId>net.giro</groupId>
 	<artifactId>Model_TYG</artifactId>
 	<version>2.1</version><!--1.2-->
-	<name>EJB3 Modelo Publico</name>
+	<name>EJB3 Modelo TYG</name>
 	<packaging>ejb</packaging>
 	<properties>
 		<!-- Explicitly declaring the source encoding eliminates the following

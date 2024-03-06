@@ -96,7 +96,7 @@
 						   	<a4j:commandButton image="#{msg['agregar16.img']}" title="#{msg['seleccionar']}"
 								action="#{subcontratistaAction.seleccionarObra}" 
 								oncomplete="seleccionar(#{subcontratistaAction.band}, '#{rich:clientId('pnlBusquedaObras')}', '#{rich:clientId('pnlMensajes')}');" 
-								render="pnlMensajes,groupObra,txtCliente,groupPorcentajesGlobales,groupBotones,cmdSubcontratistaGuardarTodo,dtSubcontratistas" limitRender="true">
+								render="pnlMensajes,groupObra,txtCliente,groupPorcentajesGlobales,cmbTipoSub,groupBotones,cmdSubcontratistaGuardarTodo,dtSubcontratistas" limitRender="true">
 								<f:setPropertyActionListener target="#{subcontratistaAction.pojoObra}" value="#{var}" />
 						   	</a4j:commandButton>
 						</rich:column>

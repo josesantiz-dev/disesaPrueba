@@ -374,6 +374,50 @@ public class EstadoCuentaAction implements Serializable {
 		totalizarCobranza();
 	}
 	
+	public void validarPagoFondoGarantia(AjaxBehaviorEvent event) {
+		String value = "";
+		// ------------------------------
+		ObraCobranza item = null;
+		double anticipo = 0;
+		double retencion = 0;
+		long idMoneda = 0;
+		int index = -1;
+
+		value = "";
+		if (event.getComponent().getAttributes().get("targetMoneda") != null) 
+			value = event.getComponent().getAttributes().get("targetMoneda").toString();
+		if (value == null || "".equals(value.trim()))
+			value = "0";
+		idMoneda = Long.valueOf(value);
+
+		value = "";
+		if (event.getComponent().getAttributes().get("targetIndex") != null) 
+			value = event.getComponent().getAttributes().get("targetIndex").toString();
+		if (value == null || "".equals(value.trim()))
+			value = "-1";
+		index = Integer.valueOf(value);
+
+		if (index >= 0) {
+			if (10000001L == idMoneda) {
+				item = this.listObraCobranzaMXN.get(index);
+				if(item.getPagoFondoGarantia().doubleValue() > item.getFacturaTotal().doubleValue()){
+					item.setPagoFondoGarantia(new  BigDecimal((new DecimalFormat(this.porcentajeFormat)).format(0)));
+					this.listObraCobranzaMXN.set(index, item);
+				}
+			}
+			
+			if (10000002L == idMoneda) {
+				item = this.listObraCobranzaUSD.get(index);
+				if(item.getPagoFondoGarantia().doubleValue() > item.getFacturaTotal().doubleValue()){
+					item.setPagoFondoGarantia(new  BigDecimal((new DecimalFormat(this.porcentajeFormat)).format(0)));
+					this.listObraCobranzaUSD.set(index, item);
+				}
+			}
+		}
+		
+		totalizarCobranza();
+	}
+	
 	public void totalizarCobranza() {
 		HashMap<Double, Integer> promPorAnticipo = new HashMap<Double, Integer>();
 		HashMap<Double, Integer> promPorRetencion = new HashMap<Double, Integer>();
@@ -460,7 +504,7 @@ public class EstadoCuentaAction implements Serializable {
 		controlLog("Cobranza detalles ... Totalizamos");
 		for (ObraCobranza var : this.listObraCobranzaMXN) {
 			// Amortizacion
-			controlLog("Cobranza detalles ... Calculamos amortizacion");
+			/*controlLog("Cobranza detalles ... Calculamos amortizacion");
 			porcentaje = getMonto(var.getPorcentajeAnticipo(), 4);
 			porcentaje = porcentaje / 100;
 			monto = (var.getEstimacion().doubleValue() * porcentaje);
@@ -473,19 +517,25 @@ public class EstadoCuentaAction implements Serializable {
 			monto = (var.getEstimacion().doubleValue() * porcentaje);
 			var.setFondoGarantia(getMonto(monto, 2));
 			
+
 			// Subtotal
 			if (var.getEstimacion().doubleValue() > 0) {
 				baseEstimacion = true;
 				controlLog("Cobranza detalles ... Obtenemos estimacion y calculamos subtotal");
-				monto = getMonto(var.getEstimacion(), 2) - (getMonto(var.getAmortizacion(), 2) + getMonto(var.getFondoGarantia(), 2));
+				monto = getMonto(var.getAnticipo(), 2) + getMonto(var.getEstimacion(), 2) 	- 
+						getMonto(var.getAmortizacion(), 2) - getMonto(var.getFondoGarantia(), 2) + getMonto(var.getPagoFondoGarantia(), 2);
 				controlLog("Cobranza detalles ... Asignamos monto (Subtotal)");
 				var.setSubtotal(getMonto(monto, 2)); 
 			} else if (var.getAnticipo().doubleValue() > 0) {
 				baseEstimacion = false;
-				controlLog("Cobranza detalles ... Obtenemos anticipo y lo asignamos al Subtotal");
 				var.setAmortizacion(BigDecimal.ZERO); 
 				var.setFondoGarantia(BigDecimal.ZERO);
-				var.setSubtotal(var.getAnticipo()); 
+				controlLog("Cobranza detalles ... Obtenemos anticipo y lo asignamos al Subtotal");
+
+				monto = getMonto(var.getAnticipo(), 2) + getMonto(var.getPagoFondoGarantia(), 2);
+				controlLog("Cobranza detalles ... Asignamos monto (Subtotal)");
+				//var.setSubtotal(var.getAnticipo()); 
+				var.setSubtotal(getMonto(monto, 2)); 
 			} else {
 				controlLog("Cobranza detalles ... descartado");
 				var.setAmortizacion(BigDecimal.ZERO); 
@@ -495,8 +545,15 @@ public class EstadoCuentaAction implements Serializable {
 				var.setCargos(BigDecimal.ZERO);
 				var.setTotal(BigDecimal.ZERO);
 				continue;
-			}
+			}*/
 			
+			//SE SOLICITO SACAR SUBTOTAL AUN CON ESTIMACION EN 0
+			baseEstimacion = false;
+			controlLog("Cobranza detalles ... Obtenemos estimacion y calculamos subtotal");
+			monto = getMonto(var.getAnticipo(), 2) + getMonto(var.getEstimacion(), 2) 
+			- getMonto(var.getAmortizacion(), 2) - getMonto(var.getFondoGarantia(), 2) + getMonto(var.getPagoFondoGarantia(), 2);
+			controlLog("Cobranza detalles ... Asignamos monto (Subtotal)");
+			var.setSubtotal(getMonto(monto, 2)); 
 			// IVA y tasa IVA
 			controlLog("Cobranza detalles ... Calculamos IVA");
 			porcentaje = getMonto(var.getPorcentajeIva(), 4);
@@ -545,7 +602,7 @@ public class EstadoCuentaAction implements Serializable {
 		controlLog("Cobranza detalles ... Totalizamos");
 		for (ObraCobranza var : this.listObraCobranzaUSD) {
 			// Amortizacion
-			controlLog("Cobranza detalles ... Calculamos amortizacion");
+			/*controlLog("Cobranza detalles ... Calculamos amortizacion");
 			porcentaje = getMonto(var.getPorcentajeAnticipo(), 4);
 			porcentaje = porcentaje / 100;
 			monto = (var.getEstimacion().doubleValue() * porcentaje);
@@ -557,12 +614,13 @@ public class EstadoCuentaAction implements Serializable {
 			porcentaje = porcentaje / 100;
 			monto = ((var.getEstimacion().doubleValue() * porcentaje) / 100);
 			var.setFondoGarantia(getMonto(monto, 2));
-
+			*/
 			// Subtotal
-			if (var.getEstimacion().doubleValue() > 0) {
+			/*if (var.getEstimacion().doubleValue() > 0) {
 				baseEstimacion = true;
 				controlLog("Cobranza detalles ... Obtenemos estimacion y calculamos subtotal");
-				monto = getMonto(var.getEstimacion(), 2) - (getMonto(var.getAmortizacion(), 2) + getMonto(var.getFondoGarantia(), 2));
+				monto = getMonto(var.getAnticipo(), 2) + getMonto(var.getEstimacion(), 2) 
+				- getMonto(var.getAmortizacion(), 2) - getMonto(var.getFondoGarantia(), 2) + getMonto(var.getPagoFondoGarantia(), 2);
 				controlLog("Cobranza detalles ... Asignamos monto (Subtotal)");
 				var.setSubtotal(getMonto(monto, 2)); 
 			} else if (var.getAnticipo().doubleValue() > 0) {
@@ -570,18 +628,31 @@ public class EstadoCuentaAction implements Serializable {
 				var.setAmortizacion(BigDecimal.ZERO); 
 				var.setFondoGarantia(BigDecimal.ZERO);
 				controlLog("Cobranza detalles ... Obtenemos anticipo y lo asignamos al Subtotal");
-				var.setSubtotal(var.getAnticipo()); 
+
+				monto = getMonto(var.getAnticipo(), 2) + getMonto(var.getPagoFondoGarantia(), 2);
+				controlLog("Cobranza detalles ... Asignamos monto (Subtotal)");
+				//var.setSubtotal(var.getAnticipo()); 
+				var.setSubtotal(getMonto(monto, 2)); 
 			} else {
 				controlLog("Cobranza detalles ... descartado");
+				var.setSubtotal(getMonto(monto, 2)); 
 				var.setAmortizacion(BigDecimal.ZERO); 
 				var.setFondoGarantia(BigDecimal.ZERO);
-				var.setSubtotal(BigDecimal.ZERO);
+				var.setSubtotal(BigDecimal.ZERO);				
 				var.setIva(BigDecimal.ZERO);
 				var.setCargos(BigDecimal.ZERO);
 				var.setTotal(BigDecimal.ZERO);
 				continue;
-			}
-
+			}*/
+			//SE SOLICITO SACAR SUBTOTAL AUN CON ESTIMACION EN 0
+			baseEstimacion = true;
+			controlLog("Cobranza detalles ... Obtenemos estimacion y calculamos subtotal");
+			monto = getMonto(var.getAnticipo(), 2) + getMonto(var.getEstimacion(), 2) 
+			- getMonto(var.getAmortizacion(), 2) - getMonto(var.getFondoGarantia(), 2) + getMonto(var.getPagoFondoGarantia(), 2);
+			controlLog("Cobranza detalles ... Asignamos monto (Subtotal)");
+			var.setSubtotal(getMonto(monto, 2)); 
+			
+			
 			// IVA y tasa IVA
 			controlLog("Cobranza detalles ... Calculamos IVA");
 			porcentaje = getMonto(var.getPorcentajeIva(), 4);

@@ -23,6 +23,9 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 
+import mx.gob.sat.cfdi.v40.complementos.TimbreFiscalDigital11.TimbreFiscalDigital;
+import mx.gob.sat.cfdi.v40.complementos.nomina12.Nomina;
+import mx.gob.sat.cfdi.v40.complementos.pagos10.Pagos;
 import net.giro.cargas.documentos.beans.ComprobacionFactura;
 import net.giro.cargas.documentos.dao.ComprobacionFacturaDAO;
 import net.giro.cargas.documentos.respuesta.Errores;
@@ -37,10 +40,8 @@ import mx.gob.sat.cfdi.consulta.tempuri.Consulta;
 import mx.gob.sat.cfdi.consulta.tempuri.ConsultaCFDIService;
 import mx.gob.sat.cfdi.consulta.tempuri.ConsultaResponse;
 import mx.gob.sat.cfdi.consulta.tempuri.IConsultaCFDIService;
-import mx.gob.sat.cfdi.v33.Comprobante;
-import mx.gob.sat.cfdi.v33.complementos.TimbreFiscalDigital11.TimbreFiscalDigital;
-import mx.gob.sat.cfdi.v33.complementos.nomina12.Nomina;
-import mx.gob.sat.cfdi.v33.complementos.pagos10.Pagos.Pago;
+import mx.gob.sat.cfdi.v40.Comprobante;
+
 
 @Stateless
 public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
@@ -215,6 +216,7 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 		List<ComprobacionFactura> listFacs = null;
 		ComprobacionFactura pojoComprobacionFactura = null;
 		Comprobante cfdi = null;
+		//TODO fix complemento
 		TimbreFiscalDigital tfd = null;
 		String expresionImpresa = "";
 		Acuse pojoAcuse = null;
@@ -257,16 +259,20 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 			// Serializando
 			steps.add("serializando ... ");
 			cfdi = toComprobante(archivoSrc);
+			log.info("Despues de obtener comprobante ");
 			if (cfdi == null) {
 				log.info("Ocurrio un problema al interpretar el XML ingresado");
 				respuesta.getErrores().addCodigo("CARGAS_DOCUMENTOS", Errores.ERROR_INESPERADO);
 				respuesta.getErrores().setCodigoError(Errores.ERROR_INESPERADO);
 				respuesta.getErrores().setDescError("Ocurrio un problema al interpretar el XML ingresado");
 				return respuesta;
+			}else{
+				log.info("El cfdi no es null V." + cfdi.getVersion());
 			}
 			
 			// Recuperando Complementos: Timbre
 			steps.add("Recuperando Complmentos ... ");
+			//TODO fix complemento
 			tfd = getNodoTimbreFiscalDigital(cfdi.getComplemento());
 			if (tfd == null) {
 				log.info("Ocurrio un problema al recuperar el Timbre del XML ingresado");
@@ -274,12 +280,17 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 				respuesta.getErrores().setCodigoError(Errores.ERROR_INESPERADO);
 				respuesta.getErrores().setDescError("Ocurrio un problema al recuperar el Timbre del XML ingresado");
 				return respuesta;
+			}else{
+				log.info("El Timbre no es null V." + tfd.getVersion());
 			}
-			
+
 			// Comprobacion Tipo de Comprobante
 			steps.add("Comprobacion Tipo de Comprobante ... ");
 			cfdi.setSerie(setDefaultValue(cfdi.getSerie(), ""));
+			//TODO fix complemento
 			cfdi.setFolio(setDefaultValue(cfdi.getFolio(), tfd.getUUID().substring(tfd.getUUID().length() - 8)));
+			//cfdi.setFolio(setDefaultValue(cfdi.getFolio(), ""));
+
 			if (! "I E".contains(cfdi.getTipoDeComprobante().value())) {
 				steps.add("TipoDeComprobante-invalido-" + cfdi.getReceptor().getRfc());
 				log.info(Errores.ERROR_TIPOCOMPROBANTE_INVALIDO + " - " + Errores.descError.get(Errores.ERROR_TIPOCOMPROBANTE_INVALIDO) + ": " + cfdi.getTipoDeComprobante().value());
@@ -287,6 +298,8 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 				respuesta.getErrores().setCodigoError(Errores.ERROR_TIPOCOMPROBANTE_INVALIDO);
 				respuesta.getErrores().setDescError(Errores.descError.get(Errores.ERROR_TIPOCOMPROBANTE_INVALIDO));
 				return respuesta;
+			}else{
+				log.info("El cfdi es de tipo :: " + cfdi.getTipoDeComprobante());
 			}
 
 			// Comprobamos que el XML va dirijido a la empresa actualmente cargada
@@ -298,12 +311,16 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 				respuesta.getErrores().setCodigoError(Errores.ERROR_EMPRESA_INVALIDA);
 				respuesta.getErrores().setDescError(Errores.descError.get(Errores.ERROR_EMPRESA_INVALIDA));
 				return respuesta;
+			}else{
+				log.info("Los datos de la empresa son correctos :: " + cfdi.getReceptor().getRfc() + " - " + cfdi.getEmisor().getRfc());
 			}
 			
 			// Compruebo el estatus del CFDI en el SAT
 			steps.add("expresion-impresa");
+			//TODO fix complemento
 			expresionImpresa = "?re=" + cfdi.getEmisor().getRfc() + "&rr=" + cfdi.getReceptor().getRfc() + "&tt=" + cfdi.getTotal() + "&id=" + tfd.getUUID();
-			
+			//expresionImpresa = "?re=" + cfdi.getEmisor().getRfc() + "&rr=" + cfdi.getReceptor().getRfc() + "&tt=" + cfdi.getTotal() + "&id=" + "";
+
 			/*// Cargamos y validamos el xml
 			steps.add("leyendo archivo");
 			xml = readFile(archivoSrc);
@@ -351,20 +368,29 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 			pojoAcuse = consultaCFDI(expresionImpresa, validarEstatus);
 			if (pojoAcuse != null) {
 				if ("cancelado".equals(pojoAcuse.getEstado().getValue().toLowerCase())) {
+					//TODO fix complemento
 					steps.add("cfdi-cancelado-" + tfd.getUUID());
-					log.info(Errores.ERROR_CFDI_CANCELADO + " - " + Errores.descError.get(Errores.ERROR_CFDI_CANCELADO) + ": " + tfd.getUUID());
+					//steps.add("cfdi-cancelado-" + "");
+
+					//log.info(Errores.ERROR_CFDI_CANCELADO + " - " + Errores.descError.get(Errores.ERROR_CFDI_CANCELADO) + ": " + tfd.getUUID());
+					log.info(Errores.ERROR_CFDI_CANCELADO + " - " + Errores.descError.get(Errores.ERROR_CFDI_CANCELADO) + ": " + "");
+
 					respuesta.getErrores().addCodigo("CARGAS_DOCUMENTOS", Errores.ERROR_CFDI_CANCELADO);
 					respuesta.getErrores().setCodigoError(Errores.ERROR_CFDI_CANCELADO);
 					respuesta.getErrores().setDescError(Errores.descError.get(Errores.ERROR_CFDI_CANCELADO));
 					return respuesta;
+				}else{
+					log.info("El acuse no esta cancelado");
 				}
+			}else{
+				log.info("Acuse es null");
 			}
 			
 			// Comprobamos que el documento especificado no se halla subido previamente
 			idComprobacion = 0;
 			steps.add("comprobando-previo");
 			listFacs = this.comprobar(expresionImpresa, "id desc"); 
-			if (listFacs != null && ! listFacs.isEmpty()) {
+			if (listFacs != null && !listFacs.isEmpty()) {
 				listFacs = actualizarDatosFacturasPrevias(cfdi, listFacs);
 				pojoComprobacionFactura = listFacs.get(0);
 				idComprobacion = pojoComprobacionFactura.getId();
@@ -380,6 +406,8 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 				respuesta.getErrores().setCodigoError(Errores.ERROR_XML_PREVIO);
 				respuesta.getErrores().setDescError(Errores.descError.get(Errores.ERROR_XML_PREVIO));
 				return respuesta;
+			}else{
+				log.info("No hay XML previo");
 			}
 
 			if (cfdi.getDescuento() != null && cfdi.getDescuento().doubleValue() > 0)
@@ -398,8 +426,10 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 			impuestos = impuestosFactura * tipoCambio;
 			retenciones = retencionesFactura * tipoCambio;
 			total = totalFactura * tipoCambio;
+			log.info("Se calculo Total de factira : " + total);
 			
 			// Genero Comprobacion de Factura
+			log.info("Inicia generacionde pojo comprobacion de factura(ComprobacionFactura)");
 			steps.add("genero-ComprobacionFactura");
 			pojoComprobacionFactura = new ComprobacionFactura();
 			pojoComprobacionFactura.setId(idComprobacion);
@@ -416,8 +446,13 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 			pojoComprobacionFactura.setFacturaTipo(cfdi.getTipoDeComprobante().value());
 			pojoComprobacionFactura.setFacturaMetodo(cfdi.getMetodoPago().value());
 			pojoComprobacionFactura.setFacturaFormaPago(cfdi.getFormaPago());
-			pojoComprobacionFactura.setFacturaFecha(cfdi.getFecha());
+			//TODO fix complemento
+			//pojoComprobacionFactura.setFacturaFecha(cfdi.getFecha().get);
+			pojoComprobacionFactura.setFacturaFecha(cfdi.getFecha().toGregorianCalendar().getTime());
+
 			pojoComprobacionFactura.setFacturaFolioFiscal(tfd.getUUID());
+			//pojoComprobacionFactura.setFacturaFolioFiscal("");
+
 			pojoComprobacionFactura.setFacturaDescuento(descuentoFactura);
 			pojoComprobacionFactura.setFacturaSubtotal(subtotalFactura);
 			pojoComprobacionFactura.setFacturaTotal(totalFactura);
@@ -448,10 +483,11 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 			pojoComprobacionFactura.setId(this.ifzBase.save(pojoComprobacionFactura, getCodigoEmpresa()));
 			idComprobacion = pojoComprobacionFactura.getId();
 			steps.add("CoprobacionFactura-" + pojoComprobacionFactura.getId());
-			
+			log.info("Termino de generar objeto Comprobacion factura");
 			respuesta.getErrores().setCodigoError(0L);
 			respuesta.getErrores().setDescError("");
 			steps.add("terminado");
+			log.info("Termino proceso");
 		} catch (TransformerException e) {
 			log.error("Ocurrio un problema al Transformar el XML ", e);
 			respuesta.getErrores().addCodigo("CARGAS_DOCUMENTOS", Errores.ERROR_ANALIZAR_XML);
@@ -472,7 +508,8 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 			if (cfdi != null) {
 				folioFactura = validateString(cfdi.getSerie()) + (! "".equals(validateString(cfdi.getSerie())) ? "-" : "") + validateString(cfdi.getFolio());
 				respuesta.getBody().addValor("pojoComprobante", cfdi);
-				respuesta.getBody().addValor("comprobanteFecha", dtFormat.format(cfdi.getFecha()));
+				log.info("comprobanteFecha :: " + cfdi.getFecha().toGregorianCalendar().getTime());
+				respuesta.getBody().addValor("comprobanteFecha", dtFormat.format(cfdi.getFecha().toGregorianCalendar().getTime()));
 				respuesta.getBody().addValor("comprobanteSerie", validateString(cfdi.getSerie())); 
 				respuesta.getBody().addValor("comprobanteFolio", validateString(cfdi.getFolio())); 
 				respuesta.getBody().addValor("comprobanteFolioFactura", folioFactura); 
@@ -485,7 +522,10 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 				respuesta.getBody().addValor("comprobanteSubtotal", subtotal); 
 				respuesta.getBody().addValor("comprobanteEmisor", cfdi.getEmisor().getRfc());
 				respuesta.getBody().addValor("comprobanteReceptor", cfdi.getReceptor().getRfc());
+				//TODO fix complemento
 				respuesta.getBody().addValor("comprobanteUuid", tfd.getUUID());
+				//respuesta.getBody().addValor("comprobanteUuid", "");
+
 				respuesta.getBody().addValor("comprobanteTipoPersona", validaTipoPersona(cfdi.getEmisor().getRfc()));
 				respuesta.getBody().addValor("comprobantePersonalidad", validaPersonalidad(cfdi.getEmisor().getRfc()));
 			}
@@ -510,7 +550,7 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 				respuesta.getBody().addValor("comprobantePersonalidad", validaPersonalidad(cfdi.getEmisor().getRfc()));
 			}
 		}
-		
+		log.info("Retorna respuesta");
 		return respuesta;
 	}
 
@@ -518,7 +558,10 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 	public Respuesta importarCFDI(Comprobante cfdi) throws Exception {
 		Respuesta respuesta = null;
 		SimpleDateFormat dtFormat = null;
+
+		//TODO fix complemento
 		TimbreFiscalDigital tfd = null;
+
 		Acuse pojoAcuse = null;
 		String expresionImpresa = "";
 		// -----------------------------------------------------------------------------
@@ -544,7 +587,8 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 				respuesta.getErrores().setDescError("Ocurrio un problema al interpretar el XML ingresado");
 				return respuesta;
 			}
-			
+
+			//TODO fix complemento
 			// Recuperando Complementos: Timbre
 			tfd = getNodoTimbreFiscalDigital(cfdi.getComplemento());
 			if (tfd == null) {
@@ -554,12 +598,20 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 				respuesta.getErrores().setDescError("Ocurrio un problema al recuperar el Timbre del XML ingresado");
 				return respuesta;
 			}
-			
+
+
 			// Comprobacion Tipo de Comprobante
 			cfdi.setSerie(setDefaultValue(cfdi.getSerie(), ""));
+
+			//TODO fix complemento
 			cfdi.setFolio(setDefaultValue(cfdi.getFolio(), tfd.getUUID().substring(tfd.getUUID().length() - 8)));
+			//cfdi.setFolio(setDefaultValue(cfdi.getFolio(), ""));
+
 			// Compruebo el estatus del CFDI en el SAT
+			//TODO fix complemento
 			expresionImpresa = "?re=" + cfdi.getEmisor().getRfc() + "&rr=" + cfdi.getReceptor().getRfc() + "&tt=" + cfdi.getTotal() + "&id=" + tfd.getUUID();
+			//expresionImpresa = "?re=" + cfdi.getEmisor().getRfc() + "&rr=" + cfdi.getReceptor().getRfc() + "&tt=" + cfdi.getTotal() + "&id=" + "";
+
 			if (! "I E".contains(cfdi.getTipoDeComprobante().value())) {
 				log.info(Errores.ERROR_TIPOCOMPROBANTE_INVALIDO + " - " + Errores.descError.get(Errores.ERROR_TIPOCOMPROBANTE_INVALIDO) + ": " + cfdi.getTipoDeComprobante().value());
 				respuesta.getErrores().addCodigo("CARGAS_DOCUMENTOS", Errores.ERROR_TIPOCOMPROBANTE_INVALIDO);
@@ -580,7 +632,10 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 			pojoAcuse = consultaCFDI(expresionImpresa, false);
 			if (pojoAcuse != null) {
 				if ("cancelado".equals(pojoAcuse.getEstado().getValue().toLowerCase())) {
+					//TODO fix complemento
 					log.info(Errores.ERROR_CFDI_CANCELADO + " - " + Errores.descError.get(Errores.ERROR_CFDI_CANCELADO) + ": " + tfd.getUUID());
+					//log.info(Errores.ERROR_CFDI_CANCELADO + " - " + Errores.descError.get(Errores.ERROR_CFDI_CANCELADO) + ": " + "");
+
 					respuesta.getErrores().addCodigo("CARGAS_DOCUMENTOS", Errores.ERROR_CFDI_CANCELADO);
 					respuesta.getErrores().setCodigoError(Errores.ERROR_CFDI_CANCELADO);
 					respuesta.getErrores().setDescError(Errores.descError.get(Errores.ERROR_CFDI_CANCELADO));
@@ -607,8 +662,11 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 				respuesta.getErrores().setDescError(Errores.descError.get(Errores.ERROR_XML_PREVIO));
 				return respuesta;
 			}
-			
+
+			//TODO fix complemento
 			comprobacion = getComprobacionFactura(cfdi, tfd.getUUID(), expresionImpresa);
+			//comprobacion = getComprobacionFactura(cfdi, "", expresionImpresa);
+
 			if (comprobacion == null) {
 				log.info(Errores.ERROR_EMPRESA_INVALIDA + " - Ocurrio un problema al generar la Comprobacion del CFDI");
 				respuesta.getErrores().addCodigo("CARGAS_DOCUMENTOS", Errores.ERROR_EMPRESA_INVALIDA);
@@ -660,7 +718,11 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 				respuesta.getBody().addValor("comprobanteTotal", total); 
 				respuesta.getBody().addValor("comprobanteEmisor", cfdi.getEmisor().getRfc());
 				respuesta.getBody().addValor("comprobanteReceptor", cfdi.getReceptor().getRfc());
+
+				//TODO fix complemento
 				respuesta.getBody().addValor("comprobanteUuid", tfd.getUUID());
+				//respuesta.getBody().addValor("comprobanteUuid", "");
+
 				respuesta.getBody().addValor("comprobanteTipoPersona", validaTipoPersona(cfdi.getEmisor().getRfc()));
 				respuesta.getBody().addValor("comprobantePersonalidad", validaPersonalidad(cfdi.getEmisor().getRfc()));
 			}
@@ -848,27 +910,33 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 			xmlSource = fileSource;
 			//xml = readFile(fileSource);
 			//xmlSource = aMinusculas(xml);
-			context = JAXBContext.newInstance(new Class[] {Comprobante.class, TimbreFiscalDigital.class, Nomina.class, Pago.class});
+
+			//TODO fix complemento
+			log.info("Antes de JAXBContext");
+			context = JAXBContext.newInstance(new Class[] {Comprobante.class, TimbreFiscalDigital.class, Nomina.class, Pagos.Pago.class});
+			//context = JAXBContext.newInstance(new Class[] {Comprobante.class});
+			log.info("despues de JAXBContext");
 			unmarshaller = context.createUnmarshaller();
+			log.info("Antes de unmarshaller");
 			return (Comprobante) unmarshaller.unmarshal(new ByteArrayInputStream(xmlSource));
 		} catch (Exception e) {
+			e.printStackTrace();
+
 			log.error("Ocurrio un problema al deserializar el XML a clases", e);
 		}
 		
 		return null;
 	}
 
-	private TimbreFiscalDigital getNodoTimbreFiscalDigital(List<Comprobante.Complemento> complementos) {
+	private TimbreFiscalDigital getNodoTimbreFiscalDigital(Comprobante.Complemento complemento) {
 		try {
-			if (complementos == null || complementos.isEmpty()) 
+			if (complemento == null)
 				return null;
-			for (Comprobante.Complemento item : complementos) {
-				if (item.getAny() == null || item.getAny().isEmpty())
-					continue;
-				for (Object value : item.getAny()) {
-					if (value instanceof TimbreFiscalDigital)
-						return (TimbreFiscalDigital) value;
-				}
+			if (complemento.getAny() == null || complemento.getAny().isEmpty())
+				return null;
+			for (Object value : complemento.getAny()) {
+				if (value instanceof TimbreFiscalDigital)
+					return (TimbreFiscalDigital) value;
 			}
 		} catch (Exception e) {
 			log.error("Ocurrio un problema al recuperar el nodo TimbreFiscalDigital de los Complementos", e);
@@ -921,7 +989,12 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 			comprobacion.setFacturaTipo(cfdi.getTipoDeComprobante().value());
 			comprobacion.setFacturaMetodo(cfdi.getMetodoPago().value());
 			comprobacion.setFacturaFormaPago(cfdi.getFormaPago());
-			comprobacion.setFacturaFecha(cfdi.getFecha());
+
+			//TODO fix complemento
+			//comprobacion.setFacturaFecha(cfdi.getFecha());
+			comprobacion.setFacturaFecha(cfdi.getFecha().toGregorianCalendar()
+					.getTime());
+
 			comprobacion.setFacturaFolioFiscal(uuid);
 			comprobacion.setFacturaDescuento(descuentoFactura);
 			comprobacion.setFacturaSubtotal(subtotalFactura);
@@ -1023,7 +1096,7 @@ public class ComprobacionFacturaFac implements ComprobacionFacturaRem {
 		Acuse acuse = null;
 		
 		try {
-			// Inicializamos
+			// Inicializamos Ocurrio un problema al interpretar el XML ingresado
 			peticion = "<![CDATA[" + expresionImpresa + "]]>";
 			peticion = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tem=\"http://tempuri.org/\"><soapenv:Header/><soapenv:Body><tem:Consulta><tem:expresionImpresa>#EXPRESION</tem:expresionImpresa></tem:Consulta></soapenv:Body></soapenv:Envelope>";
 			peticion = peticion.replace("#EXPRESION", "<![CDATA[" + expresionImpresa + "]]>");

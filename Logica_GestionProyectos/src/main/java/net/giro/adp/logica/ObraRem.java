@@ -2,6 +2,7 @@ package net.giro.adp.logica;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Remote;
 
@@ -10,6 +11,7 @@ import net.giro.adp.beans.ObraExt;
 import net.giro.adp.beans.TipoObraAutorizadas;
 import net.giro.adp.beans.TipoObraJerarquia;
 import net.giro.adp.beans.TipoObraRevisadas;
+import net.giro.adp.beans.TipoSub;
 import net.giro.clientes.beans.Persona;
 import net.giro.clientes.beans.PersonaExt;
 import net.giro.plataforma.InfoSesion;
@@ -108,6 +110,9 @@ public interface ObraRem {
 	public List<ObraExt> findLikePropertyExt(String propertyName, final String value, int opcion, String orderBy, int limite) throws Exception;
 	
 	public PersonaExt extenderPersona(Persona pojoPersona) throws Exception;
+
+	public List<TipoSub> findAllTipoSub() throws Exception;
+
 }
 
 /*

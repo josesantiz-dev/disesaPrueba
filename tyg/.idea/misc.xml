@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/../Model_TYG/pom.xml" />
+        <option value="$PROJECT_DIR$/../Comun/pom.xml" />
+        <option value="$PROJECT_DIR$/../Logica_Cargas_Documentos/pom.xml" />
+        <option value="$PROJECT_DIR$/../Model_Publico/pom.xml" />
+        <option value="$PROJECT_DIR$/../Navegador/pom.xml" />
+        <option value="$PROJECT_DIR$/../FRAMEWORK/pom.xml" />
+        <option value="$PROJECT_DIR$/../Logica_Publico/pom.xml" />
+        <option value="$PROJECT_DIR$/../Model_Cargas_Documentos/pom.xml" />
+        <option value="$PROJECT_DIR$/../Logica_TYG/pom.xml" />
+        <option value="$PROJECT_DIR$/../Model_Credito/pom.xml" />
+        <option value="$PROJECT_DIR$/../Inventarios/pom.xml" />
+        <option value="$PROJECT_DIR$/../Navegador4/pom.xml" />
+        <option value="$PROJECT_DIR$/../Model_Compras/pom.xml" />
+        <option value="$PROJECT_DIR$/../Model_RecHum/pom.xml" />
+        <option value="$PROJECT_DIR$/../Logica_Compras/pom.xml" />
+        <option value="$PROJECT_DIR$/../Logica_Clientes/pom.xml" />
+        <option value="$PROJECT_DIR$/../Logica_Inventarios/pom.xml" />
+        <option value="$PROJECT_DIR$/../Logica_GestionProyectos/pom.xml" />
+        <option value="$PROJECT_DIR$/../Logica_RecHum/pom.xml" />
+        <option value="$PROJECT_DIR$/../Model_Clientes/pom.xml" />
+        <option value="$PROJECT_DIR$/../Model_Inventarios/pom.xml" />
+        <option value="$PROJECT_DIR$/../Model_GestionProyectos/pom.xml" />
+        <option value="$PROJECT_DIR$/../Logica_CuentasPorPagar/pom.xml" />
+        <option value="$PROJECT_DIR$/../Logica_Contabilidad/pom.xml" />
+        <option value="$PROJECT_DIR$/../Model_CuentasPorPagar/pom.xml" />
+        <option value="$PROJECT_DIR$/../Model_Contabilidad/pom.xml" />
+        <option value="$PROJECT_DIR$/../Compras/pom.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK" />
+</project>

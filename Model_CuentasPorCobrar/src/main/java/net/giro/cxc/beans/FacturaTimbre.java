@@ -1,8 +1,10 @@
 package net.giro.cxc.beans;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class FacturaTimbre implements Serializable {
 	private static final long serialVersionUID = 1L;

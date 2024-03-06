@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="tyg" />
+        <module name="Model_Cargas_Documentos" />
+        <module name="Logica_CuentasPorPagar" />
+        <module name="Logica_GestionProyectos" />
+        <module name="Model_RecHum" />
+        <module name="Logica_Compras" />
+        <module name="Model_Clientes" />
+        <module name="Model_Contabilidad" />
+        <module name="Model_Publico" />
+        <module name="Model_CuentasPorPagar" />
+        <module name="Inventarios" />
+        <module name="Model_Compras" />
+        <module name="Navegador" />
+        <module name="Logica_Cargas_Documentos" />
+        <module name="Model_GestionProyectos" />
+        <module name="Comun" />
+        <module name="Navegador4" />
+        <module name="Model_Inventarios" />
+        <module name="Logica_Inventarios" />
+        <module name="Logica_Publico" />
+        <module name="Model_TYG" />
+        <module name="Logica_TYG" />
+        <module name="Logica_Contabilidad" />
+        <module name="Model_Credito" />
+        <module name="Compras" />
+        <module name="FRAMEWORK" />
+        <module name="Logica_Clientes" />
+        <module name="Logica_RecHum" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>

@@ -24,8 +24,6 @@ public class OrdenCompraDetalleExt implements Serializable {
 	private Date fechaCreacion;
 	private long modificadoPor;
 	private Date fechaModificacion;
-    private int estatus;
-    private String comentariosCancelacion;
 	
 	public OrdenCompraDetalleExt() {
 		this.fechaCreacion = Calendar.getInstance().getTime();
@@ -123,21 +121,7 @@ public class OrdenCompraDetalleExt implements Serializable {
 	public void setFechaModificacion(Date fechaModificacion) {
 		this.fechaModificacion = fechaModificacion;
 	}
-	
-    public int getEstatus() {
-        return estatus;
-    }
 
-    public void setEstatus(int estatus) {
-        this.estatus = estatus;
-    }
-    public String getComentariosCancelacion() {
-        return comentariosCancelacion;
-    }
-
-    public void setComentariosCancelacion(String comentariosCancelacion) {
-        this.comentariosCancelacion = comentariosCancelacion;
-    }
 	// -------------------------------------------------------------------
 	// EXTENDIDOS
 	// -------------------------------------------------------------------
@@ -229,8 +213,6 @@ public class OrdenCompraDetalleExt implements Serializable {
 			dest.setFechaCreacion(this.fechaCreacion);
 			dest.setModificadoPor(this.modificadoPor);
 			dest.setFechaModificacion(this.fechaModificacion);
-			dest.setEstatus(this.estatus);
-			dest.setComentariosCancelacion(this.comentariosCancelacion);
 		} catch (Exception e) {
 			throw e;
 		}

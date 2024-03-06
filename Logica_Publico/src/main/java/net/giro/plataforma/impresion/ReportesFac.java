@@ -277,8 +277,12 @@ public class ReportesFac implements ReportesRem {
 	        if (! params.containsKey("fromPass") || params.get("fromPass") == null || "".equals(params.get("fromPass").trim())) {
 	        	params.put("from", correoProps.get("from"));
 	        	params.put("fromPass", correoProps.get("fromPass"));
-	        }
-	        
+	        } 
+	       from = params.get("from");
+	       fromPass = params.get("fromPass");
+	       
+	       System.out.println("from :: " + from);
+	       
 			// Comprobamos receptores
 			receptores = string2List(params.get("to"), "\\,");
 			receptoresCC = string2List(params.get("cc"), "\\,");

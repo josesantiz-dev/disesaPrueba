@@ -408,7 +408,6 @@
 								
 								<rich:column style="text-align:center; padding-left: 5px; width:90px:">
 									<h:inputText styleClass="Descripcion" style="text-align:center; width:40px;"
-										disabled="#{ordenAction.editarOrdenCompra == false ? true : ((ordenAction.pojoOrden.id == null || ordenAction.pojoOrden.id == 0) ? false : true)}"
 										value="#{var.cantidad}"
 										onkeydown="return soloDecimales(event, this.value, 10, 4)">
 										<f:convertNumber pattern="#{ordenAction.patternDecimal}" />

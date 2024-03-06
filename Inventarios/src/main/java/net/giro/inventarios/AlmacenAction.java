@@ -190,10 +190,10 @@ public class AlmacenAction implements Serializable {
 		try {
 			control();
 			// Validamos permiso de Lectura/Consulta
-			if (! this.permisos.getConsultar()) {
+			/*if (!this.permisos.getConsultar()) {
 				control(301, "No tiene permitido consultar informacion");
 				return;
-			}
+			}*/
 			
 			this.numPagina = 1;
 			this.campoBusqueda = (this.campoBusqueda != null && ! "".equals(this.campoBusqueda.trim())) ? this.campoBusqueda.trim() : this.listTiposBusqueda.get(0).getValue().toString();

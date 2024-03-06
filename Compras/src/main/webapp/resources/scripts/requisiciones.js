@@ -84,10 +84,8 @@ function nuevaBusquedaProductos(operacionCancelada, pnlOperacion, pnlMensajes, v
 	if (operacionCancelada == true)
 		RichFaces.ui.PopupPanel.showPopupPanel(pnlMensajes);
 	else
-		//RichFaces.ui.PopupPanel.showPopupPanel(pnlOperacion);
-		console.log('function nuevaBusquedaProductos DONE\n------------------------------');
-	RichFaces.$(pnlOperacion).switchToItem('true');
-	//document.getElementById("#{rich:clientId('txtValorBusquedaProductos')}").focus();
+		RichFaces.ui.PopupPanel.showPopupPanel(pnlOperacion);
+	console.log('function nuevaBusquedaProductos DONE\n------------------------------');
 }
 
 function nuevoConfirmaOrigen(operacionCancelada, perfilEgresos, pnlConfirmar, pnlOperacion, pnlMensajes) {
@@ -107,7 +105,6 @@ function nuevoConfirmaOrigen(operacionCancelada, perfilEgresos, pnlConfirmar, pn
 		else
 			RichFaces.ui.PopupPanel.showPopupPanel(pnlOperacion);
 	}
-	RichFaces.$('frmPrincipal:panelColapsedBusquedaProductos').switchToItem('false');
 	console.log('function nuevoConfirmaOrigen DONE\n------------------------------');
 }
 
@@ -178,9 +175,5 @@ function verEditar(operacionCancelada, pnlOperacion, pnlMensajes) {
 	console.log('---> showing ' + pnlOperacion + " ...");
 	RichFaces.ui.PopupPanel.hidePopupPanel(pnlOperacion);
 	RichFaces.ui.PopupPanel.showPopupPanel(pnlOperacion);
-	var panelElement = document.getElementById("#{rich:clientId('panelColapsedBusquedaProductos')}");
-    if (panelElement) {
-        RichFaces.$(panelElement).switchToItem('false');
-    }
-    console.log('DONE\n------------------------------');
+	console.log('DONE\n------------------------------');
 }

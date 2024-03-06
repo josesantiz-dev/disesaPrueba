@@ -56,8 +56,7 @@
 					rendered="#{traspasosAction.puedeDescontar}"
 					image="#{msg['abajo22.img']}" title="#{msg['salida']}"
 					action="#{traspasosAction.ejecutarSalida}" 
-					oncomplete="#{rich:component('pnlMensajes')}.show();"
-					render="pnlMensajes,botonera,grupoDatos,dtDetalles" limitRender="true" />
+					render="botonera,grupoDatos,dtDetalles" limitRender="true" />
 				
 				<a4j:commandButton id="cmdCancelar" style="float:right; margin-left: 5px; vertical-align:top; position:relative;"
 					rendered="#{traspasosAction.puedeCancelar}"
@@ -93,8 +92,8 @@
 										<a4j:commandLink id="cmdSeleccionarObraOrigen" styleClass="linkColor" 
 											rendered="#{traspasosAction.puedeEditar}"
 											value="#{traspasosAction.obraOrigen == '' ? msg['seleccionar'] : msg['cambiar']}" title="#{msg['busqueda']}"
-											action="#{traspasosAction.nuevaBusquedaObras}" 
-											oncomplete="#{rich:component('pnlBusquedaObras')}.show()"
+											action="#{traspasosAction.nuevaBusquedaObras}" execute="@this"
+											oncomplete="#{rich:component('pnlBusquedaObras')}.show()" 
 											render="pnlBusquedaObras" limitRender="true">
 											<f:param name="settingObraOrigen" value="1" />
 										</a4j:commandLink>
@@ -139,9 +138,11 @@
 										<a4j:commandLink id="cmdSeleccionarObra" styleClass="linkColor" 
 											rendered="#{traspasosAction.puedeEditar}"
 											value="#{traspasosAction.obra == '' ? msg['seleccionar'] : msg['cambiar']}" title="#{msg['busqueda']}"
-											action="#{traspasosAction.nuevaBusquedaObras}" 
+											action="#{traspasosAction.nuevaBusquedaObras}" execute="@this"
 											oncomplete="#{rich:component('pnlBusquedaObras')}.show()"
-											render="pnlBusquedaObras" limitRender="true" />
+											render="pnlBusquedaObras" limitRender="true" >
+										</a4j:commandLink>
+										
 										
 										<h:inputText id="txtObraHidden" style="text-align:left; display:none;"
 											value="#{traspasosAction.obra}" 
@@ -269,7 +270,7 @@
 				
 				<f:facet name="footer">
 					<rich:dataScroller for="dtDetalles" page="#{traspasosAction.pagDetalles}" renderIfSinglePage="false"
-						align="center" maxPages="10" fastStep="10" ajaxSingle="true" styleClass="Titulo" />
+							ajaxSingle="true" maxPages="10" fastStep="10" align="center" styleClass="Titulo" />
 				</f:facet>
 			</rich:dataTable>
 		</div>

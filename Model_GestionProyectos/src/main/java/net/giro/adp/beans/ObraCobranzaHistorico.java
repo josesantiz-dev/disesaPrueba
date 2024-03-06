@@ -37,6 +37,7 @@ public class ObraCobranzaHistorico implements Serializable {
 	private BigDecimal estimacion;
 	private BigDecimal amortizacion;
 	private BigDecimal fondoGarantia;
+	private BigDecimal pagoFondoGarantia;
 	private BigDecimal subtotal;
 	private BigDecimal iva;
 	private BigDecimal cargos;
@@ -51,6 +52,7 @@ public class ObraCobranzaHistorico implements Serializable {
 		this.estimacion = BigDecimal.ZERO;
 		this.amortizacion = BigDecimal.ZERO;
 		this.fondoGarantia = BigDecimal.ZERO;
+		this.pagoFondoGarantia = BigDecimal.ZERO;
 		this.subtotal =  BigDecimal.ZERO;
 		this.iva =  BigDecimal.ZERO;
 		this.total = BigDecimal.ZERO;
@@ -352,6 +354,15 @@ public class ObraCobranzaHistorico implements Serializable {
 		this.fechaCreacion = fechaCreacion;
 	}
 
+	public BigDecimal getPagoFondoGarantia() {
+		return pagoFondoGarantia;
+	}
+
+	public void setPagoFondoGarantia(BigDecimal pagoFondoGarantia) {
+		if (pagoFondoGarantia == null)
+			pagoFondoGarantia = BigDecimal.ZERO;
+		this.pagoFondoGarantia = pagoFondoGarantia;
+	}
 	// --------------------------------------------------------------------
 	// METODOS
 	// --------------------------------------------------------------------
@@ -382,6 +393,7 @@ public class ObraCobranzaHistorico implements Serializable {
 		this.estimacion = itemCobranza.getEstimacion();
 		this.amortizacion = itemCobranza.getAmortizacion();
 		this.fondoGarantia = itemCobranza.getFondoGarantia();
+		this.pagoFondoGarantia = itemCobranza.getPagoFondoGarantia();
 		this.subtotal = itemCobranza.getSubtotal();
 		this.iva = itemCobranza.getIva();
 		this.cargos = itemCobranza.getCargos();
@@ -389,6 +401,7 @@ public class ObraCobranzaHistorico implements Serializable {
 		this.creadoPor = itemCobranza.getModificadoPor();
 		this.fechaCreacion = itemCobranza.getFechaCreacion();
 	}
+
 }
 
 /* ----------------------------------------------------------------------------------------------------------------

@@ -24,6 +24,7 @@ import javax.faces.application.Application;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.naming.InitialContext;
 import javax.servlet.http.HttpSession;
@@ -232,7 +233,11 @@ public class ProductoAction implements Serializable {
 			// Permisos
 			valPerfil = (this.entornoProperties.containsKey("PRODUCTOS") ? this.entornoProperties.getString("PRODUCTOS") : "PRODUCTOS");
 			valPerfil = (valPerfil != null && ! "".equals(valPerfil.trim())) ? valPerfil.trim() : "0";
+			System.out.println(valPerfil);
+			System.out.println(this.loginManager.getIdAplicacion());
+			System.out.println(this.loginManager.getPermisos(this.loginManager.getIdAplicacion(), Long.parseLong(valPerfil)));
 			this.permisos = this.loginManager.getPermisos(this.loginManager.getIdAplicacion(), Long.parseLong(valPerfil));
+			
 			
 			ctx = new InitialContext();
 			this.ifzProductos = (ProductoRem) ctx.lookup("ejb:/Logica_Inventarios//ProductoFac!net.giro.inventarios.logica.ProductoRem");
@@ -317,7 +322,8 @@ public class ProductoAction implements Serializable {
 		try {
 			control();
 			// Validamos permiso de Lectura/Consulta
-			/*if (! this.permisos.getConsultar()) {
+			/*System.out.println(this.permisos);
+			if (! this.permisos.getConsultar()) {
 				control(-1, "No tiene permitido Consultar informacion");
 				controlLog("301 - No tiene permitido Consultar informacion");
 				return;
@@ -385,11 +391,11 @@ public class ProductoAction implements Serializable {
 		try {
 			control();
 			// Validamos permiso de Lectura/Consulta
-			if (! this.permisos.getEditar()) {
+			/*if (! this.permisos.getEditar()) {
 				control(-1, "No tiene permitido Añadir/Editar informacion");
 				controlLog("301 - No tiene permitido Añadir/Editar informacion");
 				return;
-			}
+			}*/
 			
 			this.idCodeEspecialidad = -1;
 			this.mantenerCodigo = false;
@@ -450,7 +456,8 @@ public class ProductoAction implements Serializable {
 		String codigo = "";
 		String origenCodigo = "";
 		String tMaestro = "";
-		
+
+		System.out.println("idProducto :: " + this.idProducto);
 		try {
 			control();
 			this.pojoProducto = this.ifzProductos.findById(this.idProducto);
@@ -560,6 +567,7 @@ public class ProductoAction implements Serializable {
 				this.productosCaducos();
 			this.precioPrevio = 0;
 			nuevo();
+			buscar();
 		} catch (Exception e) {
 			control("Ocurrio un problema al guardar el Producto", e);
 		} 
@@ -569,11 +577,11 @@ public class ProductoAction implements Serializable {
 		try {
 			control();
 			// Validamos permiso de Lectura/Consulta
-			if (! this.permisos.getBorrar()) {
+			/*if (! this.permisos.getBorrar()) {
 				control(-1, "No tiene permitido Borrar/Eliminar informacion");
 				controlLog("301 - No tiene permitido Borrar/Eliminar informacion");
 				return;
-			}
+			}*/
 			
 			this.pojoProducto = this.ifzProductos.findById(this.idProducto);
 			if (this.pojoProducto == null || this.pojoProducto.getId() == null || this.pojoProducto.getId() <= 0L)
@@ -595,6 +603,7 @@ public class ProductoAction implements Serializable {
 			// Actualizamos en la BD
 			this.ifzProductos.update( this.pojoProductoEliminar );*/
 			this.nuevo();
+			buscar();
 		} catch (Exception e) {
 			control("Ocurrio un problema al intentar eliminar al Producto indicado", e);
 		}
@@ -640,11 +649,11 @@ public class ProductoAction implements Serializable {
 		boolean claveRepetida = false;
 
 		// Validamos permiso de Lectura/Consulta
-		if (! this.permisos.getEditar()) {
+		/*if (! this.permisos.getEditar()) {
 			control(-1, "No tiene permitido Añadir/Editar informacion");
 			controlLog("301 - No tiene permitido Añadir/Editar informacion");
 			return false;
-		}
+		}*/
 		
 		log.info("Validando producto");
 		if ("".equals(this.pojoProducto.getClave().trim())) {
@@ -1670,13 +1679,13 @@ public class ProductoAction implements Serializable {
 				}
 			}
 
-			log.error("CODIFICADOR ... " + this.listaCodeFamilias.size() + " Familias obtenidas");
+			log.info("CODIFICADOR ... " + this.listaCodeFamilias.size() + " Familias obtenidas");
 			return;
 		}
 
 		// SUBFAMILIAS
 		if (this.idCodeFamilia != this.idCodeFamiliaPrev) {
-			log.error("CODIFICADOR ... Obteniendo SubFamilias");
+			log.info("CODIFICADOR ... Obteniendo SubFamilias");
 			if (! this.mantenerCodigo)
 				this.pojoProducto.setClave("");
 			this.pojoProducto.setOrigenCodigo("");
@@ -1697,7 +1706,7 @@ public class ProductoAction implements Serializable {
 					params.put("atributo1", String.valueOf(this.idCodeFamilia));
 					this.listaCodeSubfamilias = this.ifzConValores.findByProperties(params, 0);
 					if (this.listaCodeSubfamilias == null || this.listaCodeSubfamilias.isEmpty()) {
-						log.info("Catalogo de SUBFAMILIAS vacio");
+						log.error("Catalogo de SUBFAMILIAS vacio");
 						control("El catalogo de SUBFAMILIAS esta vacio");
 						return;
 					}
@@ -1723,7 +1732,7 @@ public class ProductoAction implements Serializable {
 				}
 			}
 
-			log.error("CODIFICADOR ... " + this.listaCodeSubfamilias.size() + " SubFamilias obtenidas");
+			log.info("CODIFICADOR ... " + this.listaCodeSubfamilias.size() + " SubFamilias obtenidas");
 		}
 	}
 	

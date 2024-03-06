@@ -98,7 +98,7 @@ public class OrdenCompraImp extends DAOImpl<OrdenCompra> implements OrdenCompraD
 			queryString += "and model.autorizado in (" + (autorizadas ? "1" : "0,1") + ") ";
 			queryString += "and model.estatus in (0" + (incluyeCanceladas ? ",1" : "") + ",2) ";
 			queryString += "order by " + orderBy;
-			
+			System.out.println("findLike queryString :: " + queryString);
 			Query query = entityManager.createQuery(queryString);
 			query.setParameter("idEmpresa", idEmpresa);
 			if (idObra > 0L)
@@ -147,7 +147,7 @@ public class OrdenCompraImp extends DAOImpl<OrdenCompra> implements OrdenCompraD
 			queryString += "and model.autorizado in (" + (autorizadas ? "1" : "0,1") + ") ";
 			queryString += "and model.estatus in (0" + (incluyeCanceladas ? ",1" : "") + ",2) ";
 			queryString += "order by " + orderBy;
-			
+			System.out.println("findLikeProperty queryString :: " + queryString);
 			Query query = entityManager.createQuery(queryString);
 			query.setParameter("idEmpresa", idEmpresa);
 			if (value != null && ! "".equals(value.toString().trim()))
@@ -191,7 +191,7 @@ public class OrdenCompraImp extends DAOImpl<OrdenCompra> implements OrdenCompraD
 			queryString += "and model.autorizado in (" + (autorizadas ? "1" : "0,1") + ") ";
 			queryString += "and model.estatus in (0" + (incluyeCanceladas ? ",1" : "") + ",2) ";
 			queryString += "order by " + orderBy;
-			
+			System.out.println("findByProperty queryString :: " + queryString);
 			Query query = entityManager.createQuery(queryString);
 			query.setParameter("idEmpresa", idEmpresa);
 			if (value != null && ! "".equals(value.toString().trim()))
@@ -223,7 +223,7 @@ public class OrdenCompraImp extends DAOImpl<OrdenCompra> implements OrdenCompraD
 			if (estatus >= 0)
 				queryString += "and model.estatus = :estatus ";
 			queryString += "order by " + orderBy;
-			
+			System.out.println("findByObra queryString :: " + queryString);
 			Query query = entityManager.createQuery(queryString);
 			query.setParameter("idEmpresa", idEmpresa);
 			query.setParameter("idObra", idObra);
@@ -247,6 +247,9 @@ public class OrdenCompraImp extends DAOImpl<OrdenCompra> implements OrdenCompraD
 			if (idProveedor <= 0L) 
 				return 0;
 			Query query = entityManager.createQuery(queryString, Long.class);
+			
+			System.out.println("findConsecutivoByProveedor queryString :: " + queryString);
+			
 			query.setParameter("idEmpresa", idEmpresa);
 			query.setParameter("propertyValue", idProveedor);
 			consecutivo = (Long) query.getSingleResult();
@@ -282,7 +285,7 @@ public class OrdenCompraImp extends DAOImpl<OrdenCompra> implements OrdenCompraD
 			}
 			
 			queryString += "order by " + orderBy;
-			
+			System.out.println("findNoCompletas queryString :: " + queryString);
 			Query query = entityManager.createQuery(queryString);
 			query.setParameter("idEmpresa", idEmpresa);
 			if (value != null && ! "".equals(value.toString()))
@@ -323,6 +326,8 @@ public class OrdenCompraImp extends DAOImpl<OrdenCompra> implements OrdenCompraD
 			
 			queryString += "and estatus in (0" + (incluyeCanceladas ? ",1" : "") + ",2) ";
 			queryString += "order by " + orderBy;
+			
+			System.out.println("findNoAutorizadas queryString :: " + queryString);
 			
 			Query query = entityManager.createQuery(queryString);
 			query.setParameter("idEmpresa", idEmpresa);

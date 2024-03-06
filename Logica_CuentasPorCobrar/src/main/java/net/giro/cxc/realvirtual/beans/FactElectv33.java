@@ -42,6 +42,7 @@ import net.giro.cxc.beans.FacturaDetalleImpuestoExt;
 import net.giro.cxc.beans.FacturaExt;
 import net.giro.cxc.beans.FacturaPagosTimbre;
 import net.giro.cxc.beans.FacturaTimbre;
+import net.giro.cxc.beans.FacturasRelacionadas;
 import net.giro.cxc.logica.FacturaDetalleRem;
 import net.giro.cxc.logica.FacturaPagosTimbreRem;
 import net.giro.cxc.logica.FacturaRem;
@@ -117,7 +118,7 @@ public class FactElectv33 {
 		}
 	}
 
-	public boolean timbrarFactura(FacturaExt pojoFactura, long usuarioId) throws Exception {
+ 	public boolean timbrarFactura(FacturaExt pojoFactura, long usuarioId) throws Exception {
 		List<FacturaDetalleExt> listDetalles = null;
 		ResultSet rsCertificados = null;
 		InputStream clavePrivada = null;
@@ -180,6 +181,99 @@ public class FactElectv33 {
 			
 			// Generamos XML
 			root = generaXML(pojoFactura, listDetalles, rsCertificados.getString("no_certificado").trim(), new String(Base64.encodeBase64(rsCertificados.getBytes("certificado_data"))));
+			if (root == null) {
+				error(303L, "No se pudo general el XML (CFDI)");
+				return false;
+			}
+			
+			this.params.put("rfc_emisor", pojoFactura.getIdEmpresa().getRfc().trim());
+			this.params.put("rfc_receptor", pojoFactura.getRfc().trim());
+			
+			// Generamos CFDI, timbramos y Guardamos resultado Timbre --- 400's
+			this.timbrada = generarCFDI(root, clavePrivada, password, fileName, timbreUser, timbrePass);
+			timbre = comprobamosTimbre(pojoFactura, pojoFactura.getSerie(), pojoFactura.getFolio(), pojoFactura.getIdEmpresa().getId(), usuarioId);
+			timbre.setPruebas((this.testing ? 1 : 0));
+			timbre.setRfcEmisor(pojoFactura.getIdEmpresa().getRfc().trim());
+			timbre.setRfcReceptor(pojoFactura.getRfc().trim());
+			this.ifzTimbres.setInfoSesion(this.infoSesion);
+			timbre = this.ifzTimbres.saveOrUpdate(timbre);
+			
+			// Actualizamos la factura
+			pojoFactura.setIdCertificado(idCertificado);
+			pojoFactura.setIdTimbre(timbre);
+			this.ifzFactura.setInfoSesion(this.infoSesion);
+			this.ifzFactura.update(pojoFactura);
+		} catch (Exception e) {
+			log.error("Ocurrio un problema al intentar generar el comprobante para la Factura", e);
+			error(300L, "No se pudo generar el Comprobante para la Factura");
+			return false;
+		} 
+		
+		return this.timbrada;
+	} 
+ 	public boolean timbrarFactura(FacturaExt pojoFactura, List<FacturasRelacionadas> listFacturasRelacionadas, long usuarioId) throws Exception {
+		List<FacturaDetalleExt> listDetalles = null;
+		ResultSet rsCertificados = null;
+		InputStream clavePrivada = null;
+		String strQuery = "";
+		String password = ""; 
+		String fileName = "";
+		String timbreUser = "";
+		String timbrePass = "";
+		Long idCertificado = 0L;
+		// XML ------------------------------
+		Element root = null;
+		// ----------------------------------
+		FacturaTimbre timbre = null;
+		
+		try {
+			// Inicializaciones
+			this.timbrada = false;
+			this.conn = getConn();
+			this.params = new HashMap<String, Object>();
+			
+			// Validaciones 100
+			if (! validaciones(pojoFactura))
+				return false;
+			
+			// Asignacion de Serie y Folio si corresponde 200
+			if (! asignarSerieFolio(pojoFactura)) 
+				return false;
+			
+			// Certificado
+			strQuery += "SELECT id, id_empresa, no_certificado, certificado_data, certificado_data_pem, llave_data, llave_data_pem, llave_data_enc, palabra, usuario_timbre, clave_timbre, estatus ";
+			strQuery += "FROM empresa_certificado WHERE id_empresa = :idEmpresa and coalesce(nullif(estatus, ''), 'A') = 'A' order by id desc";
+			strQuery = strQuery.replace(":idEmpresa", pojoFactura.getIdEmpresa().getId().toString());
+			rsCertificados = this.conn.createStatement().executeQuery(strQuery); 
+			if (! rsCertificados.next()) {
+				error(301L, "No se pudo recuperar el Certificado cargado a la Empresa");
+				return false;
+			}
+			
+			listDetalles = this.ifzDetalles.findAllExt(pojoFactura.getId());
+			if (listDetalles == null || listDetalles.isEmpty()) {
+				error(302L, "No se pudo recuperar los detalles de la Factura (Conceptos)");
+				return false;
+			}
+
+			this.params.put("version", pojoFactura.getVersion());
+			this.params.put("uso_cfdi", pojoFactura.getUsoCfdi());
+			this.params.put("cfdi_relacionado", pojoFactura.getCfdiRelacionado());
+			this.params.put("cfdi_relacionado_uuid", pojoFactura.getCfdiRelacionadoUuid());
+			this.params.put("cfdi_tipo_relacion", pojoFactura.getCfdiTipoRelacion());
+			this.params.put("nocertificado", rsCertificados.getString("no_certificado").trim());
+
+			fileName = pojoFactura.getId() + "_" + pojoFactura.getFolioFactura();
+			timbreUser = rsCertificados.getString("usuario_timbre"); 
+			timbrePass = rsCertificados.getString("clave_timbre"); 
+			clavePrivada = rsCertificados.getBinaryStream("llave_data");
+			password = rsCertificados.getString("palabra"); 
+			idCertificado = rsCertificados.getLong("id");
+			if (idCertificado == null || idCertificado <= 0L)
+				idCertificado = 0L;
+			
+			// Generamos XML
+			root = generaXML(pojoFactura, listFacturasRelacionadas, listDetalles, rsCertificados.getString("no_certificado").trim(), new String(Base64.encodeBase64(rsCertificados.getBytes("certificado_data"))));
 			if (root == null) {
 				error(303L, "No se pudo general el XML (CFDI)");
 				return false;
@@ -877,7 +971,7 @@ public class FactElectv33 {
 		
 		return true;
 	}
-	
+
 	private Element generaXML(FacturaExt pojoFactura, List<FacturaDetalleExt> listDetalles, String noCertificado, String certificadoData) {
 		DecimalFormat formatterDecimal = null;
 		List<FacturaDetalleImpuestoExt> listImpuestos = null;
@@ -947,6 +1041,232 @@ public class FactElectv33 {
 				relacionado = new Element("CfdiRelacionado", xmlns);	
 				relacionado.setAttribute(new Attribute("UUID", pojoFactura.getCfdiRelacionadoUuid()));
 				relacionados.addContent(relacionado);
+				root.addContent(relacionados);
+			}
+			
+			// EMISOR
+			// --------------------------------------------------------------------------------------------------------
+			emisor = new Element("Emisor", xmlns);
+			emisor.setAttribute(new Attribute("Rfc", pojoFactura.getIdEmpresa().getRfc().trim()));
+			emisor.setAttribute(new Attribute("Nombre", pojoFactura.getIdEmpresa().getEmpresa().trim()));
+			emisor.setAttribute(new Attribute("RegimenFiscal", pojoFactura.getIdEmpresa().getCodigoRegimenFiscal()));
+			root.addContent(emisor);
+
+			// RECEPTOR
+			// --------------------------------------------------------------------------------------------------------
+			receptor = new Element("Receptor", xmlns);
+			receptor.setAttribute(new Attribute("Rfc", pojoFactura.getRfc().trim()));
+			receptor.setAttribute(new Attribute("Nombre", pojoFactura.getCliente().trim()));
+			receptor.setAttribute(new Attribute("UsoCFDI", pojoFactura.getUsoCfdi())); 
+			root.addContent(receptor);
+			
+			// CONCEPTOS
+			// --------------------------------------------------------------------------------------------------------
+			mapTraslados = new LinkedHashMap<String, Element>();
+			mapRetenciones = new LinkedHashMap<String, Element>();
+			conceptos = new Element("Conceptos",xmlns);
+			for (FacturaDetalleExt detalle : listDetalles) {
+				concepto = new Element("Concepto", xmlns);
+				concepto.setAttributes(
+					java.util.Arrays.asList(
+						new Attribute("ClaveProdServ", detalle.getClaveSat().trim()),
+						new Attribute("ClaveUnidad", detalle.getIdUnidadMedida().getValor().trim()),
+						new Attribute("Cantidad", formatterDecimal.format(detalle.getCantidad())),
+						new Attribute("NoIdentificacion", detalle.getIdConcepto().getId().toString()),
+						new Attribute("Descripcion", detalle.getIdConcepto().getDescripcion().trim()),
+						new Attribute("Unidad", detalle.getIdUnidadMedida().getDescripcion().trim()),
+						new Attribute("ValorUnitario", formatterDecimal.format(detalle.getCosto())),
+						new Attribute("Importe", formatterDecimal.format(detalle.getImporte()))
+				));
+				
+				// Impuestos del Concepto
+				listImpuestos = detalle.getListImpuestos(); 
+				if (listImpuestos != null && ! listImpuestos.isEmpty()) {
+					impuestos = new Element("Impuestos", xmlns);
+					traslados = new Element("Traslados", xmlns);
+					retenciones = new Element("Retenciones", xmlns);
+					
+					for (FacturaDetalleImpuestoExt imp : listImpuestos) {
+						monto = Double.parseDouble(imp.getIdImpuesto().getAtributo1().trim());
+						monto = monto / 100;
+						
+						if ("DE".equals(imp.getIdImpuesto().getTipoCuenta())) {
+							traslado = new Element("Traslado", xmlns);
+							traslado.setAttribute("Base", formatterDecimal.format(imp.getBase())); // traslado.setAttribute("Base", formatterDecimal.format(detalle.getImporte()));
+							traslado.setAttribute("Impuesto", imp.getIdImpuesto().getAtributo4());
+							traslado.setAttribute("TipoFactor", "Tasa");
+							traslado.setAttribute("TasaOCuota", (new DecimalFormat("#######0.000000")).format(monto));
+							traslado.setAttribute("Importe", formatterDecimal.format(imp.getImporte().doubleValue()));
+							traslados.addContent(traslado);
+							traslado = null;
+							
+							if (mapTraslados.containsKey(imp.getIdImpuesto().getAtributo4())) {
+								trasladoComprobante = mapTraslados.get(imp.getIdImpuesto().getAtributo4());
+								montoAux = Double.parseDouble(trasladoComprobante.getAttribute("Importe").getValue());
+								montoAux += imp.getImporte().doubleValue();
+								trasladoComprobante.setAttribute("Importe", formatterDecimal.format(montoAux));
+								mapTraslados.put(imp.getIdImpuesto().getAtributo4(), trasladoComprobante);
+								totalImpuestosTraslados += imp.getImporte().doubleValue();
+							} else {
+								trasladoComprobante = new Element("Traslado", xmlns);
+								trasladoComprobante.setAttribute("Impuesto", imp.getIdImpuesto().getAtributo4());
+								trasladoComprobante.setAttribute("TipoFactor", "Tasa");
+								trasladoComprobante.setAttribute("TasaOCuota", (new DecimalFormat("#######0.000000")).format(monto));
+								trasladoComprobante.setAttribute("Importe", formatterDecimal.format(imp.getImporte().doubleValue()));
+								mapTraslados.put(imp.getIdImpuesto().getAtributo4(), trasladoComprobante);
+								totalImpuestosTraslados += imp.getImporte().doubleValue();
+							}
+						} else {
+							retencion = new Element("Retencion", xmlns);
+							retencion.setAttribute("Base", formatterDecimal.format(imp.getBase())); // retencion.setAttribute("Base", formatterDecimal.format(detalle.getImporte()));
+							retencion.setAttribute("Impuesto", imp.getIdImpuesto().getAtributo4());
+							retencion.setAttribute("TipoFactor", "Tasa");
+							retencion.setAttribute("TasaOCuota", (new DecimalFormat("#######0.000000")).format(monto));
+							retencion.setAttribute("Importe", formatterDecimal.format(imp.getImporte().doubleValue()));
+							retenciones.addContent(retencion);
+							retencion = null;
+
+							if (mapRetenciones.containsKey(imp.getIdImpuesto().getAtributo4())) {
+								retencionComprobante = mapRetenciones.get(imp.getIdImpuesto().getAtributo4());
+								montoAux = Double.parseDouble(retencionComprobante.getAttribute("Importe").getValue());
+								montoAux += imp.getImporte().doubleValue();
+								retencionComprobante.setAttribute("Importe", formatterDecimal.format(montoAux));
+								mapRetenciones.put(imp.getIdImpuesto().getAtributo4(), retencionComprobante);
+								totalImpuestosRetenidos += imp.getImporte().doubleValue();
+							} else {
+								retencionComprobante = new Element("Retencion", xmlns);
+								retencionComprobante.setAttribute("Impuesto", imp.getIdImpuesto().getAtributo4());
+								retencionComprobante.setAttribute("Importe", formatterDecimal.format(imp.getImporte().doubleValue()));
+								mapRetenciones.put(imp.getIdImpuesto().getAtributo4(), retencionComprobante);
+								totalImpuestosRetenidos += imp.getImporte().doubleValue();
+							}
+						}
+					}
+
+					if (traslados.getContentSize() > 0)
+						impuestos.addContent(traslados);
+					if (retenciones.getContentSize() > 0)
+						impuestos.addContent(retenciones);
+					if (impuestos.getContentSize() > 0)
+						concepto.addContent(impuestos);
+				}
+				
+				// Añado concepto
+				conceptos.addContent(concepto);
+			}
+			
+			// Añado conceptos
+			root.addContent(conceptos);
+			
+			// IMPUESTOS
+			// --------------------------------------------------------------------------------------------------------
+			impuestos = new Element("Impuestos", xmlns);
+			traslados = new Element("Traslados", xmlns);
+			retenciones = new Element("Retenciones", xmlns);
+			
+			// Comprobamos traslados
+			if (mapTraslados != null && ! mapTraslados.isEmpty()) { 
+				for (Entry<String, Element> item : mapTraslados.entrySet())
+					traslados.addContent(item.getValue());
+			}
+			
+			// comprobamos retenciones
+			if (mapRetenciones != null && ! mapRetenciones.isEmpty()) { 
+				for (Entry<String, Element> item : mapRetenciones.entrySet())
+					retenciones.addContent(item.getValue());
+			}
+			
+			// Añado Retenciones, si corresponde
+			if (retenciones.getContentSize() > 0 ) {
+				impuestos.addContent(retenciones);
+				impuestos.setAttribute("TotalImpuestosRetenidos", formatterDecimal.format(totalImpuestosRetenidos));
+			}
+			
+			// Añado Traslados, si corresponde
+			if (traslados.getContentSize() > 0 ) {
+				impuestos.addContent(traslados);
+				impuestos.setAttribute("TotalImpuestosTrasladados", formatterDecimal.format(totalImpuestosTraslados));
+			}
+			
+			root.addContent(impuestos);
+		} catch (Exception e) {
+			log.error("303L - No se pudo general el XML (CFDI)", e);
+			root = null;
+		} 
+		
+		return root;
+	}
+	private Element generaXML(FacturaExt pojoFactura, List<FacturasRelacionadas> listFacturasRelacionadas, List<FacturaDetalleExt> listDetalles, String noCertificado, String certificadoData) {
+		DecimalFormat formatterDecimal = null;
+		List<FacturaDetalleImpuestoExt> listImpuestos = null;
+		double totalImpuestosRetenidos = 0;
+		double totalImpuestosTraslados = 0;
+		double montoAux = 0;
+		double monto = 0;
+		// XML ---------------------------------------------------------------
+		Namespace xmlns = null;
+		Namespace xsi = null;
+		Attribute attSchema = null;
+		Element root = null;
+		Element emisor = null;
+		Element receptor = null;
+		Element conceptos = null;
+		Element concepto = null;
+		Element impuestos = null;
+		Element traslados = null;
+		Element traslado = null;
+		Element trasladoComprobante = null;
+		Element retenciones = null;
+		Element retencion = null;
+		Element retencionComprobante = null;
+		Element relacionados = null;
+		Element relacionado = null;
+		// mapa de impuestos -------------------------------------------------
+		LinkedHashMap<String,Element> mapTraslados = null;
+		LinkedHashMap<String,Element> mapRetenciones = null;
+		
+		try {
+			formatterDecimal = new DecimalFormat("#######0.00");
+			xmlns = Namespace.getNamespace("cfdi", "http://www.sat.gob.mx/cfd/3");
+			xsi = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+			attSchema = new Attribute("schemaLocation", "http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd", xsi);
+
+			// COMPROBANTE
+			// ----exit----------------------------------------------------------------------------------------------------
+			root = new Element("Comprobante", xmlns);
+			root.setAttribute(attSchema);
+			root.setAttribute(new Attribute("Version", pojoFactura.getVersion()));
+			root.setAttribute(new Attribute("Serie", pojoFactura.getSerie().trim()));
+			root.setAttribute(new Attribute("Folio", pojoFactura.getFolio().trim()));
+			root.setAttribute(new Attribute("Fecha",(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(pojoFactura.getFechaEmision()).replace(' ','T')))); 
+			root.setAttribute(new Attribute("MetodoPago", pojoFactura.getIdMetodoPago().getValor().trim()));
+			root.setAttribute(new Attribute("FormaPago", claveFormaPago(pojoFactura.getIdFormaPago())));
+			root.setAttribute(new Attribute("NoCertificado", noCertificado));
+			root.setAttribute(new Attribute("Certificado", certificadoData));
+			if (pojoFactura.getDescuento().doubleValue() > 0) {
+				root.setAttribute(new Attribute("Descuento", formatterDecimal.format(pojoFactura.getDescuento().doubleValue())));
+				if (pojoFactura.getMotivoDescuento() != null && ! "".equals(pojoFactura.getMotivoDescuento()))
+					root.setAttribute(new Attribute("motivoDescuento", pojoFactura.getMotivoDescuento()));
+			}
+			root.setAttribute(new Attribute("SubTotal", formatterDecimal.format(pojoFactura.getSubtotal().doubleValue())));
+			root.setAttribute(new Attribute("Total", formatterDecimal.format(pojoFactura.getTotal())));
+			root.setAttribute(new Attribute("TipoDeComprobante", pojoFactura.getTipoComprobante())); 
+			root.setAttribute(new Attribute("Moneda", pojoFactura.getAbreviaturaMoneda()));
+			root.setAttribute(new Attribute("LugarExpedicion", pojoFactura.getIdSucursal().getColonia().getCp()));
+			if (! "MXN XXX".contains(pojoFactura.getAbreviaturaMoneda())) //if (pojoFactura.getTipoCambio() > 1)
+				root.setAttribute(new Attribute("TipoCambio", (new DecimalFormat("#######0.##")).format(pojoFactura.getTipoCambio())));
+			root.setAttribute(new Attribute("CondicionesDePago", pojoFactura.getCondicionesPago().trim()));
+			
+			// CFDI RELACIONADO
+			// --------------------------------------------------------------------------------------------------------
+			if (pojoFactura.getCfdiRelacionado() == 1) {
+				relacionados = new Element("CfdiRelacionados", xmlns);
+				relacionados.setAttribute(new Attribute("TipoRelacion", pojoFactura.getCfdiTipoRelacion()));
+				for (FacturasRelacionadas var : listFacturasRelacionadas) {
+					relacionado = new Element("CfdiRelacionado", xmlns);	
+					relacionado.setAttribute(new Attribute("UUID", var.getCfdiRelacionadoUuid()));
+					relacionados.addContent(relacionado);
+				}
 				root.addContent(relacionados);
 			}
 			

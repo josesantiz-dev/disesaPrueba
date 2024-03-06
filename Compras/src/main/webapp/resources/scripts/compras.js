@@ -709,13 +709,3 @@ function comprobarOperacion(operacionCancelada, tipoMensaje, pnlConfirmarSBO, pn
 	RichFaces.ui.PopupPanel.showPopupPanel(pnlOperacion);
 }
 
-function bajaProducto(pnlOperacion){
-	console.log('-------------dar de baja producto------------');
-	console.log(pnlOperacion);
-	RichFaces.ui.PopupPanel.showPopupPanel(pnlOperacion);
-}
-
-function actualizarTablaProductos(){
-	RichFaces.$('frmPrincipal:pnlOrden').reRender();
-}
-

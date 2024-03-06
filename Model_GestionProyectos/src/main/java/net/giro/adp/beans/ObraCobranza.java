@@ -36,6 +36,7 @@ public class ObraCobranza implements Serializable {
 	private BigDecimal estimacion;
 	private BigDecimal amortizacion;
 	private BigDecimal fondoGarantia;
+	private BigDecimal pagoFondoGarantia;
 	private BigDecimal subtotal;
 	private BigDecimal iva;
 	private BigDecimal cargos;
@@ -52,6 +53,7 @@ public class ObraCobranza implements Serializable {
 		this.estimacion = BigDecimal.ZERO;
 		this.amortizacion = BigDecimal.ZERO;
 		this.fondoGarantia = BigDecimal.ZERO;
+		this.setPagoFondoGarantia(BigDecimal.ZERO);
 		this.subtotal =  BigDecimal.ZERO;
 		this.iva =  BigDecimal.ZERO;
 		this.total = BigDecimal.ZERO;
@@ -279,7 +281,8 @@ public class ObraCobranza implements Serializable {
 	public void setFondoGarantia(BigDecimal value) {
 		value = (value != null ? value: BigDecimal.ZERO);
 		this.fondoGarantia = new BigDecimal(Math.abs(value.doubleValue()));
-	}
+	}		
+
 
 	public BigDecimal getSubtotal() {
 		return subtotal;
@@ -348,7 +351,8 @@ public class ObraCobranza implements Serializable {
 	public void setFechaModificacion(Date fechaModificacion) {
 		this.fechaModificacion = fechaModificacion;
 	}
-
+	
+	
 	// ---------------------------------------------------------------------------
 	// EXTENDIDOS
 	// ---------------------------------------------------------------------------
@@ -370,6 +374,19 @@ public class ObraCobranza implements Serializable {
 	}
 	
 	public void setEditable(boolean value) {}
+
+	public BigDecimal getPagoFondoGarantia() {
+		return pagoFondoGarantia;
+	}
+
+	public void setPagoFondoGarantia(BigDecimal value) {
+		value = (value != null ? value: BigDecimal.ZERO);
+		this.pagoFondoGarantia = new BigDecimal(Math.abs(value.doubleValue()));
+	}
+
+
+
+
 }
 
 /* ----------------------------------------------------------------------------------------------------------------

@@ -19,11 +19,11 @@ public interface ObraSubcontratistaRem {
 
 	public void delete(Long idObraSubcontratista) throws Exception;
 
-	public List<ObraSubcontratista> findAll(long idObra, String orderBy) throws Exception;
+	public List<ObraSubcontratista> findAll(long idObra, long idEmpleado, String orderBy) throws Exception;
 
-	public List<ObraSubcontratista> findLikeProperty(String propertyName, Object value, long idObra, String orderBy, int limite) throws Exception;
+	public List<ObraSubcontratista> findLikeProperty(String propertyName, Object value, long idObra, long idEmpleado, String orderBy, int limite) throws Exception;
 
-	public List<ObraSubcontratista> findByProperty(String propertyName, Object value, long idObra, String orderBy, int limite) throws Exception;
+	public List<ObraSubcontratista> findByProperty(String propertyName, Object value, long idObra, long idEmpleado, String orderBy, int limite) throws Exception;
 
 	public Respuesta procesarCFDI(byte[] fileSrc, String fileName, String originalFileName) throws Exception;
 
@@ -35,5 +35,6 @@ public interface ObraSubcontratistaRem {
 	
 	public List<ObraSubcontratistaExt> saveOrUpdateListExt(List<ObraSubcontratistaExt> extendidos) throws Exception;
 	
-	public List<ObraSubcontratistaExt> findAllExt(long idObra, String orderBy) throws Exception;
+	public List<ObraSubcontratistaExt> findAllExt(long idObra, long idEmpleado, String orderBy) throws Exception;
+
 }

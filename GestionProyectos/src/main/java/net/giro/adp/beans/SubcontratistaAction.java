@@ -3,6 +3,8 @@ package net.giro.adp.beans;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.PropertyResourceBundle;
@@ -24,9 +26,13 @@ import org.apache.log4j.Logger;
 import org.richfaces.event.FileUploadEvent;
 
 import net.giro.adp.beans.Obra;
+import net.giro.adp.logica.ObraEmpleadoRem;
 import net.giro.adp.logica.ObraRem;
 import net.giro.adp.logica.ObraSubcontratistaRem;
 import net.giro.cargas.documentos.logica.ComprobanteCFDIRem;
+import net.giro.clientes.beans.Negocio;
+import net.giro.clientes.beans.NegocioExt;
+import net.giro.clientes.logica.NegociosRem;
 import net.giro.navegador.LoginManager;
 import net.giro.plataforma.beans.ConGrupoValores;
 import net.giro.plataforma.beans.ConValores;
@@ -34,8 +40,11 @@ import net.giro.plataforma.impresion.ReportesRem;
 import net.giro.plataforma.logica.ConGrupoValoresRem;
 import net.giro.plataforma.logica.ConValoresRem;
 import net.giro.respuesta.Respuesta;
+import net.giro.rh.admon.beans.Empleado;
+import net.giro.rh.admon.beans.EmpleadoExt;
 import net.giro.rh.admon.logica.EmpleadoRem;
 
+@SuppressWarnings("unused")
 @ViewScoped
 @ManagedBean(name="subcontratistaAction")
 public class SubcontratistaAction implements Serializable {
@@ -46,10 +55,12 @@ public class SubcontratistaAction implements Serializable {
 	private HttpSession httpSession;
 	private ReportesRem	ifzReportes;
 	private ObraSubcontratistaRem ifzSubcontratista;
-	private List<ObraSubcontratistaExt> listSubcontratistas;
+	private List<ObraSubcontratistaExt> listFacturaSubcontratistas;
+	private List<ObraContratos> listSubcontratistas;
 	private ObraSubcontratistaExt pojoSubcontratista;
 	private boolean guardarTodo;
 	private Obra pojoObraBase;
+	private int indexFactura;
 	private int indexSubcontratista;
 	private int indexImpuesto;
 	private int paginacionSubcontratistas;
@@ -62,6 +73,19 @@ public class SubcontratistaAction implements Serializable {
     private String decimalFormat;
     private String porcentajeFormat;
     private ConValores impuestoIva;
+	private List<SelectItem> listTipoSubItems;
+	private List<TipoSub> listTipoSub;
+	// Busqueda SubContratista
+	private NegociosRem ifzNegocios;
+	private List<Empleado> listSubContratistaGrid;	
+	private Empleado pojoBusquedaSubContratista;	
+	private List<Negocio> listSubContratistaNegocio;	
+	private Negocio pojoBusquedaSubContratistaNegocio;	
+	private List<SelectItem> tiposBusquedaSubContratista;	
+	private String campoBusquedaSubContratista;
+	private String valorBusquedaSubContratista;
+	private String nombreSubContratista;
+	private int numPaginaSubContratista;
     // Impuestos
     private ConGrupoValoresRem ifzGrupoValores;
     private ConGrupoValores grupoImpuestos;
@@ -75,8 +99,14 @@ public class SubcontratistaAction implements Serializable {
 	private boolean incluyeImpuestosContables;
 	// Busqueda Obras
 	private ObraRem ifzObras;
+	private ObraEmpleadoRem ifzObraEmpleados;
+	private List<ObraEmpleadoExt> listObraEmpleados;
+	private ObraEmpleadoExt pojoObraEmpleado;
+	private List<Negocio> listObraNegocios;
+	private Negocio pojoObraNegocio;
 	private List<Obra> listObras;
 	private Obra pojoObra;
+	private ObraExt 		pojoObraExt;
 	private List<SelectItem> opcionesBusquedaObra;
 	private String campoBusquedaObra;
 	private String valorBusquedaObra;
@@ -155,11 +185,13 @@ public class SubcontratistaAction implements Serializable {
 			this.ifzSubcontratista = (ObraSubcontratistaRem) ctx.lookup("ejb:/Logica_GestionProyectos//ObraSubcontratistaFac!net.giro.adp.logica.ObraSubcontratistaRem");
 			this.ifzGrupoValores = (ConGrupoValoresRem) ctx.lookup("ejb:/Logica_Publico//ConGrupoValoresFac!net.giro.plataforma.logica.ConGrupoValoresRem");
 			this.ifzImpuestos = (ConValoresRem) ctx.lookup("ejb:/Logica_Publico//ConValoresFac!net.giro.plataforma.logica.ConValoresRem");
-			
+			this.ifzObraEmpleados = (ObraEmpleadoRem) ctx.lookup("ejb:/Logica_GestionProyectos//ObraEmpleadoFac!net.giro.adp.logica.ObraEmpleadoRem");
+			this.ifzNegocios = (NegociosRem) ctx.lookup("ejb:/Logica_Clientes//NegociosFac!net.giro.clientes.logica.NegociosRem");
 			this.ifzObras.setInfoSesion(this.loginManager.getInfoSesion()); 
 			this.ifzEmpleados.setInfoSesion(this.loginManager.getInfoSesion()); 
 			this.ifzComprobante.setInfoSesion(this.loginManager.getInfoSesion()); 
 			this.ifzSubcontratista.setInfoSesion(this.loginManager.getInfoSesion());
+			this.ifzObraEmpleados.setInfoSesion(this.loginManager.getInfoSesion()); 
 
 			// IMPUESTOS 
 			// ----------------------------------------------------------------------------
@@ -167,6 +199,15 @@ public class SubcontratistaAction implements Serializable {
 			if (this.grupoImpuestos == null || this.grupoImpuestos.getId() <= 0L)
 				log.warn("No se encontro encontro el grupo SYS_IMPTOS en con_grupo_valores");
 
+			//Busqueda de SubContratista
+			this.listSubContratistaGrid	= new ArrayList<Empleado>();		
+			this.listSubContratistaNegocio = new ArrayList<Negocio>();		
+			
+			// Busqueda responsable
+			this.tiposBusquedaSubContratista = new ArrayList<SelectItem>();
+			this.tiposBusquedaSubContratista.add(new SelectItem("nombre", "Nombre"));
+			this.tiposBusquedaSubContratista.add(new SelectItem("id", "ID"));
+			
 			// Busqueda obras
 			this.opcionesBusquedaObra = new ArrayList<SelectItem>();
 			this.opcionesBusquedaObra.add(new SelectItem("*", "Coincidencia"));
@@ -199,13 +240,151 @@ public class SubcontratistaAction implements Serializable {
 			this.porAnticipoGlobalPrevio = 0;
 			this.porRetencionGlobalPrevio = 0;
     		this.indexSubcontratista = -1;
+    		this.indexFactura= -1; 
+    		
+    		cargarTipoSub();
 		} catch (Exception e) {
 			log.error("Error al inicializar BEAN", e);
 		} finally {
 			establecerPermisos();
 		}
 	}
+	private void cargarTipoSub() {		
+		try {
+			if (this.listTipoSubItems == null)
+				this.listTipoSubItems = new ArrayList<SelectItem>();
+			this.listTipoSubItems.clear();
+			
+			controlLog("Subcontratistas ... buscando tipos sub");
+			this.ifzObras.setInfoSesion(this.loginManager.getInfoSesion());
+			
+			this.listTipoSub = this.ifzObras.findAllTipoSub(); 
+				
+		
+			for (TipoSub val : listTipoSub) {
+				this.listTipoSubItems.add(new SelectItem(val.getClave(), val.getDescripcion()));
+			}
+		
+		} catch (Exception e) {
+			control("Ocurrio un problema al intentar recuperar los Tipos de Subcontratos para el Modulo", e);
+		}
+	}
+	
+	// -------------------------------------------------------------------------------------------------------------------
+    // BUSQUEDA RESPONSABLES
+    // -------------------------------------------------------------------------------------------------------------------
 
+    public void nuevaBusquedaSubContratista() {
+		this.campoBusquedaSubContratista = this.tiposBusquedaSubContratista.get(0).getValue().toString();
+		this.valorBusquedaSubContratista = "";
+    	
+		this.numPaginaSubContratista = 1;
+		this.listSubContratistaGrid = new ArrayList<Empleado>();
+    	this.pojoBusquedaSubContratista = new Empleado();
+    	this.listSubContratistaNegocio = new ArrayList<Negocio>();
+    	this.pojoBusquedaSubContratistaNegocio = new Negocio();
+    }
+
+	public void buscarSubContratista() {
+		try {
+			control();
+			if ("".equals(this.campoBusquedaSubContratista)) {
+				this.campoBusquedaSubContratista = "nombre";
+			}
+
+			controlLog("Buscando responsables");
+    		this.ifzEmpleados.setInfoSesion(this.loginManager.getInfoSesion());
+			this.listSubContratistaGrid = this.ifzEmpleados.findLikeProperty(this.campoBusquedaSubContratista, this.valorBusquedaSubContratista, 0);
+			this.listSubContratistaNegocio = this.ifzNegocios.findLikeProperty(this.campoBusquedaSubContratista, this.valorBusquedaSubContratista, 0);
+			if (this.listSubContratistaGrid.isEmpty()) {
+				control(2, "Busqueda sin resultados");
+				return;
+			}if (this.listSubContratistaNegocio.isEmpty()) {
+				control(2, "Busqueda sin resultados");
+				return;
+			}
+
+			controlLog(this.listSubContratistaGrid.size() + " SubContratistas encontrados");
+			controlLog(this.listSubContratistaNegocio.size() + " SubContratistas Negocios encontrados");
+		} catch (Exception e) {
+			if (this.listSubContratistaGrid != null)
+    			this.listSubContratistaGrid.clear();
+			if (this.listSubContratistaNegocio != null)
+    			this.listSubContratistaNegocio.clear();
+			control(true, -1, "Ocurrio un problema al intentar consultar los Empleados", e);
+		}
+	}
+
+	public void seleccionarSubContratista() {
+    	EmpleadoExt pojoExt = null;
+    	ObraEmpleadoExt pojoObraEmpleadoExt = null;
+    	try {
+			controlLog("Extiendo subcontratista (Empleado) seleccionado");
+			pojoExt = this.ifzEmpleados.convertir(this.pojoBusquedaSubContratista);
+			if (pojoExt == null) {
+				controlLog("No pude extender el subcontratista (Empleado) seleccionado - ERROR INTERNO");
+				control(-1, "ERROR INTERNO - No se pudo recuperar el subcontratista (Empleado) seleccionado");
+				return;
+			}
+
+			controlLog("Asigno subcontratista (Empleado) a obra");
+			
+			pojoObraEmpleadoExt = new ObraEmpleadoExt();
+			pojoObraEmpleadoExt.setIdObra(this.pojoObraExt);
+			pojoObraEmpleadoExt.setNombreObra(this.pojoObraExt.getNombre());
+			pojoObraEmpleadoExt.setIdEmpleado(pojoExt);
+			pojoObraEmpleadoExt.setNombreEmpleado(pojoExt.getNombre());
+			pojoObraEmpleadoExt.setCreadoPor(this.loginManager.getUsuarioResponsabilidad().getUsuario().getId());
+			pojoObraEmpleadoExt.setFechaCreacion(Calendar.getInstance().getTime());
+
+    		pojoObraEmpleadoExt.setId(this.ifzObraEmpleados.save(pojoObraEmpleadoExt));
+    		
+			this.listObraEmpleados.add(pojoObraEmpleadoExt);
+	    	nuevaBusquedaSubContratista();
+		} catch (Exception e) {
+    		control(true, -1, "Ocurrio un problema al intentar recuperar el Empleado seleccionado", e);
+		}
+	}
+	
+	public void seleccionarSubContratistaNegocio() {
+    	EmpleadoExt pojoResult = null;
+    	ObraEmpleadoExt pojoObraEmpleadoExt = null;
+    	try {
+			if (this.pojoBusquedaSubContratistaNegocio.getId() == null) {
+				control(-1, "ERROR INTERNO - No se pudo recuperar el subcontratista (Negocio) seleccionado");
+				return;
+			}
+			pojoResult = new EmpleadoExt();
+			pojoResult.setId(pojoBusquedaSubContratistaNegocio.getId());
+			pojoResult.setNombre(pojoBusquedaSubContratistaNegocio.getNombre());
+			pojoResult.setNombresPropios(pojoBusquedaSubContratistaNegocio.getNombre());
+			pojoResult.setEstatus(Integer.valueOf(String.valueOf(pojoBusquedaSubContratistaNegocio.getEstatus())));
+			pojoResult.setCreadoPor(pojoBusquedaSubContratistaNegocio.getCreadoPor());
+			pojoResult.setFechaCreacion(pojoBusquedaSubContratistaNegocio.getFechaCreacion());
+			pojoResult.setModificadoPor(pojoBusquedaSubContratistaNegocio.getModificadoPor());
+			pojoResult.setFechaModificacion(pojoBusquedaSubContratistaNegocio.getFechaModificacion());
+			pojoResult.setSistema(pojoBusquedaSubContratistaNegocio.getSistema());
+			
+			controlLog("Asigno subcontratista (Negocio) a obra");
+			
+			
+			pojoObraEmpleadoExt = new ObraEmpleadoExt();
+			pojoObraEmpleadoExt.setIdObra(this.pojoObraExt);
+			pojoObraEmpleadoExt.setNombreObra(this.pojoObraExt.getNombre());
+			pojoObraEmpleadoExt.setIdEmpleado(pojoResult);
+			pojoObraEmpleadoExt.setNombreEmpleado(pojoResult.getNombre());
+			pojoObraEmpleadoExt.setCreadoPor(this.loginManager.getUsuarioResponsabilidad().getUsuario().getId());
+			pojoObraEmpleadoExt.setFechaCreacion(Calendar.getInstance().getTime());
+
+    		pojoObraEmpleadoExt.setId(this.ifzObraEmpleados.save(pojoObraEmpleadoExt));
+    		
+			this.listObraEmpleados.add(pojoObraEmpleadoExt);
+	    	nuevaBusquedaSubContratista();
+		} catch (Exception e) {
+    		control(true, -1, "Ocurrio un problema al intentar recuperar el Empleado seleccionado", e);
+		}
+	}
+    
 	public void nuevo() {
 		ObraSubcontratistaExt nuevo = null;
 		
@@ -216,21 +395,21 @@ public class SubcontratistaAction implements Serializable {
 			nuevo.setPorcentajeAnticipo(this.porAnticipoGlobal);
 			nuevo.setPorcentajeRetencion(this.porRetencionGlobal);
 			nuevo = asignarImpuestoIva(nuevo, this.porcentajeIva, 0);
-			this.listSubcontratistas = (this.listSubcontratistas != null ? this.listSubcontratistas : new ArrayList<ObraSubcontratistaExt>());
-			this.listSubcontratistas.add(0, nuevo);
+			this.listFacturaSubcontratistas = (this.listFacturaSubcontratistas != null ? this.listFacturaSubcontratistas : new ArrayList<ObraSubcontratistaExt>());
+			this.listFacturaSubcontratistas.add(0, nuevo);
 			reindexar();
 		} catch (Exception e) {
 			control("Ocurrio un problema al añadir un nuevo registro", e);
 		}
 	}
-	
-	public void ver() {
+		
+	public void verSubContratista() {
 		List<ObraSubcontratistaExt> backup = null;
 		
 		try {
 			control();
-			if (this.pojoObraBase == null || this.pojoObraBase.getId() == null || this.pojoObraBase.getId() <= 0L) {
-				control("Debe seleccionar una Obra");
+			if (this.indexSubcontratista < 0) {
+				control(-1, "Ocurrio un problema al editar el registro indicado.\nIndice no valido.");
 				return;
 			}
 			
@@ -239,35 +418,110 @@ public class SubcontratistaAction implements Serializable {
 
 			// Recuperamos cobranza existente
 			controlLog("Subcontratistas - Preparando ... ");
+			this.nombreSubContratista = this.listObraEmpleados.get(this.indexSubcontratista).getNombreEmpleado();
 			this.pojoSubcontratista = null;
-			this.indexSubcontratista = -1;
 			this.porAnticipoGlobal = 0;
 			this.porRetencionGlobal = 0;
 			this.porAnticipoGlobalPrevio = 0;
 			this.porRetencionGlobalPrevio = 0;
-			if (this.listSubcontratistas != null && ! this.listSubcontratistas.isEmpty()) {
+			if (this.listFacturaSubcontratistas != null && ! this.listFacturaSubcontratistas.isEmpty()) {
 				backup = new ArrayList<ObraSubcontratistaExt>();
-				for (ObraSubcontratistaExt item : this.listSubcontratistas) {
+				for (ObraSubcontratistaExt item : this.listFacturaSubcontratistas) {
 					if (item.isNuevo())
 						backup.add(item);
 				}
 			}
-			
+					
 			controlLog("Subcontratistas Recuperando ... Obra: " + this.pojoObraBase.getId());
-			this.ifzSubcontratista.setInfoSesion(this.loginManager.getInfoSesion());
-			this.listSubcontratistas = this.ifzSubcontratista.findAllExt(this.pojoObraBase.getId(), "");
-			this.listSubcontratistas = (this.listSubcontratistas != null ? this.listSubcontratistas : new ArrayList<ObraSubcontratistaExt>());
+			this.listFacturaSubcontratistas = this.ifzSubcontratista.findAllExt(this.pojoObraBase.getId(),this.listObraEmpleados.get(this.indexSubcontratista).getIdEmpleado().getId(), "");
+			this.listFacturaSubcontratistas = (this.listFacturaSubcontratistas != null ? this.listFacturaSubcontratistas : new ArrayList<ObraSubcontratistaExt>());
 			if (backup != null && ! backup.isEmpty()) 
-				this.listSubcontratistas.addAll(0, backup);
-			controlLog("Proceso Terminado. Subcontratistas: x" + this.listSubcontratistas.size());
+				this.listFacturaSubcontratistas.addAll(0, backup);
+			controlLog("Proceso Terminado. Subcontratistas: x" + this.listFacturaSubcontratistas.size());
+			
 		} catch (Exception e) {
 			control("Ocurrio un problema al consultar las Facturas de la Obra seleccionada", e);
     	} finally {
 			this.pojoSubcontratista = null;
-    		this.indexSubcontratista = -1;
     		reindexar();
 			controlLog("Subcontratistas Totalizando ... ");
 			totalizar();
+    	}
+	}
+	
+	public void verSubContratistaNegocio() {
+		List<ObraSubcontratistaExt> backup = null;
+		
+		try {
+			control();
+			if (this.indexSubcontratista < 0) {
+				control(-1, "Ocurrio un problema al editar el registro indicado.\nIndice no valido.");
+				return;
+			}
+			
+    		controlLog("Validando permiso de escritura");
+    		validarPermisos();
+
+			// Recuperamos cobranza existente
+			controlLog("Subcontratistas - Preparando ... ");
+			this.nombreSubContratista = this.listObraNegocios.get(this.indexSubcontratista).getNombre();
+			this.pojoSubcontratista = null;
+			this.porAnticipoGlobal = 0;
+			this.porRetencionGlobal = 0;
+			this.porAnticipoGlobalPrevio = 0;
+			this.porRetencionGlobalPrevio = 0;
+			if (this.listFacturaSubcontratistas != null && ! this.listFacturaSubcontratistas.isEmpty()) {
+				backup = new ArrayList<ObraSubcontratistaExt>();
+				for (ObraSubcontratistaExt item : this.listFacturaSubcontratistas) {
+					if (item.isNuevo())
+						backup.add(item);
+				}
+			}
+					
+			controlLog("Subcontratistas Recuperando ... Obra: " + this.pojoObraBase.getId());
+			this.listFacturaSubcontratistas = this.ifzSubcontratista.findAllExt(this.pojoObraBase.getId(),this.listObraNegocios.get(this.indexSubcontratista).getId(), "");
+			this.listFacturaSubcontratistas = (this.listFacturaSubcontratistas != null ? this.listFacturaSubcontratistas : new ArrayList<ObraSubcontratistaExt>());
+			if (backup != null && ! backup.isEmpty()) 
+				this.listFacturaSubcontratistas.addAll(0, backup);
+			controlLog("Proceso Terminado. Subcontratistas: x" + this.listFacturaSubcontratistas.size());
+			
+		} catch (Exception e) {
+			control("Ocurrio un problema al consultar las Facturas de la Obra seleccionada", e);
+    	} finally {
+			this.pojoSubcontratista = null;
+    		reindexar();
+			controlLog("Subcontratistas Totalizando ... ");
+			totalizar();
+    	}
+	}
+	
+	public void ver() {
+		try {
+			control();
+			if (this.pojoObraBase == null || this.pojoObraBase.getId() == null || this.pojoObraBase.getId() <= 0L) {
+				control(-1, "No selecciono una Obra");
+				return;
+			}
+    		controlLog("Validando permiso de escritura");
+    		validarPermisos();
+			
+			this.permisoEditar = true;
+			if(this.pojoObraBase.getEstatus().equals(10000798L)) 
+				this.permisoEditar = false;
+			
+			this.ifzObraEmpleados.setInfoSesion(this.loginManager.getInfoSesion());
+			this.listObraEmpleados = this.ifzObraEmpleados.findExtAll(this.pojoObraBase.getId()); //.findByPropertyExt("idObra.id", this.pojoObra.getId(), 0);
+			if (this.listObraEmpleados == null || this.listObraEmpleados.isEmpty()) 
+				return;
+			
+			Collections.sort(this.listObraEmpleados, new Comparator<ObraEmpleadoExt>() {
+		    	@Override
+		        public int compare(ObraEmpleadoExt o1, ObraEmpleadoExt o2) {
+		    		return o1.getEmpleadoNombreApellidos().compareTo(o2.getEmpleadoNombreApellidos());
+		        }
+			});
+		} catch(Exception e) {
+			control("Ocurrio un problema al consultar los Empleados de la Obra seleccionada", e);
     	}
 	}
 	
@@ -277,19 +531,22 @@ public class SubcontratistaAction implements Serializable {
 			controlLog("Subcontratistas ... Preparando para guardar");
 			if (! validaciones())
 				return;
-			for (ObraSubcontratistaExt item : this.listSubcontratistas) {
+			for (ObraSubcontratistaExt item : this.listFacturaSubcontratistas) {
 				if (item.getId() == null || item.getId() <= 0L) {
 					item.setCreadoPor(this.loginManager.getUsuarioResponsabilidad().getUsuario().getId());
 					item.setFechaCreacion(Calendar.getInstance().getTime());
 				} 
 				item.setModificadoPor(this.loginManager.getUsuarioResponsabilidad().getUsuario().getId());
 				item.setFechaModificacion(Calendar.getInstance().getTime());
+
+				item.setIdEmpleado(this.listObraEmpleados.get(this.indexSubcontratista).getIdEmpleado().getId());
+				
 			}
 			
 			// Guardamos la cobranza
 			controlLog("Subcontratistas ... guardando");
 			this.ifzSubcontratista.setInfoSesion(this.loginManager.getInfoSesion());
-			this.listSubcontratistas = this.ifzSubcontratista.saveOrUpdateListExt(this.listSubcontratistas);
+			this.listFacturaSubcontratistas = this.ifzSubcontratista.saveOrUpdateListExt(this.listFacturaSubcontratistas);
 			ver();
 			controlLog("Subcontratistas guardada!");
 		} catch(Exception e) {
@@ -300,13 +557,13 @@ public class SubcontratistaAction implements Serializable {
 	public void guardar() {
 		try {
     		control();
-    		this.listSubcontratistas = (this.listSubcontratistas != null ? this.listSubcontratistas : new ArrayList<ObraSubcontratistaExt>());
-    		if (this.indexSubcontratista < 0 || this.indexSubcontratista > this.listSubcontratistas.size()) {
+    		this.listFacturaSubcontratistas = (this.listFacturaSubcontratistas != null ? this.listFacturaSubcontratistas : new ArrayList<ObraSubcontratistaExt>());
+    		if (this.indexFactura < 0 || this.indexFactura > this.listFacturaSubcontratistas.size()) {
     			control(-1, "Ocurrio un problema al intentar guardar el registro indicado.\nIndice no valido.");
     			return;
     		}
     		
-    		this.pojoSubcontratista = this.listSubcontratistas.get(this.indexSubcontratista);
+    		this.pojoSubcontratista = this.listFacturaSubcontratistas.get(this.indexFactura);
 			if (this.pojoSubcontratista.getId() == null || this.pojoSubcontratista.getId() <= 0L) {
 				this.pojoSubcontratista.setCreadoPor(this.loginManager.getUsuarioResponsabilidad().getUsuario().getId());
 				this.pojoSubcontratista.setFechaCreacion(Calendar.getInstance().getTime());
@@ -314,11 +571,13 @@ public class SubcontratistaAction implements Serializable {
 			this.pojoSubcontratista.setModificadoPor(this.loginManager.getUsuarioResponsabilidad().getUsuario().getId());
 			this.pojoSubcontratista.setFechaModificacion(Calendar.getInstance().getTime());
 			
+			this.pojoSubcontratista.setIdEmpleado(this.listObraEmpleados.get(this.indexFactura).getIdEmpleado().getId());
+			
 			this.ifzSubcontratista.setInfoSesion(this.loginManager.getInfoSesion());
 			this.pojoSubcontratista = this.ifzSubcontratista.save(this.pojoSubcontratista);
-    		this.listSubcontratistas.set(this.indexSubcontratista, this.pojoSubcontratista);
+    		this.listFacturaSubcontratistas.set(this.indexFactura, this.pojoSubcontratista);
 			this.pojoSubcontratista = null;
-			this.indexSubcontratista = -1;
+			this.indexFactura = -1;
     		reindexar();
     	} catch (Exception e) {
     		control("Ocurrio un problema al intentar eliminar el registro", e);
@@ -327,32 +586,53 @@ public class SubcontratistaAction implements Serializable {
 	
 	public void desgloseImpuestos() {
 		control();
-		this.listSubcontratistas = (this.listSubcontratistas != null ? this.listSubcontratistas : new ArrayList<ObraSubcontratistaExt>());
-		if (this.indexSubcontratista < 0 || this.indexSubcontratista > this.listSubcontratistas.size()) {
+		this.listFacturaSubcontratistas = (this.listFacturaSubcontratistas != null ? this.listFacturaSubcontratistas : new ArrayList<ObraSubcontratistaExt>());
+		if (this.indexFactura < 0 || this.indexFactura > this.listFacturaSubcontratistas.size()) {
 			control(-1, "Ocurrio un problema al intentar desglosar los impuestos del registro indicado.\nIndice no valido.");
 			return;
 		}
 		
-		this.pojoSubcontratista = this.listSubcontratistas.get(this.indexSubcontratista);
+		this.pojoSubcontratista = this.listFacturaSubcontratistas.get(this.indexFactura);
 	}
 	
 	public void eliminar() {
 		try {
+			control();
+
+			if (this.indexSubcontratista < 0) {
+				control(-1, "Ocurrio un problema al editar el registro indicado.\nIndice no valido.");
+				return;
+			}
+			
+			// Eliminamos de la BD
+			this.ifzObraEmpleados.delete(this.listObraEmpleados.get(this.indexSubcontratista).getId());
+			// Eliminamos de la lista
+			this.listObraEmpleados.remove(this.listObraEmpleados.get(this.indexSubcontratista));
+	    	// Recargamos empleados
+	    	ver();
+		} catch(Exception e) {
+			control(true, 1, e.getMessage(), e);
+    		log.error("Error en GestionProyectos.EmpleadosObrasAction.eliminar", e);
+    	}
+	}
+	
+	public void eliminarFactura() {
+		try {
     		control();
-    		this.listSubcontratistas = (this.listSubcontratistas != null ? this.listSubcontratistas : new ArrayList<ObraSubcontratistaExt>());
-    		if (this.indexSubcontratista < 0 || this.indexSubcontratista > this.listSubcontratistas.size()) {
+    		this.listFacturaSubcontratistas = (this.listFacturaSubcontratistas != null ? this.listFacturaSubcontratistas : new ArrayList<ObraSubcontratistaExt>());
+    		if (this.indexFactura < 0 || this.indexFactura > this.listFacturaSubcontratistas.size()) {
     			control(-1, "No se puede eliminar el registro indicado.\nIndice no valido.");
     			return;
     		}
 
-    		this.pojoSubcontratista = this.listSubcontratistas.get(this.indexSubcontratista);
+    		this.pojoSubcontratista = this.listFacturaSubcontratistas.get(this.indexFactura);
     		if (this.pojoSubcontratista.getId() != null && this.pojoSubcontratista.getId() > 0L) {
     			this.ifzSubcontratista.setInfoSesion(this.loginManager.getInfoSesion());
     			this.ifzSubcontratista.delete(this.pojoSubcontratista.getId());
     		}
-    		this.listSubcontratistas.remove(this.indexSubcontratista);
+    		this.listFacturaSubcontratistas.remove(this.indexFactura);
 			this.pojoSubcontratista = null;
-    		this.indexSubcontratista = -1;
+    		this.indexFactura = -1;
     		reindexar();
     	} catch (Exception e) {
     		control("Ocurrio un problema al intentar eliminar el registro", e);
@@ -373,7 +653,7 @@ public class SubcontratistaAction implements Serializable {
 			}
 			
 			this.pojoSubcontratista.delImpuesto(this.indexImpuesto);
-			this.listSubcontratistas.set(this.pojoSubcontratista.getIndex(), this.pojoSubcontratista);
+			this.listFacturaSubcontratistas.set(this.pojoSubcontratista.getIndex(), this.pojoSubcontratista);
 			this.indexImpuesto = -1;
 		} catch (Exception e) {
 			control("Ocurrio un problema al eliminar el Impuesto indicado", e);
@@ -440,7 +720,7 @@ public class SubcontratistaAction implements Serializable {
 	}
 
 	public void reasignarPorcentajes() {
-		for (ObraSubcontratistaExt item : this.listSubcontratistas) {
+		for (ObraSubcontratistaExt item : this.listFacturaSubcontratistas) {
 			if (item.getPorcentajeAnticipo() == this.porAnticipoGlobal || item.getPorcentajeAnticipo() == 0)
 				item.setPorcentajeAnticipo(this.porAnticipoGlobal);
 			if (item.getPorcentajeRetencion() == this.porRetencionGlobal || item.getPorcentajeRetencion() == 0)
@@ -507,19 +787,49 @@ public class SubcontratistaAction implements Serializable {
 			value = (value != null && ! "".contains(value.trim()) ? value.trim() : "-1");
 			index = Integer.valueOf(value);
 
-			this.pojoSubcontratista = (this.pojoSubcontratista == null || this.pojoSubcontratista.getIndex() != index ? this.listSubcontratistas.get(index) : this.pojoSubcontratista);
+			this.pojoSubcontratista = (this.pojoSubcontratista == null || this.pojoSubcontratista.getIndex() != index ? this.listFacturaSubcontratistas.get(index) : this.pojoSubcontratista);
 			if (this.pojoSubcontratista != null && this.pojoSubcontratista.getModificado()) {
+				System.out.println("RECALCULAR");
 				this.pojoSubcontratista.setIndex(index);
 				this.pojoSubcontratista.calcular();
-				this.listSubcontratistas.set(this.pojoSubcontratista.getIndex(), this.pojoSubcontratista);
+				this.listFacturaSubcontratistas.set(this.pojoSubcontratista.getIndex(), this.pojoSubcontratista);
 			}
 		} catch (Exception e) {
 			control("Ocurrio un problema al recalcular el registro", e);
 		} finally {
 			this.pojoSubcontratista = null;
-			this.indexSubcontratista = -1;
 			this.guardarTodo = false;
-			for (ObraSubcontratistaExt item : this.listSubcontratistas) {
+			for (ObraSubcontratistaExt item : this.listFacturaSubcontratistas) {
+				if (item.getModificado()) {
+					this.guardarTodo = true;
+					break;
+				}
+			}
+		}
+	}
+	
+	public void recalcularPorcentaje(AjaxBehaviorEvent event) {
+		String value = "";
+		int index = -1;
+		
+		try {
+			control();
+			value = (event.getComponent().getAttributes().get("targetIndex") != null ? event.getComponent().getAttributes().get("targetIndex").toString() : "");
+			value = (value != null && ! "".contains(value.trim()) ? value.trim() : "-1");
+			index = Integer.valueOf(value);
+
+			this.pojoSubcontratista = (this.pojoSubcontratista == null || this.pojoSubcontratista.getIndex() != index ? this.listFacturaSubcontratistas.get(index) : this.pojoSubcontratista);
+			if (this.pojoSubcontratista != null && this.pojoSubcontratista.getModificado()) {
+				this.pojoSubcontratista.setIndex(index);
+				this.pojoSubcontratista.calcularConPorcentajes();
+				this.listFacturaSubcontratistas.set(this.pojoSubcontratista.getIndex(), this.pojoSubcontratista);
+			}
+		} catch (Exception e) {
+			control("Ocurrio un problema al recalcular el registro", e);
+		} finally {
+			this.pojoSubcontratista = null;
+			this.guardarTodo = false;
+			for (ObraSubcontratistaExt item : this.listFacturaSubcontratistas) {
 				if (item.getModificado()) {
 					this.guardarTodo = true;
 					break;
@@ -533,7 +843,7 @@ public class SubcontratistaAction implements Serializable {
 			control();
 			if (this.pojoSubcontratista != null) {
 				this.pojoSubcontratista.recalcular();
-				this.listSubcontratistas.set(this.pojoSubcontratista.getIndex(), this.pojoSubcontratista);
+				this.listFacturaSubcontratistas.set(this.pojoSubcontratista.getIndex(), this.pojoSubcontratista);
 			}
 		} catch (Exception e) {
 			control("Ocurrio un problema al recalcular el registro", e);
@@ -545,8 +855,8 @@ public class SubcontratistaAction implements Serializable {
 		HashMap<Double, Integer> mapRetenciones = new HashMap<Double, Integer>();
 		
 		this.guardarTodo = false;
-		for (ObraSubcontratistaExt item : this.listSubcontratistas) {
-			item.setIndex(this.listSubcontratistas.indexOf(item));
+		for (ObraSubcontratistaExt item : this.listFacturaSubcontratistas) {
+			item.setIndex(this.listFacturaSubcontratistas.indexOf(item));
 			item.calcular();
 			mapAnticipos = contadorLlaves(mapAnticipos, item.getPorcentajeAnticipo());
 			mapRetenciones = contadorLlaves(mapRetenciones, item.getPorcentajeRetencion());
@@ -562,8 +872,8 @@ public class SubcontratistaAction implements Serializable {
 	
 	private void reindexar() {
 		this.guardarTodo = false;
-		for (ObraSubcontratistaExt item : this.listSubcontratistas) {
-			item.setIndex(this.listSubcontratistas.indexOf(item));
+		for (ObraSubcontratistaExt item : this.listFacturaSubcontratistas) {
+			item.setIndex(this.listFacturaSubcontratistas.indexOf(item));
 			if (item.getModificado())
 				this.guardarTodo = true;
 		}
@@ -602,8 +912,8 @@ public class SubcontratistaAction implements Serializable {
 		}
 		
 		controlLog("Cobranza ... inicializando");
-		this.listSubcontratistas = (this.listSubcontratistas != null ? this.listSubcontratistas : new ArrayList<ObraSubcontratistaExt>());
-		if (this.listSubcontratistas.size() <= 0) {
+		this.listFacturaSubcontratistas = (this.listFacturaSubcontratistas != null ? this.listFacturaSubcontratistas : new ArrayList<ObraSubcontratistaExt>());
+		if (this.listFacturaSubcontratistas.size() <= 0) {
 			control("Sin detalles para guardar");
 			return false;
 		}
@@ -731,6 +1041,7 @@ public class SubcontratistaAction implements Serializable {
 			this.pojoObraBase = new Obra();
 			BeanUtilsBean.getInstance().getConvertUtils().register(false, false, 0);
 			BeanUtils.copyProperties(this.pojoObraBase, this.pojoObra);
+			this.pojoObraExt = this.ifzObras.convertir(this.pojoObraBase);
 			ver();
 			nuevaBusquedaObra();
 		} catch(Exception e) {
@@ -741,7 +1052,8 @@ public class SubcontratistaAction implements Serializable {
 	public void quitarObra() {
 		try {
 			control();
-			this.listSubcontratistas = new ArrayList<ObraSubcontratistaExt>();
+			this.listFacturaSubcontratistas = new ArrayList<ObraSubcontratistaExt>();
+			this.listObraEmpleados = new ArrayList<ObraEmpleadoExt>();
 			this.pojoSubcontratista = null;
 			this.indexSubcontratista = -1;
 			this.pojoObraBase = null;
@@ -849,7 +1161,7 @@ public class SubcontratistaAction implements Serializable {
 				return;
 			}
 			
-			this.pojoSubcontratista = this.listSubcontratistas.get(this.indexSubcontratista);
+			this.pojoSubcontratista = this.listFacturaSubcontratistas.get(this.indexFactura);
 			this.pojoSubcontratista.setIdFactura(cfdi.getIdComprobante());
 			this.pojoSubcontratista.setFolioFactura(cfdi.getFactura());
 			this.pojoSubcontratista.setIdCliente(cfdi.getIdEmisor());
@@ -858,7 +1170,7 @@ public class SubcontratistaAction implements Serializable {
 			this.pojoSubcontratista.setConcepto(cfdi.getConcepto());
 			this.pojoSubcontratista.setFacturaTotal(cfdi.getTotal());
 			this.pojoSubcontratista.setFacturaTotalPesos(cfdi.getTotalPesos());
-			this.listSubcontratistas.set(this.indexSubcontratista, this.pojoSubcontratista);
+			this.listFacturaSubcontratistas.set(this.indexFactura, this.pojoSubcontratista);
 		} catch (Exception e) {
 			control("Ocurrio un problema al procesar el CFDI indicado", e);
 		} finally {
@@ -968,12 +1280,12 @@ public class SubcontratistaAction implements Serializable {
 
 	public void setGuardarTodo(String value) {}
 
-	public List<ObraSubcontratistaExt> getListSubcontratistas() {
-		return listSubcontratistas;
+	public List<ObraSubcontratistaExt> getlistFacturaSubcontratistas() {
+		return listFacturaSubcontratistas;
 	}
 
-	public void setListSubcontratistas(List<ObraSubcontratistaExt> listSubcontratistas) {
-		this.listSubcontratistas = listSubcontratistas;
+	public void setlistFacturaSubcontratistas(List<ObraSubcontratistaExt> listFacturaSubcontratistas) {
+		this.listFacturaSubcontratistas = listFacturaSubcontratistas;
 	}
 
 	public int getIndexSubcontratista() {
@@ -1300,5 +1612,109 @@ public class SubcontratistaAction implements Serializable {
 
 	public void setPermisoImprimir(boolean permisoImprimir) {
 		this.permisoImprimir = permisoImprimir;
+	}
+
+	public List<SelectItem> getListTipoSubItems() {
+		return listTipoSubItems;
+	}
+
+	public void setListTipoSubItems(List<SelectItem> listTipoSubItems) {
+		this.listTipoSubItems = listTipoSubItems;
+	}
+	public List<ObraContratos> getListSubcontratistas() {
+		return listSubcontratistas;
+	}
+	public void setListSubcontratistas(List<ObraContratos> listSubcontratistas) {
+		this.listSubcontratistas = listSubcontratistas;
+	}
+	public List<ObraSubcontratistaExt> getListFacturaSubcontratistas() {
+		return listFacturaSubcontratistas;
+	}
+	public void setListFacturaSubcontratistas(List<ObraSubcontratistaExt> listFacturaSubcontratistas) {
+		this.listFacturaSubcontratistas = listFacturaSubcontratistas;
+	}
+	public ObraExt getPojoObraExt() {
+		return pojoObraExt;
+	}
+	public void setPojoObraExt(ObraExt pojoObraExt) {
+		this.pojoObraExt = pojoObraExt;
+	}
+	public List<Empleado> getListSubContratistaGrid() {
+		return listSubContratistaGrid;
+	}
+	public void setListSubContratistaGrid(List<Empleado> listSubContratistaGrid) {
+		this.listSubContratistaGrid = listSubContratistaGrid;
+	}
+	public Empleado getPojoBusquedaSubContratista() {
+		return pojoBusquedaSubContratista;
+	}
+	public void setPojoBusquedaSubContratista(Empleado pojoBusquedaSubContratista) {
+		this.pojoBusquedaSubContratista = pojoBusquedaSubContratista;
+	}
+	public List<SelectItem> getTiposBusquedaSubContratista() {
+		return tiposBusquedaSubContratista;
+	}
+	public void setTiposBusquedaSubContratista(List<SelectItem> tiposBusquedaSubContratista) {
+		this.tiposBusquedaSubContratista = tiposBusquedaSubContratista;
+	}
+	public String getCampoBusquedaSubContratista() {
+		return campoBusquedaSubContratista;
+	}
+	public void setCampoBusquedaSubContratista(String campoBusquedaSubContratista) {
+		this.campoBusquedaSubContratista = campoBusquedaSubContratista;
+	}
+	public String getValorBusquedaSubContratista() {
+		return valorBusquedaSubContratista;
+	}
+	public void setValorBusquedaSubContratista(String valorBusquedaSubContratista) {
+		this.valorBusquedaSubContratista = valorBusquedaSubContratista;
+	}
+	public int getNumPaginaSubContratista() {
+		return numPaginaSubContratista;
+	}
+	public void setNumPaginaSubContratista(int numPaginaSubContratista) {
+		this.numPaginaSubContratista = numPaginaSubContratista;
+	}
+	public ObraSubcontratistaExt getPojoSubcontratista() {
+		return pojoSubcontratista;
+	}
+	public void setPojoSubcontratista(ObraSubcontratistaExt pojoSubcontratista) {
+		this.pojoSubcontratista = pojoSubcontratista;
+	}
+	public List<ObraEmpleadoExt> getListObraEmpleados() {
+		return listObraEmpleados;
+	}
+	public void setListObraEmpleados(List<ObraEmpleadoExt> listObraEmpleados) {
+		this.listObraEmpleados = listObraEmpleados;
+	}
+	public ObraEmpleadoExt getPojoObraEmpleado() {
+		return pojoObraEmpleado;
+	}
+	public void setPojoObraEmpleado(ObraEmpleadoExt pojoObraEmpleado) {
+		this.pojoObraEmpleado = pojoObraEmpleado;
+	}
+	public String getNombreSubContratista() {
+		return nombreSubContratista;
+	}
+	public void setNombreSubContratista(String nombreSubContratista) {
+		this.nombreSubContratista = nombreSubContratista;
+	}
+	public int getIndexFactura() {
+		return indexFactura;
+	}
+	public void setIndexFactura(int indexFactura) {
+		this.indexFactura = indexFactura;
+	}
+	public List<Negocio> getListSubContratistaNegocio() {
+		return listSubContratistaNegocio;
+	}
+	public void setListSubContratistaNegocio(List<Negocio> listSubContratistaNegocio) {
+		this.listSubContratistaNegocio = listSubContratistaNegocio;
+	}
+	public Negocio getPojoBusquedaSubContratistaNegocio() {
+		return pojoBusquedaSubContratistaNegocio;
+	}
+	public void setPojoBusquedaSubContratistaNegocio(Negocio pojoBusquedaSubContratistaNegocio) {
+		this.pojoBusquedaSubContratistaNegocio = pojoBusquedaSubContratistaNegocio;
 	}
 }

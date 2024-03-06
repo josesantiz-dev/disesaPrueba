@@ -619,7 +619,7 @@ public class CargaOrdenComprasAction implements Runnable,Serializable {
 			try {
 				if (primeraCotizacion) {
 					bitacora("Terminando... ", false); 
-					guardaTraspasos();
+					//guardaTraspasos();
 					bitacora("Terminando... OK", true); 
 				}
 			} catch (Exception e) {

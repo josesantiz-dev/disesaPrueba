@@ -304,6 +304,7 @@ public class AlmacenTraspasoFac implements AlmacenTraspasoRem {
 			traspaso = this.findById(idTraspaso);
 			if (traspaso == null || traspaso.getId() == null || traspaso.getId() <= 0L){
 				log.error("Ocurrio un problema al recuperar el Traspaso indicado");
+				System.out.println("Ocurrio un problema al recuperar el Traspaso indicado");
 				return false;
 			}
 
@@ -311,13 +312,15 @@ public class AlmacenTraspasoFac implements AlmacenTraspasoRem {
 			productos = this.ifzDetalles.findAll(idTraspaso);
 			if (productos == null || productos.isEmpty()){
 				log.error("El Traspaso indicado no tiene productos");
+				System.out.println("El Traspaso indicado no tiene productos");
 				return false;
 			}
 			
 			// Generamos el mensaje, registramos y enviamos a JMS
 			boPostTraspaso(idTraspaso, tipoTraspaso);
-		} catch (Exception e) {
+		} catch (Exception e) {			
 			log.error("Ocurrio un problema al intentar lanzar el BackOffice de Inventarios para el Traspaso indicado", e);
+			e.printStackTrace();
 			return false;
 		} 
 
@@ -375,6 +378,7 @@ public class AlmacenTraspasoFac implements AlmacenTraspasoRem {
 				comando = msgTopic.getCommand();
 			}
 			log.error("Ocurrio un problema al intentar enviar mensaje al topic/INVENTARIOS:" + TopicEventosInventarios.POST_TRASPASO.toString() + "\n\n" + comando + "\n\n", e);
+			e.printStackTrace();
 		}
 	}
 	

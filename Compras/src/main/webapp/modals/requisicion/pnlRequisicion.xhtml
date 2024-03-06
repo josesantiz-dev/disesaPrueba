@@ -106,143 +106,15 @@
 				        
 						<h:outputText rendered="#{reqAction.permiteEditar}" value="#{msg['productos']}:" styleClass="Titulo" /> 
 				        <h:panelGroup rendered="#{reqAction.permiteEditar}">
-    						<a4j:jsFunction name="panelBusedaProducto" action="#{reqAction.panelBusedaProducto}" />
-							
 							<a4j:commandButton id="btnAgregarReqDetalle" style="float:left; margin:0 5px; vertical-align: middle; position:relative;"
 								image="#{msg['agregar22.img']}" title="#{msg['agregar.e']} #{msg['producto']}"
 								action="#{reqAction.nuevaBusquedaProductos}" 
-								oncomplete="nuevaBusquedaProductos(#{reqAction.operacion}, '#{rich:clientId('panelColapsedBusquedaProductos')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorRequisicion')}); panelBusedaProducto()"
+								oncomplete="nuevaBusquedaProductos(#{reqAction.operacion}, '#{rich:clientId('pnlBusquedaProductos')}', '#{rich:clientId('pnlMensajes')}', #{rich:element('validadorRequisicion')});"
 								render="validadorRequisicion,pnlBusquedaProductos,pnlMensajes,pnlBusquedaProductosPrincipal,dtProductos" limitRender="true" />
 				        </h:panelGroup>
 					</h:panelGrid>
 				</fieldset>
 			</h:panelGroup>
-			
-			<rich:collapsiblePanel
-				rendered="#{reqAction.permiteEditar}" 
-				id="panelColapsedBusquedaProductos" switchType="client" expanded="false" header="#{msg['buscar.e']} #{msg['productos']}" styleClass="Titulo">
-				<rich:hotKey id="richHotKeyProd" enabledInInput="true" preventDefault="true" 
-					selector="#txtValorBusquedaProductos" key="return"
-					onkeydown="#{rich:element('frmPrincipal:cmdBuscarProductos')}.click()" />
-				<h:panelGroup>
-					<h:panelGrid id="pnlBusquedaProductosPrincipal" columns="2" columnClasses="colLayoutTop,colLayoutBottom" style="width:100%; margin:0 auto; padding:0; min-height:22px; text-align:left;">
-						<h:panelGroup style="width:100%;">
-							<h:panelGrid columns="3" cellpadding="0" cellspacing="0">
-								<h:inputText id="txtValorBusquedaProductos" maxlength="50" style="width:210px;"
-									value="#{reqAction.valorBusquedaProductos}" title="#{msg['busqueda']}">
-									<rich:placeholder value="#{msg['busqueda']}" />
-								</h:inputText>
-								<a4j:commandButton id="cmdBuscarProductos" style="margin:auto 5px; vertical-align: middle; cursor: pointer;" 
-									image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
-									action="#{reqAction.buscarProductos}"
-									oncomplete="busquedaPopup('REQUISICION.BUSCAR_PRODUCTO', #{reqAction.operacion}, '#{rich:clientId('pnlMensajes')}')" 
-									render="dtProductos,pnlMensajes,cmdNuevoProducto" limitRender="true" />
-										
-								<a4j:commandButton id="cmdBusquedaProductosAvanzada" 
-									image="#{msg['toggle.img']}" title="#{msg['busqueda']} #{msg['avanzada']}"
-									onclick="toggleAvanzado(this.id, 'gBusquedaProductosAvanzada', 'cbTipoBusquedaProductos', 'txtValorBusquedaProductos');" />
-							</h:panelGrid>
-						</h:panelGroup>
-				
-						<h:panelGroup style="width:100%;">
-							<h:panelGroup style="vertical-align:middle; position:relative;">
-								<a4j:commandButton id="cmdNuevoProducto" style="float:right; margin:0 5px; vertical-align:right; position:relative; display:#{reqAction.previaBusquedaProducto ? 'block' : 'none'}" 
-									image="#{msg['agregar16.img']}" title="#{msg['nuevo']} #{msg['producto']}"
-									action="#{reqAction.nuevoProducto}" 
-									onclick="#{rich:element('cmdNuevoProducto')}.disabled = true;" 
-									oncomplete="#{rich:component('pnlProducto')}.show(); #{rich:element('cmdNuevoProducto')}.disabled = false" 
-									render="pnlProducto" limitRender="true" />
-							</h:panelGroup>
-						</h:panelGroup>
-					</h:panelGrid>
-					<h:panelGroup id="gBusquedaProductosAvanzada" style="display:none; width:100%; margin:5px auto 0; padding:0;">
-						<h:panelGrid columns="2" style="margin:0; padding:0;" cellpadding="0" cellspacing="5">
-							<h:outputText value="#{msg['buscarPor']}:" styleClass="Titulo"/>
-							<h:selectOneMenu id="cbTipoBusquedaProductos" styleClass="Titulo" style="width: 216px;"
-								value="#{reqAction.campoBusquedaProductos}">
-								<f:selectItems value="#{reqAction.tiposBusquedaProductos}" />
-							</h:selectOneMenu>
-							<h:outputText value="#{msg['familia']}:" styleClass="Titulo" />
-							<h:selectOneMenu value="#{reqAction.familiaBusquedaProductos}" styleClass="Titulo" style="width:216px">
-			            		<f:selectItem itemLabel="#{msg['todos']}" itemValue="0" />
-			            		<f:selectItems value="#{reqAction.listFamiliasItems}" /> 
-			        		</h:selectOneMenu>
-						</h:panelGrid>
-					</h:panelGroup> 
-					<div class="tableParent" style="display:block; margin:5px auto 0; width:100%; padding:0; height:auto; max-height:200px; overflow-y:auto;">
-						<rich:dataTable id="dtProductos" value="#{reqAction.listProductos}" var="var" rows="50" style="margin:0 auto;"
-							cellpadding="0" cellspacing="0" border="0" rowClasses="Row1, Row2" styleClass="tabla_pagina">
-							<f:facet name="header">
-								<rich:columnGroup>
-									<rich:column style="width: 90px; text-align:center; font-weight: bold;" styleClass="Titulo">
-										<h:outputText value="#{msg['id']}" />
-									</rich:column>
-							
-									<rich:column style="width: 90px; text-align:center;" styleClass="Titulo">
-										<h:outputText value="#{msg['clave']}" />
-									</rich:column>
-							
-									<rich:column style="text-align:center;" styleClass="Titulo">
-										<h:outputText value="#{msg['descripcion']}" />
-									</rich:column>
-							
-									<rich:column style="text-align:center;" styleClass="Titulo">
-										<h:outputText value="#{msg['familia']}" />
-									</rich:column>
-							
-									<rich:column style="text-align:center;" styleClass="Titulo">
-										<h:outputText value="#{msg['unidadMedida']}" />
-									</rich:column>
-							
-									<rich:column style="width: 30px; text-align:center;" styleClass="Titulo">
-										<h:outputText value="#{msg['moneda']}" />
-									</rich:column>
-	
-									<rich:column style="width:20px; text-align:center;" styleClass="Titulo" />
-								</rich:columnGroup>
-							</f:facet>
-							<rich:column styleClass="Descripcion" style="width: 60px; text-align:center;">
-								<h:outputText value="#{var.id}" styleClass="Descripcion" />
-							</rich:column>
-					
-							<rich:column styleClass="Descripcion" style="width: 60px; text-align:center;">
-								<h:outputText value="#{var.clave}" styleClass="Descripcion" />
-							</rich:column>
-					
-							<rich:column styleClass="Descripcion" style="text-align:left; padding-left: 5px;">
-								<h:outputText value="#{var.descripcion}" styleClass="Descripcion" />
-							</rich:column>
-					
-							<rich:column styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
-								<h:outputText value="#{var.descFamilia}" styleClass="Descripcion" />
-							</rich:column>
-					
-							<rich:column styleClass="Descripcion" style="text-align:center; padding-left: 5px;">
-								<h:outputText value="#{var.descUnidadMedida}" styleClass="Descripcion" />
-							</rich:column>
-					
-							<rich:column styleClass="Descripcion" style="width: 30px; text-align:center; padding-left: 5px;">
-								<h:outputText value="#{var.descMonedaAbreviatura}" styleClass="Descripcion" />
-							</rich:column>
-					
-							<rich:column style="width: 30px; text-align:center;" styleClass="Descripcion">
-					   			<a4j:commandButton id="cmdAgregarProducto" 
-					   				image="#{msg['agregar16.img']}" title="#{msg['seleccionar']}"
-									action="#{reqAction.seleccionarProducto}"
-									oncomplete="agregarProducto(#{reqAction.operacion}, '#{rich:clientId('pnlMensajes')}');"
-									render="pnlBusquedaProductosPrincipal,pnlMensajes,dtReqDetalles" limitRender="true">
-									<f:setPropertyActionListener target="#{reqAction.pojoProducto}" value="#{var}" for="cmdAgregarProducto" />
-					   			</a4j:commandButton>
-							</rich:column>
-	
-							<f:facet name="footer">
-								<rich:dataScroller page="#{reqAction.numPaginaProductos}" for="dtProductos" renderIfSinglePage="false"
-									maxPages="10" fastStep="10" ajaxSingle="true" align="center" styleClass="Titulo" />
-							</f:facet>
-						</rich:dataTable>
-					</div>
-				</h:panelGroup>
-			</rich:collapsiblePanel>
 			
 			<h:panelGroup id="grupoDetalles">
 				<rich:tabPanel id="tabsRequisicion" switchType="client" activeItem="tabSolBodega" style="margin:10px auto 0;">

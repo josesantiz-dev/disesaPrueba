@@ -39,8 +39,8 @@ public class ObraSubcontratistaImp extends DAOImpl<ObraSubcontratista> implement
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<ObraSubcontratista> findAll(long idObra, String orderBy) throws Exception {
-		String queryString = "select model from ObraSubcontratista model where model.idObra.id = :idObra ";
+	public List<ObraSubcontratista> findAll(long idObra, long idEmpleado, String orderBy) throws Exception {
+		String queryString = "select model from ObraSubcontratista model where model.idObra.id = :idObra and model.idEmpleado = :idEmpleado ";
 		
 		try {
 			idObra = (idObra > 0 ? idObra : 0L);
@@ -49,6 +49,7 @@ public class ObraSubcontratistaImp extends DAOImpl<ObraSubcontratista> implement
 			
 			Query query = entityManager.createQuery(queryString);
 			query.setParameter("idObra", idObra);
+			query.setParameter("idEmpleado", idEmpleado);
 			return query.getResultList();
 		} catch (Exception re) {
 			throw re;
@@ -57,7 +58,7 @@ public class ObraSubcontratistaImp extends DAOImpl<ObraSubcontratista> implement
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<ObraSubcontratista> findLikeProperty(String propertyName, Object value, long idObra, long idEmpresa, String orderBy, int limite) throws Exception {
+	public List<ObraSubcontratista> findLikeProperty(String propertyName, Object value, long idObra,  long idEmpleado, long idEmpresa, String orderBy, int limite) throws Exception {
 		String queryString = "select model from ObraSubcontratista model where model.idEmpresa = :idEmpresa ";
 		SimpleDateFormat formateador = null;
 		StringBuffer sb = null;
@@ -102,7 +103,7 @@ public class ObraSubcontratistaImp extends DAOImpl<ObraSubcontratista> implement
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<ObraSubcontratista> findByProperty(String propertyName, Object value, long idObra, long idEmpresa, String orderBy, int limite) throws Exception {
+	public List<ObraSubcontratista> findByProperty(String propertyName, Object value, long idObra, long idEmpleado, long idEmpresa, String orderBy, int limite) throws Exception {
 		String queryString = "select model from ObraSubcontratista model where model.idEmpresa = :idEmpresa ";
 		
 		try {

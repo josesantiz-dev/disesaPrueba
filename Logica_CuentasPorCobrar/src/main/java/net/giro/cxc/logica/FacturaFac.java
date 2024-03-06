@@ -24,6 +24,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.ssl.Base64;
 import org.apache.log4j.Logger;
+import org.jdom.Attribute;
+import org.jdom.Element;
 
 import com.google.gson.Gson;
 
@@ -38,17 +40,18 @@ import net.giro.cxc.FEv33.CTipoFactor;
 import net.giro.cxc.FEv33.CUsoCFDI;
 import net.giro.cxc.FEv33.Comprobante;
 import net.giro.cxc.FEv33.Comprobante.Conceptos;
+import net.giro.cxc.FEv33.Comprobante.Conceptos.Concepto;
 import net.giro.cxc.FEv33.Comprobante.Emisor;
 import net.giro.cxc.FEv33.Comprobante.Impuestos;
-import net.giro.cxc.FEv33.Comprobante.Receptor;
-import net.giro.cxc.FEv33.Comprobante.Conceptos.Concepto;
 import net.giro.cxc.FEv33.Comprobante.Impuestos.Retenciones.Retencion;
 import net.giro.cxc.FEv33.Comprobante.Impuestos.Traslados.Traslado;
+import net.giro.cxc.FEv33.Comprobante.Receptor;
 import net.giro.cxc.beans.Factura;
 import net.giro.cxc.beans.FacturaDetalleExt;
 import net.giro.cxc.beans.FacturaDetalleImpuestoExt;
 import net.giro.cxc.beans.FacturaExt;
 import net.giro.cxc.beans.FacturaTimbre;
+import net.giro.cxc.beans.FacturasRelacionadas;
 import net.giro.cxc.beans.Provisiones;
 import net.giro.cxc.dao.FacturaDAO;
 import net.giro.cxc.realvirtual.beans.FactElectv33;
@@ -144,7 +147,6 @@ public class FacturaFac implements FacturaRem {
 			throw re;
 		}
 	}
-
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<Factura> save(List<Factura> listEntities) throws Exception {
@@ -1059,6 +1061,108 @@ public class FacturaFac implements FacturaRem {
 			timbre33.setTesting(testing);
 			timbre33.setNoTimbrar(noTimbrar);
 			timbrada = timbre33.timbrarFactura(extendida, this.infoSesion.getAcceso().getUsuario().getId());
+			if (noTimbrar && timbrada) {
+				extendida.setTimbrado(timbrada ? 1 : 0);
+				extendida.setUuid("uuid");
+			}
+			
+			// Actualizacion de Cobranza si corresponde
+			if (timbrada && "I".equals(extendida.getTipoComprobante())) {
+				if ("PUE".equals(extendida.getMetodoPago()) && extendida.getSaldo().doubleValue() > 0) 
+					this.generarPago(extendida.getId());
+				
+				if ("PPD".equals(extendida.getMetodoPago())) 
+					this.actualizaCobranza(extendida.getId());
+			}
+
+			if (debugging) log.info("Terminando ... ");
+			respuesta.getBody().addValor("factura", extendida);
+			respuesta.getErrores().setCodigoError(timbre33.getErrorCodigo());
+			respuesta.getErrores().setDescError(timbre33.getErrorDescripcion());
+		} catch (Exception e) { 
+			log.error("Ocurrio un problema al intentar timbrar la Factura indicada: " + extendida.getId(), e);
+			throw e;
+		}
+		
+		return respuesta;
+	}
+	
+	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public Respuesta timbrar(FacturaExt extendida, String version, String usoCfdi, int cfdiRelacionado, List<FacturasRelacionadas> listFacturasRelacionadas, String cfdiRelacionadoTipoRelacion, boolean debugging, boolean testing, boolean noTimbrar) throws Exception {
+		Respuesta respuesta = new Respuesta();
+		FactElectv33 timbre33 = null;
+		FacturaTimbre timbre = null;
+		String serie = "";
+		String folio = "";
+		boolean timbrada = false;
+		
+		try {
+			serie = extendida.getSerie();
+			folio = extendida.getFolio();
+			
+			if (debugging) log.info("Generando/Comprobando registro timbre ... ");
+			timbre = extendida.getIdTimbre();
+			if (timbre == null || timbre.getId() == null || timbre.getId() <= 0L) {
+				this.ifzTimbres.setInfoSesion(this.infoSesion);
+				timbre = this.ifzTimbres.comprobarTimbre(serie, folio);
+				if (timbre == null) {
+					timbre = new FacturaTimbre();
+					timbre.setId(0L);
+					timbre.setSerie(serie);
+					timbre.setFolio(folio);
+					timbre.setIdEmpresa(this.infoSesion.getEmpresa().getId());
+					timbre.setCreadoPor(this.infoSesion.getAcceso().getUsuario().getId());
+					timbre.setFechaCreacion(Calendar.getInstance().getTime());
+				}
+			}
+			
+			timbre.setTimbrado(0);
+			timbre.setTimbradoPor(this.infoSesion.getAcceso().getUsuario().getId());
+			timbre.setVersion(version);
+			timbre.setUsoCfdi(usoCfdi);
+			timbre.setCfdiRelacionado(cfdiRelacionado);
+			timbre.setCfdiTipoRelacion(cfdiRelacionadoTipoRelacion); 
+			timbre.setPruebas((testing ? 1 : 0));
+			timbre.setRfcReceptor(extendida.getRfc());
+			timbre.setRfcEmisor(this.infoSesion.getEmpresa().getRfc());
+			
+			String cfdiRelacionadoUuid = "";
+			for (FacturasRelacionadas var : listFacturasRelacionadas) {
+				cfdiRelacionadoUuid += "["+var.getCfdiRelacionadoUuid()+"]";
+			}
+			timbre.setCfdiRelacionadoUuid(cfdiRelacionadoUuid);
+			
+			// Guardamos y asignamos a la factura
+			if (debugging) log.info("Guardando registro timbre ... ");
+			this.ifzTimbres.setInfoSesion(this.infoSesion);
+			timbre = this.ifzTimbres.saveOrUpdate(timbre);
+			
+				
+			// Actualizamos factura
+			if (debugging) log.info("Relacionando registro timbre en la Factura ... ");
+			extendida.setIdTimbre(timbre);
+			this.update(extendida);
+
+			/*
+			 * FACTURAS 3.2
+				timbre = new FactElect();
+				resTimbre = timbre.foliar(this.pojoFactura.getId(), this.usuarioId);
+				actualizaFactura(timbre.getData(), timbre.facturaActualizada());
+				
+				if (! "".equals(resTimbre.trim())) {
+					log.info("ERROR 5: Error al timbrar: " + resTimbre.trim());
+					control(5, "No se pudo timbrar.\n" + resTimbre.trim());
+					return;
+				}
+			 */
+			
+			if (debugging) log.info("Timbrando ... ");
+			timbre33 = new FactElectv33(this.infoSesion);
+			timbre33.setDebugging(debugging);
+			timbre33.setTesting(testing);
+			timbre33.setNoTimbrar(noTimbrar);
+			timbrada = timbre33.timbrarFactura(extendida,listFacturasRelacionadas, this.infoSesion.getAcceso().getUsuario().getId());
 			if (noTimbrar && timbrada) {
 				extendida.setTimbrado(timbrada ? 1 : 0);
 				extendida.setUuid("uuid");

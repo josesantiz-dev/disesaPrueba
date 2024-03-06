@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/../Compras/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Compras/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Comun/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Comun/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Inventarios/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Inventarios/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Logica_Cargas_Documentos/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Logica_Cargas_Documentos/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Logica_Clientes/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Logica_Clientes/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Logica_Compras/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Logica_Compras/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Logica_Contabilidad/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../Logica_Contabilidad/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../Logica_CuentasPorPagar/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../Logica_CuentasPorPagar/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../Logica_GestionProyectos/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Logica_GestionProyectos/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Logica_Inventarios/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Logica_Inventarios/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Logica_Publico/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Logica_Publico/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Logica_RecHum/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Logica_RecHum/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Logica_TYG/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Logica_TYG/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Model_Cargas_Documentos/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Model_Cargas_Documentos/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Model_Clientes/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Model_Clientes/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Model_Compras/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Model_Compras/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Model_Contabilidad/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../Model_Contabilidad/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../Model_Credito/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Model_Credito/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Model_CuentasPorPagar/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../Model_CuentasPorPagar/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../Model_GestionProyectos/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Model_GestionProyectos/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Model_Inventarios/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Model_Inventarios/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Model_Publico/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Model_Publico/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Model_RecHum/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Model_RecHum/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Model_TYG/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/../Model_TYG/src/main/resources" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="ISO-8859-1" />
+  </component>
+</project>

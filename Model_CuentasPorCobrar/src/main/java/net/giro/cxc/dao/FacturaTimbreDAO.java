@@ -12,7 +12,7 @@ public interface FacturaTimbreDAO extends DAO<FacturaTimbre> {
 	public long save(FacturaTimbre entity, long codigoEmpresa) throws Exception;
 	
 	public long saveOrUpdate(FacturaTimbre entity, long codigoEmpresa) throws Exception;
-	
+		
 	public List<FacturaTimbre> saveOrUpdateList(List<FacturaTimbre> entities, long codigoEmpresa) throws Exception;
 	
 	public List<FacturaTimbre> findAll(long idEmpresa) throws Exception;

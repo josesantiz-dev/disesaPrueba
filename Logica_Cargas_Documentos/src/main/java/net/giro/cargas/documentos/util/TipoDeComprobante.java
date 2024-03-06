@@ -1,6 +1,6 @@
 package net.giro.cargas.documentos.util;
 
-import mx.gob.sat.cfdi.v33.catalogos.CTipoDeComprobante;
+import mx.gob.sat.cfdi.v40.catalogos.CTipoDeComprobante;
 
 public enum TipoDeComprobante {
 	INGRESO  { public String toString() { return CTipoDeComprobante.I.value(); }},

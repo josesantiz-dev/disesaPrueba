@@ -61,29 +61,6 @@
 			<rich:tabPanel id="tabOrdenCompra" switchType="client">
 				<rich:tab header="#{msg['datosGenerales']}">
 					<h:panelGrid columns="2" columnClasses="colTitulo, colDato">
-						<h:outputText value="Tipo de OC" styleClass="Titulo" />
-						<h:panelGroup id="groupConversion1">
-							<h:selectOneMenu id="cmbTipoOrden" style="width:146px" 
-								disabled="#{ordenesAction.editarOrdenCompra == false}"
-								value="#{ordenesAction.tipoOrden}"
-								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
-								requiredMessage="#{msg['tipoOrden']} #{msg['mensaje.error.requerido']}">
-							 	<f:selectItem itemLabel="#{msg['seleccione']}" />
-								<f:selectItems value="#{ordenesAction.listTipoOrdenItems}" />
-							</h:selectOneMenu>
-							<!--<h:selectOneMenu id="cmbMonedas" style="width:146px" 
-								disabled="#{ordenesAction.editarOrdenCompra == false}"
-								value="#{ordenesAction.moneda}"
-								required="#{!empty param[rich:clientId('cmdSalvar')]}" 
-								requiredMessage="#{msg['moneda']} #{msg['mensaje.error.requerido']}">
-							  	<f:selectItem itemLabel="#{msg['seleccione']}" />
-							  	<f:selectItems value="#{ordenesAction.listMonedasItems}" />
-							  	<a4j:ajax event="change" 
-							  		listener="#{ordenesAction.evaluaConversion}"
-						        	oncomplete="conversion(#{ordenesAction.operacion}, '#{rich:clientId('pnlMensajes')}')"
-							    	render="groupConversion,txtTipoCambio,pnlMensajes" limitRender="true" />
-							</h:selectOneMenu>-->
-						</h:panelGroup>
 						<h:outputText value="#{msg['folio']}:" styleClass="Titulo" />
 						<h:outputText id="txtFolioOrden" style="text-align:left; display:block; margin:auto 5px;" escape="false"
 							value="#{ordenesAction.folio}" />
@@ -375,14 +352,6 @@
 											<h:outputText value="#{msg['importe']}" />
 										</rich:column>
 										
-										<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px">
-											<h:outputText value="Estatus" />
-										</rich:column>
-										
-										<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px">
-											<h:outputText value="Comentario" />
-										</rich:column>
-										
 										<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width: 20px;">
 											<h:selectBooleanCheckbox title="#{msg['incluirTodo']}" 
 												value="#{ordenesAction.seleccionarTodos}"
@@ -392,32 +361,28 @@
 													render="panelOrdenTotales,regListDetalles" limitRender="true" />
 											</h:selectBooleanCheckbox>
 										</rich:column>
-										<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width: 20px;">
-											
-										</rich:column>
 									</rich:columnGroup>
 								</f:facet>
 								
-								<rich:column styleClass="#{(var.estatus == 1 ? 'itemCancelado' : 'Descripcion')}" style="text-align:center;">
+								<rich:column styleClass="Descripcion" style="text-align:center;">
 									<h:outputText value="#{var.productoClave}" title="#{msg['producto']} #{msg['id']}: #{var.productoId}" />
 								</rich:column>
 								
-								<rich:column styleClass="#{(var.estatus == 1 ? 'itemCancelado' : 'Descripcion')}" style="text-align:left;">
+								<rich:column styleClass="Descripcion" style="text-align:left;">
 									<h:outputText value="#{var.productoNombre}" />
 								</rich:column>
 								
-								<rich:column styleClass="#{(var.estatus == 1 ? 'itemCancelado' : 'Descripcion')}" style="text-align:center;">
+								<rich:column styleClass="Descripcion" style="text-align:center;">
 									<h:outputText value="#{var.productoUnidad}" />
 								</rich:column>
 								
-								<rich:column styleClass="#{(var.estatus == 1 ? 'itemCancelado' : 'Descripcion')}" style="text-align:center;">
+								<rich:column styleClass="Descripcion" style="text-align:center;">
 									<h:outputText value="#{var.productoFamilia}" />
 								</rich:column>
 								
-								<rich:column styleClass="#{(var.estatus == 1 ? 'itemCancelado' : 'Descripcion')}" style="text-align:center;">
+								<rich:column styleClass="Descripcion" style="text-align:center;">
 									<h:inputText id="txtCantidadProducto" style="text-align:right; width:80px; font-size:0.9em;"
-										value="#{var.cantidad}" title="#{msg['suministrado']}: #{var.suministrado}"
-										disabled="#{ordenesAction.editarOrdenCompra == false ? true : ((ordenesAction.pojoOrden.id == null || ordenesAction.pojoOrden.id == 0) ? false : true)}">
+										value="#{var.cantidad}" title="#{msg['suministrado']}: #{var.suministrado}">
 										<f:convertNumber pattern="#{ordenesAction.patternDecimal}" />
 										<a4j:ajax event="blur" 
 											listener="#{ordenesAction.totalizarDetalles}" execute="@this"
@@ -425,7 +390,7 @@
 									</h:inputText>
 								</rich:column>
 								
-								<rich:column styleClass="#{(var.estatus == 1 ? 'itemCancelado' : 'Descripcion')}" style="text-align:center;">
+								<rich:column styleClass="Descripcion" style="text-align:center;">
 									<h:inputText id="txtPrecioUnitarioProducto" style="text-align:right; width:90px; font-size:0.9em;"
 										value="#{var.precioUnitario}" 
 										disabled="#{! ordenesAction.origenRequisicion}"
@@ -437,19 +402,8 @@
 									</h:inputText>
 								</rich:column>
 								
-								<rich:column styleClass="#{(var.estatus == 1 ? 'itemCancelado' : 'Descripcion')}" style="text-align:right;">
+								<rich:column styleClass="Descripcion" style="text-align:right;">
 									<h:outputText value="#{var.importe}"><f:convertNumber pattern="#{ordenesAction.patternDecimal}" /></h:outputText>
-								</rich:column>
-								
-								<rich:column styleClass="#{(var.estatus == 1 ? 'itemCancelado' : 'Descripcion')}" style="text-align:right;">
-									<h:outputText rendered="#{var.estatus eq 0}" styleClass="Descripcion" value="#{msg['estatus.activa']}" />
-									<h:outputText rendered="#{var.estatus eq 1}" styleClass="itemCancelado" value="#{msg['estatus.cancelada']}" />
-								</rich:column>
-								
-								<rich:column styleClass="#{(var.estatus == 1 ? 'itemCancelado' : 'Descripcion')}" style="text-align:right;">
-									<h:outputText value="#{var.comentariosCancelacion}">
-										
-										</h:outputText>
 								</rich:column>
 								
 								<rich:column styleClass="Descripcion" style="text-align:center;">
@@ -461,19 +415,7 @@
 											render="panelOrdenTotales,regListDetalles" limitRender="true" />
 									</h:selectBooleanCheckbox>
 								</rich:column>
-								<rich:column styleClass="Descripcion" style="text-align:center;">
-									<a4j:commandButton id="cmdCancelarProducto" 
-									    rendered="#{var.estatus == 0}"
-									    value="#{var.seleccionado}"
-									    onclick="#{rich:element('cmdCancelarProducto')}.disabled = true;"
-									    action="#{ordenesAction.bajaProducto}" 
-									    image="#{msg['cancelar16.img']}" title="#{msg['cancelar']}"
-									    oncomplete="bajaProducto('#{rich:clientId('pnlBajaProducto')}')" 
-									    render="pnlBajaProducto"
-									    limitRender="true">
-									    <f:setPropertyActionListener value="#{var.id}" target="#{ordenesAction.idOrdenDetalleSeleccionado}" />
-									</a4j:commandButton>
-								</rich:column>
+				
 								<f:facet name="footer">
 									<rich:columnGroup>
 										<rich:column styleClass="Titulo" style="text-align:left;" colspan="5">
@@ -489,7 +431,6 @@
 											<h:outputText value="#{ordenesAction.subtotal}"><f:convertNumber pattern="#{ordenesAction.patternDecimal}" /></h:outputText> 
 										</rich:column>
 										
-										<rich:column styleClass="Titulo" style="text-align:center;" />
 										<rich:column styleClass="Titulo" style="text-align:center;" />
 									</rich:columnGroup>
 								</f:facet>

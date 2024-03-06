@@ -190,7 +190,8 @@ public class SalidasAlmacenAction implements Serializable {
 			// EVALUACION DE PERFILES
 			resValue = this.loginManager.getAutentificacion().getPerfil("EGRESOS_OPERACION");
 			this.PERFIL_ADMINISTRATIVO = ((resValue != null && "S".equals(resValue)) ? true : false);
-
+						
+			
 			ctx = new InitialContext();
 			this.ifzMovimientos = (AlmacenMovimientosRem) ctx.lookup("ejb:/Logica_Inventarios//AlmacenMovimientosFac!net.giro.inventarios.logica.AlmacenMovimientosRem");
 			this.ifzMovimientosDetalle = (MovimientosDetalleRem) ctx.lookup("ejb:/Logica_Inventarios//MovimientosDetalleFac!net.giro.inventarios.logica.MovimientosDetalleRem");
@@ -302,11 +303,11 @@ public class SalidasAlmacenAction implements Serializable {
 		try {
 			control();
 			// Validamos permiso de Lectura/Consulta
-			if (! this.permisos.getConsultar()) {
+			/*if (! this.permisos.getConsultar()) {
 				control(-1, "No tiene permitido Consultar informacion");
 				controlLog("301 - No tiene permitido Consultar informacion");
 				return;
-			}
+			}*/
 
 			if (this.almacenTrabajo == null || this.almacenTrabajo.getId() == null || this.almacenTrabajo.getId() <= 0L) {
 				control(-1, "Debe seleccionar un Almacen/Bodega para poder consultar los Traspasos");
@@ -336,11 +337,11 @@ public class SalidasAlmacenAction implements Serializable {
 				return;
 			}
 			
-			if (! this.permisos.escribir(this.almacenTrabajo.getId())) {
+			/*if (! this.permisos.escribir(this.almacenTrabajo.getId())) {
 				control(-1, "No tiene permitido Añadir/Editar informacion");
 				controlLog("301 - No tiene permitido Añadir/Editar informacion");
 				return;
-			}
+			}*/
 			
 			this.pojoObra = new Obra();
 			this.pojoMovimiento = new AlmacenMovimientosExt();
@@ -367,11 +368,11 @@ public class SalidasAlmacenAction implements Serializable {
 			return;
 		}
 		
-		if (! this.permisos.escribir(this.almacenTrabajo.getId())) {
+		/*if (! this.permisos.escribir(this.almacenTrabajo.getId())) {
 			control(-1, "No tiene permitido Añadir/Editar informacion");
 			controlLog("301 - No tiene permitido Añadir/Editar informacion");
 			return;
-		}
+		}*/
 		
 		nuevo();
 		cargarFamilias();
@@ -481,11 +482,11 @@ public class SalidasAlmacenAction implements Serializable {
 				return;
 			}
 			
-			if (! this.permisos.borrar(this.almacenTrabajo.getId())) {
+			/*if (! this.permisos.borrar(this.almacenTrabajo.getId())) {
 				control(-1, "No tiene permitido Borrar/Eliminar informacion");
 				controlLog("301 - No tiene permitido Borrar/Eliminar informacion");
 				return;
-			}
+			}*/
 			
 			movimiento = this.ifzMovimientos.findById(this.pojoMovimiento.getId());
 			if (movimiento == null || movimiento.getId() == null || movimiento.getId() <= 0L) {
@@ -523,11 +524,11 @@ public class SalidasAlmacenAction implements Serializable {
 			return;
 		}
 		
-		if (! this.permisos.borrar(this.almacenTrabajo.getId())) {
+		/*if (! this.permisos.borrar(this.almacenTrabajo.getId())) {
 			control(-1, "No tiene permitido Borrar/Eliminar informacion");
 			controlLog("301 - No tiene permitido Borrar/Eliminar informacion");
 			return;
-		}
+		}*/
 		if (this.pojoMovimientoDetalleEliminar == null)
 			return;
 		
@@ -825,11 +826,11 @@ public class SalidasAlmacenAction implements Serializable {
 			return false;
 		}
 
-		if (! this.permisos.escribir(this.almacenTrabajo.getId())) {
+		/*if (! this.permisos.escribir(this.almacenTrabajo.getId())) {
 			control(-1, "No tiene permitido Añadir/Editar informacion");
 			controlLog("301 - No tiene permitido Añadir/Editar informacion");
 			return false;
-		}
+		}*/
 		
 		if (this.pojoObra == null || this.pojoObra.getId() == null || this.pojoObra.getId() <= 0L) {
 			control(-12, "Seleccione Obra");
@@ -1087,8 +1088,42 @@ public class SalidasAlmacenAction implements Serializable {
 	// ------------------------------------------------------------------------------------
 	// ALMACENES
 	// ------------------------------------------------------------------------------------
-
 	private void cargarAlmacenes() {
+		List<Integer> tipos = null;
+		List<Long> idAlmacenesAsignados = null;
+		
+		try {
+			tipos = new ArrayList<Integer>(Arrays.asList(1, 2));
+			if (isAdministrativo()) {
+				tipos.add(3);
+				tipos.add(4);
+			}
+			// Solo Almacenes/Bodegas ligados al Empleado
+			this.ifzAlmacen.setInfoSesion(this.loginManager.getInfoSesion());
+			this.listAlmacenes = this.ifzAlmacen.findByTipo(tipos, false, "");
+			this.listAlmacenes = (this.listAlmacenes != null) ? this.listAlmacenes : new ArrayList<Almacen>();
+
+			idAlmacenesAsignados = new ArrayList<Long>();
+			if (! "ADMINISTRADOR".equals(this.loginManager.getUsuarioResponsabilidad().getUsuario().getUsuario())) {
+				for (Almacen var : this.listAlmacenesTrabajo) 
+					idAlmacenesAsignados.add(var.getId());
+			}
+			
+			this.listAlmacenesItems = new ArrayList<SelectItem>();
+			//for (Almacen var : this.listAlmacenes) 
+			//	this.listAlmacenesItems.add(new SelectItem(var.getId(), (idAlmacenesAsignados.contains(var.getId()) ? "* " : "") + var.getNombre() + " (" + var.getIdentificador() + ")"));
+		
+			for (Almacen var : listAlmacenesTrabajo) 
+				this.listAlmacenesItems.add(new SelectItem(var.getId(), var.getNombre() + " (" + var.getIdentificador() + ")"));
+			
+
+		} catch (Exception e) {
+			control("Ocurrio un problema al cargar los Almacenes", e);
+		}
+	}
+
+	
+	private void cargarAlmacenesOLD1() {
 		List<Integer> tipos = null;
 		List<Long> idAlmacenesAsignados = null;
 		
@@ -1100,7 +1135,8 @@ public class SalidasAlmacenAction implements Serializable {
 			}
 			// Solo Almacenes/Bodegas ligados al Empleado
 			this.ifzAlmacen.setInfoSesion(this.loginManager.getInfoSesion());
-			this.listAlmacenes = this.ifzAlmacen.findByTipo(tipos, false, "");
+			boolean f = false;
+			this.listAlmacenes = this.ifzAlmacen.findByTipo(tipos, f, "");
 			this.listAlmacenes = (this.listAlmacenes != null) ? this.listAlmacenes : new ArrayList<Almacen>();
 
 			idAlmacenesAsignados = new ArrayList<Long>();
@@ -1951,6 +1987,11 @@ public class SalidasAlmacenAction implements Serializable {
 	public void setListaTraspasoDetalleGrid(List<TraspasoDetalleExt> listaTraspasoDetalleGrid) {
 		this.listTraspasoDetalleGrid = listaTraspasoDetalleGrid;
 	}
+	public boolean isAdministrativo() {
+		return PERFIL_ADMINISTRATIVO;
+	}
+
+	public void setAdministrativo(boolean pAdministrativo) { }
 
 	public int getPagDetalles() {
 		return pagTraspasoDetalles;

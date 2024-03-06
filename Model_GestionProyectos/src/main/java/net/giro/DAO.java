@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import net.giro.adp.beans.TipoSub;
 import net.giro.comun.ExcepConstraint;
 
 /**
@@ -111,4 +112,6 @@ public interface DAO<T extends Serializable> {
     public List<T> nativeQuery(String queryString, List<Object> parameterValues, String resultSetMapping);
 
     public List<T> nativeQuery(String queryString, Map<String, Object> parameterValues, String resultSetMapping);
+
+    
 }

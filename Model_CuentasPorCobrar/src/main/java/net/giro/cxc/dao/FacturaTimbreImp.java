@@ -40,7 +40,7 @@ public class FacturaTimbreImp extends DAOImpl<FacturaTimbre> implements FacturaT
 			throw re;
 		}
 	}
-
+	
 	@Override
 	public List<FacturaTimbre> saveOrUpdateList(List<FacturaTimbre> entities, long codigoEmpresa) throws Exception {
 		try {

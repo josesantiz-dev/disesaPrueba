@@ -15,7 +15,7 @@
 		<rich:toolbarGroup id="tbgBuscar" location="right">
 			<a4j:commandButton id="cmdBuscar" styleClass="Titulo" style="cursor:pointer;"
 				image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
-				action="#{traspasosAction.buscar}" 
+				action="#{traspasosAction.buscar}" execute="@this"
 				oncomplete="buscar(#{traspasosAction.band},'#{rich:clientId('pnlMensajes')}');"
 				render="dtTraspasos,pnlMensajes" limitRender="true" />
 		</rich:toolbarGroup>
@@ -23,7 +23,7 @@
 		<rich:toolbarGroup id="tbgNuevo" location="right">
 			<a4j:commandButton id="cmdNuevo" styleClass="Titulo" style="cursor:pointer;"
 				image="#{msg['nuevo22.img']}" title="#{msg['nuevo.e']}"
-				action="#{traspasosAction.validaciones}" 
+				action="#{traspasosAction.validaciones}"  execute="@this"
 				oncomplete="validaNuevo(#{traspasosAction.band},'#{rich:clientId('pnlNuevoTraspaso')}','#{rich:clientId('pnlMensajes')}');"
 				render="pnlNuevoTraspaso,pnlMensajes" limitRender="true" />
 		</rich:toolbarGroup>
@@ -46,7 +46,7 @@
 				<h:outputText value="#{msg['almacenBodega']}:" styleClass="Titulo" />
 				<h:selectOneMenu value="#{traspasosAction.idAlmacenTrabajo}" style="width:316px;">
 					<f:selectItem itemLabel="#{msg['seleccione']}" />
-					<f:selectItems value="#{traspasosAction.listAlmacenesTrabajoItems}" />
+					<f:selectItems value="#{traspasosAction.listAlmacenesItems}" />
 			    	<a4j:ajax event="change" 
 			    		listener="#{traspasosAction.actualizarResultados}" 
 			    		render="dtTraspasos" limitRender="true" />
@@ -179,7 +179,7 @@
 				<rich:column style="text-align:center; width:20px;">
 					<a4j:commandButton id="btnReporte" rendered="#{var.estatus == 0 ? true : traspasosAction.debugging}"
 						image="#{msg['imprimir16.img']}" title="#{msg['imprimir.e']}"
-						action="#{traspasosAction.reporte}" 
+						action="#{traspasosAction.reporte}"  execute="@this"
 						oncomplete="reporte(#{traspasosAction.band}, '#{rich:clientId('pnlMensajes')}')"
 						render="pnlMensajes" limitRender="true">
 						<f:setPropertyActionListener target="#{traspasosAction.pojoTraspaso}" value="#{var.id}" />
@@ -189,7 +189,7 @@
 				<rich:column style="text-align:center; width:20px;">
 					<a4j:commandButton id="cmdEditar" 
 						image="#{msg['consultarMovimiento22.img']}" title="#{msg['ver']}"
-						action="#{traspasosAction.editar}" 
+						action="#{traspasosAction.editar}"  execute="@this"
 						oncomplete="#{rich:component('pnlTraspaso')}.show() "
 						render="pnlTraspaso,dtTraspasos,grupoBotonesDerechos,gDatosGrales" limitRender="true">
 						<f:setPropertyActionListener target="#{traspasosAction.pojoTraspaso}" value="#{var.id}" />

@@ -12,11 +12,11 @@
 		<filter-class>org.jasig.cas.client.authentication.AuthenticationFilter</filter-class>
 		<init-param>
 			<param-name>casServerLoginUrl</param-name>
-			<param-value>http://localhost:9080/cas/login</param-value>
+			<param-value>https://constructora.giro26.net:9443/cas/login</param-value>
 		</init-param>
 		<init-param>
 			<param-name>service</param-name>
-			<param-value>http://localhost:9080/Inventarios/index.faces</param-value>
+			<param-value>https://constructora.giro26.net:9443/Inventarios/index.faces</param-value>
 		</init-param>
 	</filter>
 	<filter>
@@ -24,11 +24,11 @@
 		<filter-class>org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter</filter-class>
 		<init-param>
 			<param-name>casServerUrlPrefix</param-name>
-			<param-value>http://localhost:9080/cas/</param-value>
+			<param-value>https://constructora.giro26.net:9443/cas/</param-value>
 		</init-param>
 		<init-param>
 			<param-name>service</param-name>
-			<param-value>http://localhost:9080/Inventarios/index.faces</param-value>
+			<param-value>https://constructora.giro26.net:9443/Inventarios/index.faces</param-value>
 		</init-param>
 	</filter>
 	<filter>

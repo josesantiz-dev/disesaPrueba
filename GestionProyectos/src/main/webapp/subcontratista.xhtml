@@ -53,69 +53,81 @@
 						
 						<h:outputText value="#{msg['cliente']}:" styleClass="Titulo" />
 						<h:outputText id="txtCliente" styleClass="Titulo" style="text-align:left; display:block;" 
-							value="#{subcontratistaAction.cliente}" />
-						
-						<h:outputText value="#{msg['anticipo']}:" styleClass="Titulo" />
-						<h:panelGroup id="groupPorcentajesGlobales">
-							<h:panelGroup style="margin:0 5px 0 0;">
-								<h:inputText id="txtPorcentajeAnticipo" style="width:46px; text-align:right; margin:0 auto; font-size:0.95em;"
-									disabled="#{subcontratistaAction.obra eq ''}"
-									value="#{subcontratistaAction.porAnticipoGlobal}" title="#{msg['%']} #{msg['amortizacion']}"
-									onkeypress="return soloDecimales(event, this.value, 3, 4);"
-									validatorMessage="#{msg['porcentaje']} #{msg['anticipo']}: #{msg['mensaje.validacion.valorCeroCien']}">
-									<f:convertNumber pattern="#{subcontratistaAction.porcentajeFormat}" />
-									<f:validateLongRange minimum="0" maximum="100" for="txtPorcentajeAnticipo" />
-									<a4j:ajax event="blur" execute="@region" 
-										listener="#{subcontratistaAction.reasignarPorcentajes}"
-										render="groupPorcentajesGlobales,groupBotones,cmdSubcontratistaGuardarTodo,dtSubcontratistas" limitRender="true" />
-								</h:inputText>
-								<h:outputText value="#{msg['%']}" styleClass="Titulo" style="margin:0 5px;" />
-							</h:panelGroup>
-							
-							<h:outputText value="#{msg['retencion']}:" styleClass="Titulo" style="margin:0 5px;" />
-							<h:panelGroup>
-								<h:inputText id="txtPorcentajeRetencion" style="width:46px; text-align:right; margin:0 auto; font-size:0.95em;"
-									disabled="#{subcontratistaAction.obra eq ''}"
-									value="#{subcontratistaAction.porRetencionGlobal}" title="#{msg['%']} #{msg['fondo']} #{msg['garantia']}"
-									onkeypress="return soloDecimales(event, this.value, 3, 4);"
-									validatorMessage="#{msg['porcentaje']} #{msg['retencion']}: #{msg['mensaje.validacion.valorCeroCien']}">
-									<f:convertNumber pattern="#{subcontratistaAction.porcentajeFormat}" />
-									<f:validateLongRange minimum="0" maximum="100" for="txtPorcentajeRetencion" />
-									<a4j:ajax event="blur" execute="@region" 
-										listener="#{subcontratistaAction.reasignarPorcentajes}"
-										render="groupPorcentajesGlobales,groupBotones,cmdSubcontratistaGuardarTodo,dtSubcontratistas" limitRender="true" />
-								</h:inputText>
-								<h:outputText value="#{msg['%']}" styleClass="Titulo" style="margin:0 5px;" />
-							</h:panelGroup>
-						</h:panelGroup>
+							value="#{subcontratistaAction.cliente}" />							
 					</h:panelGrid>
 				</h:panelGroup>
 			
 				<h:panelGroup layout="block" style="width:100%;">
 					<h:panelGroup id="groupBotones" layout="block" style="display:inline-block; position:absolute; right:0; text-align:right; margin:-28px 10px 0; min-width:98px; min-height:28px; z-index:1;">
-						<a4j:commandButton id="cmdReporte" style="margin:auto 5px; vertical-align:middle; cursor:pointer;" 
-							rendered="#{subcontratistaAction.obra ne ''}"
-							image="#{msg['imprimir22.img']}" title="#{msg['imprimir.e']} #{msg['estadoCuenta']} #{msg['cobranza']}"
-							action="#{subcontratistaAction.reporte}" 
-							oncomplete="reporte(#{subcontratistaAction.band}, '#{rich:clientId('pnlMensajes')}')"
-							render="pnlMensajes" limitRender="true" />
-						
 						<a4j:commandButton id="cmdSubcontratistaNuevo" style="margin:auto 5px; vertical-align:middle; cursor:pointer;" 
 							rendered="#{subcontratistaAction.obra ne ''}"
-							image="#{msg['nuevo22.img']}" title="#{msg['nuevo.e']}"
-							action="#{subcontratistaAction.nuevo}" execute="@region" 
-							oncomplete="buscar(#{subcontratistaAction.band}, '#{rich:clientId('pnlMensajes')}')"
+							image="#{msg['nuevo22.img']}" title="#{msg['nuevo.e']}" 
+							action="#{subcontratistaAction.nuevaBusquedaSubContratista}"	execute="@region"
+							oncomplete="#{rich:component('pnlBusquedaSubContratista')}.show()"
 							render="pnlMensajes,dtSubcontratistas" limitRender="true" />
 						
-						<a4j:commandButton id="cmdSubcontratistaActualizar" style="margin:auto 5px; vertical-align:middle; cursor:pointer;"
-							rendered="#{subcontratistaAction.obra ne ''}"
-							image="#{msg['actualizar22.img']}" title="#{msg['actualizar']}" 
-							action="#{subcontratistaAction.ver}" execute="@region" 
-							render="groupPorcentajesGlobales,groupBotones,cmdSubcontratistaGuardarTodo,dtSubcontratistas" limitRender="true" />
 					</h:panelGroup>
 				</h:panelGroup>
-			</h:panelGrid>
+			</h:panelGrid> 
 			
+			<a4j:region id="regSubcontratista">
+				<rich:dataTable id="dtSubcontratistas" value="#{subcontratistaAction.listObraEmpleados}" var="var" iterationStatusVar="it" rows="100" 
+					cellpadding="0" cellspacing="0" border="0" rowClasses="Row2" styleClass="tabla_pagina" style="margin:5px 0 30px;">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column styleClass="Titulo" style="text-align:center; padding:2px; width:20px;" breakRowBefore="true">
+								<h:outputLabel value="#" />
+							</rich:column>
+							
+							<rich:column styleClass="Titulo" style="text-align:center; padding:2px; width:400px;">
+								<h:outputLabel value="#{msg['nombre']}" />
+							</rich:column>
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:20px;" />
+							<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:20px;" />
+						</rich:columnGroup>
+					</f:facet>
+			        
+					<rich:column style="text-align:center;">
+						<h:outputLabel value="#{it.index + 1}" title="#{msg['registro']}: #{var.id}"><f:convertNumber pattern="00" /></h:outputLabel>
+					</rich:column>
+					
+					
+					<rich:column style="text-align:center;">
+						<h:outputText style="text-align:left; font-size:0.95em;"
+							value="#{var.nombreEmpleado}">
+						</h:outputText>
+					</rich:column> 
+					
+					<rich:column style="text-align:center;">
+						<a4j:commandButton id="cmdEditar" 
+							image="#{msg['editar16.img']}" title="#{msg['editar']}"
+							action="#{subcontratistaAction.verSubContratista}" 
+							oncomplete="#{rich:component('pnlCapturarFacturas')}.show();"
+							render="pnlCapturarFacturas" limitRender="true">
+							<f:setPropertyActionListener for="cmdEditar" value="#{it.index}" target="#{subcontratistaAction.indexSubcontratista}" />
+						</a4j:commandButton>
+					</rich:column>
+					
+		
+					
+					<rich:column style="text-align:center;">
+						<a4j:commandButton id="cmdEliminar" 
+							image="#{msg['eliminar16.img']}" title="#{msg['eliminar']}"
+							oncomplete="#{rich:component('pnlEliminar')}.show()" 
+							render="pnlEliminar,dtSubcontratistas" limitRender="true">
+							<f:setPropertyActionListener for="cmdEliminar" value="#{it.index}" target="#{subcontratistaAction.indexSubcontratista}" />
+						</a4j:commandButton>
+					</rich:column>
+					
+					<f:facet name="footer">
+						<rich:dataScroller for="dtSubcontratistas" page="#{subcontratistaAction.paginacionCobranza}" renderIfSinglePage="false"
+							ajaxSingle="true" maxPages="10" fastStep="10" align="center" styleClass="Titulo" />
+					</f:facet>
+				</rich:dataTable>
+			</a4j:region>
+			<!-- 
+				SE MOVIO A 	"pnlCapturarFacturas.xml" 
+				
 			<a4j:region id="regSubcontratista">
 				<rich:dataTable id="dtSubcontratistas" value="#{subcontratistaAction.listSubcontratistas}" var="var" iterationStatusVar="it" rows="100" 
 					cellpadding="0" cellspacing="0" border="0" rowClasses="Row2" styleClass="tabla_pagina" style="margin:5px 0 30px;">
@@ -366,17 +378,20 @@
 							ajaxSingle="true" maxPages="10" fastStep="10" align="center" styleClass="Titulo" />
 					</f:facet>
 				</rich:dataTable>
-			</a4j:region>
+			</a4j:region> -->
 		</div>
 	</ui:define>
 	
 	<ui:define name="modals">
 		<ui:include src="/modals/subcontratista/pnlMensajes.xhtml" />
 		<ui:include src="/modals/subcontratista/pnlEliminar.xhtml" />
+		<ui:include src="/modals/subcontratista/pnlEliminarFactura.xhtml" />
 		<ui:include src="/modals/subcontratista/pnlBusquedaObras.xhtml" />
 		<ui:include src="/modals/subcontratista/pnlDesgloseImpuestos.xhtml" />
 		<ui:include src="/modals/subcontratista/pnlBusquedaImpuestos.xhtml" />
 		<ui:include src="/modals/subcontratista/pnlEliminarImpuesto.xhtml" />
 		<ui:include src="/modals/subcontratista/pnlCargarXML.xhtml" />
+		<ui:include src="/modals/subcontratista/pnlCapturarFacturas.xhtml" />
+		<ui:include src="/modals/subcontratista/pnlBusquedaSubContratista.xhtml" />
 	</ui:define>
 </ui:composition>

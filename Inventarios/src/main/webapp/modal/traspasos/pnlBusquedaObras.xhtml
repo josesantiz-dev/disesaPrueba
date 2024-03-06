@@ -31,7 +31,7 @@
 					
 						<a4j:commandButton id="cmdBuscarObras" style="margin:0 5px; vertical-align: middle; cursor: pointer;" 
 							image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
-							action="#{traspasosAction.buscarObras}"
+							action="#{traspasosAction.buscarObras}" execute="@this"
 							oncomplete="buscarObras(#{traspasosAction.band}, '#{rich:clientId('pnlMensajes')}');" 
 							render="dtObras,dScrollObrasTop,pnlMensajes" 
 							limitRender="true"  />
@@ -95,8 +95,8 @@
 					   <a4j:commandButton id="cmdAgregarObra" 
 					   		image="#{msg['agregar16.img']}" title="#{msg['seleccionar']}"
 							onclick="#{rich:component('pnlBusquedaObras')}.hide()"
-							action="#{traspasosAction.seleccionarObra}"
-							oncomplete="seleccionar(#{traspasosAction.band}, '#{rich:clientId('pnlBusquedaObras')}',  '#{rich:clientId('pnlMensajes')}');"
+							action="#{traspasosAction.seleccionarObra}" execute="@this"
+							oncomplete="mensaje(#{traspasosAction.band}, '#{rich:clientId('pnlBusquedaObras')}',  '#{rich:clientId('pnlMensajes')}');"
 							render="grupoDatos,pnlObraOrigenDatos,pnlObraDatos,pnlMensajes,cbAlmacenDestino,cbEmpleadosRecibe"
 							limitRender="true">
 							<f:setPropertyActionListener target="#{traspasosAction.pojoObra}" value="#{var}" />

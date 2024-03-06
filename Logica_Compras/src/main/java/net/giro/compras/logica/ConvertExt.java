@@ -861,8 +861,6 @@ public class ConvertExt implements Serializable {
 			pojoResult.setFechaCreacion(pojoTarget.getFechaCreacion());
 			pojoResult.setModificadoPor(pojoTarget.getModificadoPor());
 			pojoResult.setFechaModificacion(pojoTarget.getFechaModificacion());
-			pojoResult.setEstatus(pojoTarget.getEstatus());
-			pojoResult.setComentariosCancelacion(pojoTarget.getComentariosCancelacion());
 			if (this.mostrarSystemOut) log.info("---- -- ----> Comprobando de tipos nativos terminado");
 			
 			if (this.mostrarSystemOut) log.info("---- -- ----> Comprobando OrdenCompra");

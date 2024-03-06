@@ -130,7 +130,8 @@ public class PermisosFac implements PermisosRem {
 				log.error("No se pudo comprobar la Sesion del usuario actual");
 				return null;
 			}
-			
+			System.out.println("Usuario " + idUsuario);
+			System.out.println("Empresa " + getIdEmpresa());
 			return this.ifzBaseUsuario.findAll(idUsuario, getIdEmpresa(), orderBy);
 		} catch (Exception e) {
 			log.error("Ocurrio un problema al consultar los permisos por Usuario", e);

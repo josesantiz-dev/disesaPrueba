@@ -6,14 +6,14 @@
     xmlns:a4j="http://richfaces.org/a4j" 
     xmlns:rich="http://richfaces.org/rich">
     
-    <rich:popupPanel id="pblBusquedaFacturas" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20"
+    <rich:popupPanel id="pnlBusquedaFacturas" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="20"
 		onshow="document.getElementById('#{rich:clientId('txtValorBusquedaFacturas')}').focus();"
 		header="#{msg['busqueda.buscarFacturas']}">
 		
 		<f:facet name="controls">
 			<h:graphicImage style="cursor:pointer;"
 				value="#{msg['navegacion.gral.cerrar.img']}"  
-				onclick="#{rich:component('pblBusquedaFacturas')}.hide()" />
+				onclick="#{rich:component('pnlBusquedaFacturas')}.hide()" />
 		</f:facet>
 		
 		<rich:hotKey id="richHotKeyBusquedaFacturas" enabledInInput="true" preventDefault="true" 
@@ -129,7 +129,7 @@
 					   <a4j:commandButton id="cmdBusquedaFacturasSeleccionar" 
 					   		image="#{msg['agregar16.img']}" title="#{msg['seleccionar']}"
 							action="#{facturaAction.seleccionarFactura}" execute="@region"
-							oncomplete="seleccionar(#{facturaAction.band}, '#{rich:clientId('pblBusquedaFacturas')}', '#{rich:clientId('pnlMensajes')}')"
+							oncomplete="#{rich:component('pnlBusquedaFacturas')}.hide(), seleccionar(#{facturaAction.band}, '#{rich:clientId('pnlBusquedaFacturas')}', '#{rich:clientId('pnlMensajes')}')"
 							render="groupFacturaRelacionada,pnlMensajes,pnlFacturaPoryectoDatos,txtCliente,txtClienteDireccion,cbMoneda,cbSucursales" limitRender="true">
 							<f:setPropertyActionListener target="#{facturaAction.pojoFacturaSeleccionada}" value="#{var}" />
 					   </a4j:commandButton>

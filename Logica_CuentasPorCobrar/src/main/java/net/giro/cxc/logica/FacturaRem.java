@@ -12,6 +12,7 @@ import net.giro.adp.beans.Obra;
 import net.giro.cxc.FEv33.Comprobante;
 import net.giro.cxc.beans.Factura;
 import net.giro.cxc.beans.FacturaExt;
+import net.giro.cxc.beans.FacturasRelacionadas;
 import net.giro.plataforma.InfoSesion;
 import net.giro.respuesta.Respuesta;
 
@@ -22,7 +23,7 @@ public interface FacturaRem {
 	public void setInfoSesion(InfoSesion infoSesion);
 	
 	public void setInfoSesion(long idUsuario, long idEmpresa, long codigoEmpresa);
-	
+
 	public Long save(Factura entity) throws Exception;
 	
 	public List<Factura> save(List<Factura> listEntities) throws Exception;
@@ -120,8 +121,10 @@ public interface FacturaRem {
 	public List<Factura> paraProvisionar(int year, int month, String orderBy) throws Exception;
 	
 	public Respuesta timbrar(FacturaExt factura, String version, String usoCfdi, int cfdiRelacionado, String cfdiRelacionadoUuid, String cfdiRelacionadoTipoRelacion) throws Exception;
-	
+
 	public Respuesta timbrar(FacturaExt factura, String version, String usoCfdi, int cfdiRelacionado, String cfdiRelacionadoUuid, String cfdiRelacionadoTipoRelacion, boolean debugging, boolean testing, boolean noTimbrar) throws Exception;
+	
+	public Respuesta timbrar(FacturaExt factura, String version, String usoCfdi, int cfdiRelacionado, List<FacturasRelacionadas> listFacturasRelacionadas, String cfdiRelacionadoTipoRelacion, boolean debugging, boolean testing, boolean noTimbrar) throws Exception;
 	
 	public Respuesta consultarEstatus(long idFactura) throws Exception;
 	

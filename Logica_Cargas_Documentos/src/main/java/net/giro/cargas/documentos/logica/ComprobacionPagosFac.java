@@ -27,8 +27,10 @@ import org.apache.log4j.Logger;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
-import mx.gob.sat.cfdi.v33.Comprobante;
-import mx.gob.sat.cfdi.v33.complementos.pagos10.Pagos.Pago;
+import mx.gob.sat.cfdi.v40.Comprobante;
+//TODO fix complementos
+import mx.gob.sat.cfdi.v40.complementos.pagos10.Pagos.Pago;
+
 import net.giro.cargas.documentos.beans.ComprobacionPago;
 import net.giro.cargas.documentos.dao.ComprobacionPagosDAO;
 import net.giro.cargas.documentos.respuesta.Errores;
@@ -136,7 +138,10 @@ public class ComprobacionPagosFac implements ComprobacionPagosRem {
 		ComprobacionPago comprobacion = null;
 		// ------------------------------------------------------------
 		String strXML = "";
+
+		//TODO fix complementos
 		Pago cfdi = null;
+
 		Serializer serializer = null;
 
 		try {
@@ -144,17 +149,28 @@ public class ComprobacionPagosFac implements ComprobacionPagosRem {
 			serializer = new Persister();
 			strXML = readFile(fileSrc);
 			fileSrc = aMinusculas(strXML);
+
+			//TODO fix complementos
 			cfdi = serializer.read(Pago.class, new ByteArrayInputStream(fileSrc), false);
+
 			//cfdi.setSerie(setDefaultValue(cfdi.getSerie(), "TMP"));
 			//cfdi.setFolio(setDefaultValue(cfdi.getFolio(), "00000"));
 			//cfdi.getEmisor().setNombre(setDefaultValue(cfdi.getEmisor().getNombre(), ""));
 			// Generamos comprobacion
+
+			//TODO fix complementos
 			comprobacion = toComprobacionPago(cfdi);
+
+
 			comprobacion = this.save(comprobacion);
 			
 			respuesta.getErrores().setCodigoError(0L);
 			respuesta.getErrores().setDescError("");
-			respuesta.getBody().addValor("cfdi", cfdi); 
+
+			//TODO fix complementos
+			respuesta.getBody().addValor("cfdi", cfdi);
+			//respuesta.getBody().addValor("cfdi", null);
+
 			respuesta.getBody().addValor("comprobacion", comprobacion); 
 		} catch (Exception e) {
 			log.error("Ocurrio un problema al Importar el CFDI", e);
@@ -179,7 +195,9 @@ public class ComprobacionPagosFac implements ComprobacionPagosRem {
 	private long comprobarCFDI(String expresionImpresa) {
 		return 0L;
 	}
-	
+
+	//TODO fix complementos
+
 	private ComprobacionPago toComprobacionPago(Pago cfdi) {
 		ComprobacionPago comprobacion = null;
 		//SimpleDateFormat dtFormat = null;
@@ -189,38 +207,7 @@ public class ComprobacionPagosFac implements ComprobacionPagosRem {
 			//dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			//expresionImpresa = "?re=" + cfdi.getEmisor().getRfc() + "&rr=" + cfdi.getReceptor().getRfc() + "&tt=" + cfdi.getTotal() + "&id=" + cfdi.getComplemento().getTimbreFiscalDigital().getUUID();
 			comprobacion = new ComprobacionPago();
-			/*comprobacion.setEstatus(0);
-			comprobacion.setDescripcion("");
-			comprobacion.setExpresionImpresa(expresionImpresa);
-			// ---------------------------------------------------------------------------------------------------------------------------------
-			comprobacion.setSerie(cfdi.getSerie());
-			comprobacion.setFolio(cfdi.getFolio());
-			comprobacion.setFecha(dtFormat.parse(cfdi.getFecha().replace("T", " ")));
-			comprobacion.setFechaTimbrado(dtFormat.parse(cfdi.getComplemento().getTimbreFiscalDigital().getFechaTimbrado().replace("T", " ")));
-			comprobacion.setFacturaFolioFiscal(cfdi.getComplemento().getTimbreFiscalDigital().getUUID());
-			comprobacion.setPagoFecha(dtFormat.parse(cfdi.getFecha().replace("T", " ")));
-			comprobacion.setPagoFormaPago(cfdi.getFormaPago());
-			comprobacion.setPagoMoneda(cfdi.getMoneda());
-			comprobacion.setPagoMonto(getMonto(cfdi.getTotal()));
-			comprobacion.setPagoNumOperacion("");
-			// ---------------------------------------------------------------------------------------------------------------------------------
-			comprobacion.setEmisor(cfdi.getEmisor().getNombre());
-			comprobacion.setEmisorRfc(cfdi.getEmisor().getRfc());
-			comprobacion.setEmisorRegimen("");
-			// ---------------------------------------------------------------------------------------------------------------------------------
-			comprobacion.setReceptor(cfdi.getReceptor().getNombre());
-			comprobacion.setReceptorRfc(cfdi.getReceptor().getRfc());
-			comprobacion.setReceptorUsoCfdi("");
-			// ---------------------------------------------------------------------------------------------------------------------------------
-			comprobacion.setFacturaFolioFiscal("");
-			comprobacion.setFacturaSerie("");
-			comprobacion.setFacturaFolio("");
-			comprobacion.setFacturaParcialidad("");
-			comprobacion.setFacturaPagado(getMonto(cfdi.getTotal()));
-			comprobacion.setFacturaSaldoAnterior(getMonto(cfdi.getTotal()));
-			comprobacion.setFacturaSaldoInsoluto(getMonto(cfdi.getTotal()));
-			comprobacion.setFacturaMetodoPago("");
-			comprobacion.setFacturaMoneda("");*/
+
 			// ---------------------------------------------------------------------------------------------------------------------------------
 			comprobacion.setIdEmpresa(getIdEmpresa());
 			comprobacion.setCreadoPor(this.infoSesion.getAcceso().getId());
@@ -233,6 +220,7 @@ public class ComprobacionPagosFac implements ComprobacionPagosRem {
 		
 		return comprobacion;
 	}
+
 
 	/*private String setDefaultValue(String value, String defaultValue) {
 		defaultValue = (defaultValue != null && ! "".equals(defaultValue.trim()) ? defaultValue.trim() : "");

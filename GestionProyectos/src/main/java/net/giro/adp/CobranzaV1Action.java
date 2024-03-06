@@ -507,7 +507,12 @@ public class CobranzaV1Action implements Serializable {
 			monto = (var.getSubtotal().doubleValue() * factor);
 			var.setPorcentajeIva(getMonto(porcentaje));
 			var.setIva(getMonto(monto)); 
-
+			
+			// Pago Fondo Garantia
+			if (this.isDebug) log.info("Cobranza detalles ... Calculamos pago fondo garantia");
+			monto = (var.getPagoFondoGarantia().doubleValue() + var.getIva().doubleValue());
+			var.setPagoFondoGarantia(getMonto(monto));
+			
 			// Total
 			if (this.isDebug) log.info("Cobranza detalles ... Calculamos total (Subtotal + IVA)");
 			monto = var.getSubtotal().doubleValue() + var.getIva().doubleValue();

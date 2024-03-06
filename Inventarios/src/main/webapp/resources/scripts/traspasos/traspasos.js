@@ -54,14 +54,14 @@ function salvar(operacionCancelada, pnlOperacion, pnlMensajes, validador) {
 		return;
 	} 
 	
-	if (operacionCancelada == true) {
+	/*if (operacionCancelada == true) {
 		RichFaces.ui.PopupPanel.showPopupPanel(pnlMensajes);
 		console.log('ERROR\n------------------------------');
 		return;
-	} 
+	} */
 	
 	RichFaces.ui.PopupPanel.hidePopupPanel(pnlOperacion);
-	window.open('./reportes/ReporteGeneric.faces', 'Salida de Almacen', 'menubar=0, toolbar=0, scrollbars=1,location=0, status=1');
+	window.open('./reportes/ReporteGeneric.xhtml', 'Salida de Almacen', 'menubar=0, toolbar=0, scrollbars=1,location=0, status=1');
 	console.log('OK\n------------------------------');
 }
 
@@ -80,11 +80,11 @@ function salvarLanzarReporte(operacionCancelada, lanzarReporte, pnlOperacion, pn
 		return;
 	} 
 	
-	if (operacionCancelada == true) {
+	/*if (operacionCancelada == true) {
 		RichFaces.ui.PopupPanel.showPopupPanel(pnlMensajes);
 		console.log('ERROR\n------------------------------');
 		return;
-	} 
+	} */
 	
 	RichFaces.ui.PopupPanel.hidePopupPanel(pnlOperacion);
 	if (lanzarReporte == true)
@@ -101,11 +101,11 @@ function eliminarCancelar(operacionCancelada, pnlOperacion, pnlMensajes) {
 	if (debugging) console.log('    pnlOperacion       : ' + pnlOperacion);
 	if (debugging) console.log('    pnlMensajes        : ' + pnlMensajes);
 	
-	if (operacionCancelada == true) {
+	/*if (operacionCancelada == true) {
 		RichFaces.ui.PopupPanel.showPopupPanel(pnlMensajes);
 		console.log('\nERROR\n------------------------------');
 		return;
-	} 
+	} */
 	
 	RichFaces.ui.PopupPanel.hidePopupPanel(pnlOperacion);
 	if (debugging) console.log('\nOK\n------------------------------');
@@ -119,11 +119,11 @@ function quitar(operacionCancelada, pnlMensajes) {
 	if (debugging) console.log('    operacionCancelada : ' + operacionCancelada);
 	if (debugging) console.log('    pnlMensajes        : ' + pnlMensajes);
 	
-	if (operacionCancelada == true) {
+	/*if (operacionCancelada == true) {
 		RichFaces.ui.PopupPanel.showPopupPanel(pnlMensajes);
 		console.log('quitar :: ERROR');
 		return;
-	} 
+	} */
 	
 	if (debugging) console.log('DONE\n------------------------------');
 }
@@ -134,11 +134,11 @@ function reporte(operacionCancelada, pnlMensaje) {
 	console.log('    operacionCancelada : ' + operacionCancelada);
 	console.log('            pnlMensaje : ' + pnlMensaje);
 	
-	if (operacionCancelada == true) {
+	/*if (operacionCancelada == true) {
 		RichFaces.ui.PopupPanel.showPopupPanel(pnlMensaje);
 		console.log('ERROR\n------------------------------');
 		return;
-	}
+	}*/
 	
 	javascript:window.open('./reportes/ReporteGeneric.faces', 'Reporte', 'menubar=0, toolbar=0, scrollbars=1, location=0, status=1');
 	console.log('DONE\n------------------------------');
@@ -156,11 +156,11 @@ function seleccionar(operacionCancelada, pnlOperacion, pnlMensajes) {
 	console.log('      pnlOperacion : ' + pnlOperacion);
 	console.log('       pnlMensajes : ' + pnlMensajes);
 	
-	if (operacionCancelada == true) {
+	/*if (operacionCancelada == true) {
 		RichFaces.ui.PopupPanel.showPopupPanel(pnlMensajes);
 		console.log('function seleccionar ERROR\n------------------------------');
 		return;
-	} 
+	} */
 	
 	RichFaces.ui.PopupPanel.hidePopupPanel(pnlOperacion);
 	console.log('function seleccionar DONE\n------------------------------');
@@ -201,11 +201,11 @@ function validaCabeceraTraspaso(operacionCancelada, pnlOperacion, pnlMensajes) {
 	console.log('        pnlOperacion : ' + pnlOperacion);
 	console.log('         pnlMensajes : ' + pnlMensajes);
 
-	if (operacionCancelada == true) {
+	/*if (operacionCancelada == true) {
 		RichFaces.ui.PopupPanel.showPopupPanel(pnlMensajes);
 		console.log('ERROR\n------------------------------');
 		return;
-	}
+	}*/
 	
 	RichFaces.ui.PopupPanel.showPopupPanel(pnlOperacion);
 	console.log('OK\n------------------------------');
@@ -393,11 +393,11 @@ function validaNuevo(operacionCancelada, pnlOperacion, pnlMensajes) {
 	if (debugging) console.log('  pnlOperacion       : ' + pnlOperacion);
 	if (debugging) console.log('  pnlMensajes        : ' + pnlMensajes);
 	
-	if (operacionCancelada == true) {
+	/*if (operacionCancelada == true) {
 		RichFaces.ui.PopupPanel.showPopupPanel(pnlMensajes);
 		console.log('function seleccionar ERROR\n------------------------------');
 		return;
-	} 
+	} */
 	
 	RichFaces.ui.PopupPanel.showPopupPanel(pnlOperacion);
 	if (debugging) console.log('function seleccionar DONE\n------------------------------');

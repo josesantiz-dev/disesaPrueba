@@ -3,6 +3,7 @@ package net.giro.adp.dao;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import net.giro.DAOImpl;
 
@@ -12,6 +13,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import net.giro.adp.beans.Obra;
+import net.giro.adp.beans.TipoSub;
 
 @Stateless
 public class ObraImp extends DAOImpl<Obra> implements ObraDAO {
@@ -359,6 +361,20 @@ public class ObraImp extends DAOImpl<Obra> implements ObraDAO {
 			return query.getResultList();
 		} catch (Exception e) {
 			throw e;
+		}
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<TipoSub> findAllTipoSub() throws Exception {
+		String queryString = "select model from TipoSub model where model.estatus = 1 ";
+		
+		try {
+			Query query = entityManager.createQuery(queryString);
+			
+			return query.getResultList();
+		} catch (Exception re) {
+			throw re;
 		}
 	}
 }

@@ -28,10 +28,11 @@ import org.xml.sax.InputSource;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import mx.gob.sat.cfdi.v33.Comprobante;
-import mx.gob.sat.cfdi.v33.complementos.TimbreFiscalDigital11.TimbreFiscalDigital;
-import mx.gob.sat.cfdi.v33.complementos.nomina12.Nomina;
-import mx.gob.sat.cfdi.v33.complementos.pagos10.Pagos.Pago;
+import mx.gob.sat.cfdi.v40.Comprobante;
+//TODO fix complemento
+import mx.gob.sat.cfdi.v40.complementos.TimbreFiscalDigital11.TimbreFiscalDigital;
+import mx.gob.sat.cfdi.v40.complementos.nomina12.Nomina;
+import mx.gob.sat.cfdi.v40.complementos.pagos10.Pagos.Pago;
 import net.giro.cargas.documentos.beans.ComprobacionFactura;
 import net.giro.cargas.documentos.beans.ComprobacionNomina;
 import net.giro.cargas.documentos.beans.ComprobacionPago;
@@ -78,6 +79,7 @@ public class ComprobanteCFDIFac implements ComprobanteCFDIRem {
 		Respuesta respuesta = null;
 		// CFDI v33
 		Comprobante cfdi = null;
+		//TODO fix complemento
 		TimbreFiscalDigital timbre = null;
 		// --------------------------------------------------------------------------------------------------------------
 		DocumentBuilderFactory factory = null;
@@ -121,15 +123,19 @@ public class ComprobanteCFDIFac implements ComprobanteCFDIRem {
             tipoComprobante = TipoDeComprobante.fromString(tipoComprobante).value();
 
         	// tratamos 3.2 si corresponde
-            if ("3.2".equals(version)) 
-            	return comprobante32(archivoSrc, prefijo);
+            //if ("3.2".equals(version))
+            	//return comprobante32(archivoSrc, prefijo);
             
 			// Serializando: Generamos comprobante 3.3 y recuperamos timbre
 			cfdi = generaComprobante(archivoSrc);
+			//TODO fix complemento
 			timbre = getTimbreFiscalDigital(cfdi.getComplemento());
 			// Generando Comprobacion
 			cfdi.setSerie(setDefaultValue(cfdi.getSerie(), ""));
+
+			//TODO fix complemento
 			cfdi.setFolio(setDefaultValue(cfdi.getFolio(), timbre.getUUID().substring(timbre.getUUID().length() - 8)));
+			//cfdi.setFolio(setDefaultValue(cfdi.getFolio(),""));
 
 			// Comprobamos que el XML va dirijido a la empresa actualmente cargada
 			if (! comprobarEmpresa(cfdi.getReceptor().getRfc(), cfdi.getEmisor().getRfc())) {
@@ -244,7 +250,8 @@ public class ComprobanteCFDIFac implements ComprobanteCFDIRem {
 			if (fileSource == null) 
 				return null;
 			// Clases: CFDI + complementos
-			classestoBeBound = new Class[] {Comprobante.class, TimbreFiscalDigital.class, Nomina.class, Pago.class};
+			//classestoBeBound = new Class[] {Comprobante.class, TimbreFiscalDigital.class, Nomina.class, Pago.class};
+			classestoBeBound = new Class[] {Comprobante.class};
 			context = JAXBContext.newInstance(classestoBeBound);
 			unmarshaller = context.createUnmarshaller();
 			cfdi = (Comprobante) unmarshaller.unmarshal(new ByteArrayInputStream(fileSource));
@@ -255,18 +262,17 @@ public class ComprobanteCFDIFac implements ComprobanteCFDIRem {
 		
 		return cfdi;
 	}
-	
-	private TimbreFiscalDigital getTimbreFiscalDigital(List<Comprobante.Complemento> complementos) {
+
+
+	private TimbreFiscalDigital getTimbreFiscalDigital(Comprobante.Complemento complemento) {
 		try {
-			if (complementos == null || complementos.isEmpty()) 
+			if (complemento == null)
 				return null;
-			for (Comprobante.Complemento item : complementos) {
-				if (item.getAny() == null || item.getAny().isEmpty())
-					continue;
-				for (Object value : item.getAny()) {
-					if (value instanceof TimbreFiscalDigital)
-						return (TimbreFiscalDigital) value;
-				}
+			if (complemento.getAny() == null || complemento.getAny().isEmpty())
+				return null;
+			for (Object value : complemento.getAny()) {
+				if (value instanceof TimbreFiscalDigital)
+					return (TimbreFiscalDigital) value;
 			}
 		} catch (Exception e) {
 			log.error("Ocurrio un problema al recuperar el nodo TimbreFiscalDigital de los Complementos", e);
@@ -275,6 +281,8 @@ public class ComprobanteCFDIFac implements ComprobanteCFDIRem {
 		return null;
 	}
 
+
+	/*
 	private Respuesta comprobante32(byte[] fileSource, String prefijo) {
 		Respuesta respuesta = null;
 		// CFDI 
@@ -333,7 +341,9 @@ public class ComprobanteCFDIFac implements ComprobanteCFDIRem {
 		
 		return respuesta;
 	}
-
+	*/
+	 
+	/*
 	@SuppressWarnings("rawtypes")
 	private mx.gob.sat.cfdi.v32.Comprobante generaComprobante32(byte[] fileSource) {
 		mx.gob.sat.cfdi.v32.Comprobante cfdi = null;
@@ -355,8 +365,10 @@ public class ComprobanteCFDIFac implements ComprobanteCFDIRem {
 		}
 		
 		return cfdi;
-	}
+	}	
+	 */
 
+	/*
 	private mx.gob.sat.cfdi.v32.complementos.TimbreFiscalDigital10.TimbreFiscalDigital getTimbreFiscalDigital10(mx.gob.sat.cfdi.v32.Comprobante.Complemento complemento) {
 		try {
 			if (complemento == null) 
@@ -371,12 +383,14 @@ public class ComprobanteCFDIFac implements ComprobanteCFDIRem {
 		
 		return null;
 	}
+	 */
 
 	private HashMap<String, Object> mapearComprobante(Comprobante cfdi, String expresionImpresa, Long idComprobante) {
 		HashMap<String, Object> valores = null;
 		List<HashMap<String, Object>> conceptos = null;
 		HashMap<String, Object> concepto = null;
 		// ---------------------------------------------------------------------------------------
+		//TODO fix complemento
 		TimbreFiscalDigital tfd = null;
 		String factura = "";
 		String serie = "";
@@ -399,6 +413,7 @@ public class ComprobanteCFDIFac implements ComprobanteCFDIRem {
 			serie = validateString(cfdi.getSerie());
 			folio = validateString(cfdi.getFolio());
 			factura = serie + (! "".equals(serie) ? "-" : "") + folio;
+			//TODO fix complemento
 			tfd = getTimbreFiscalDigital(cfdi.getComplemento());
 			tipoCambio = (cfdi.getTipoCambio() != null && cfdi.getTipoCambio().doubleValue() > 0 ? cfdi.getTipoCambio() : BigDecimal.ZERO);
 			descuento = (cfdi.getDescuento() != null && cfdi.getDescuento().doubleValue() > 0 ? cfdi.getDescuento() : BigDecimal.ZERO);
@@ -450,8 +465,11 @@ public class ComprobanteCFDIFac implements ComprobanteCFDIRem {
 			valores.put("expresionImpresa", expresionImpresa);
 			valores.put("serie", serie); 
 			valores.put("folio", folio); 
-			valores.put("factura", factura); 
+			valores.put("factura", factura);
+			//TODO fix complemento
 			valores.put("uuid", tfd.getUUID());
+			//valores.put("uuid", "");
+
 			valores.put("version", cfdi.getVersion());
 			valores.put("fecha", cfdi.getFecha());
 			valores.put("tipoDeComprobante", cfdi.getTipoDeComprobante().value());
@@ -480,6 +498,7 @@ public class ComprobanteCFDIFac implements ComprobanteCFDIRem {
 		return valores;
 	}
 
+	/*
 	private HashMap<String, Object> mapearComprobante(mx.gob.sat.cfdi.v32.Comprobante cfdi, String expresionImpresa, Long idComprobante) {
 		HashMap<String, Object> valores = null;
 		List<HashMap<String, Object>> conceptos = null;
@@ -572,6 +591,7 @@ public class ComprobanteCFDIFac implements ComprobanteCFDIRem {
 		
 		return valores;
 	}
+	 */
 	
 	private String mapaJson(HashMap<String, Object> mapa) {
 		String valores = "";

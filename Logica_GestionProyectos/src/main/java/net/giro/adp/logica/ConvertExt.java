@@ -875,6 +875,8 @@ public class ConvertExt {
 			if (this.mostrarSystemOut) log.info("---- -- ----> Comprobando de tipos nativos");
 			pojoResult = new ObraSubcontratista();
 			pojoResult.setId(pojoTarget.getId());
+			pojoResult.setTipoSubClave(pojoTarget.getTipoSubClave());
+			pojoResult.setIdEmpleado(pojoTarget.getIdEmpleado());
 			pojoResult.setFecha(pojoTarget.getFecha());
 			pojoResult.setDescripcion(pojoTarget.getDescripcion());
 			pojoResult.setIdObra(pojoTarget.getIdObra());
@@ -935,6 +937,7 @@ public class ConvertExt {
 			if (this.mostrarSystemOut) log.info("---- -- ----> Comprobando de tipos nativos");
 			pojoResult = new ObraSubcontratistaExt();
 			pojoResult.setId(pojoTarget.getId());
+			pojoResult.setTipoSubClave(pojoTarget.getTipoSubClave());
 			pojoResult.setFecha(pojoTarget.getFecha());
 			pojoResult.setDescripcion(pojoTarget.getDescripcion());
 			pojoResult.setIdObra(pojoTarget.getIdObra());

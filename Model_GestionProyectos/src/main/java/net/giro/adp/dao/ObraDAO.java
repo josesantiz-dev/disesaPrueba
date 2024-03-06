@@ -6,6 +6,7 @@ import javax.ejb.Remote;
 
 import net.giro.DAO;
 import net.giro.adp.beans.Obra;
+import net.giro.adp.beans.TipoSub;
 
 @Remote
 public interface ObraDAO extends DAO<Obra> {
@@ -22,6 +23,9 @@ public interface ObraDAO extends DAO<Obra> {
 	public List<Obra> findByProperty(String propertyName, Object value, long idObraPrincipal, long idSucursal, int tipo, boolean incluyeAdministrativas, boolean incluyeCanceladas, int revisadas, int autorizadas, int jerarquia, long idEmpresa, String orderBy, int limite) throws Exception;
 
 	public List<Obra> findInProperty(String propertyName, List<Object> values, long idEmpresa, String orderBy) throws Exception;
+	
+	public List<TipoSub> findAllTipoSub() throws Exception;
+
 }
 
 /*

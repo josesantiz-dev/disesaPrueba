@@ -15,6 +15,8 @@ public class ObraSubcontratistaExt extends ObraSubcontratista implements Seriali
 	private boolean estimacion;
 	private boolean amortizacion;
 	private boolean fondoGarantia;
+	private boolean pagoFondoGarantia;
+	private boolean tipoSubClave;
 	private boolean cargos;
 	private boolean guardable;
 	private List<ObraSubcontratistaImpuestosExt> listImpuestos;
@@ -30,6 +32,7 @@ public class ObraSubcontratistaExt extends ObraSubcontratista implements Seriali
 		this.estimacion = false;
 		this.amortizacion = false;
 		this.fondoGarantia = false;
+		this.pagoFondoGarantia = false;
 		this.cargos = false;
 		this.listImpuestos = new ArrayList<ObraSubcontratistaImpuestosExt>();
 	}
@@ -111,6 +114,16 @@ public class ObraSubcontratistaExt extends ObraSubcontratista implements Seriali
 		super.setFondoGarantia(value);
 	}
 	
+	public BigDecimal getPagoFondoGarantia() {
+		return super.getPagoFondoGarantia();
+	}
+	
+	public void setPagoFondoGarantia(BigDecimal value) {
+		this.pagoFondoGarantia = true;
+		this.guardable = true;
+		super.setPagoFondoGarantia(value);
+	}
+	
 	public BigDecimal getCargos() {
 		return super.getCargos();
 	}
@@ -156,7 +169,7 @@ public class ObraSubcontratistaExt extends ObraSubcontratista implements Seriali
 	public void setTotalImpuesots(double value) {}
 	
 	public boolean getModificado() {
-		return (this.nuevo || this.porAnticipo || this.porRetencion || this.anticipo || this.estimacion || this.amortizacion || this.fondoGarantia || this.cargos);
+		return (this.nuevo || this.porAnticipo || this.porRetencion || this.anticipo || this.estimacion || this.amortizacion || this.fondoGarantia || this.pagoFondoGarantia || this.cargos || this.tipoSubClave);
 	}
 	
 	public void setModificado(boolean value) {}
@@ -219,11 +232,29 @@ public class ObraSubcontratistaExt extends ObraSubcontratista implements Seriali
 		recalcular();
 	}
 	
+	public void calcularConPorcentajes(){
+		double porcentaje = 0;
+		double value = 0;
+		if (super.getEstimacion().doubleValue() > 0 && (this.porAnticipo || this.porRetencion)) {
+			// Amortizacion
+			porcentaje = super.getPorcentajeAnticipo();
+			porcentaje = (porcentaje > 1 ? (porcentaje / 100) : porcentaje);
+			value = (super.getEstimacion().doubleValue() * porcentaje);
+			super.setAmortizacion(monto(value, 2)); 
+			// Fondo de Garantia
+			porcentaje = super.getPorcentajeRetencion();
+			porcentaje = (porcentaje > 1 ? (porcentaje / 100) : porcentaje);
+			value = (super.getEstimacion().doubleValue() * porcentaje);
+			super.setFondoGarantia(monto(value, 2)); 
+		}
+		calcular();
+	}
+	
 	public void calcular() {
 		double porcentaje = 0;
 		double value = 0;
 		
-		if (super.getEstimacion().doubleValue() > 0 && (this.porAnticipo || this.porRetencion)) {
+		/*if (super.getEstimacion().doubleValue() > 0 && (this.porAnticipo || this.porRetencion)) {
 			// Amortizacion
 			porcentaje = super.getPorcentajeAnticipo();
 			porcentaje = (porcentaje > 1 ? (porcentaje / 100) : porcentaje);
@@ -241,12 +272,19 @@ public class ObraSubcontratistaExt extends ObraSubcontratista implements Seriali
 		
 		// Subtotal: anticipo
 		if (super.getEstimacion().doubleValue() <= 0 && super.getAnticipo().doubleValue() > 0) 
-			super.setSubtotal(super.getAnticipo());
+			super.setSubtotal(super.getAnticipo());*/
+		
+		//SE SOLICITO SACAR SUBTOTAL AUN CON ESTIMACION EN 0
+		value = monto(super.getAnticipo(), 2) + monto(super.getEstimacion(), 2) 
+		- monto(super.getAmortizacion(), 2) - monto(super.getFondoGarantia(), 2) + monto(super.getPagoFondoGarantia(), 2);
+		super.setSubtotal(monto(value, 2)); 
+		
 		
 		// Impuestos
 		recalcularTotalesImpuestos();
 		
 		// Total
+		
 		value  = super.getSubtotal().doubleValue() + (super.getImpuestos().doubleValue() - super.getRetenciones().doubleValue());
 		value += (super.getEstimacion().doubleValue() > 0 && super.getAnticipo().doubleValue() > 0 ? super.getAnticipo().doubleValue() : 0); // Añadimos anticipo si corresponde
 		value -= (super.getCargos().doubleValue() > 0 ? super.getCargos().doubleValue() : 0); // Restamos cargos si corresponde
@@ -258,7 +296,9 @@ public class ObraSubcontratistaExt extends ObraSubcontratista implements Seriali
 		this.estimacion = false;
 		this.amortizacion = false;
 		this.fondoGarantia = false;
+		this.pagoFondoGarantia = false;
 		this.cargos = false;
+		this.tipoSubClave = false;
 	}
 	
 	public void recalcular() {
@@ -298,5 +338,16 @@ public class ObraSubcontratistaExt extends ObraSubcontratista implements Seriali
 	
 	private BigDecimal monto(Double value, int decimales) {
 		return new BigDecimal(value).setScale(decimales, BigDecimal.ROUND_HALF_EVEN);
+	}
+
+
+	public String getTipoSubClave() {
+		return super.getTipoSubClave();
+	}
+
+	public void setTipoSubClave(String tipoSubClave) {
+		this.tipoSubClave = true;
+		this.guardable = true;
+		super.setTipoSubClave(tipoSubClave);
 	}
 }

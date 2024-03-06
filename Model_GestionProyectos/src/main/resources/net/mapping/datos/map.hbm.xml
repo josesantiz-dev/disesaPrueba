@@ -159,6 +159,7 @@
 		<property column="estimacion" name="estimacion" />
 		<property column="amortizacion" name="amortizacion" />
 		<property column="fondo_garantia" name="fondoGarantia" />
+		<property column="pago_fondo_garantia" name="pagoFondoGarantia" />
 		<property column="subtotal" name="subtotal" />
 		<property column="iva" name="iva" />
 		<property column="cargos" name="cargos" /><!-- cargos de cliente -->
@@ -210,6 +211,7 @@
 		<property column="estimacion" name="estimacion" />
 		<property column="amortizacion" name="amortizacion" />
 		<property column="fondo_garantia" name="fondoGarantia" />
+		<property column="pago_fondo_garantia" name="pagoFondoGarantia" />
 		<property column="subtotal" name="subtotal" />
 		<property column="iva" name="iva" />
 		<property column="cargos" name="cargos" /><!--  cargos de cliente -->
@@ -224,6 +226,7 @@
 		<property column="descripcion" name="descripcion" />
 		<many-to-one column="id_obra" name="idObra" class="net.giro.adp.beans.Obra" lazy="false" fetch="join" insert="true" update="true" not-found="ignore" />
 		<property column="id_orden_compra" name="idOrdenCompra" />
+		<property column="id_empleado" name="idEmpleado" />
 		<property column="folio_orden_compra" name="folioOrdenCompra" />
 		<property column="total_orden_compra" name="totalOrdenCompra" />
 		<property column="saldo_orden_compra" name="saldoOrdenCompra" />
@@ -242,6 +245,7 @@
 		<property column="retenciones" name="retenciones" />
 		<property column="cargos" name="cargos" />
 		<property column="total" name="total" />
+		<property column="tipo_sub_clave" name="tipoSubClave"/>
 		<!-- -->
 		<property column="id_factura" name="idFactura" />
 		<property column="folio_factura" name="folioFactura" />
@@ -376,6 +380,12 @@
 		<property column="fecha_creacion" name="fechaCreacion" />
 		<property column="modificado_por" name="modificadoPor" />
 		<property column="fecha_modificacion" name="fechaModificacion" />
+	</class>
+	
+	<class name="net.giro.adp.beans.TipoSub" table="tipo_sub">
+		<id column="clave" name="clave" />
+		<property column="descripcion" name="descripcion" />
+		<property column="estatus" name="estatus" />
 	</class>
 	
 	<!-- NO SE USA 

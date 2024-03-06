@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.naming.InitialContext;
-import javax.rmi.PortableRemoteObject;
+
 
 import org.apache.log4j.*;
 /**
@@ -58,7 +58,7 @@ public class ReversaUtil<T, U>{
 			if(ctx == null)
 				ctx = new InitialContext(); 
 			this.lookup = ctx.lookup(JNDI);
-			this.Interfaz = (T)PortableRemoteObject.narrow(lookup, c);
+			//this.Interfaz = (T)PortableRemoteObject.narrow(lookup, c);
 			this.clase = (Class<T>)this.Interfaz.getClass();
 	}
 	
@@ -71,7 +71,7 @@ public class ReversaUtil<T, U>{
 			if(ctx == null)
 				ctx = new InitialContext(); 
 			this.lookup = ctx.lookup(JNDI);
-			this.Interfaz = (T)PortableRemoteObject.narrow(lookup, c);
+			//this.Interfaz = (T)PortableRemoteObject.narrow(lookup, c);
 			this.clase = (Class<T>)this.Interfaz.getClass();
 			this.obj = u;
 	}
@@ -86,7 +86,7 @@ public class ReversaUtil<T, U>{
 			if(ctx == null)
 				ctx = new InitialContext(env); 
 			this.lookup = ctx.lookup(JNDI);
-			this.Interfaz = (T)PortableRemoteObject.narrow(lookup, c);
+			//this.Interfaz = (T)PortableRemoteObject.narrow(lookup, c);
 			this.clase = (Class<T>)this.Interfaz.getClass();
 	}
 	

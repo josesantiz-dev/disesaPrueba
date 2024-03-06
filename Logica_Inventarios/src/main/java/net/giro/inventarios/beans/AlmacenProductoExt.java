@@ -63,7 +63,7 @@ public class AlmacenProductoExt implements Serializable {
 	}
 	
 	public double getExistencia() {
-		return existencia;
+		return existencia - solicitud;
 	}
 
 	public void setExistencia(double existencia) {
@@ -79,7 +79,7 @@ public class AlmacenProductoExt implements Serializable {
 	}
 
 	public double getTotal() {
-		return existencia + solicitud;
+		return existencia;// + solicitud;
 	}
 
 	public void setTotal(double value) {}

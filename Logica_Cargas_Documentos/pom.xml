@@ -6,7 +6,7 @@
 	<version>2.1</version>
 	<name>EJB3 Logica Cargas Documentos</name>
 	<packaging>ejb</packaging>
-	
+
 	<properties>
 		<!-- Explicitly declaring the source encoding eliminates the following message: -->
 		<!-- [WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent! -->
@@ -15,7 +15,10 @@
 		<version.org.jboss.as.plugins.maven.plugin>7.3.Final</version.org.jboss.as.plugins.maven.plugin>
 		<version.org.jboss.spec.jboss.javaee.6.0>3.0.0.Final</version.org.jboss.spec.jboss.javaee.6.0>
 		<!-- other plugin versions -->
+		<!--
 		<version.compiler.plugin>2.3.1</version.compiler.plugin>
+		-->
+		<version.compiler.plugin>3.5.1</version.compiler.plugin>
 		<version.ejb.plugin>2.3</version.ejb.plugin>
 		<!-- maven-compiler-plugin -->
 		<maven.compiler.target>1.7</maven.compiler.target>
@@ -23,7 +26,7 @@
 		<!-- Optional: to use jboss-as:run goal -->
 		<!--<jboss-as.home>C:\Users\iByteCode\Desktop\jboss-as-7.1.0.Final</jboss-as.home>-->
 	</properties>
-	
+
 	<dependencyManagement>
 		<dependencies>
 			<!-- Define the version of JBoss' Java EE 6 APIs we want to use -->
@@ -33,6 +36,7 @@
 				of artifacts. Here we use the jboss-javaee-6.0 stack (you can read this as
 				the JBoss stack of the Java EE 6 APIs). You can actually use this stack with
 				any version of JBoss AS that implements Java EE 6, not just JBoss AS 7! -->
+			<!--
 			<dependency>
 				<groupId>org.jboss.spec</groupId>
 				<artifactId>jboss-javaee-6.0</artifactId>
@@ -40,9 +44,21 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			-->
+			<dependency>
+				<groupId>org.jboss.spec</groupId>
+				<artifactId>jboss-javaee-6.0</artifactId>
+				<version>3.0.0.Final</version>
+				<type>pom</type>
+				<scope>provided</scope>
+			</dependency>
+
+
+
+
 		</dependencies>
 	</dependencyManagement>
-	
+
 	<dependencies>
 		<!-- Import the Common Annotations API (JSR-250), we use provided scope
 			as the API is included in JBoss AS 7 -->
@@ -53,6 +69,7 @@
 		</dependency-->
 		<!-- Import the EJB 3.1 API, we use provided scope as the API is included
 			in JBoss AS 7 -->
+		<!--
 		<dependency>
 			<groupId>org.jboss.spec.javax.ejb</groupId>
 			<artifactId>jboss-ejb-api_3.1_spec</artifactId>
@@ -63,6 +80,20 @@
 			<artifactId>jboss-jms-api_1.1_spec</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		-->
+		<dependency>
+			<groupId>org.jboss.spec.javax.ejb</groupId>
+			<artifactId>jboss-ejb-api_3.1_spec</artifactId>
+			<version>1.0.2.Final</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.spec.javax.jms</groupId>
+			<artifactId>jboss-jms-api_1.1_spec</artifactId>
+			<version>1.0.1.Final</version>
+		</dependency>
+
+
 		<dependency>
 			<groupId>org.simpleframework</groupId>
 			<artifactId>simple-xml</artifactId>
@@ -153,8 +184,9 @@
 			<version>2.1</version>
 			<scope>provided</scope>
 		</dependency>
+
 	</dependencies>
-	
+
 	<build>
 		<!-- Set the name of the deployment -->
 		<finalName>${project.artifactId}</finalName>
@@ -184,13 +216,14 @@
 				<version>${version.ejb.plugin}</version>
 				<configuration>
 					<ejbVersion>3.1</ejbVersion>
-					<!-- this is false by default 
+					<!-- this is false by default
 					<generateClient>true</generateClient>-->
 					<archive>
 						<manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
 					</archive>
 				</configuration>
 			</plugin>
+
 		</plugins>
 	</build>
 </project>

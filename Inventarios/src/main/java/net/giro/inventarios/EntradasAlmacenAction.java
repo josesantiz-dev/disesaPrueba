@@ -94,6 +94,7 @@ public class EntradasAlmacenAction implements Serializable {
 	private EmpleadoRem ifzEmpleado;
 	private List<Empleado> listEmpleados;
 	private List<SelectItem> listEmpleadosItems;
+	private boolean PERFIL_ADMINISTRATIVO;
 	// busqueda principal
 	private List<SelectItem> listaCampoBusqueda;
 	private String campoBusqueda;
@@ -202,6 +203,11 @@ public class EntradasAlmacenAction implements Serializable {
 			resValue = this.loginManager.getAutentificacion().getPerfil("EGRESOS_OPERACION");
 			this.perfilAdministrativo = ((resValue != null && "S".equals(resValue)) ? true : false);
 			log.info("Perfil EGRESOS_OPERACION: " + (this.perfilAdministrativo ? "SI" : "NO"));
+
+			// EVALUACION DE PERFILES
+			resValue = this.loginManager.getAutentificacion().getPerfil("EGRESOS_OPERACION");
+			this.PERFIL_ADMINISTRATIVO = ((resValue != null && "S".equals(resValue)) ? true : false);
+						
 			
 			// Recuperamos puesto requerido (No obligatorio)
 			ve = app.getExpressionFactory().createValueExpression(fc.getELContext(), "#{entorno}", PropertyResourceBundle.class);
@@ -309,8 +315,16 @@ public class EntradasAlmacenAction implements Serializable {
 			nuevaBusquedaTraspaso();
 			
 			// Busqueda OBRAS
-			this.tiposBusquedaObras = new ArrayList<SelectItem>();
+		/*	this.tiposBusquedaObras = new ArrayList<SelectItem>();
 			this.tiposBusquedaObras.add(new SelectItem("nombre", "Obra"));
+			this.tiposBusquedaObras.add(new SelectItem("nombreCliente", "Cliente"));
+			this.tiposBusquedaObras.add(new SelectItem("nombreContrato", "Contrato"));
+			this.tiposBusquedaObras.add(new SelectItem("id", "ID"));
+			nuevaBusquedaObras();*/
+			this.listObras = new ArrayList<Obra>();
+			this.tiposBusquedaObras = new ArrayList<SelectItem>();
+			this.tiposBusquedaObras.add(new SelectItem("*", "Coincidencia"));
+			this.tiposBusquedaObras.add(new SelectItem("nombre", "Nombre"));
 			this.tiposBusquedaObras.add(new SelectItem("nombreCliente", "Cliente"));
 			this.tiposBusquedaObras.add(new SelectItem("nombreContrato", "Contrato"));
 			this.tiposBusquedaObras.add(new SelectItem("id", "ID"));
@@ -346,11 +360,11 @@ public class EntradasAlmacenAction implements Serializable {
 		try {
 			control();
 			// Validamos permiso de Lectura/Consulta
-			if (! this.permisos.getConsultar()) {
+			/*if (! this.permisos.getConsultar()) {
 				control(-1, "No tiene permitido Consultar informacion");
 				controlLog("301 - No tiene permitido Consultar informacion");
 				return;
-			}
+			}*/
 
 			if (this.almacenTrabajo == null || this.almacenTrabajo.getId() == null || this.almacenTrabajo.getId() <= 0L) {
 				control(-1, "Debe seleccionar un Almacen/Bodega previamente");
@@ -386,11 +400,11 @@ public class EntradasAlmacenAction implements Serializable {
 				return;
 			}
 			
-			if (! this.permisos.escribir(this.almacenTrabajo.getId())) {
+			/*if (! this.permisos.escribir(this.almacenTrabajo.getId())) {
 				control(-1, "No tiene permitido Añadir/Editar informacion");
 				controlLog("301 - No tiene permitido Añadir/Editar informacion");
 				return;
-			}
+			}*/
 			
 			this.puedeEditar = true;
 			this.pojoMovimiento = new AlmacenMovimientosExt();
@@ -551,11 +565,11 @@ public class EntradasAlmacenAction implements Serializable {
 				return;
 			}
 			
-			if (! this.permisos.borrar(this.almacenTrabajo.getId())) {
+			/*if (! this.permisos.borrar(this.almacenTrabajo.getId())) {
 				control(-1, "No tiene permitido Borrar/Eliminar informacion");
 				controlLog("301 - No tiene permitido Borrar/Eliminar informacion");
 				return;
-			}
+			}*/
 
 			movimiento = this.ifzMovimientos.findById(this.idMovimiento);
 			if (movimiento == null || movimiento.getId() == null || movimiento.getId() <= 0L) {
@@ -785,11 +799,11 @@ public class EntradasAlmacenAction implements Serializable {
 			return false;
 		}
 		
-		if (! this.permisos.escribir(this.almacenTrabajo.getId())) {
+		/*if (! this.permisos.escribir(this.almacenTrabajo.getId())) {
 			control(-1, "No tiene permitido Añadir/Editar informacion");
 			controlLog("301 - No tiene permitido Añadir/Editar informacion");
 			return false;
-		}
+		}*/
 		/*
 		if (! this.usuarioValido) {
 			control(-1, "No es un usuario autorizado para guardar Entradas a Almacen/Bodega");
@@ -1035,6 +1049,41 @@ public class EntradasAlmacenAction implements Serializable {
 	// ------------------------------------------------------------------------------------
 	
 	private void cargarAlmacenes() {
+		List<Integer> tipos = null;
+		List<Long> idAlmacenesAsignados = null;
+		
+		try {
+			tipos = new ArrayList<Integer>(Arrays.asList(1, 2));
+			if (isAdministrativo()) {
+				tipos.add(3);
+				tipos.add(4);
+			}
+			// Solo Almacenes/Bodegas ligados al Empleado
+			this.ifzAlmacen.setInfoSesion(this.loginManager.getInfoSesion());
+			this.listAlmacenes = this.ifzAlmacen.findByTipo(tipos, false, "");
+			this.listAlmacenes = (this.listAlmacenes != null) ? this.listAlmacenes : new ArrayList<Almacen>();
+
+			idAlmacenesAsignados = new ArrayList<Long>();
+			if (! "ADMINISTRADOR".equals(this.loginManager.getUsuarioResponsabilidad().getUsuario().getUsuario())) {
+				for (Almacen var : this.listAlmacenesTrabajo) 
+					idAlmacenesAsignados.add(var.getId());
+			}
+			
+			this.listAlmacenesItems = new ArrayList<SelectItem>();
+			//for (Almacen var : this.listAlmacenes) 
+			//	this.listAlmacenesItems.add(new SelectItem(var.getId(), (idAlmacenesAsignados.contains(var.getId()) ? "* " : "") + var.getNombre() + " (" + var.getIdentificador() + ")"));
+		
+			for (Almacen var : listAlmacenesTrabajo) 
+				this.listAlmacenesItems.add(new SelectItem(var.getId(), var.getNombre() + " (" + var.getIdentificador() + ")"));
+			
+
+		} catch (Exception e) {
+			control("Ocurrio un problema al cargar los Almacenes", e);
+		}
+	}
+	
+	
+	private void cargarAlmacenesOLD() {
 		List<Integer> tipos = null;
 		List<Long> idAlmacenesAsignados = null;
 		
@@ -1378,7 +1427,7 @@ public class EntradasAlmacenAction implements Serializable {
 	// BUSQUEDA OBRAS 
 	// --------------------------------------------------------------------
 
-	public void nuevaBusquedaObras() {
+	public void nuevaBusquedaObrasOLD() {
 		control();
 		this.campoBusquedaObras = this.tiposBusquedaObras.get(0).getValue().toString();
 		this.valorBusquedaObras = "";
@@ -1388,8 +1437,16 @@ public class EntradasAlmacenAction implements Serializable {
 		this.pojoObra = new Obra();
 		this.numPaginaObras = 1;
 	}
+	public void nuevaBusquedaObras() {
+		control();
+		this.campoBusquedaObras = this.tiposBusquedaObras.get(0).getValue().toString();
+		this.valorBusquedaObras = "";
+		
+		this.numPaginaObras = 1;
+		this.listObras = new ArrayList<Obra>();
+	}
 
-	public void buscarObras() {
+	public void buscarObrasOLD() {
 		try {
     		control();
 			this.campoBusquedaObras = (this.campoBusquedaObras != null && ! "".equals(this.campoBusquedaObras.trim())) ? this.campoBusquedaObras.trim() : this.tiposBusquedaObras.get(0).getValue().toString();
@@ -1409,6 +1466,23 @@ public class EntradasAlmacenAction implements Serializable {
 			this.numPaginaObras = 1;
     		log.info(this.listObras.size() + " Obra encontradas");
     	}
+    }
+	
+	public void buscarObras() {
+    	try {
+    		control();
+			this.campoBusquedaObras = (this.campoBusquedaObras != null && ! "".equals(this.campoBusquedaObras.trim())) ? this.campoBusquedaObras.trim() : this.tiposBusquedaObras.get(0).getValue().toString();
+			this.valorBusquedaObras = (this.valorBusquedaObras != null && ! "".equals(this.valorBusquedaObras.trim())) ? this.valorBusquedaObras.trim() : "";
+
+			this.numPaginaObras = 1;
+			this.listObras = this.ifzObras.findLikePropertyByAlmacen(this.campoBusquedaObras, this.valorBusquedaObras, this.almacenTrabajo.getId(), 0); 
+			this.listObras = this.listObras != null ? this.listObras : new ArrayList<Obra>();
+			if (this.listObras == null || this.listObras.isEmpty()) 
+				control(2, "Busqueda sin resultados");
+			this.mensaje = "OK";
+    	} catch (Exception e) {
+			control("Ocurrio un problema al consultar las Obras", e);
+    	} 
     }
 
 	public void seleccionarObra() {
@@ -1829,6 +1903,13 @@ public class EntradasAlmacenAction implements Serializable {
 		this.listObras = listObras;
 	}
 
+	public List<Obra> getListObrasPrincipales() {
+		return listObras;
+	}
+
+	public void setListObrasPrincipales(List<Obra> listObrasPrincipales) {
+		this.listObras = listObrasPrincipales;
+	}
 	public Obra getPojoObra() {
 		return pojoObra;
 	}
@@ -2212,4 +2293,10 @@ public class EntradasAlmacenAction implements Serializable {
 	public void setNumPaginaDetalles(int numPaginaDetalles) {
 		this.numPaginaDetalles = numPaginaDetalles;
 	}
+
+	public boolean isAdministrativo() {
+		return PERFIL_ADMINISTRATIVO;
+	}
+
+	public void setAdministrativo(boolean pAdministrativo) { }
 }

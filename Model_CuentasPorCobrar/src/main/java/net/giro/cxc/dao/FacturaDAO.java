@@ -36,4 +36,5 @@ public interface FacturaDAO extends DAO<Factura> {
 	public List<Factura> paraProvisionar(Date fechaDesde, Date fechaHasta, String orderBy, long idEmpresa) throws Exception;
 	
 	public List<Factura> findList(List<Long> idFacturas, String orderBy, long idEmpresa) throws Exception;
+
 }

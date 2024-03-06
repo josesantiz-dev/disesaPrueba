@@ -291,7 +291,7 @@ public class TraspasosAction implements Serializable {
 			this.listaCampoBusqueda.add(new SelectItem("a.id", "ID"));
 			this.campoBusqueda = this.listaCampoBusqueda.get(0).getValue().toString();
 			this.valorBusqueda = "";
-			this.numPagina = 1;
+			//this.numPagina = 1;
 
 			// Busqueda obras
 			this.tiposBusquedaObras = new ArrayList<SelectItem>();
@@ -312,6 +312,7 @@ public class TraspasosAction implements Serializable {
 			
 			this.listTraspasos = new ArrayList<AlmacenTraspaso>();
 			cargarAlmacenes();
+			//cargarAlmacenesOLD();
 			cargarFamilias();
 			cargarEmpleados();
 			nuevoTraspaso();
@@ -339,7 +340,10 @@ public class TraspasosAction implements Serializable {
 			this.campoBusqueda = (this.campoBusqueda != null && ! "".equals(this.campoBusqueda.trim())) ? this.campoBusqueda.trim() : this.listaCampoBusqueda.get(0).getValue().toString();
 			this.valorBusqueda = (this.valorBusqueda != null && ! "".equals(this.valorBusqueda.trim())) ? this.valorBusqueda.trim() : "";
 			value = "fecha".equals(this.campoBusqueda) ? (new SimpleDateFormat("MM/dd/yyyy")).format(this.fechaBusqueda) : this.valorBusqueda;
-
+			
+			System.out.println("campoBusqueda " + campoBusqueda);
+    		System.out.println("valorBusqueda " + valorBusqueda);
+    		
     		this.numPagina = 1;
 			this.listTraspasos = this.ifzTraspaso.findLikePropertyTraspasoDevolucion(this.campoBusqueda, value, this.almacenTrabajo.getId(), this.almacenTrabajo.getId(), true, false, "date(model.fecha) desc, model.id desc", 0);
     		this.listTraspasos = (this.listTraspasos != null ? this.listTraspasos : new ArrayList<AlmacenTraspaso>());
@@ -358,7 +362,6 @@ public class TraspasosAction implements Serializable {
 			control();
 			if (! validaciones())
 				return;
-			
 			this.puedeEditar = true;
 			this.traspasoEstatus = -1;
 			this.idTraspaso = 0L;
@@ -375,20 +378,20 @@ public class TraspasosAction implements Serializable {
 			this.pojoTraspaso.setSolicitudRequisicion(0L);
 			this.traspasoDetalles = new ArrayList<TraspasoDetalleExt>();
 			this.listaDetalleCantidades = new ArrayList<TraspasoDetalleExt>();
-			
+
 			// Cargamos Almacenes
 			cargarAlmacenes();
 			// Cargamos Empleados
 			cargarEmpleados();
-			
+
 			params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 			this.tipoTraspaso = (params.containsKey("origen") ? params.get("origen") : this.tipoTraspaso);
 			this.tipoTraspaso = (this.tipoTraspaso == null || "".equals(this.tipoTraspaso.trim()) ? this.listTiposTraspasos.get(0).getValue().toString() : this.tipoTraspaso);
 			this.pojoObra = null;
 			this.pojoObraOrigen = null;
 			this.cantidadProductoDetalles = 0;
-			this.pagDetalles = 1;
-			filtrarAlmacenes();
+			//this.pagDetalles = 1;
+			//filtrarAlmacenes();
 			
 			if ("TR TZ".contains(this.tipoTraspaso))
 				this.bodegaBloqueada = true;
@@ -422,7 +425,7 @@ public class TraspasosAction implements Serializable {
 				control(-1, "Ocurrio un problema al recuperar el Traspaso indicado");
 				return;
 			}
-			
+
 			if (this.pojoTraspaso.getTipo() == 1 || this.pojoTraspaso.getTipo() == 3)
 				this.tipoTraspaso = TipoMovimientoReferencia.TRASPASO.toString();
 			else if (this.pojoTraspaso.getTipo() == 2)
@@ -440,7 +443,7 @@ public class TraspasosAction implements Serializable {
 			cargarAlmacenes();
 			// Cargamos Empleados
 			cargarEmpleados();
-	
+
 			// Cargo los detalles del Traspaso
 			this.traspasoDetalles = this.ifzTraspasoDetalle.findExtAll(this.pojoTraspaso.getId());
 			if (this.traspasoDetalles == null || this.traspasoDetalles.isEmpty())
@@ -460,10 +463,12 @@ public class TraspasosAction implements Serializable {
 		long idObraOrigen = 0L;
 		
 		try {
+			System.out.println("ENTRA GUARDAR");
 			control();
 			if (! validaGuardarTraspaso()) 
 				return;
-			
+
+			System.out.println("ENTRA GUARDAR 1");
 			if (this.pojoTraspaso.getId() != null && this.pojoTraspaso.getId() > 0L) {
 				this.pojoTraspaso.setModificadoPor(this.loginManager.getUsuarioResponsabilidad().getUsuario().getId());
 				this.pojoTraspaso.setFechaModificacion(Calendar.getInstance().getTime());
@@ -471,10 +476,12 @@ public class TraspasosAction implements Serializable {
 				control(-1, "Traspaso actualizado");
 				return;
 			}
-			
+
+			System.out.println("ENTRA GUARDAR 2");
 			if (this.pojoObraOrigen != null && this.pojoObraOrigen.getId() != null && this.pojoObraOrigen.getId() > 0L)
 				idObraOrigen = this.pojoObraOrigen.getId();
-			
+
+			System.out.println("ENTRA GUARDAR 3");
 			this.pojoTraspaso.setId(null);
 			this.pojoTraspaso.setTipo(TipoTraspaso.TRASPASO.ordinal());
 			if (this.tipoTraspaso.equals(TipoMovimientoReferenciaExtendida.DEVOLUCION_BODEGA_ALMACEN.toString()))
@@ -484,13 +491,15 @@ public class TraspasosAction implements Serializable {
 			this.pojoTraspaso.setFechaCreacion(Calendar.getInstance().getTime());
 			this.pojoTraspaso.setModificadoPor(this.loginManager.getUsuarioResponsabilidad().getUsuario().getId());
 			this.pojoTraspaso.setFechaModificacion(Calendar.getInstance().getTime());
-			
+
+			System.out.println("ENTRA GUARDAR 4");
 			// Guardamos Traspaso
 			log.info("Guardando Traspaso ... ");
 			this.ifzTraspaso.setInfoSesion(this.loginManager.getInfoSesion());
 			this.pojoTraspaso.setId(this.ifzTraspaso.save(this.pojoTraspaso));
 			idTraspaso = this.pojoTraspaso.getId();
-			
+
+			System.out.println("ENTRA GUARDAR 5");
 			log.info("Traspaso guardado. Guardando detalles de Traspaso ... ");
 			for (TraspasoDetalleExt detalle : this.traspasoDetalles) {
 				detalle.setIdAlmacenTraspaso(this.pojoTraspaso.getId());
@@ -501,23 +510,28 @@ public class TraspasosAction implements Serializable {
 				detalle.setFechaModificacion(Calendar.getInstance().getTime());
 			}
 
+			System.out.println("ENTRA GUARDAR 6");
 			// Guarda detalle
 			this.ifzTraspasoDetalle.setInfoSesion(this.loginManager.getInfoSesion());
 			this.ifzTraspasoDetalle.saveOrUpdateListExt(this.traspasoDetalles);
 			if (this.tipoTraspaso.equals(TipoMovimientoReferenciaExtendida.TRASPASO_BODEGA_BODEGA.toString())) 
 				this.ifzTraspasoBodegas.save(this.pojoTraspaso.getId(), idObraOrigen, this.pojoObra.getId(), this.loginManager.getInfoSesion().getEmpresa().getCodigo());
 
+			System.out.println("ENTRA GUARDAR 7");
 			// Añadimos el elemento al inicio de la Lista
 			this.operacionCompleta = true;
 			this.listTraspasos = (this.listTraspasos != null ? this.listTraspasos : new ArrayList<AlmacenTraspaso>());
 			this.listTraspasos.add(0, this.ifzTraspaso.convertir(this.pojoTraspaso));
 			nuevoTraspaso();
-			
+
+			System.out.println("ENTRA GUARDAR 8");
 			// Ahora, afectamos existencias por JMS
 			// ----------------------------------------------------------------------------------------------------------------------
 			this.ifzTraspaso.setInfoSesion(this.loginManager.getInfoSesion());
 			if (! this.ifzTraspaso.postTraspaso(idTraspaso)) 
 				control(false, -1, "Se genero el Traspaso correctamente.\nSin embargo, este proceso requiere generar un movimiento de salida, lo cual no se pudo completar.", null);
+
+			System.out.println("ENTRA GUARDAR 9");
 		} catch (Exception e) {
 			control("Ocurrio un problema al guardar el traspaso", e);
 		} 
@@ -535,11 +549,11 @@ public class TraspasosAction implements Serializable {
 				return;
 			}
 			
-			if (! this.permisos.borrar(this.almacenTrabajo.getId())) {
+			/*if (! this.permisos.borrar(this.almacenTrabajo.getId())) {
 				control(-1, "No tiene permitido Borrar/Eliminar informacion");
 				controlLog("301 - No tiene permitido Borrar/Eliminar informacion");
 				return;
-			}
+			}*/
 			
 			traspaso = this.ifzTraspaso.findById(this.idTraspaso);
 			if (traspaso == null || traspaso.getId() == null || traspaso.getId() <= 0L) {
@@ -698,11 +712,11 @@ public class TraspasosAction implements Serializable {
 			return false; 
 		}
 		
-		if (! this.permisos.escribir(this.almacenTrabajo.getId())) {
+		/*if (! this.permisos.escribir(this.almacenTrabajo.getId())) {
 			control(-1, "No tiene permitido Añadir/Editar informacion");
 			controlLog("301 - No tiene permitido Añadir/Editar informacion");
 			return false;
-		}
+		}*/
 		
 		return true;
 	}
@@ -713,6 +727,7 @@ public class TraspasosAction implements Serializable {
 				throw new Exception("500 Internal Server Error");
 			control(-1, "Evento de descuento lanzado");
 		} catch (Exception e) {
+			e.printStackTrace();
 			control("Ocurrio un problema al intentar lanzar el evento de descuento del Traspaso indicado", e);
 		}
 	}
@@ -944,11 +959,11 @@ public class TraspasosAction implements Serializable {
 		double cantidadProducto = 0;
 
 		// Validamos permiso de Lectura/Consulta
-		if (! this.permisos.getEditar()) {
+		/*if (! this.permisos.getEditar()) {
 			control(-1, "No tiene permitido Añadir/Editar informacion");
 			controlLog("301 - No tiene permitido Añadir/Editar informacion");
 			return false;
-		}
+		}*/
 		/*
 		if (! this.usuarioValido) {
 			control(-1, "No es un usuario autorizado para realizar Traspasos entre Almacenes/Bodegas");
@@ -1144,8 +1159,13 @@ public class TraspasosAction implements Serializable {
 			}
 			
 			this.listAlmacenesItems = new ArrayList<SelectItem>();
-			for (Almacen var : this.listAlmacenes) 
-				this.listAlmacenesItems.add(new SelectItem(var.getId(), (idAlmacenesAsignados.contains(var.getId()) ? "* " : "") + var.getNombre() + " (" + var.getIdentificador() + ")"));
+			//for (Almacen var : this.listAlmacenes) 
+			//	this.listAlmacenesItems.add(new SelectItem(var.getId(), (idAlmacenesAsignados.contains(var.getId()) ? "* " : "") + var.getNombre() + " (" + var.getIdentificador() + ")"));
+		
+			for (Almacen var : listAlmacenesTrabajo) 
+				this.listAlmacenesItems.add(new SelectItem(var.getId(), var.getNombre() + " (" + var.getIdentificador() + ")"));
+			
+
 		} catch (Exception e) {
 			control("Ocurrio un problema al cargar los Almacenes", e);
 		}
@@ -1311,7 +1331,6 @@ public class TraspasosAction implements Serializable {
 
 	public void nuevaBusquedaObras() {
 		Map<String,String> params = null;
-		
 		control();
 		this.campoBusquedaObras = this.tiposBusquedaObras.get(0).getValue().toString();
 		this.valorBusquedaObras = "";
@@ -1332,14 +1351,19 @@ public class TraspasosAction implements Serializable {
     		this.campoBusquedaObras = (this.campoBusquedaObras != null && ! "".equals(this.campoBusquedaObras.trim())) ? this.campoBusquedaObras.trim() : this.tiposBusquedaObras.get(0).getValue().toString();
     		this.valorBusquedaObras = (this.valorBusquedaObras != null && ! "".equals(this.valorBusquedaObras.trim())) ? this.valorBusquedaObras.trim() : "";
     		this.valorOpcionBusquedaObras = this.almacenTrabajo.getTipo() > 2 ? 4 : 0;
-    		
+
 			this.numPaginaObras = 1;
 			if (this.settingObraOrigen)
 				this.listObrasPrincipales = this.ifzObras.findLikePropertyByAlmacen(this.campoBusquedaObras, this.valorBusquedaObras, this.almacenTrabajo.getId(), 0);
 			else
 				this.listObrasPrincipales = this.ifzObras.findLikeProperty(this.campoBusquedaObras, this.valorBusquedaObras, 0L, 0L, this.valorOpcionBusquedaObras, (this.valorOpcionBusquedaObras == 4), false, TipoObraRevisadas.Todas, TipoObraAutorizadas.Todas, TipoObraJerarquia.Todas, "nombre", 0);
-			this.listObrasPrincipales = this.listObrasPrincipales != null ? this.listObrasPrincipales : new ArrayList<Obra>();
-			if (this.listObrasPrincipales.isEmpty()) 
+
+    		this.listObrasPrincipales = this.listObrasPrincipales != null ? this.listObrasPrincipales : new ArrayList<Obra>();
+    		System.out.println("campoBusquedaObras " + campoBusquedaObras);
+    		System.out.println("valorBusquedaObras " + valorBusquedaObras);
+    		System.out.println("valorOpcionBusquedaObras " + valorOpcionBusquedaObras);
+    		System.out.println("settingObraOrigen " + settingObraOrigen);
+    		if (this.listObrasPrincipales.isEmpty()) 
 				control(2, "Busqueda sin resultados");
     		log.info(this.listObrasPrincipales.size() + " Obra encontradas");
     	} catch (Exception e) {
@@ -1456,9 +1480,9 @@ public class TraspasosAction implements Serializable {
     		this.numPaginaProductos = 1;
 			this.listaBusquedaProductos = this.ifzAlmacenProducto.findExtExistentes(this.pojoTraspaso.getAlmacenOrigen().getId(), this.campoBusquedaProductos, this.valorBusquedaProductos, this.idFamilia, tipoMaestro, 0, false);
 			this.listaBusquedaProductos = this.listaBusquedaProductos != null ? this.listaBusquedaProductos : new ArrayList<AlmacenProductoExt>(); 
+
 			if (this.listaBusquedaProductos.isEmpty()) 
 				control(2, "La busqueda no devolvio resultados");
-			
 			// Ordenamos por descripcion
 			Collections.sort(this.listaBusquedaProductos, new Comparator<AlmacenProductoExt>() {
 				@Override
@@ -1481,34 +1505,34 @@ public class TraspasosAction implements Serializable {
 				control(-1, "Ocurrio un problema al intentar recuperar el Producto seleccionado");
 				return;
 			}
-			
+
 			this.listaBusquedaProductos.remove(this.pojoProductoBusqueda);
 			if (! validaAgregarProducto()) 
 				return;
-			
+
 			producto = this.ifzProductos.convertir(this.pojoProductoBusqueda.getProducto()); //.findExtById(this.pojoProductoBusqueda.getId()); 
 			producto.setExistencia(this.pojoProductoBusqueda.getExistencia());
-			
+
 			detalle = new TraspasoDetalleExt();
 			detalle.setPrecioUnitario(this.pojoProductoBusqueda.getPrecioUnitario());
 			detalle.setIdProducto(producto);
 			detalle.setCantidad(1);
 			this.traspasoDetalles.add(detalle); 
-			
+
 			//Se crea otro objeto para evitar problemas de clonacion en Java
 			detalle = new TraspasoDetalleExt();	
 			detalle.setPrecioUnitario(this.pojoProductoBusqueda.getPrecioUnitario());
 			detalle.setIdProducto(producto);
 			detalle.setCantidad(1);
 			this.listaDetalleCantidades.add(detalle);	//la lista de respaldo. En el campo cantidad, se guardará la cantidad que existe de producto
-			
+
 			this.pojoProductoBusqueda = new AlmacenProductoExt();
 			this.cantidadProductoDetalles = this.traspasoDetalles.size();
 			if (this.almacenAnterior == 0) {	//Asignar por primera vez el almacen
 				this.setAlmacenAnterior(this.pojoTraspaso.getAlmacenOrigen().getId());
 				log.info("Asignar almacen anterior: " + this.almacenAnterior);
 			}
-			
+
 			this.operacionCompleta = true;
 			control(false, 4, "Producto Añadido", null);
 		} catch (Exception e) {
@@ -1871,13 +1895,13 @@ public class TraspasosAction implements Serializable {
 		this.listAlmacenesItems = listAlmacenesItems;
 	}
 
-	public List<SelectItem> getListAlmacenesTrabajoItems() {
+	/*public List<SelectItem> getListAlmacenesTrabajoItems() {
 		return listAlmacenesItems;
 	}
 
 	public void setListAlmacenesTrabajoItems(List<SelectItem> listAlmacenesTrabajoItems) {
 		this.listAlmacenesItems = listAlmacenesTrabajoItems;
-	}
+	}*/
 	
 	public List<Empleado> getListaEmpleados() {
 		return listEmpleados;
@@ -2211,3 +2235,4 @@ public class TraspasosAction implements Serializable {
 // VERSION |    FECHA    |        AUTOR       | DESCRIPCION 
 // -------------------------------------------------------------------------------------------------------------------
 //    2.0  | 2016-10-19  | Javier Tirado      | Modifico metodo cargarCboAlmacenDestino. Filtro solo alamcenes principales
+

@@ -149,7 +149,7 @@
 						action="#{productoAction.editar}" 
 						oncomplete="#{rich:component('pnlProducto')}.show()"
 						render="pnlProducto" limitRender="true">
-						<f:setPropertyActionListener target="#{productoAction.pojoProducto}" value="#{var}" />
+						<f:setPropertyActionListener target="#{productoAction.idProducto}" value="#{var.id}" />
 					</a4j:commandButton>
 				</rich:column>
 				
@@ -158,7 +158,7 @@
 						image="#{msg['eliminar16.img']}" title="#{msg['cancelar']}"
 						oncomplete="#{rich:component('pnlEliminar')}.show()"
 						render="pnlEliminar" limitRender="true">
-						<f:setPropertyActionListener target="#{productoAction.pojoProducto}" value="#{var}" />
+						<f:setPropertyActionListener target="#{productoAction.idProducto}" value="#{var.id}" />
 					</a4j:commandButton>
 				</rich:column>
  				

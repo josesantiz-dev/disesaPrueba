@@ -14,9 +14,9 @@ public interface FacturaTimbreRem {
 	public void setInfoSesion(long idUsuario, long idEmpresa, long codigoEmpresa);
 	
 	public long save(FacturaTimbre entity) throws Exception;
-	
+
 	public FacturaTimbre saveOrUpdate(FacturaTimbre entity) throws Exception;
-	
+		
 	public List<FacturaTimbre> saveOrUpdateList(List<FacturaTimbre> entities) throws Exception;
 
 	public void update(FacturaTimbre entity) throws Exception;

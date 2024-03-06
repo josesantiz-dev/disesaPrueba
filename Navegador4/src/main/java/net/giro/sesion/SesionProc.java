@@ -22,9 +22,9 @@ import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-import net.izel.ws.seg.datos.Rol;
 import net.giro.sesion.Grupo;
 import net.giro.sesion.Subgrupo;
+import net.izel.ws.seg.datos.Rol;
 import net.giro.sesion.CMensajesRoles;
 import net.giro.sesion.CRole;
 import net.giro.sesion.CSoctetStream;

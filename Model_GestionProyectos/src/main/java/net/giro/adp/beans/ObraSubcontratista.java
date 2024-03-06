@@ -13,8 +13,10 @@ public class ObraSubcontratista implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Long id;
 	private Date fecha;
+	private String tipoSubClave;
 	private String descripcion;
 	private Obra idObra;
+	private long idEmpleado;
 	private long idOrdenCompra;
 	private String folioOrdenCompra;
 	private BigDecimal totalOrdenCompra;
@@ -28,6 +30,7 @@ public class ObraSubcontratista implements Serializable {
 	private BigDecimal estimacion;
 	private BigDecimal amortizacion;
 	private BigDecimal fondoGarantia;
+	private BigDecimal pagoFondoGarantia;
 	private BigDecimal subtotal;
 	private BigDecimal impuestos;
 	private BigDecimal retenciones;
@@ -55,6 +58,7 @@ public class ObraSubcontratista implements Serializable {
 		this.fecha = Calendar.getInstance().getTime();
 		this.descripcion = "";
 		this.folioOrdenCompra = "";
+		this.tipoSubClave = "";
 		this.moneda = "";
 		this.totalOrdenCompra = BigDecimal.ZERO;
 		this.saldoOrdenCompra = BigDecimal.ZERO;
@@ -62,6 +66,7 @@ public class ObraSubcontratista implements Serializable {
 		this.estimacion = BigDecimal.ZERO;
 		this.amortizacion = BigDecimal.ZERO;
 		this.fondoGarantia = BigDecimal.ZERO;
+		this.pagoFondoGarantia = BigDecimal.ZERO;
 		this.subtotal = BigDecimal.ZERO;
 		this.impuestos = BigDecimal.ZERO;
 		this.retenciones = BigDecimal.ZERO;
@@ -399,5 +404,30 @@ public class ObraSubcontratista implements Serializable {
 
 	public void setFechaModificacion(Date fechaModificacion) {
 		this.fechaModificacion = fechaModificacion;
+	}
+
+	public BigDecimal getPagoFondoGarantia() {
+		return pagoFondoGarantia;
+	}
+
+	public void setPagoFondoGarantia(BigDecimal pagoFondoGarantia) {
+		pagoFondoGarantia = (pagoFondoGarantia != null ? pagoFondoGarantia : BigDecimal.ZERO);
+		this.pagoFondoGarantia = pagoFondoGarantia;
+	}
+
+	public String getTipoSubClave() {
+		return tipoSubClave;
+	}
+
+	public void setTipoSubClave(String tipoSubClave) {
+		this.tipoSubClave = tipoSubClave;
+	}
+
+	public long getIdEmpleado() {
+		return idEmpleado;
+	}
+
+	public void setIdEmpleado(long idEmpleado) {
+		this.idEmpleado = idEmpleado;
 	}
 }

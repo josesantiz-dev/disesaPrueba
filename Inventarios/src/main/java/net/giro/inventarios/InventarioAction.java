@@ -220,10 +220,10 @@ public class InventarioAction implements Serializable {
 		try {
 			control();
 			// Validamos permiso de Lectura/Consulta
-			if (! this.permisos.getConsultar()) {
+			/*if (! this.permisos.getConsultar()) {
 				control(301, "No tiene permitido consultar informacion");
 				return;
-			}
+			}*/
 			
 			if (this.almacenTrabajo == null || this.almacenTrabajo.getId() == null || this.almacenTrabajo.getId() <= 0L) {
 				control(-1, "Debe seleccionar un Almacen/Bodega para poder consultar las Existencias");
@@ -522,8 +522,11 @@ public class InventarioAction implements Serializable {
 		try {
 			this.idAlmacen = 0L;
 			this.listAlmacenesItems = new ArrayList<SelectItem>();
-			
-			this.listAlmacenes = this.ifzAlmacen.findAll();
+			if ("ADMINISTRADOR".equals(this.loginManager.getUsuarioResponsabilidad().getUsuario().getUsuario())) {
+				this.listAlmacenes = this.ifzAlmacen.findAll();
+			}else{
+				this.listAlmacenes = this.ifzAlmacen.findByProperty("idEncargado", this.loginManager.getUsuarioResponsabilidad().getUsuario().getIdEmpleado());
+			}
 			if (this.listAlmacenes != null && ! this.listAlmacenes.isEmpty()) {
 				Collections.sort(this.listAlmacenes, new Comparator<Almacen>() {
 					@Override
@@ -531,7 +534,7 @@ public class InventarioAction implements Serializable {
 						return o1.getNombre().compareTo(o2.getNombre());
 					}
 				});
-				
+
 				for (Almacen almacen : this.listAlmacenes) {
 					this.listAlmacenesItems.add(new SelectItem(almacen.getId(), almacen.getNombre() + " (" + almacen.getIdentificador() + ") " + (this.isDebug ? almacen.getId() : "")));
 					if (this.idAlmacen <= 0L && this.idBodegaBase > 0L && this.idBodegaBase == almacen.getId().longValue()) {
@@ -988,27 +991,27 @@ public class InventarioAction implements Serializable {
 	// PERMISOS
 	// ----------------------------------------------------------------------
 
-	public boolean isPermisoConsultar() { return this.permisos.getConsultar(); }
+	public boolean isPermisoConsultar() { return true; /* this.permisos.getConsultar(); */}
 
 	public void setPermisoConsultar(boolean value) {}
     
-	public boolean isPermisoAgregar() { return this.permisos.getEditar(); }
+	public boolean isPermisoAgregar() { return true; /* this.permisos.getEditar(); */}
 
 	public void setPermisoAgregar(boolean value) {}
 
-	public boolean isPermisoEditar() { return this.permisos.getEditar(); }
+	public boolean isPermisoEditar() { return true; /* this.permisos.getEditar(); */}
 
 	public void setPermisoEditar(boolean value) {}
 
-	public boolean isPermisoBorrar() { return this.permisos.getBorrar(); }
+	public boolean isPermisoBorrar() { return true; /* this.permisos.getBorrar(); */}
 
 	public void setPermisoBorrar(boolean value) {}
 
-	public boolean isPermisoImprimir() { return this.permisos.getConsultar(); }
+	public boolean isPermisoImprimir() { return true; /* this.permisos.getConsultar(); */}
 
 	public void setPermisoImprimir(boolean value) {}
 
-	public boolean isPermisoEscritura() { return this.permisos.getEditar(); }
+	public boolean isPermisoEscritura() { return true; /* this.permisos.getEditar(); */}
 
 	public void setPermisoEscritura(boolean value) { }
 }

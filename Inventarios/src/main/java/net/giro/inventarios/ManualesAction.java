@@ -109,7 +109,7 @@ public class ManualesAction implements Serializable {
 			this.ftpDigitalizacionRuta = this.entornoProperties.getString("ftp.digitalizacion.ruta");
 
 			// Permisos
-			valor = (this.entornoProperties.containsKey("MANUALES") ? this.entornoProperties.getString("MANUALES") : "MANUALES");
+			valor = (this.entornoProperties.containsKey("MANUALES") ? this.entornoProperties.getString("MANUALES") : "");
 			valor = (valor != null && ! "".equals(valor.trim())) ? valor.trim() : "0";
 			this.permisos = this.loginManager.getPermisos(this.loginManager.getIdAplicacion(), Long.parseLong(valor));
 			
@@ -191,10 +191,10 @@ public class ManualesAction implements Serializable {
 		try {
 			control();
 			// Validamos permiso de Lectura/Consulta
-			if (! this.permisos.getConsultar()) {
+			/*if (! this.permisos.getConsultar()) {
 				control("No tiene permitido consultar informacion");
 				return;
-			}
+			}*/
 			
 			if (this.manualSeleccionado == null || "".equals(this.manualSeleccionado)) {
 				control("No selecciono ningun Manual");
@@ -348,27 +348,27 @@ public class ManualesAction implements Serializable {
 	// PERMISOS
 	// ----------------------------------------------------------------------
 
-	public boolean isPermisoConsultar() { return this.permisos.getConsultar(); }
+	public boolean isPermisoConsultar() { return true; /* this.permisos.getConsultar();*/ }
 
 	public void setPermisoConsultar(boolean value) {}
     
-	public boolean isPermisoAgregar() { return this.permisos.getEditar(); }
+	public boolean isPermisoAgregar() { return true; /* this.permisos.getEditar(); */}
 
 	public void setPermisoAgregar(boolean value) {}
 
-	public boolean isPermisoEditar() { return this.permisos.getEditar(); }
+	public boolean isPermisoEditar() { return true; /* this.permisos.getEditar();*/ }
 
 	public void setPermisoEditar(boolean value) {}
 
-	public boolean isPermisoBorrar() { return this.permisos.getBorrar(); }
+	public boolean isPermisoBorrar() { return true; /* this.permisos.getBorrar(); */}
 
 	public void setPermisoBorrar(boolean value) {}
 
-	public boolean isPermisoImprimir() { return this.permisos.getConsultar(); }
+	public boolean isPermisoImprimir() { return true; /* this.permisos.getConsultar(); */}
 
 	public void setPermisoImprimir(boolean value) {}
 
-	public boolean isPermisoEscritura() { return this.permisos.getConsultar(); }
+	public boolean isPermisoEscritura() { return true; /* this.permisos.getConsultar(); */}
 
 	public void setPermisoEscritura(boolean value) { }
 }

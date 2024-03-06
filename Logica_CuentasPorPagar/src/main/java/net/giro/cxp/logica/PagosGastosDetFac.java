@@ -16,15 +16,12 @@ import javax.naming.InitialContext;
 
 import org.apache.log4j.Logger;
 
-import mx.gob.sat.cfdi.v33.Comprobante;
-import mx.gob.sat.cfdi.v33.Comprobante.Conceptos.Concepto;
-import mx.gob.sat.cfdi.v33.Comprobante.Conceptos.Concepto.Impuestos.Retenciones.Retencion;
-import mx.gob.sat.cfdi.v33.Comprobante.Conceptos.Concepto.Impuestos.Traslados.Traslado;
+import mx.gob.sat.cfdi.v40.Comprobante;
+import mx.gob.sat.cfdi.v40.Comprobante.Conceptos.Concepto;
+import mx.gob.sat.cfdi.v40.Comprobante.Conceptos.Concepto.Impuestos.Retenciones.Retencion;
+import mx.gob.sat.cfdi.v40.Comprobante.Conceptos.Concepto.Impuestos.Traslados.Traslado;
 import net.giro.cargas.documentos.beans.ComprobacionFactura;
-//import net.giro.cargas.documentos.beans.Comprobante;
-//import net.giro.cargas.documentos.beans.Concepto;
-//import net.giro.cargas.documentos.beans.Retencion;
-//import net.giro.cargas.documentos.beans.Traslado;
+
 import net.giro.cargas.documentos.logica.ComprobacionFacturaRem;
 import net.giro.cargas.documentos.respuesta.Errores;
 import net.giro.cxp.beans.FacturaConcepto;
@@ -539,17 +536,26 @@ public class PagosGastosDetFac implements PagosGastosDetRem {
 
 			// Recuperamos Comprobante
 			this.ifzFacturas.setInfoSesion(this.infoSesion);
+			log.info("Antes de analizar factura");
 			respuesta = this.ifzFacturas.analizarXML(fileSrc, validarEstatusCFDI);
+			log.info("Despues de analizar factura");
 			if (respuesta.getBody().getValor("pojoComprobante") != null) {
+				log.info("Pojo comprobante no es null");
 				pojoComprobante = (Comprobante) respuesta.getBody().getValor("pojoComprobante");
+
+				log.info("Inicia recuperacion conceptos");
 				conceptos = recuperarConceptos(pojoComprobante.getConceptos().getConcepto());
+				log.info("Termino recuperacion de conceptos");
 				respuesta.getBody().addValor("conceptos", conceptos); 
+			}else{
+				log.info("Pojo comprobante es null");
 			}
 			
 			// Validamos resultado de carga
 			errorCode = respuesta.getErrores().getCodigoError(); 
 			stepTrace += "|trace-analizarXML{" + respuesta.getBody().getValor("stepTrace").toString() + "}";
 			if (errorCode != 0L) {
+				log.info("Encontro un error con el codigo :: " + errorCode);
 				control("Error en Logica_CuentasPorPagar.PagosGastosDetFac.analizaFactura)\n\nTRACE\n" + stepTrace + "\n\n ERROR: " + respuesta.getErrores().getDescError());
 				respuesta.getBody().addValor("stepTrace", stepTrace);
 				return respuesta;
@@ -561,8 +567,9 @@ public class PagosGastosDetFac implements PagosGastosDetRem {
 			// Recuperamo ID generado de la carga
 			valor = respuesta.getBody().getValor("idComprobante").toString(); 
 			if (valor != null && ! "".equals(valor.trim()))
-				idFactura = Long.parseLong(valor.trim()); 
-			
+				idFactura = Long.parseLong(valor.trim());
+
+			log.info("Asigna valores a respuesta");
 			respuesta.getBody().addValor("comprobanteEmisor", pojoComprobante.getEmisor().getRfc());
 			respuesta.getBody().addValor("comprobanteReceptor", pojoComprobante.getReceptor().getRfc());
 			respuesta.getBody().addValor("comprobanteTipo", pojoComprobante.getTipoDeComprobante().value());
@@ -571,7 +578,9 @@ public class PagosGastosDetFac implements PagosGastosDetRem {
 			respuesta.getBody().addValor("comprobanteMoneda", pojoComprobante.getMoneda());
 			respuesta.getBody().addValor("comprobanteTipoCambio", pojoComprobante.getTipoCambio());
 			respuesta.getBody().addValor("comprobanteDescuento", pojoComprobante.getDescuento()); 
-			respuesta.getBody().addValor("comprobanteSubtotal", pojoComprobante.getSubTotal()); 
+			respuesta.getBody().addValor("comprobanteSubtotal", pojoComprobante.getSubTotal());
+			log.info("Finaliza la asignacion de valores a respuesta");
+
 			stepTrace += "|passing-pojoAcuse";
 			respuesta.getBody().addValor("stepTrace", stepTrace);
 			log.info("Proceso completo.\n\nTRACE\n" + stepTrace + "\n\n");

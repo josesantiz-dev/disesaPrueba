@@ -447,4 +447,6 @@ public class FacturaImp extends DAOImpl<Factura> implements FacturaDAO {
 		
 		return value;
 	}
+
+
 }

@@ -33,9 +33,9 @@
 					
 						<a4j:commandButton id="cmdBuscarProductos" style="margin:0 5px; vertical-align: middle; cursor: pointer;" 
 							image="#{msg['buscar22.img']}" title="#{msg['buscar.e']}"
-							action="#{traspasosAction.buscarProductos}"
+							action="#{traspasosAction.buscarProductos}" execute="@this"
 							oncomplete="buscarProductos(#{traspasosAction.band}, '#{rich:clientId('pnlMensajes')}');" 
-							render="dtBusquedaProductos,pnlMensajes,dScrollProductosTop" />
+							render="dtBusquedaProductos" />
 							
 						<a4j:commandButton id="cmdBuscarProductosAvanzada" 
 							image="#{msg['toggle.img']}" title="#{msg['busqueda']} #{msg['avanzada']}"
@@ -108,8 +108,8 @@
 					<rich:column styleClass="Descripcion" style="text-align:center;">
 					   	<a4j:commandButton id="cmdSeleccionarProducto" 
 					   		image="#{msg['agregar16.img']}" title="#{msg['seleccionar']}"
-							action="#{traspasosAction.seleccionarProducto}" 
-							oncomplete="#{rich:component('pnlMensajes')}.show(); document.getElementById('#{rich:clientId('txtValorBusquedaProductos')}').focus();"
+							action="#{traspasosAction.seleccionarProducto}" execute="@this"
+							oncomplete="mensaje(#{traspasosAction.band}, '#{rich:clientId('pnlBusquedaProductos')}',  '#{rich:clientId('pnlMensajes')}');"
 							render="dtBusquedaProductos,dtDetalles,pnlMensajes"
 							limitRender="true">
 							<f:setPropertyActionListener target="#{traspasosAction.pojoProductoBusqueda}" value="#{var}" />

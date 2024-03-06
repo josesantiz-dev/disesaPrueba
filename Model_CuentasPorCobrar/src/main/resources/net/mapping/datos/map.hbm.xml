@@ -134,6 +134,16 @@
 		<property column="fecha_provisionada" name="fechaProvisionada" />
 	</class>
 	
+	
+	<class name="net.giro.cxc.beans.FacturasRelacionadas" table="facturas_relacionadas">
+		<id column="id" name="id"/>
+		<property column="id_factura" name="idFactura"/>
+		<property column="id_factura_relacionada" name="idFacturaRelacionada"/>
+		<property column="fecha_creacion" name="fechaCreacion"/>
+		<property column="creado_por" name="creadoPor"/>
+		<property column="cfdi_relacionado_uuid" name="cfdiRelacionadoUuid" />
+	</class>
+	
 	<class name="net.giro.cxc.beans.FacturaDetalle" table="factura_detalle">
 		<id column="id" name="id"/>
 		<!-- many-to-one column="id_factura" name="idFactura" class="net.giro.cxc.beans.Factura" fetch="join" insert="false" update="false"/-->

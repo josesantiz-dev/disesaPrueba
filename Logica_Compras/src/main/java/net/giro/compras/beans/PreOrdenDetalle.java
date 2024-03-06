@@ -16,8 +16,6 @@ public class PreOrdenDetalle implements Serializable {
 	private double cantidadAlmacen;
 	private double cantidadTraspasar;
 	private double suministrado;
-    private int estatus;
-    private String comentariosCancelacion;
 	// ----------------------------------
 	private OrdenCompraDetalleExt backup;
 	
@@ -34,8 +32,6 @@ public class PreOrdenDetalle implements Serializable {
 		this.importe = value.getImporte();
 		this.suministrado = value.getCantidadSuministrada();
 		this.seleccionado = true;
-		this.estatus = value.getEstatus();
-		this.comentariosCancelacion = value.getComentariosCancelacion();
 		// ----------------------------------
 		this.backup = value.Copia();
 	}
@@ -127,20 +123,7 @@ public class PreOrdenDetalle implements Serializable {
 	}
 
 	public void setSuministrado(double cantidad) {}
-    public int getEstatus() {
-        return estatus;
-    }
 
-    public void setEstatus(int estatus) {
-        this.estatus = estatus;
-    }
-    public String getComentariosCancelacion() {
-        return comentariosCancelacion;
-    }
-
-    public void setComentariosCancelacion(String comentariosCancelacion) {
-        this.comentariosCancelacion = comentariosCancelacion;
-    }
 	// --------------------------------------------------------------------
 	// EXTENDIDOS
 	// --------------------------------------------------------------------

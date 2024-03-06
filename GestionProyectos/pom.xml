@@ -264,12 +264,6 @@
 		</dependency>
 		<dependency>
 			<groupId>net.giro</groupId>
-			<artifactId>Model_GestionProyectos</artifactId>
-			<version>2.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.giro</groupId>
 			<artifactId>Model_Inventarios</artifactId>
 			<version>3.1</version>
 			<scope>provided</scope>
@@ -306,6 +300,12 @@
 			<scope>provided</scope>
 		</dependency>
 		-->
+		<dependency>
+			<groupId>net.giro</groupId>
+			<artifactId>Model_GestionProyectos</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 	
 	<build>

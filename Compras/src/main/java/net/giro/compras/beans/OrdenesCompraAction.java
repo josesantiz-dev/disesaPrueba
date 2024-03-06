@@ -537,6 +537,9 @@ public class OrdenesCompraAction implements Serializable {
 			this.nuevaBusquedaObras();
 			this.seleccionarTodos = false;
 			backtrace("Proceso terminado");
+
+			log.info("editarOrdenCompra :: " + this.editarOrdenCompra);
+			System.out.println("editarOrdenCompra :: " + this.editarOrdenCompra);
     	} catch (Exception e) {
 			control("Ocurrio un problema al recuperar la Orden de Compra", e);
     	}

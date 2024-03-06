@@ -224,8 +224,6 @@
 		<property column="fecha_creacion" name="fechaCreacion" />
 		<property column="modificado_por" name="modificadoPor" />
 		<property column="fecha_modificacion" name="fechaModificacion" />
-		<property column="estatus" name="estatus" />
-		<property column="comentarios_cancelacion" name="comentariosCancelacion" />
 	</class>
 	
 	<class name="net.giro.compras.beans.OrdenCompraImpuestos" table="orden_compra_impuestos">

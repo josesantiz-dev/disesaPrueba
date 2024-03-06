@@ -162,8 +162,6 @@ public class RequisicionesAction implements Serializable {
 	private boolean isDebug;
 	private HashMap<String, String> paramsRequest;
 	
-    private boolean mostrarPanelBusquedaProducto = false;
-	
 	public RequisicionesAction() {
 		InitialContext ctx = null;
 		FacesContext fc = null;
@@ -364,7 +362,6 @@ public class RequisicionesAction implements Serializable {
 			cargarMonedas();
 			nuevaBusquedaObras();
 			nuevaBusquedaProductos();
-			this.setMostrarPanelBusquedaProducto(true);
     	} catch (Exception e) {
     		control("Ocurrio un problema al inicializar una nueva Requisicion", e);
     	}
@@ -419,14 +416,7 @@ public class RequisicionesAction implements Serializable {
 			this.listDetalles = (this.listDetalles != null ? this.listDetalles : new ArrayList<RequisicionDetalleExt>());
 			this.listDetallesEliminados = new ArrayList<RequisicionDetalleExt>();
 			this.numPaginaProductos = 1;
-			Collections.sort(this.listDetalles, new Comparator<RequisicionDetalleExt>() {
-			    @Override
-			    public int compare(RequisicionDetalleExt o1, RequisicionDetalleExt o2) {
-			        String clave1 = (o1.getIdProducto() != null) ? o1.getIdProducto().getClave() : "";
-			        String clave2 = (o2.getIdProducto() != null) ? o2.getIdProducto().getClave() : "";
-			        return clave1.compareTo(clave2);
-			    }
-			});
+			
 			// Recuperamos Solicitud a Bodega, previamente generada si corresponde
 			this.listSolicitudes = this.ifzRequisiciones.solicitudBodega(this.pojoRequisicion.getId());
 			this.listSolicitudes = (this.listSolicitudes != null ? this.listSolicitudes : new ArrayList<SolicitudBodega>());
@@ -434,7 +424,6 @@ public class RequisicionesAction implements Serializable {
 			
 			nuevaBusquedaObras();
 			nuevaBusquedaProductos();
-			mostrarOcultarPanelNuevoProducto();
     	} catch (Exception e) {
     		control("Ocurrio un problema al recuperar la Requisicion seleccionada", e);
     	} 
@@ -1135,24 +1124,6 @@ public class RequisicionesAction implements Serializable {
 		nuevoReqDetalle();
     }
 	
-	public void mostrarOcultarPanelNuevoProducto() {
-    	System.out.println("Hola, esto se imprimirá en la consola de Java");
-        System.out.println(this.getOperacion());
-        System.out.println(this.isMostrarPanelBusquedaProducto());
-
-        if(this.getOperacion() == true) {
-        	this.setMostrarPanelBusquedaProducto(false);
-        }else {
-        	this.setMostrarPanelBusquedaProducto(true);
-        }
-	}
-	
-    public void panelBusedaProducto() {
-    	System.out.println("Hola, esto se imprimirá en la consola de Java");
-        System.out.println(this.getOperacion());
-        System.out.println(this.isMostrarPanelBusquedaProducto());
-    }
-    
 	public void buscarProductos() {
 		String valor = "";
 		
@@ -2192,15 +2163,6 @@ public class RequisicionesAction implements Serializable {
 	public void setNumPaginaSolicitudBodega(int numPaginaSolicitudBodega) {
 		this.numPaginaSolicitudBodega = numPaginaSolicitudBodega;
 	}
-	
-    public boolean isMostrarPanelBusquedaProducto() {
-        return mostrarPanelBusquedaProducto;
-    }
-
-    public void setMostrarPanelBusquedaProducto(boolean mostrarPanelBusquedaProducto) {
-        this.mostrarPanelBusquedaProducto = mostrarPanelBusquedaProducto;
-    }
-    
 }
 
 

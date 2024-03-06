@@ -6,8 +6,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +46,6 @@ import net.giro.compras.logica.OrdenCompraRem;
 import net.giro.compras.logica.RequisicionDetalleRem;
 import net.giro.compras.logica.RequisicionRem;
 import net.giro.comun.TiposObra;
-import net.giro.inventarios.beans.Producto;
 import net.giro.inventarios.comun.TipoMaestro;
 import net.giro.inventarios.logica.ProductoRem;
 import net.giro.navegador.LoginManager;
@@ -192,12 +189,6 @@ public class OrdenesCompraAction implements Serializable {
 	private boolean isDebug;
 	private HashMap<String, String> paramsRequest;
 	
-    private long idOrdenDetalleSeleccionado;
-    private OrdenCompraDetalle ordenCompraDetalle;
-    private String nombreProductoSeleccionado;
-    private String comentarios;
-    private List<SelectItem> listTipoOrdenItems;
-
 	public OrdenesCompraAction() {
 		ValueExpression valExp = null;
 		InitialContext ctx = null;
@@ -338,7 +329,6 @@ public class OrdenesCompraAction implements Serializable {
 			
 			cargarMonedas();
 			backtrace();
-			cargarTipoOrden();
 		} catch (Exception e) {
 			log.error("Ocurrio un problema al inicializar " + this.getClass().getCanonicalName(), e);
 		}
@@ -432,7 +422,6 @@ public class OrdenesCompraAction implements Serializable {
 			
 			this.pojoOrden = new OrdenCompraExt();
 			this.pojoOrden.setTipo(this.tipoMaestro.ordinal());
-
 			this.pojoOrden.setIdObra(obra);
 			this.pojoOrden.setLugarEntrega(obra.getNombre());
     		this.pojoOrden.setIdEmpresa(this.loginManager.getInfoSesion().getEmpresa().getId());
@@ -475,13 +464,16 @@ public class OrdenesCompraAction implements Serializable {
 			obraEstatus = (this.pojoObraBase != null ? this.pojoObraBase.getEstatus() : this.pojoOrden.getIdObra().getEstatus());
 			this.tipoMaestro = (obraTipo == TiposObra.Administrativa.ordinal() ? TipoMaestro.Administrativo: TipoMaestro.Inventario);
 			this.permiteModificar = (obraEstatus == 0 || obraEstatus == 10001211L) ? false : true;
-			
+			System.out.println("permiteModificar :: " + this.permiteModificar);
+
 			this.reConvierte = false;
 			this.evaluaConversion = false;
 			this.listOrdenImpuestos = new ArrayList<OrdenCompraImpuestosExt>();
 			this.listOrdenImpuestosBorrados = new ArrayList<OrdenCompraImpuestosExt>();
 			// Editable: Si la Orden esta activa y la Obra no esta Cancelada o Cerrada
 			this.ordenEditable = (this.pojoOrden.getEstatus() == EstatusCompras.ACTIVA.ordinal() ? this.permiteModificar : false);
+			System.out.println("ordenEditable :: " + this.ordenEditable);
+			System.out.println("isEditarOrdenCompra :: " + isEditarOrdenCompra());
 			/*if (this.permiteModificar) {
 				formatter = new SimpleDateFormat("dd-MM-yyyy");
 				this.ordenEditable = (formatter.format(Calendar.getInstance().getTime()).equals(formatter.format(this.pojoOrden.getFechaCreacion())) && this.loginManager.getInfoSesion().getAcceso().getUsuario().getId() == this.pojoOrden.getCreadoPor());
@@ -512,7 +504,6 @@ public class OrdenesCompraAction implements Serializable {
 		OrdenCompra ordenCompra = null;
 		
 		try {
-			
 			control();
 			if (! validaciones()) 
 				return;
@@ -520,10 +511,9 @@ public class OrdenesCompraAction implements Serializable {
 			backtrace("Comprobando origen por requisicion y guardando requisicion si corresponde");
 			if (this.origenRequisicion && ! guardarCotizacion())
 				return;
-	        
+			
 			//seleccionados = 0;
-			//this.pojoOrden.setTipo(this.tipoMaestro.ordinal());
-			this.pojoOrden.setTipo((int)this.getTipoOrden());
+			this.pojoOrden.setTipo(this.tipoMaestro.ordinal());
     		this.pojoOrden.setIdEmpresa(this.loginManager.getInfoSesion().getEmpresa().getId());
 			this.pojoOrden.setSubtotal(this.subtotal);
 			this.pojoOrden.setIva(this.iva);
@@ -892,7 +882,6 @@ public class OrdenesCompraAction implements Serializable {
 				controlLog("Recuperamos detalles por OC: " + this.pojoOrden.getId());
 				this.seleccionarTodos = true;
 				lista = this.ifzOrdenDetalles.findExtAll(this.pojoOrden.getId()); 
-				
 				if (lista == null || lista.isEmpty()) {
 					mensaje = "Ocurrio un problema al recuperar los productos de la Orden de Compra"; 
 					return false;
@@ -940,16 +929,6 @@ public class OrdenesCompraAction implements Serializable {
 					return false;
 				}
 			}
-			Collections.sort(this.listPreDetalles, new Comparator<PreOrdenDetalle>() {
-			    @Override
-			    public int compare(PreOrdenDetalle o1, PreOrdenDetalle o2) {
-			        // Asegúrate de manejar posibles valores nulos para las claves de productos
-			        String clave1 = (o1.getIdProducto() != null) ? o1.getIdProducto().getClave() : "";
-			        String clave2 = (o2.getIdProducto() != null) ? o2.getIdProducto().getClave() : "";
-
-			        return clave1.compareTo(clave2);
-			    }
-			});
 			
 			// Comprobamos impuestos de los detalles
 			comprobarOrdenImpuestos(); 
@@ -1045,17 +1024,6 @@ public class OrdenesCompraAction implements Serializable {
 		}
 	}
 	
-	private void cargarTipoOrden() {
-		try {
-			this.listTipoOrdenItems = new ArrayList<SelectItem>();
-			this.listTipoOrdenItems.add(new SelectItem(1, "Material"));
-			this.listTipoOrdenItems.add(new SelectItem(2, "Indirectos de campo"));
-			this.listTipoOrdenItems.add(new SelectItem(3, "Herramienta y equipo"));
-			this.listTipoOrdenItems.add(new SelectItem(4, "N/A"));
-		}catch(Exception e) {
-			control("Ocurrio un problema al intentar cargar tipos de obras", e);
-		}
-	}
 	private boolean validaciones() {
 		boolean valido = false;
 		
@@ -1954,38 +1922,6 @@ public class OrdenesCompraAction implements Serializable {
 				backtracePrint();
     	}
 	}
-	
-	public void bajaProducto() {
-		System.out.println("ID del producto a dar de baja: " + idOrdenDetalleSeleccionado);
-        this.ordenCompraDetalle = ifzOrdenDetalles.findById(idOrdenDetalleSeleccionado);
-		System.out.println("Este es el producto obtenido: " + this.ordenCompraDetalle);
-		if (ordenCompraDetalle != null) {
-	        Long idProducto = ordenCompraDetalle.getIdProducto();
-	        Producto producto = ifzProductos.findById(idProducto);
-	        String nombreProductoSeleccionado = producto.getDescripcion();
-	        this.nombreProductoSeleccionado = nombreProductoSeleccionado;
-			System.out.println("Este es el producto obtenido: " + nombreProductoSeleccionado);
-			
-		}
-	}
-	
-	public void cancelarProducto() {
-        System.out.println("Comentarios ingresados: " + comentarios);
-        if (ordenCompraDetalle != null) {
-            ordenCompraDetalle.setComentariosCancelacion(comentarios);
-            ordenCompraDetalle.setEstatus(1);
-            try {
-				ifzOrdenDetalles.update(ordenCompraDetalle);
-				if (! recuperarListadoDetalles(true))
-					return;
-		        System.out.println("Se actualizó correctamente");
-			} catch (Exception e) {
-		        System.out.println("No se pudo actualizar");
-				e.printStackTrace();
-			}
-        }
-        System.out.println("--------fin---------------");
-	}
 
 	// -------------------------------------------------------------------------
 	// LOCAL STORAGE
@@ -2759,51 +2695,5 @@ public class OrdenesCompraAction implements Serializable {
 				break;
 			}
 		}
-	}
-    public long getIdOrdenDetalleSeleccionado() {
-        return idOrdenDetalleSeleccionado;
-    }
-    public void setIdOrdenDetalleSeleccionado(long idOrdenDetalleSeleccionado) {
-        this.idOrdenDetalleSeleccionado = idOrdenDetalleSeleccionado;
-    }
-    public OrdenCompraDetalle getOrdenCompraDetalle() {
-        return ordenCompraDetalle;
-    }
-    public void setOrdenCompraDetalle(OrdenCompraDetalle ordenCompraDetalle) {
-        this.ordenCompraDetalle = ordenCompraDetalle;
-    }
-    public String getNombreProductoSeleccionado() {
-        return nombreProductoSeleccionado;
-    }
-
-    public void setNombreProductoSeleccionado(String nombreProductoSeleccionado) {
-        this.nombreProductoSeleccionado = nombreProductoSeleccionado;
-    }
-    public String getComentarios() {
-        return comentarios;
-    }
-
-    public void setComentarios(String comentarios) {
-        this.comentarios = comentarios;
-    }
-    
-	public List<SelectItem> getListTipoOrdenItems() {
-		return listTipoOrdenItems;
-	}
-
-	public void getListTipoOrdenItems(List<SelectItem> listTipoOrdenItems) {
-		this.listTipoOrdenItems = listTipoOrdenItems;
-	}
-	public long getTipoOrden() {
-		return (this.pojoOrden != null ? this.pojoOrden.getTipo() : 0L);
-	}
-	
-	public void setTipoOrden(int tipoOrden) {
-		if (this.pojoOrden == null)
-			return;
-		if (this.listTipoOrdenItems == null || this.listTipoOrdenItems.isEmpty())
-			return;
-		
-		this.pojoOrden.setTipo(tipoOrden);
 	}
 }

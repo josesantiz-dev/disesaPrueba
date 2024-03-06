@@ -1,0 +1,184 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j" 
+    xmlns:rich="http://richfaces.org/rich">
+    
+    <rich:popupPanel id="pnlNuevoEditarEmpleado" autosized="true" domElementAttachment="form" style="min-width:800px; max-width:1024px;" top="10">
+		<f:facet name="header">
+			<h:outputText id="lblTitulo" value="#{empleadoAction.titulo}" styleClass="Titulo" />
+		</f:facet>
+		
+		<f:facet name="controls">
+			<h:graphicImage style="cursor:pointer;" 
+				value="#{msg['navegacion.gral.cerrar.img']}" 
+				onclick="#{rich:component('pnlNuevoEditarEmpleado')}.hide()" />
+		</f:facet>
+		
+		<!-- BOTONERA -->
+		<div id="botonera" style="display: block; width: 100%; height: 22px; margin-bottom: 1em;">
+			<h:panelGroup id="grupoBotonesIzquierdos" style="width:100%">
+				<a4j:commandButton id="cmdFamiliares" style="float:left; margin-left:5px; vertical-align: middle; cursor: pointer;"
+					image="#{msg['personas22.img']}" title="#{msg['familiares']}"
+					rendered="#{empleadoAction.pojoEmpleado.id!=null}"
+					action="#{empleadoAction.cargarFamiliares}"
+					oncomplete="#{rich:component('pnlFamiliares')}.show();"
+					render="pnlFamiliares,txtNombreEmpleado002,dtListaFamiliares" />
+				
+				<a4j:commandButton id="cmdBeneficiarios" style="float:left; margin-left:5px; vertical-align: middle; cursor: pointer;"
+					image="#{msg['agregarPersona22.img']}" title="#{msg['beneficiarios']}"
+					rendered="#{empleadoAction.pojoEmpleado.id!=null}"
+					action="#{empleadoAction.cargarBeneficiarios}"
+					oncomplete="#{rich:component('pnlBeneficiarios')}.show();"
+					render="pnlBeneficiarios,txtNombreEmpleado003,dtListaBeneficiarios" />
+				
+				<a4j:commandButton id="cmdContrato" style="float:left; margin-left:5px; vertical-align: middle; cursor: pointer;"
+					image="#{msg['estudios22.img']}" title="#{msg['contrato']}"
+					rendered="#{empleadoAction.pojoEmpleado.id!=null}"
+					action="#{empleadoAction.cargarContratos}"
+					oncomplete="#{rich:component('pnlContratos')}.show();"
+					render="pnlContratos,grupoEncListaContrato,dtListaContratos" />
+			</h:panelGroup>
+			
+			<h:panelGroup id="grupoBotonesDerechos" style="width:100%">
+				<h:panelGrid columns="2" style="float:right; margin-right:5px;" >
+					<h:panelGroup style="vertical-align: middle; position:relative; ">
+						<a4j:commandButton id="cmdSalvar" rendered="#{empleadoAction.editable}" style="vertical-align: right; position:relative;" 
+							image="#{msg['salvar22.img']}" title="#{msg['salvar.e']}"
+							onclick="#{rich:element('cmdSalvar')}.disabled = true;" 
+							action="#{empleadoAction.guardar}" 
+							oncomplete="msgRevisando(#{rich:element('msgErrorEmpleado')},'#{rich:clientId('pnlNuevoEditarEmpleado')}','#{rich:clientId('pnlMensajes')}',#{empleadoAction.band},'guardar', '#{empleadoAction.resOperacion}'); #{rich:element('cmdSalvar')}.disabled = false;"
+							render="pnlMensajes, msgErrorEmpleado, dtEmpleados, lblTitulo"/>
+					</h:panelGroup>
+					
+					<h:panelGroup style="vertical-align: middle; position:relative;">
+						<!--a4j:status>
+							<f:facet name="start">
+								<h:graphicImage value="#{msg['navegacion.loading.loading16.img']}" style="vertical-align: middle; position:relative;"/>
+							</f:facet>
+							
+							<f:facet name="stop">
+								<h:graphicImage value="#{msg['navegacion.loading.loading_stop16.img']}" style="vertical-align: middle; position:relative;"/>
+							</f:facet>
+						</a4j:status-->
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+		</div>
+		
+		<h:panelGroup id="grupoEncabezado" />
+		
+		<rich:messages id="msgErrorEmpleado" ajaxRendered="true" title="Campos requeridos!" >
+			<f:facet name="errorMarker">
+				<h:graphicImage value="#{msg['alert16.img']}" style="margin-right:1em;" />
+			</f:facet>
+		</rich:messages>
+		
+		<h:panelGroup id="grupoDatos">
+			<fieldset style="margin:10px auto;">
+				<legend><h:outputText value="#{msg['persona']}" styleClass="Titulo"/></legend>
+				
+				<h:panelGrid id="pnlPersonaDatos" columns="2" width="700" columnClasses="colTitulo,colDato" style="text-align:left;">
+					<h:outputText value="#{msg['persona']}:" styleClass="Titulo"/>
+					<h:panelGroup>
+						<h:outputText value="#{empleadoAction.persona}" styleClass="Titulo" />
+						<a4j:commandLink id="cmdSeleccionarPersona" rendered="#{empleadoAction.editable}" style="margin:0 5px;"
+							value="#{empleadoAction.pojoEmpleado.persona.id == null ? msg['seleccionar'] : msg['cambiar']}" 
+							action="#{empleadoAction.nuevaBusquedaPersona}"
+							oncomplete="#{rich:component('pnlBusquedaPersonas')}.show();"  
+							render="pnlBusquedaPersonas" limitRender="true" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</fieldset>
+				
+			<fieldset style="margin:10px auto;">
+				<legend><h:outputText value="#{msg['empleado']}" styleClass="Titulo"/></legend>
+				
+				<h:panelGrid id="pnlEmpleadoDatos" columns="4" width="700" columnClasses="colTitulo,colDato, colTitulo,colDato" style="text-align:left;">
+					<h:outputText value="#{msg['clave']}:" styleClass="Titulo"/>
+		 			<h:inputText id="txtClave" readonly="#{not empleadoAction.editable}" maxlength="50" style="width: 130px;" 
+		 				value="#{empleadoAction.clave}" size="50" />
+		            
+		            <h:outputLabel value="#{msg['persona.nss']}:" styleClass="Titulo" title="#{msg['persona.numeroSeguridadSocial']}" />
+					<h:inputText id="txtNSS" readonly="#{not empleadoAction.editable}" maxlength="50" style="width: 194px;" 
+						value="#{empleadoAction.numeroSeguridadSocial}"
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+		            	requiredMessage="#{msg['persona.nss']} #{msg['mensaje.error.requerido']}" />
+					
+					<!-- Seleccionar Sucursal -->
+					<h:outputText value="#{msg['sucursal']}:" styleClass="Titulo"/>
+					<h:selectOneMenu id="cbSucursal" disabled="#{not empleadoAction.editable}" style="width:200px;"
+						value="#{empleadoAction.idSucursal}"
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+		            	requiredMessage="#{msg['sucursal']} #{msg['mensaje.error.requerido']}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{empleadoAction.listaCboSucursales}"/>	  					
+					</h:selectOneMenu>
+					
+					<!-- Seleccionar Área -->
+					<h:outputText value="#{msg['area']}:" styleClass="Titulo"/>
+					<h:selectOneMenu id="cbArea" disabled="#{not empleadoAction.editable}" style="width:200px;"
+						value="#{empleadoAction.idArea}"
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+		            	requiredMessage="#{msg['area']} #{msg['mensaje.error.requerido']}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{empleadoAction.listaCboAreas}"/>			
+					</h:selectOneMenu>	
+		            
+					<!-- Seleccionar Puesto -->
+					<h:outputText value="#{msg['puesto']}:" styleClass="Titulo" />
+					<h:selectOneMenu id="cbPuesto" disabled="#{not empleadoAction.editable}" style="width:200px;"
+						value="#{empleadoAction.idPuesto}"
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+		            	requiredMessage="#{msg['puesto']} #{msg['mensaje.error.requerido']}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{empleadoAction.listaCboPuestos}" />		
+						<f:ajax event="valueChange" 
+							listener="#{empleadoAction.cargaCategorias}" 
+							render="cboCategorias"
+							limitRender="true" />
+					</h:selectOneMenu>
+		            
+					<!-- Seleccionar Categoria -->
+					<h:outputText value="#{msg['categoria']}:" styleClass="Titulo"/>
+					<h:selectOneMenu id="cboCategorias" disabled="#{not empleadoAction.editable}" style="width:200px;" 
+						value="#{empleadoAction.idCategoria}"
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+		            	requiredMessage="#{msg['categoria']} #{msg['mensaje.error.requerido']}">
+						<f:selectItem itemLabel="#{msg['seleccione']}" />
+						<f:selectItems value="#{empleadoAction.listaCboCategorias}"/>	  					
+					</h:selectOneMenu>
+		 			
+		 			<h:outputText value="#{msg['correo']}:" styleClass="Titulo"/>
+		 			<h:inputText id="txtEmail" readonly="#{not empleadoAction.editable}" maxlength="50" style="width: 194px;" 
+		 				value="#{empleadoAction.email}" />
+					
+					<h:outputLabel value="#{msg['fechaIngreso']}:" styleClass="Titulo" style="margin-left: 10px; margin-right: 0px"/>
+		            <rich:calendar id="dtFechaIngreso" enableManualInput="true" datePattern="dd/MMM/yyyy"
+		            	value="#{empleadoAction.fechaIngreso}" disabled="#{not empleadoAction.editable}" 
+		            	required="#{!empty param[rich:clientId('cmdSalvar')]}" 
+		            	requiredMessage="#{msg['fecha']} #{msg['mensaje.error.requerido']}">
+		                <rich:placeholder value="dd/MMM/yyyy" />
+		            </rich:calendar>
+					
+					<h:outputText value="#{msg['externo']}:" styleClass="Titulo"/>
+		 			<h:selectBooleanCheckbox value="#{empleadoAction.externo}" disabled="#{not empleadoAction.editable}"  />
+					
+		            <h:outputLabel value="#{msg['emergencia']}:" styleClass="Titulo" />
+					<h:inputText id="txtEmergencia" readonly="#{not empleadoAction.editable}" minlength="10" maxlength="10" style="width: 194px;" 
+						value="#{empleadoAction.emergencia}" 
+						onkeypress="return soloNumeros(event, this.value);" />
+					
+					<h:outputText value="#{msg['altaSS']}:" styleClass="Titulo" rendered="#{empleadoAction.debugging}"/>
+					<h:selectBooleanCheckbox disabled="#{empleadoAction.fechaAltaSeguroSocial == '' ? (not empleadoAction.editable) : true}"
+					  	title="#{empleadoAction.fechaAltaSeguroSocial}" 
+		 				value="#{empleadoAction.altaSeguroSocial}" rendered="#{empleadoAction.debugging}"/>
+		 			<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+					<h:outputText value="#{msg['navegacion.label.vacio']}" styleClass="Titulo" />
+				</h:panelGrid>
+			</fieldset>
+		</h:panelGroup>
+	</rich:popupPanel>
+</ui:composition>

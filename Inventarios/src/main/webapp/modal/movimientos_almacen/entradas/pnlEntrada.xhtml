@@ -142,7 +142,7 @@
 						<h:panelGrid id="selectorSalida" 	  rendered="#{entradasAction.tipoEntrada == 'SO'}"
 							columns="2" columnClasses="colTitulo,colDato" style="width:100%; margin:0 auto; text-align:left;">
 							<h:outputText value="#{msg['obra']}:"  styleClass="Titulo" />
-							<h:panelGroup>
+							<h:panelGroup  id="pnlObraDatos" >
 								<h:outputText id="txtObra" value="#{entradasAction.obra}" style="margin:0 5px 0 0;" escape="false" />
 								<a4j:commandLink id="cmdSeleccionarObra" styleClass="linkColor" 
 									rendered="#{entradasAction.puedeEditar}"

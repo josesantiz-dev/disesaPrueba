@@ -17,6 +17,7 @@ public class CobranzaMoneda implements Serializable {
 	private double estimacion;
 	private double amortizacion;
 	private double fondoGarantia;
+	private double pagoFondoGarantia;
 	private double subtotal;
 	private double iva;
 	private double cargos;
@@ -132,6 +133,14 @@ public class CobranzaMoneda implements Serializable {
 		this.fondoGarantia = fondoGarantia;
 	}
 
+	public double getpagoFondoGarantia() {
+		return pagoFondoGarantia;
+	}
+
+	public void setpagoFondoGarantia(double pagoFondoGarantia) {
+		this.pagoFondoGarantia = pagoFondoGarantia;
+	}
+
 	public double getSubtotal() {
 		return subtotal;
 	}
@@ -188,6 +197,7 @@ public class CobranzaMoneda implements Serializable {
 		this.estimacion = 0;
 		this.amortizacion = 0;
 		this.fondoGarantia = 0;
+		this.pagoFondoGarantia = 0;
 		this.subtotal = 0;
 		this.iva = 0;
 		this.cargos = 0;
@@ -204,6 +214,7 @@ public class CobranzaMoneda implements Serializable {
 			this.estimacion += item.getEstimacion().doubleValue();
 			this.amortizacion += item.getAmortizacion().doubleValue();
 			this.fondoGarantia += item.getFondoGarantia().doubleValue();
+			this.pagoFondoGarantia += item.getPagoFondoGarantia().doubleValue();
 			this.subtotal += item.getSubtotal().doubleValue();
 			this.iva += item.getIva().doubleValue();
 			this.cargos += item.getCargos().doubleValue();

@@ -128,12 +128,9 @@
 						</rich:column>
 						
 						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:120px;">
-							<h:outputText value="#{msg['categoria']}" />
+							<h:outputText value="#{msg['tipo']}" />
 						</rich:column>
 						
-						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:120px;">
-							<h:outputText value="#{msg['tipoOrdenCompra']}" />
-						</rich:column>
 						<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
 							<h:outputText value="#{msg['estatus']}" />
 						</rich:column>
@@ -180,11 +177,6 @@
 					<h:outputText value="#{var.total}" title="Subtotal: #{var.subtotal} Iva: #{var.iva} Retenciones: #{var.retenciones}">
 						<f:convertNumber pattern="###,###,###,##0.00" />
 					</h:outputText>
-				</rich:column>
-				
-				<rich:column styleClass="#{(var.estatus == 1 ? 'itemCancelado' : (var.estatus == 2 ? 'itemUsado' : 'Descripcion'))}" style="text-align:center;">
-					<h:outputText rendered="#{var.tipo le 1}" value="#{msg['maestro.inventariosAlt']}" />
-					<h:outputText rendered="#{var.tipo eq 2}" value="#{msg['maestro.administrativoAlt']}" />
 				</rich:column>
 				
 				<rich:column styleClass="#{(var.estatus == 1 ? 'itemCancelado' : (var.estatus == 2 ? 'itemUsado' : 'Descripcion'))}" style="text-align:center;">
@@ -254,6 +246,5 @@
 		<ui:include src="/modals/orden/pnlEliminarDetalle.xhtml" />
 		<ui:include src="/modals/orden/pnlConfirmaCerrar.xhtml" />
 		<ui:include src="/modals/orden/pnlAutorizar.xhtml" />
-		<ui:include src="/modals/orden/pnlBajaProducto.xhtml" />
 	</ui:define>
 </ui:composition>

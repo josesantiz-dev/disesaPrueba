@@ -269,15 +269,15 @@
 											<h:outputText value="#{msg['requeridos']}" />
 										</rich:column>
 										
-										<!-- <rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+										<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
 											<h:outputText value="#{msg['existencia']}" />
-										</rich:column>-->
+										</rich:column>
 										
 										<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
 											<h:outputText value="#{msg['cotizar']}" />
 										</rich:column>
 										
-										<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:20px;">
+										<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
 											<h:outputText value="#{msg['pu']}" title="#{msg['precioUnitario']}" />
 										</rich:column>
 										
@@ -320,12 +320,12 @@
 									<h:outputText value="#{var.requeridos}"><f:convertNumber pattern="#0.0000" /></h:outputText>
 								</rich:column>
 								
-								<!-- <rich:column styleClass="Descripcion" style="text-align:right; width:90px;">
+								<rich:column styleClass="Descripcion" style="text-align:right; width:90px;">
 									<h:outputText rendered="#{cotizacionAction.hasId eq true}" value="NA" title="No Aplica" />
 									<h:outputText rendered="#{cotizacionAction.hasId eq false}" value="#{var.existencias}" title="#{msg['ver']} #{msg['solicitud']}"><f:convertNumber pattern="#0.0000" /></h:outputText>
 									<h:graphicImage id="imgAlert" rendered="#{var.existencias > 0}" style="margin:0; padding: 0; float:left;"
 										value="#{msg['alert16.img']}" title="#{msg['ver']} #{msg['solicitud']}" />
-								</rich:column>-->
+								</rich:column>
 								
 								<rich:column styleClass="Descripcion" style="text-align:center; width:90px;">
 									<h:inputText id="txtCantidadProducto" style="text-align:right; width:80px; font-size:0.9em;"
@@ -414,9 +414,9 @@
 										<h:outputText value="#{msg['familia']}" />
 									</rich:column>
 									
-									<!-- <rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
+									<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
 										<h:outputText value="#{msg['disponible']}" />
-									</rich:column>-->
+									</rich:column>
 									
 									<rich:column styleClass="Titulo" style="text-align:center; padding:auto 2px; width:90px;">
 										<h:outputText value="#{msg['requeridos']}" />
@@ -466,10 +466,10 @@
 									<h:outputText value="#{var.familia}" title="#{var.idFamilia}" />
 								</rich:column>
 								
-								<!-- <rich:column styleClass="Descripcion" style="text-align:right;">
+								<rich:column styleClass="Descripcion" style="text-align:right;">
 									<h:outputText value="NA" title="No Aplica" rendered="#{item.idSolicitud gt 0}" />
 									<h:outputText value="#{var.disponible}" rendered="#{item.idSolicitud le 0}"><f:convertNumber pattern="#0.0000" /></h:outputText>
-								</rich:column>-->
+								</rich:column>
 								
 								<rich:column styleClass="Descripcion" style="text-align:right;">
 									<h:outputText value="#{var.requeridos}"><f:convertNumber pattern="#0.0000" /></h:outputText>

@@ -118,14 +118,14 @@ public class ObraSubcontratistaFac implements ObraSubcontratistaRem {
 	}
 
 	@Override
-	public List<ObraSubcontratista> findAll(long idObra, String orderBy) throws Exception {
+	public List<ObraSubcontratista> findAll(long idObra, long idEmpleado, String orderBy) throws Exception {
 		try {
 			if (this.infoSesion == null) {
 				control("Ocurrio un problema al validar la sesion de Usuario. Sesion nula");
 				return null;
 			}
 			
-			return this.ifzBase.findAll(idObra, orderBy);
+			return this.ifzBase.findAll(idObra, idEmpleado, orderBy);
 		} catch (Exception e) {
 			control("Ocurrio un problema al consultar: findAll(idObra, orderBy)", e);
 			throw e;
@@ -133,14 +133,14 @@ public class ObraSubcontratistaFac implements ObraSubcontratistaRem {
 	}
 
 	@Override
-	public List<ObraSubcontratista> findLikeProperty(String propertyName, Object value, long idObra, String orderBy, int limite) throws Exception {
+	public List<ObraSubcontratista> findLikeProperty(String propertyName, Object value, long idObra, long idEmpleado, String orderBy, int limite) throws Exception {
 		try {
 			if (this.infoSesion == null) {
 				control("Ocurrio un problema al validar la sesion de Usuario. Sesion nula");
 				return null;
 			}
 			
-			return this.ifzBase.findLikeProperty(propertyName, value, idObra, getIdEmpresa(), orderBy, limite);
+			return this.ifzBase.findLikeProperty(propertyName, value, idObra, idEmpleado, getIdEmpresa(), orderBy, limite);
 		} catch (Exception e) {
 			control("Ocurrio un problema al consultar: findLikeProperty(propertyName, value, idObra, orderBy, limite)", e);
 			throw e;
@@ -148,14 +148,14 @@ public class ObraSubcontratistaFac implements ObraSubcontratistaRem {
 	}
 
 	@Override
-	public List<ObraSubcontratista> findByProperty(String propertyName, Object value, long idObra, String orderBy, int limite) throws Exception {
+	public List<ObraSubcontratista> findByProperty(String propertyName, Object value, long idObra, long idEmpleado, String orderBy, int limite) throws Exception {
 		try {
 			if (this.infoSesion == null) {
 				control("Ocurrio un problema al validar la sesion de Usuario. Sesion nula");
 				return null;
 			}
 			
-			return this.ifzBase.findByProperty(propertyName, value, idObra, getIdEmpresa(), orderBy, limite);
+			return this.ifzBase.findByProperty(propertyName, value, idObra,  idEmpleado, getIdEmpresa(), orderBy, limite);
 		} catch (Exception e) {
 			control("Ocurrio un problema al consultar: findByProperty(propertyName, value, idObra, orderBy, limite)", e);
 			throw e;
@@ -319,7 +319,7 @@ public class ObraSubcontratistaFac implements ObraSubcontratistaRem {
 	}
 
 	@Override
-	public List<ObraSubcontratistaExt> findAllExt(long idObra, String orderBy) throws Exception {
+	public List<ObraSubcontratistaExt> findAllExt(long idObra, long idEmpleado, String orderBy) throws Exception {
 		List<ObraSubcontratistaExt> extendidos = null;
 		List<ObraSubcontratista> entities = null;
 		ObraSubcontratistaExt extendido = null;
@@ -331,7 +331,7 @@ public class ObraSubcontratistaFac implements ObraSubcontratistaRem {
 				return null;
 			}
 			
-			entities = this.ifzBase.findAll(idObra, orderBy);
+			entities = this.ifzBase.findAll(idObra, idEmpleado, orderBy);
 			entities = (entities != null ? entities : new ArrayList<ObraSubcontratista>());
 			for (ObraSubcontratista entity : entities) {
 				extendido = this.convertidor.getExtendido(entity);

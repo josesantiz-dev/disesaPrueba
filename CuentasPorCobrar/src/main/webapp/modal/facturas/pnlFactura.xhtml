@@ -108,24 +108,29 @@
 				<h:panelGroup id="groupFacturaRelacionada" style="display:#{facturaAction.idTipoComprobante == 'E' ? 'block' : 'none'}">
 					<h:panelGroup>
 						<h:outputText value="#{msg['facturaRelacionada']}:" styleClass="Titulo" />
-						<h:panelGrid columns="2">
+						<h:panelGrid columns="1">
 							<h:outputText id="txtFacturaRelacionada" styleClass="Titulo" style="text-align:left; display:block;" 
-								title="#{facturaAction.idFacturaRelacionada}"
 								value="#{facturaAction.folioFacturaRelacionada}" />
 							
-							<h:panelGroup>
+							<h:panelGroup >
 								<a4j:commandLink id="btnBusquedaFacturas" style="font-weight:bold;" 
 									rendered="#{facturaAction.idTipoComprobante == 'E'}" 
-								 	value="#{facturaAction.folioFacturaRelacionada == '' ? msg['seleccionar'] : msg['cambiar'] }"
+								 	value="#{facturaAction.folioFacturaRelacionada == '' ? msg['seleccionar'] : msg['agregar.e'] }"
 								 	action="#{facturaAction.nuevaBusquedaFacturas}" 
 									oncomplete="#{rich:component('pnlBusquedaFacturas')}.show()" 
-									render="pnlBusquedaFacturas" limitRender="true" />
-								
+									render="pnlBusquedaFacturas,txtFacturaRelacionada" limitRender="true" />
+									
+								<a4j:commandLink id="btnLimpiarFacturas" style="font-weight:bold; margin:0 8px;" 
+									rendered="#{facturaAction.idTipoComprobante == 'E'}" 
+								 	value="#{msg['borrar']}"
+								 	action="#{facturaAction.limpiarFacturasRelacionadas}" 
+									render="pnlBusquedaFacturas,txtFacturaRelacionada" limitRender="true" />
 								<!-- Este input es solo con propósito de que se permita hacer validator al proyecto -->
 								<h:inputText id="txtFacturaRelacionadaHidden" style="text-align:left; display:none;"
 									value="#{facturaAction.folioFacturaRelacionada}"
 									required="#{facturaAction.idTipoComprobante == 'E' ? !empty param[rich:clientId('cmdSalvar')] : false}"
 									requiredMessage="#{msg['factura']} #{msg['mensaje.error.requerido']}" />
+								
 							</h:panelGroup> 
 						</h:panelGrid>
 					</h:panelGroup>

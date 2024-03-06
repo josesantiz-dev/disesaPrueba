@@ -41,12 +41,15 @@ import net.giro.cxc.beans.FacturaExt;
 import net.giro.cxc.beans.FacturaPagos;
 import net.giro.cxc.beans.FacturaPagosExt;
 import net.giro.cxc.beans.FacturaTimbre;
+import net.giro.cxc.beans.FacturasRelacionadas;
+import net.giro.cxc.beans.FacturasRelacionadasExt;
 import net.giro.cxc.logica.ConceptoFacturacionImpuestosRem;
 import net.giro.cxc.logica.ConceptoFacturacionRem;
 import net.giro.cxc.logica.FacturaDetalleImpuestoRem;
 import net.giro.cxc.logica.FacturaDetalleRem;
 import net.giro.cxc.logica.FacturaPagosRem;
 import net.giro.cxc.logica.FacturaRem;
+import net.giro.cxc.logica.FacturasRelacionadasRem;
 import net.giro.cxc.util.FACTURA_ESTATUS;
 import net.giro.navegador.LoginManager;
 import net.giro.ne.beans.Sucursal;
@@ -84,6 +87,7 @@ public class FacturaAction implements Serializable, Runnable {
 	private ConGrupoValoresRem ifzGpoVal;
 	private ConValoresRem ifzConValores;
 	private FacturaRem ifzFactura;
+	private FacturasRelacionadasRem ifzFacturasRelacionadas;
 	private FacturaDetalleRem ifzFacturaDetalle;
 	private FacturaDetalleImpuestoRem ifzFacDetImpuestos;
 	private ReportesRem ifzReportes;
@@ -222,6 +226,10 @@ public class FacturaAction implements Serializable, Runnable {
 	private String campoBusquedaCfdi;
 	private int numPaginaCfdi;
 	// Busqueda Factura
+	private FacturasRelacionadasExt pojoFacturasRelacionadasExt;
+	private List<FacturasRelacionadasExt> listFacturasRelacionadasExt;
+	private List<FacturasRelacionadas> listFacturasRelacionadas;
+	private FacturasRelacionadas pojoFacturasRelacionadas;
 	private List<Factura> listBusquedaFacturas;
 	private Factura pojoFacturaSeleccionada;
 	private List<SelectItem> tipoBusquedaFacturas; 
@@ -290,6 +298,7 @@ public class FacturaAction implements Serializable, Runnable {
 			ctx = new InitialContext();
 			this.ifzFactura = (FacturaRem) ctx.lookup("ejb:/Logica_CuentasPorCobrar//FacturaFac!net.giro.cxc.logica.FacturaRem");
 			this.ifzFacturaDetalle = (FacturaDetalleRem) ctx.lookup("ejb:/Logica_CuentasPorCobrar//FacturaDetalleFac!net.giro.cxc.logica.FacturaDetalleRem");
+			this.ifzFacturasRelacionadas = (FacturasRelacionadasRem) ctx.lookup("ejb:/Logica_CuentasPorCobrar//FacturasRelacionadasFac!net.giro.cxc.logica.FacturasRelacionadasRem");
 			this.ifzFacDetImpuestos = (FacturaDetalleImpuestoRem) ctx.lookup("ejb:/Logica_CuentasPorCobrar//FacturaDetalleImpuestoFac!net.giro.cxc.logica.FacturaDetalleImpuestoRem");
 			this.ifzConceptosFacturacion = (ConceptoFacturacionRem) ctx.lookup("ejb:/Logica_CuentasPorCobrar//ConceptoFacturacionFac!net.giro.cxc.logica.ConceptoFacturacionRem");
 			this.ifzConFacImpuestos = (ConceptoFacturacionImpuestosRem) ctx.lookup("ejb:/Logica_CuentasPorCobrar//ConceptoFacturacionImpuestosFac!net.giro.cxc.logica.ConceptoFacturacionImpuestosRem");
@@ -308,6 +317,7 @@ public class FacturaAction implements Serializable, Runnable {
 			this.ifzBancos = (BancosRem) ctx.lookup("ejb:/Logica_TYG//BancosFac!net.giro.tyg.logica.BancosRem");
 			
 			this.ifzFactura.setInfoSesion(this.loginManager.getInfoSesion());
+			this.ifzFacturasRelacionadas.setInfoSesion(this.loginManager.getInfoSesion());
 			this.ifzFacturaDetalle.setInfoSesion(this.loginManager.getInfoSesion());
 			this.ifzFacDetImpuestos.setInfoSesion(this.loginManager.getInfoSesion());
 			this.ifzConceptosFacturacion.setInfoSesion(this.loginManager.getInfoSesion());
@@ -327,6 +337,7 @@ public class FacturaAction implements Serializable, Runnable {
 			this.ifzFactura.showSystemOuts(false);
 			this.ifzFacturaDetalle.showSystemOuts(false);
 			this.ifzConFacImpuestos.showSystemOuts(false);
+			this.ifzFacturasRelacionadas.showSystemOuts(false);
 
 			// Porcentaje IVA
 			this.porcentajeIva = 1;
@@ -573,6 +584,10 @@ public class FacturaAction implements Serializable, Runnable {
 			this.listDetalleImpuestosEliminados = new ArrayList<FacturaDetalleImpuestoExt>();
 			this.listDetalles = new ArrayList<FacturaDetalleExt>();
 			this.pojoDetalle = new FacturaDetalleExt();
+
+			this.pojoFacturasRelacionadas = new FacturasRelacionadas();
+			this.pojoFacturasRelacionadasExt = new FacturasRelacionadasExt();
+			this.listFacturasRelacionadasExt = new ArrayList<FacturasRelacionadasExt>(); 
 		} catch (Exception e) {
 			control("Ocurrio un problema al instanciar una nueva Factura.", e);
 		} finally {
@@ -673,6 +688,20 @@ public class FacturaAction implements Serializable, Runnable {
 				});
 			}
 			
+			// Cargamos facturas relacionadas
+			this.listFacturasRelacionadasExt = new ArrayList<FacturasRelacionadasExt>();
+			this.listFacturasRelacionadas = ifzFacturasRelacionadas.findFacturasById(this.pojoFactura.getId());
+			for (FacturasRelacionadas var : listFacturasRelacionadas) {
+				this.pojoFacturasRelacionadasExt = new FacturasRelacionadasExt();
+				this.pojoFacturaSeleccionada = ifzFactura.findById(var.getIdFacturaRelacionada());
+				if(pojoFacturaSeleccionada != null){
+					this.pojoFacturasRelacionadasExt.setIdFacturaRelacionada(this.pojoFacturaSeleccionada);
+					this.pojoFacturasRelacionadasExt.setCreadoPor(this.loginManager.getUsuarioResponsabilidad().getUsuario().getId());
+					this.pojoFacturasRelacionadasExt.setFechaCreacion(Calendar.getInstance(this.timeZone).getTime());
+					this.listFacturasRelacionadasExt.add(this.pojoFacturasRelacionadasExt);
+				}
+			}
+			
 			totalizar();
 			controlLog("Factura lista para editar");
 		} catch (Exception e) {
@@ -725,6 +754,7 @@ public class FacturaAction implements Serializable, Runnable {
 				this.ifzFactura.setInfoSesion(this.loginManager.getInfoSesion());
 				this.pojoFactura.setId(this.ifzFactura.save(this.pojoFactura));
 				this.listFacturas.add(0, this.ifzFactura.convertir(this.pojoFactura));
+				
 			} else {
 				saldo = BigDecimal.ZERO;
 				if ("I".equals(this.pojoFactura.getTipoComprobante())) {
@@ -745,9 +775,23 @@ public class FacturaAction implements Serializable, Runnable {
 						break;
 					}
 				}
-			}
+			}			
 			this.idFactura = this.pojoFactura.getId();
 			controlLog("Factura guardada: " + this.idFactura);
+			
+
+			controlLog("Guardando Facturas Relacionadas: " + this.idFactura);
+			this.ifzFacturasRelacionadas.setInfoSesion(this.loginManager.getInfoSesion());
+			this.ifzFacturasRelacionadas.deleteFacturasRelacionadas(this.idFactura);
+			for (FacturasRelacionadasExt var : listFacturasRelacionadasExt) {
+				this.pojoFacturasRelacionadas = new FacturasRelacionadas();
+				this.pojoFacturasRelacionadas.setCreadoPor(this.loginManager.getUsuarioResponsabilidad().getUsuario().getId());
+				this.pojoFacturasRelacionadas.setFechaCreacion(Calendar.getInstance(this.timeZone).getTime());
+				this.pojoFacturasRelacionadas.setIdFactura(this.idFactura);
+				this.pojoFacturasRelacionadas.setIdFacturaRelacionada(var.getIdFacturaRelacionada().getId());
+				this.pojoFacturasRelacionadas.setCfdiRelacionadoUuid(var.getIdFacturaRelacionada().getUuid());
+				var.setId(this.ifzFacturasRelacionadas.save(this.pojoFacturasRelacionadas));
+			}
 			
 			// Enlazando detalles a la factura
 			controlLog("Guardando detalles (" + this.listDetalles.size() + ") de Factura ... ");
@@ -2217,6 +2261,7 @@ public class FacturaAction implements Serializable, Runnable {
 
 	public void evaluaFacturaFolio() {
 		try {
+			controlLog("Evaluando factura folio.");
 			control();
 			this.facturaSerie = this.pojoFactura.getSerie();
 			this.facturaFolio = this.pojoFactura.getFolio();
@@ -2559,6 +2604,7 @@ public class FacturaAction implements Serializable, Runnable {
 			
 			this.cfdiRelacionado = false;
 			this.cfdiRelacionadoUuid = "";
+			this.listFacturasRelacionadas = new ArrayList<FacturasRelacionadas>();
 			this.tipoComprobante = this.tipoComprobanteSugerido;
 			this.idTipoRelacion = 0;
 			this.idUsoCfdi = this.idUsoCfdiSugerido;
@@ -2573,7 +2619,7 @@ public class FacturaAction implements Serializable, Runnable {
 			// Comprobamos si es de egreso y ya ha sido relacionada
 			if ("E".equals(this.pojoFactura.getTipoComprobante())) {
 				this.cfdiRelacionado = true;
-				if (this.pojoFactura.getIdFacturaRelacionada() != null) {
+				/*if (this.pojoFactura.getIdFacturaRelacionada() != null) {
 					if (this.pojoFactura.getIdFacturaRelacionada().getUuid() == null || "".equals(this.pojoFactura.getIdFacturaRelacionada().getUuid().trim())) {
 						controlLog("ERROR INTERNO - Factura Relacionada no esta timbrada");
 						control(-1, "La Factura Relacionada no esta timbrada.\nDebe timbrar la Factura relacionada antes de continuar.\nFactura Relacionada: " + this.pojoFactura.getIdFacturaRelacionada().getFolioFactura());
@@ -2581,6 +2627,19 @@ public class FacturaAction implements Serializable, Runnable {
 					}
 					
 					this.cfdiRelacionadoUuid = this.pojoFactura.getIdFacturaRelacionada().getUuid();
+					this.tipoComprobante = this.pojoFactura.getTipoComprobante();
+				}*/
+				
+				//Facturas Relacionadas
+				if(this.listFacturasRelacionadasExt != null && this.listFacturasRelacionadasExt.size() > 0){
+					for (FacturasRelacionadasExt var : listFacturasRelacionadasExt) {
+						if (var.getIdFacturaRelacionada().getUuid() == null || "".equals(var.getIdFacturaRelacionada().getUuid().trim())) {
+							controlLog("ERROR INTERNO - Factura Relacionada no esta timbrada");
+							control(-1, "La Factura Relacionada no esta timbrada.\nDebe timbrar la Factura relacionada antes de continuar.\nFactura Relacionada: " + this.pojoFactura.getIdFacturaRelacionada().getFolioFactura());
+							return;
+						}
+					}
+					this.listFacturasRelacionadas = ifzFacturasRelacionadas.findFacturasById(this.pojoFactura.getId());
 					this.tipoComprobante = this.pojoFactura.getTipoComprobante();
 				}
 			}
@@ -2713,7 +2772,8 @@ public class FacturaAction implements Serializable, Runnable {
 
 			controlLog("Timbrando factura ... ");
 			this.ifzFactura.setInfoSesion(this.loginManager.getInfoSesion());
-			respuesta = this.ifzFactura.timbrar(this.pojoFactura, this.cfdiVersion, usoCFDI, ((this.cfdiRelacionado) ? 1 : 0), ((this.cfdiRelacionado) ? this.cfdiRelacionadoUuid : ""), ((this.cfdiRelacionado) ? tipoRelacion : ""), this.isDebug, cfdiTesting, cfdiNoTimbrar);
+			//respuesta = this.ifzFactura.timbrar(this.pojoFactura, this.cfdiVersion, usoCFDI, ((this.cfdiRelacionado) ? 1 : 0), ((this.cfdiRelacionado) ? this.cfdiRelacionadoUuid : ""), ((this.cfdiRelacionado) ? tipoRelacion : ""), this.isDebug, cfdiTesting, cfdiNoTimbrar);
+			respuesta = this.ifzFactura.timbrar(this.pojoFactura, this.cfdiVersion, usoCFDI, ((this.cfdiRelacionado) ? 1 : 0), ((this.cfdiRelacionado) ? this.listFacturasRelacionadas : null), ((this.cfdiRelacionado) ? tipoRelacion : ""), this.isDebug, cfdiTesting, cfdiNoTimbrar);
 			if (respuesta.getErrores().getCodigoError() != 0) {
 				control(-1, "Ocurrio un problema al timbrar la Factura, proceso de timbre abortado.\n" + respuesta.getErrores().getCodigoError() + " - " + respuesta.getErrores().getDescError());
 				return;
@@ -2964,6 +3024,14 @@ public class FacturaAction implements Serializable, Runnable {
 		this.listBusquedaFacturas = new ArrayList<Factura>();
 		this.pojoFacturaSeleccionada = null;
 	}
+	public void limpiarFacturasRelacionadas() {
+		control();
+		
+		this.listFacturasRelacionadasExt = new ArrayList<FacturasRelacionadasExt>();
+		this.pojoFacturaSeleccionada = null;
+		this.pojoFacturasRelacionadas = null;
+		this.pojoFacturasRelacionadasExt = null;
+	}
 	
 	public void buscarFacturas() {
 		try {
@@ -2995,7 +3063,16 @@ public class FacturaAction implements Serializable, Runnable {
 			}
 			
 			// Asignamos la factura relacionada
-			this.pojoFactura.setIdFacturaRelacionada(this.pojoFacturaSeleccionada);
+			if(this.listFacturasRelacionadasExt == null){
+				this.listFacturasRelacionadasExt = new ArrayList<FacturasRelacionadasExt>();
+			}
+			this.pojoFacturasRelacionadasExt = new FacturasRelacionadasExt();
+			this.pojoFacturasRelacionadasExt.setIdFacturaRelacionada(this.pojoFacturaSeleccionada);
+			this.pojoFacturasRelacionadasExt.setCreadoPor(this.loginManager.getUsuarioResponsabilidad().getUsuario().getId());
+			this.pojoFacturasRelacionadasExt.setFechaCreacion(Calendar.getInstance(this.timeZone).getTime());
+			this.listFacturasRelacionadasExt.add(this.pojoFacturasRelacionadasExt);
+			
+			//this.pojoFactura.setIdFacturaRelacionada(this.pojoFacturaSeleccionada);
 			
 			// Recuperamos la Obra de la Factura relacionada
 			this.pojoObra = this.ifzObra.findById(this.pojoFacturaSeleccionada.getIdObra());
@@ -3402,8 +3479,17 @@ public class FacturaAction implements Serializable, Runnable {
 	public void setPermitirCambiarObra(boolean value) {}
 	
 	public String getFolioFacturaRelacionada() {
-		if (this.pojoFactura != null && this.pojoFactura.getIdFacturaRelacionada() != null && this.pojoFactura.getIdFacturaRelacionada().getId() != null && this.pojoFactura.getIdFacturaRelacionada().getId() > 0L)
+		/*if (this.pojoFactura != null && this.pojoFactura.getIdFacturaRelacionada() != null && this.pojoFactura.getIdFacturaRelacionada().getId() != null && this.pojoFactura.getIdFacturaRelacionada().getId() > 0L)
 			return this.pojoFactura.getIdFacturaRelacionada().getFolioFactura();
+			*/
+		if (this.pojoFactura != null && this.listFacturasRelacionadasExt != null && this.listFacturasRelacionadasExt.size() > 0 &&
+				this.listFacturasRelacionadasExt.get(0).getIdFacturaRelacionada().getId() > 0L){
+			String r = "";
+			for (FacturasRelacionadasExt var : listFacturasRelacionadasExt) {
+				r += "[" + var.getIdFacturaRelacionada().getFolioFactura() + "] ";
+			}
+			return r;
+		}
 		return "";
 	}
 	
@@ -3968,7 +4054,15 @@ public class FacturaAction implements Serializable, Runnable {
 	}
 
 	public String getCfdiRelacionadoUuid() {
-		return cfdiRelacionadoUuid;
+		if (this.pojoFactura != null && this.listFacturasRelacionadasExt != null && this.listFacturasRelacionadasExt.size() > 0 &&
+				this.listFacturasRelacionadasExt.get(0).getIdFacturaRelacionada().getId() > 0L){
+			String r = "";
+			for (FacturasRelacionadasExt var : listFacturasRelacionadasExt) {
+				r += "[" + var.getIdFacturaRelacionada().getUuid() + "] ";
+			}
+			return r;
+		}
+		return "";
 	}
 
 	public void setCfdiRelacionadoUuid(String cfdiRelacionadoUuid) {
@@ -4351,6 +4445,37 @@ public class FacturaAction implements Serializable, Runnable {
 		validaRequest("NOTIMBRAR", value);
 	}
 
+	public FacturasRelacionadas getPojoFacturasRelacionadas() {
+		return pojoFacturasRelacionadas;
+	}
+
+	public void setPojoFacturasRelacionadas(FacturasRelacionadas pojoFacturasRelacionadas) {
+		this.pojoFacturasRelacionadas = pojoFacturasRelacionadas;
+	}
+
+	public FacturasRelacionadasExt getPojoFacturasRelacionadasExt() {
+		return pojoFacturasRelacionadasExt;
+	}
+
+	public void setPojoFacturasRelacionadasExt(FacturasRelacionadasExt pojoFacturasRelacionadasExt) {
+		this.pojoFacturasRelacionadasExt = pojoFacturasRelacionadasExt;
+	}
+
+	public List<FacturasRelacionadasExt> getListFacturasRelacionadasExt() {
+		return listFacturasRelacionadasExt;
+	}
+
+	public void setListFacturasRelacionadasExt(List<FacturasRelacionadasExt> listFacturasRelacionadasExt) {
+		this.listFacturasRelacionadasExt = listFacturasRelacionadasExt;
+	}
+
+	public List<FacturasRelacionadas> getListFacturasRelacionadas() {
+		return listFacturasRelacionadas;
+	}
+
+	public void setListFacturasRelacionadas(List<FacturasRelacionadas> listFacturasRelacionadas) {
+		this.listFacturasRelacionadas = listFacturasRelacionadas;
+	}
 }
 
 // HISTORIAL DE MODIFICACIONES 

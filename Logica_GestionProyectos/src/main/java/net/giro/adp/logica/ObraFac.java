@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -21,6 +22,7 @@ import net.giro.adp.beans.ObraExt;
 import net.giro.adp.beans.TipoObraAutorizadas;
 import net.giro.adp.beans.TipoObraJerarquia;
 import net.giro.adp.beans.TipoObraRevisadas;
+import net.giro.adp.beans.TipoSub;
 import net.giro.adp.dao.ObraDAO;
 import net.giro.clientes.beans.Negocio;
 import net.giro.clientes.beans.Persona;
@@ -467,6 +469,15 @@ public class ObraFac implements ObraRem {
 		return listResult;
 	}
 
+	@Override
+	public List<TipoSub> findAllTipoSub() throws Exception {
+		try {
+			return this.ifzObras.findAllTipoSub();
+		} catch (Exception re) {
+			log.error("Ocurrio un problema al consultar todas las obras. Metodo: findAllTipoSub()", re);
+			throw re;
+		} 
+	}
 	// -------------------------------------------------------------------------------------------
 	// CONVERSION
 	// -------------------------------------------------------------------------------------------

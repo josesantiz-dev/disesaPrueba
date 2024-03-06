@@ -168,6 +168,8 @@ public class CFDIRealVirtualv33 implements CFDI {
 				return acuseRecepcion;
 			}
 
+			System.out.println("STRUCT :: " + struct.getTimbre());
+			
 			// Leemos el TIMBRE para recuperar UUID, Fecha timbrado, Sello SAT y No Certificado SAT.
 			acuseRecepcion = acuseRecepcion(struct);
 		} catch (Exception ex) { 
